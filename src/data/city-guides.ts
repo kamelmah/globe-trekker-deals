@@ -361,6 +361,402 @@ export const CITY_GUIDES: CityGuide[] = [
       },
     ],
   },
+  {
+    slug: "istanbul",
+    city: "Istanbul",
+    country: "Turquie",
+    routeSlug: "paris-istanbul",
+    origin: "PAR",
+    destination: "IST",
+    originCity: "Paris",
+    title: "Que faire à Istanbul : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Istanbul : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Istanbul : meilleure période, quartiers où loger, budget sur place, transports, monnaie et formalités pour les Français. Tout pour préparer votre séjour.",
+    intro:
+      "Istanbul se visite bien en quatre jours si l'on accepte de ne pas tout voir. La ville est immense, coupée en deux par le Bosphore, et le choix du quartier où dormir change complètement l'expérience. Voici les informations concrètes à connaître avant de réserver votre vol.",
+    readingMinutes: 8,
+    updated: "2026-08-30",
+    practical: {
+      monnaie: "Livre turque (TRY). Taux très variable : changez par petites sommes, les bureaux de Grand-Rue offrent de meilleurs taux que l'aéroport.",
+      langue: "Turc. L'anglais est courant dans le tourisme, le français beaucoup moins.",
+      visa: "Aucun visa pour les Français en séjour touristique de moins de 90 jours. Passeport valide au moins 150 jours après l'entrée.",
+      transport: "Tramway T1, métro, funiculaires et ferries. Prenez une carte Istanbulkart dès l'arrivée, elle sert sur tous les modes.",
+      budgetJour: "45 à 80 € par personne et par jour, hébergement en hôtel confortable, repas et visites inclus.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Istanbul ?",
+        paragraphs: [
+          "Avril-mai et septembre-octobre sont les deux meilleures fenêtres : 18 à 25 °C, ciel souvent dégagé, journées assez longues pour enchaîner deux quartiers. Avril offre en prime la floraison des tulipes dans les parcs d'Emirgan et de Gülhane, un moment très photographié mais rarement bondé en semaine.",
+          "L'été (juin à août) est chaud et humide, avec des pointes à 33 °C et une affluence maximale à Sainte-Sophie, à la Citerne Basilique et au palais de Topkapi. Si vous venez à cette période, réservez vos billets d'entrée en ligne et visitez à l'ouverture ou en fin d'après-midi.",
+          "L'hiver, de décembre à février, est frais et pluvieux (5 à 10 °C), parfois neigeux quelques jours. C'est la saison la moins chère pour les vols et les hôtels, et l'ambiance des hammams, des cafés à narguilé et des marchés couverts prend alors tout son sens.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Sultanahmet concentre l'héritage byzantin et ottoman : Sainte-Sophie, la Mosquée bleue, Topkapi, la Citerne Basilique et l'Hippodrome, le tout dans un périmètre praticable à pied. C'est pratique pour un premier séjour court, mais le quartier se vide le soir et les restaurants y sont surtout touristiques.",
+          "Beyoğlu, de la place Taksim à la tour de Galata en descendant l'İstiklal Caddesi, est le cœur vivant de la ville : cafés, librairies, salles de concert, restaurants de meyhane. C'est le meilleur choix si vous voulez sortir le soir sans dépendre des transports.",
+          "Karaköy et Cihangir, en contrebas, offrent une ambiance plus calme et créative. Kadıköy, sur la rive asiatique, vaut largement la traversée en ferry : marché alimentaire, bars de quartier et prix nettement inférieurs à ceux de la rive européenne. Enfin, Balat et Fener, avec leurs maisons colorées et leurs églises orthodoxes, se parcourent tranquillement en une demi-journée.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Istanbul reste abordable pour un voyageur français, malgré une inflation forte ces dernières années. Comptez 6 à 12 € pour un repas dans un lokanta de quartier, 20 à 35 € pour un dîner de poisson avec vue sur le Bosphore, 1 à 2 € pour un thé et 2 à 4 € pour un café de spécialité.",
+          "Les entrées de sites vont de 15 à 30 € pour les monuments majeurs, qui appliquent depuis peu des tarifs spécifiques aux visiteurs étrangers. Une croisière publique sur le Bosphore en ferry municipal coûte moins de 2 €, contre 20 à 40 € pour une croisière privée : le ferry est largement suffisant.",
+          "L'hébergement se situe entre 50 et 100 € la nuit pour un bon hôtel trois étoiles bien placé. Prévoyez quelques espèces : marchés, taxis courts et petits commerces ne prennent pas toujours la carte, même si le paiement sans contact progresse vite.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : pas de visa pour un séjour touristique de moins de 90 jours sur une période de 180 jours ; votre passeport doit rester valide 150 jours après l'entrée. Aucun vaccin obligatoire.",
+          "Transports depuis l'aéroport : depuis Istanbul Airport (IST), la navette Havaist rejoint Taksim en 60 à 90 minutes pour environ 10 €, le métro M11 relie Gayrettepe en 30 minutes. Depuis Sabiha Gökçen (SAW), côté asiatique, comptez au moins 1 h 30 pour rejoindre le centre européen.",
+          "Sur place : l'Istanbulkart, achetée dans les bornes des stations, fonctionne sur tramway, métro, bus, funiculaire et ferries, avec des tarifs très bas. Pour les taxis, exigez le compteur ou passez par une application.",
+          "Usages : tenue couvrante et foulard pour les femmes dans les mosquées, chaussures retirées à l'entrée. Évitez les visites pendant la prière du vendredi midi. Le marchandage est attendu au Grand Bazar, pas dans les boutiques à prix affichés.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent Sultanahmet, Beyoğlu et une traversée en ferry. Quatre à cinq nuits permettent d'ajouter Balat, Kadıköy, un hammam historique et une journée aux îles aux Princes, à une heure de bateau du centre.",
+          "Au-delà d'une semaine, Istanbul devient une base pour un circuit turc plus large : Cappadoce en vol intérieur d'une heure, Éphèse ou Bursa en bus. Dans ce cas, gardez une nuit tampon avant le vol retour, les correspondances intérieures accusent souvent du retard.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "dubai",
+    city: "Dubaï",
+    country: "Émirats arabes unis",
+    routeSlug: "paris-dubai",
+    origin: "PAR",
+    destination: "DXB",
+    originCity: "Paris",
+    title: "Que faire à Dubaï : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Dubaï : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Dubaï : quand partir, quartiers où loger, budget réel sur place, métro et taxis, monnaie, visa et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Dubaï se visite très différemment selon la saison et le quartier choisi. Entre la vieille ville de Deira, la Marina et le désert, les distances sont longues : mieux vaut planifier. Voici l'essentiel avant de réserver votre vol.",
+    readingMinutes: 8,
+    updated: "2026-08-30",
+    practical: {
+      monnaie: "Dirham des Émirats (AED), indexé sur le dollar. Environ 1 € = 4 AED. Carte acceptée quasiment partout.",
+      langue: "Arabe officiel, anglais parlé partout, y compris dans les taxis et les commerces.",
+      visa: "Aucun visa préalable pour les Français : visa gratuit de 90 jours délivré à l'arrivée. Passeport valide 6 mois.",
+      transport: "Métro (lignes rouge et verte), tramway de la Marina, taxis abordables et applications VTC.",
+      budgetJour: "80 à 150 € par personne et par jour hors hôtel de luxe ; beaucoup moins en mangeant local.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Dubaï ?",
+        paragraphs: [
+          "De novembre à mars, le climat est idéal : 22 à 28 °C, faible humidité, soirées agréables en terrasse. C'est la haute saison touristique, donc la période où les hôtels et les vols sont les plus chers, en particulier autour de Noël et du Nouvel An.",
+          "Avril, mai et octobre forment de bons compromis : il fait chaud (30 à 35 °C) mais les plages et les piscines restent très agréables, et les tarifs baissent nettement par rapport à l'hiver.",
+          "De juin à septembre, la chaleur devient extrême, souvent au-delà de 42 °C avec une humidité élevée. La ville reste entièrement climatisée et les prix chutent, mais la vie se déroule alors à l'intérieur : centres commerciaux, musées, parcs aquatiques. À éviter si votre programme repose sur la marche ou le désert.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Downtown Dubai regroupe la Burj Khalifa, le Dubai Mall et les fontaines. C'est le quartier le plus pratique pour un premier séjour, bien desservi par le métro, mais aussi l'un des plus chers pour dormir.",
+          "Dubai Marina et JBR offrent la plage, la promenade en bord de mer et une grande densité de restaurants. C'est le meilleur choix pour un séjour balnéaire, avec le tramway pour se déplacer localement.",
+          "Deira et Bur Dubai, de part et d'autre de la crique, montrent le Dubaï historique : souk de l'or, souk aux épices, quartier restauré d'Al Fahidi et traversée en abra pour quelques centimes. Al Quoz, plus au sud, concentre les galeries d'art dans d'anciens entrepôts. Enfin, le désert, à 45 minutes du centre, se découvre en excursion d'une demi-journée avec dîner sous tente.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Contrairement à sa réputation, Dubaï peut se visiter sans budget démesuré. Un repas dans un restaurant indien ou pakistanais de Deira coûte 5 à 10 €, un déjeuner en food court 10 à 15 €, un dîner dans un restaurant de la Marina 35 à 60 € sans alcool. Les boissons alcoolisées sont taxées et coûtent cher : 10 à 15 € la bière en hôtel.",
+          "Les activités structurent le budget : environ 40 € l'accès au sommet de la Burj Khalifa (plus cher au coucher du soleil), 35 à 60 € pour un safari dans le désert, 25 € pour The View at the Palm. Le métro coûte moins de 2 € le trajet et les taxis restent bon marché (5 à 12 € pour la plupart des courses urbaines).",
+          "Côté hébergement, comptez 70 à 120 € la nuit pour un bon quatre étoiles hors haute saison, davantage sur la plage en décembre-janvier.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : les ressortissants français reçoivent un visa de visite gratuit à l'arrivée, valable 90 jours sur une période de 180 jours. Le passeport doit être valide six mois après l'entrée.",
+          "Transport depuis l'aéroport : le métro dessert directement les terminaux 1 et 3 et rejoint Downtown en une vingtaine de minutes. Un taxi vers la Marina coûte environ 20 à 25 €.",
+          "Usages et règles : tenue correcte exigée dans les centres commerciaux et les quartiers traditionnels (épaules et genoux couverts), alcool uniquement dans les établissements licenciés, comportements affectueux discrets en public. Pendant le ramadan, ne mangez pas et ne buvez pas dans la rue en journée.",
+          "Pratique : l'eau du robinet est potable mais peu consommée, les distances entre quartiers sont réelles (comptez 30 minutes de trajet de Deira à la Marina), et un abonnement Nol Card facilite tous les transports publics.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Quatre nuits suffisent pour Downtown, la Marina, la vieille ville et une soirée dans le désert. Une semaine permet d'ajouter Abu Dhabi et la mosquée Cheikh Zayed en excursion, ainsi que quelques journées de plage.",
+          "Dubaï fonctionne aussi très bien comme escale de deux ou trois nuits sur un trajet vers l'Asie ou l'océan Indien : les vols avec stopover sont souvent moins chers qu'un vol direct, et l'aéroport est l'un des mieux connectés du monde.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "tokyo",
+    city: "Tokyo",
+    country: "Japon",
+    routeSlug: "paris-tokyo",
+    origin: "PAR",
+    destination: "TYO",
+    originCity: "Paris",
+    title: "Que faire à Tokyo : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Tokyo : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Tokyo : meilleure saison, quartiers où loger, budget quotidien, métro et JR, monnaie, formalités et conseils pratiques pour un premier voyage au Japon.",
+    intro:
+      "Tokyo n'a pas de centre unique : la ville s'organise autour d'une dizaine de pôles reliés par la ligne Yamanote. Comprendre cette géographie évite de perdre des heures dans les transports. Voici l'essentiel avant de réserver.",
+    readingMinutes: 9,
+    updated: "2026-08-30",
+    practical: {
+      monnaie: "Yen (JPY). Environ 1 € = 165 JPY. Les espèces restent utiles malgré la généralisation du sans contact.",
+      langue: "Japonais. L'anglais est limité à l'oral mais la signalétique des transports est bilingue.",
+      visa: "Aucun visa pour les Français jusqu'à 90 jours de tourisme. Formulaire d'immigration en ligne via Visit Japan Web.",
+      transport: "Métro Tokyo Metro et Toei, lignes JR dont la Yamanote. Carte Suica ou Pasmo indispensable.",
+      budgetJour: "70 à 130 € par personne et par jour, hébergement compris en hôtel de catégorie moyenne.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Tokyo ?",
+        paragraphs: [
+          "Fin mars à début avril, la floraison des cerisiers attire un monde considérable mais offre une expérience unique dans les parcs d'Ueno, de Shinjuku Gyoen et le long de la Meguro. Réservez vols et hôtels plusieurs mois à l'avance : c'est la période la plus chère de l'année avec la Golden Week.",
+          "Octobre et novembre sont, pour beaucoup de voyageurs, la meilleure saison : 15 à 22 °C, air sec, ciel clair et érables rouges à partir de mi-novembre. Les tarifs aériens sont plus raisonnables qu'au printemps.",
+          "L'été, de juin à septembre, est chaud et très humide, avec la saison des pluies en juin et un risque de typhons en septembre. L'hiver est froid mais sec et ensoleillé : peu de foule, prix bas et vue dégagée sur le mont Fuji depuis les points hauts de la ville.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Shinjuku et Shibuya sont les deux pôles les plus animés : gratte-ciel, ruelles d'izakaya, grands magasins et le fameux carrefour de Shibuya. Loger près de l'une de ces gares simplifie tous les déplacements grâce à la ligne Yamanote.",
+          "Asakusa et Yanaka montrent le Tokyo traditionnel : temple Sensō-ji, ruelles commerçantes, maisons basses et petits ateliers. C'est aussi le secteur des hébergements les plus abordables.",
+          "Ginza et Nihonbashi concentrent le luxe et la gastronomie, Akihabara l'électronique et la culture otaku, Harajuku et Omotesandō la mode et l'architecture contemporaine. Enfin, Odaiba, sur la baie, et Nakameguro, le long de la rivière, offrent deux ambiances plus calmes pour une demi-journée.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Le Japon coûte moins cher que sa réputation. Un bol de ramen ou un donburi revient à 6 à 10 €, un menu de midi dans un bon restaurant 10 à 15 €, un dîner d'izakaya 20 à 35 € par personne. Les combini (supérettes ouvertes 24 h/24) permettent de manger correctement pour 4 à 6 €.",
+          "Les transports urbains coûtent 1,20 à 2,50 € par trajet ; un pass journalier de métro revient à environ 6 €. Le JR Pass national n'est rentable que si vous quittez Tokyo pour Kyoto ou Osaka : pour un séjour uniquement à Tokyo, il ne l'est pas.",
+          "L'hébergement va de 40 € la nuit en business hotel ou capsule à 120 € pour un hôtel confortable bien situé. La plupart des temples et des parcs sont gratuits ; les musées coûtent 5 à 15 €, l'observatoire du bâtiment municipal de Shinjuku est gratuit.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : pas de visa pour un séjour touristique de moins de 90 jours. Remplissez à l'avance le formulaire Visit Japan Web (immigration et douane) pour gagner du temps à l'arrivée.",
+          "Depuis l'aéroport : de Narita, le Narita Express rejoint Tokyo en 60 minutes (environ 20 €), le Keisei Skyliner Ueno en 45 minutes. De Haneda, plus proche, le monorail ou la ligne Keikyu mettent 20 à 30 minutes pour moins de 5 €.",
+          "Sur place : achetez une carte Suica ou Pasmo (physique ou sur smartphone) dès l'arrivée, elle sert dans tous les transports et dans les commerces. Gardez toujours 5 000 à 10 000 yens en espèces : petits restaurants et temples n'acceptent pas la carte.",
+          "Usages : on ne mange pas en marchant, on ne parle pas fort dans les transports, on ne laisse pas de pourboire. Les poubelles sont rares : prévoyez un petit sac pour vos déchets.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Quatre à cinq nuits sont un minimum pour Tokyo seule, compte tenu du décalage horaire de sept à huit heures et de la taille de la ville. Prévoyez des journées thématiques par quartier plutôt que des allers-retours.",
+          "Dix à quatorze jours permettent d'ajouter Kyoto, Osaka et une étape nature comme Hakone, Nikkō ou Kanazawa, en Shinkansen. Dans ce cas, calculez la rentabilité du JR Pass avant d'acheter : au tarif actuel, deux allers-retours longue distance sont souvent nécessaires pour l'amortir.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "alger",
+    city: "Alger",
+    country: "Algérie",
+    routeSlug: "paris-alger",
+    origin: "PAR",
+    destination: "ALG",
+    originCity: "Paris",
+    title: "Que faire à Alger : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Alger : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Alger : meilleure période, quartiers à visiter, budget sur place, transports, monnaie, visa pour les Français et conseils pratiques avant de partir.",
+    intro:
+      "Alger la Blanche se découvre à pied, entre les arcades du front de mer, la Casbah et les hauteurs de Notre-Dame d'Afrique. C'est une destination encore peu touristique, ce qui suppose un peu de préparation, notamment côté visa et argent liquide.",
+    readingMinutes: 8,
+    updated: "2026-08-30",
+    practical: {
+      monnaie: "Dinar algérien (DZD), non exportable et non convertible hors du pays. Prévoyez des espèces en euros.",
+      langue: "Arabe et amazigh officiels ; le français est très largement compris et parlé.",
+      visa: "Visa obligatoire pour les Français : demande au consulat avec réservation d'hôtel ou attestation d'hébergement.",
+      transport: "Métro, tramway, téléphériques, taxis et bus ETUSA. Les courses en taxi se négocient souvent au départ.",
+      budgetJour: "35 à 60 € par personne et par jour, hébergement en hôtel correct compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Alger ?",
+        paragraphs: [
+          "Le printemps, d'avril à juin, est la meilleure saison : 20 à 27 °C, végétation verte sur les hauteurs et mer déjà agréable en fin de période. L'automne, de septembre à début novembre, offre des conditions comparables avec une mer encore chaude.",
+          "L'été est chaud (30 à 35 °C) et surtout très fréquenté par la diaspora : les vols depuis Paris sont alors nettement plus chers et se remplissent des mois à l'avance, en particulier en juillet-août et autour de l'Aïd.",
+          "L'hiver reste doux sur la côte (12 à 17 °C) mais pluvieux. C'est la période la moins chère pour voler, adaptée à un séjour culturel et urbain plutôt que balnéaire.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "La Casbah, classée à l'UNESCO, est le cœur historique : ruelles en escaliers, palais ottomans, mosquée Ketchaoua. Le quartier se visite idéalement accompagné d'un guide local, à la fois pour l'orientation et pour l'histoire des lieux.",
+          "Le centre-ville haussmannien, autour de la rue Didouche-Mourad et de la Grande Poste, montre le visage colonial et moderne d'Alger : cafés, librairies, cinémas et arcades du front de mer face au port.",
+          "Sur les hauteurs, Notre-Dame d'Afrique offre l'un des plus beaux panoramas sur la baie ; on y accède en téléphérique. Le Jardin d'Essai du Hamma, immense parc botanique, et le Musée national des beaux-arts juste au-dessus, méritent une demi-journée. Enfin, le Mémorial du Martyr (Maqam Echahid) domine la ville et abrite le musée de l'Armée.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Alger est peu chère pour un voyageur venant de France. Un repas complet dans un restaurant populaire coûte 4 à 8 €, un bon dîner de poisson 15 à 25 €, un café 0,50 à 1 €. Les entrées de musées ne dépassent généralement pas 2 à 3 €.",
+          "L'hébergement est le poste le plus variable : 30 à 50 € la nuit pour un hôtel simple mais propre, 80 à 130 € pour un établissement international en bord de mer. Les locations d'appartement se développent mais se réservent souvent localement.",
+          "Point essentiel : le dinar ne s'achète pas hors d'Algérie et les cartes bancaires étrangères sont très peu acceptées. Emportez des euros en espèces, à changer sur place, et prévoyez une marge : très peu de distributeurs acceptent les cartes internationales.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : le visa est obligatoire pour les Français. Le dossier se dépose au consulat d'Algérie et exige généralement passeport valide six mois, photos, justificatif d'hébergement ou réservation d'hôtel, assurance et attestation de ressources. Prévoyez plusieurs semaines de délai avant le départ, et achetez un billet modifiable tant que le visa n'est pas obtenu.",
+          "Depuis l'aéroport Houari-Boumédiène, comptez 20 à 30 minutes jusqu'au centre en taxi (environ 10 à 15 €) ; fixez le tarif avant de monter. La ligne de bus 100 dessert aussi le centre-ville.",
+          "Sur place : le métro et le tramway sont modernes, propres et très bon marché. Les transports par taxi collectif restent la norme pour les trajets plus longs.",
+          "Bon à savoir : le vendredi, beaucoup de commerces et d'administrations sont fermés. Photographier les bâtiments officiels, les ports et les militaires est interdit. Un usage courant du français facilite énormément les échanges.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits permettent de couvrir la Casbah, le centre, le Jardin d'Essai et Notre-Dame d'Afrique sans se presser. Quatre à cinq nuits ajoutent Tipaza et ses ruines romaines en bord de mer, à une heure à l'ouest, ainsi que les plages de la côte turquoise.",
+          "Pour un séjour plus long, Alger sert de porte d'entrée vers Constantine, Oran ou le Sahara (Ghardaïa, Timimoun), accessibles en vols intérieurs peu coûteux mais à réserver tôt en été.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "rome",
+    city: "Rome",
+    country: "Italie",
+    routeSlug: "paris-rome",
+    origin: "PAR",
+    destination: "ROM",
+    originCity: "Paris",
+    title: "Que faire à Rome : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Rome : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Rome : quand partir, quartiers où loger, budget sur place, transports, réservations des sites majeurs et conseils pratiques pour un city-break réussi.",
+    intro:
+      "Rome se marche : la plupart des sites du centre historique tiennent dans un périmètre de trois kilomètres. Le vrai enjeu d'un séjour réussi, ce sont les réservations et le choix de la saison. Voici les repères concrets avant de réserver votre vol.",
+    readingMinutes: 8,
+    updated: "2026-08-30",
+    practical: {
+      monnaie: "Euro. Carte acceptée partout, y compris pour les petits montants.",
+      langue: "Italien. L'anglais est courant dans le centre, le français parfois compris.",
+      visa: "Aucune formalité pour les Français : carte d'identité ou passeport en cours de validité suffit.",
+      transport: "Métro (lignes A, B, C), tramways et bus ATAC. Le centre historique se parcourt à pied.",
+      budgetJour: "70 à 120 € par personne et par jour, hébergement en hôtel de catégorie moyenne compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Rome ?",
+        paragraphs: [
+          "Avril-juin et septembre-octobre offrent les meilleures conditions : 20 à 27 °C, journées longues et terrasses agréables. Ce sont aussi des périodes fréquentées : réservez le Colisée et les musées du Vatican plusieurs semaines à l'avance.",
+          "Juillet et août sont chauds (souvent 33 à 36 °C) et beaucoup de Romains quittent la ville en août ; certains restaurants de quartier ferment. Les visites de sites en plein air comme le Forum ou la Via Appia deviennent éprouvantes en milieu de journée.",
+          "De novembre à mars, Rome est douce (10 à 15 °C), moins chère et beaucoup plus calme. Les files d'attente sont raisonnables et les vols depuis Paris tombent régulièrement à des tarifs très bas, sauf pendant les fêtes et Pâques, qui attirent une foule considérable au Vatican.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Le centre antique regroupe le Colisée, le Forum romain et le Palatin, un ensemble qui demande une bonne demi-journée. Le billet combiné se réserve en ligne avec un créneau horaire ; sans réservation, l'accès est devenu difficile en haute saison.",
+          "Le centre baroque, du Panthéon à la place Navone et à la fontaine de Trevi, se parcourt à pied. Tôt le matin, avant 8 h, ces places sont quasiment vides : c'est le meilleur moment pour les photos.",
+          "Le Vatican mérite une matinée complète pour la basilique Saint-Pierre et les musées ; l'entrée dans la basilique est gratuite mais la file de sécurité est longue. Le Trastevere, de l'autre côté du Tibre, concentre les trattorias et l'ambiance du soir. Monti, à deux pas du Colisée, est un excellent quartier où loger : central, vivant et moins cher que la Piazza di Spagna. Enfin, Testaccio est le quartier de référence pour la cuisine romaine traditionnelle.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Comptez 12 à 18 € pour un plat de pâtes dans une trattoria correcte, 25 à 40 € pour un dîner complet avec vin, 1,20 € pour un espresso au comptoir — mais deux à trois fois plus en terrasse sur une place touristique. Une part de pizza al taglio, à 3 ou 4 €, reste le meilleur déjeuner rapide.",
+          "Côté visites : environ 18 € le billet Colisée-Forum-Palatin, 20 € les musées du Vatican, 13 € la galerie Borghèse (réservation obligatoire). Beaucoup d'églises majeures, dont Saint-Pierre-aux-Liens et Santa Maria Maggiore, sont gratuites.",
+          "L'hébergement va de 80 à 150 € la nuit dans le centre en saison, sensiblement moins en hiver. La taxe de séjour, de 4 à 7 € par personne et par nuit, se règle souvent sur place en espèces.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : le Leonardo Express relie Fiumicino à Termini en 32 minutes pour 14 € ; les trains régionaux, moins chers, desservent Trastevere. Depuis Ciampino, les navettes rejoignent Termini en 40 minutes pour environ 6 €.",
+          "Réservations : Colisée, musées du Vatican et galerie Borghèse se réservent en ligne, avec créneau. Sans cela, vous risquez de perdre deux heures de file ou de ne pas entrer du tout.",
+          "Sur place : la Roma Pass (72 h) devient intéressante si vous enchaînez plusieurs sites payants et utilisez les transports. Les fontaines publiques (nasoni) fournissent une eau potable et fraîche : emportez une gourde.",
+          "Usages : tenue couvrant épaules et genoux obligatoire dans les basiliques, y compris Saint-Pierre. Attention aux pickpockets dans le métro ligne A et autour de Termini. Le service est inclus, mais un couvert (coperto) de 2 à 3 € est facturé au restaurant.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits constituent le format idéal d'un city-break : une journée antique, une journée Vatican, une journée centre baroque et Trastevere. Quatre à cinq nuits permettent d'ajouter la galerie Borghèse, la Via Appia à vélo et les catacombes.",
+          "Pour une semaine, Rome sert de base à des excursions faciles en train : Ostie antique en 40 minutes, Tivoli et ses villas en une heure, Naples et Pompéi en 1 h 10 de train à grande vitesse.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "tunis",
+    city: "Tunis",
+    country: "Tunisie",
+    routeSlug: "lyon-tunis",
+    origin: "LYS",
+    destination: "TUN",
+    originCity: "Lyon",
+    title: "Que faire à Tunis : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Tunis : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Tunis : meilleure période, médina et Sidi Bou Saïd, budget sur place, transports, monnaie, formalités pour les Français et conseils pratiques.",
+    intro:
+      "Tunis se visite facilement en trois jours, entre la médina classée, les mosaïques du Bardo et les villages côtiers de Carthage et Sidi Bou Saïd, tous accessibles par le petit train TGM. Voici l'essentiel avant de réserver votre vol.",
+    readingMinutes: 7,
+    updated: "2026-08-30",
+    practical: {
+      monnaie: "Dinar tunisien (TND), non exportable. Environ 1 € = 3,4 TND. Changez sur place et gardez les reçus.",
+      langue: "Arabe officiel ; le français est très largement parlé et compris partout.",
+      visa: "Aucun visa pour les Français en séjour touristique de moins de 90 jours. Passeport valide requis.",
+      transport: "Métro léger, train TGM vers Carthage et La Marsa, louages et taxis jaunes au compteur.",
+      budgetJour: "30 à 55 € par personne et par jour, hébergement en hôtel confortable compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Tunis ?",
+        paragraphs: [
+          "Le printemps (mars à juin) est la période la plus agréable : 20 à 28 °C, lumière claire et sites archéologiques praticables toute la journée. L'automne, de septembre à novembre, offre une mer encore chaude et une affluence bien plus faible qu'en été.",
+          "Juillet et août sont chauds (32 à 36 °C) et correspondent au pic de fréquentation, avec des vols nettement plus chers depuis la France, en particulier autour des fêtes religieuses et des congés scolaires.",
+          "L'hiver reste doux (12 à 17 °C) mais pluvieux par épisodes. C'est la saison la plus économique, adaptée aux visites urbaines et culturelles : la médina et le musée du Bardo se visitent alors sans foule.",
+        ],
+      },
+      {
+        heading: "Les quartiers et sites à voir en priorité",
+        paragraphs: [
+          "La médina de Tunis, inscrite à l'UNESCO, s'organise autour de la mosquée Zitouna : souks couverts, palais, medersas et cafés en terrasse sur les toits. Comptez une demi-journée pour s'y perdre volontairement.",
+          "La ville moderne, autour de l'avenue Habib-Bourguiba, offre son architecture coloniale, la cathédrale, le théâtre municipal et les grands cafés. C'est le secteur le plus pratique pour loger.",
+          "Le musée national du Bardo abrite l'une des plus belles collections de mosaïques romaines au monde : deux heures minimum. Enfin, la ligne TGM mène en 30 minutes aux sites de Carthage (thermes d'Antonin, ports puniques, colline de Byrsa) puis au village bleu et blanc de Sidi Bou Saïd, à faire en fin de journée pour le coucher de soleil sur le golfe.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Tunis est une des destinations méditerranéennes les moins chères. Comptez 4 à 8 € pour un repas dans un restaurant populaire, 12 à 25 € pour un bon dîner de poisson à La Goulette ou Sidi Bou Saïd, moins d'un euro pour un café.",
+          "Les entrées de sites sont modestes : environ 4 € pour le musée du Bardo, 3 à 4 € pour le billet couvrant les sites de Carthage. Le TGM coûte moins d'un euro le trajet, et une course en taxi en ville dépasse rarement 3 à 5 €.",
+          "L'hébergement va de 35 à 60 € la nuit pour un hôtel confortable dans la ville moderne, davantage dans les maisons d'hôtes de la médina ou en bord de mer. Prévoyez des espèces : la carte passe dans les grands hôtels mais rarement dans les souks et les petits restaurants.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : pas de visa pour les Français pour un séjour touristique de moins de 90 jours ; un passeport en cours de validité suffit. Aucun vaccin obligatoire.",
+          "Depuis l'aéroport Tunis-Carthage, le centre-ville est à 15 minutes en taxi (environ 4 à 7 € au compteur, majoration de 50 % la nuit). Exigez la mise en marche du compteur.",
+          "Argent : le dinar ne se change pas hors de Tunisie. Changez à l'arrivée et conservez les justificatifs si vous souhaitez reconvertir une partie au départ.",
+          "Sur place : tenue couvrante recommandée dans la médina et obligatoire pour approcher les lieux de culte, marchandage habituel dans les souks, et prudence classique concernant les guides improvisés qui proposent de vous accompagner vers une boutique.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent confortablement la médina, le Bardo, Carthage et Sidi Bou Saïd. Quatre à cinq nuits permettent d'ajouter Dougga, l'un des sites romains les mieux conservés d'Afrique du Nord, à deux heures de route.",
+          "Pour un séjour d'une semaine, Tunis se combine facilement avec Hammamet ou Sousse en train, ou avec Kairouan et El Jem pour un circuit patrimonial. Les louages (taxis collectifs interurbains) rendent ces trajets simples et très bon marché.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getCityGuide(slug: string): CityGuide | undefined {
