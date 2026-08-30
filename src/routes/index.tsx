@@ -146,8 +146,9 @@ function HomePage() {
             </div>
           </div>
 
-          <SearchForm
-            key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
+          <div id="recherche" className="scroll-mt-24">
+            <SearchForm
+              key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
             initialOrigin={prefill.origin || "PAR"}
             initialDestination={prefill.destination ?? ""}
             {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
@@ -159,7 +160,8 @@ function HomePage() {
               children: prefill.enfants ?? 0,
               infants: Math.min(prefill.bebes ?? 0, prefill.adultes ?? 1),
             }}
-          />
+            />
+          </div>
         </div>
       </section>
 
