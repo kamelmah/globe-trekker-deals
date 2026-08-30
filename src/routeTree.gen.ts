@@ -28,6 +28,7 @@ import { Route as SitemapVolsPageDotxmlRouteImport } from './routes/sitemap-vols
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
 import { Route as VolsSlugRouteImport } from './routes/vols.$slug'
 import { Route as ApiPublicVerifierAlertesRouteImport } from './routes/api/public/verifier-alertes'
+import { Route as ConseilsDestinationsIndexRouteImport } from './routes/conseils.destinations.index'
 import { Route as ConseilsDestinationsCityRouteImport } from './routes/conseils.destinations.$city'
 
 const IndexRoute = IndexRouteImport.update({
@@ -126,6 +127,12 @@ const ApiPublicVerifierAlertesRoute =
     path: '/api/public/verifier-alertes',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ConseilsDestinationsIndexRoute =
+  ConseilsDestinationsIndexRouteImport.update({
+    id: '/conseils/destinations/',
+    path: '/conseils/destinations/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ConseilsDestinationsCityRoute =
   ConseilsDestinationsCityRouteImport.update({
     id: '/conseils/destinations/$city',
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
+  '/conseils/destinations/': typeof ConseilsDestinationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -176,6 +184,7 @@ export interface FileRoutesByTo {
   '/conseils': typeof ConseilsIndexRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
+  '/conseils/destinations': typeof ConseilsDestinationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -199,6 +208,7 @@ export interface FileRoutesById {
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
+  '/conseils/destinations/': typeof ConseilsDestinationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/conseils/'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
+    | '/conseils/destinations/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/conseils'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
+    | '/conseils/destinations'
   id:
     | '__root__'
     | '/'
@@ -267,6 +279,7 @@ export interface FileRouteTypes {
     | '/conseils/'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
+    | '/conseils/destinations/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -290,6 +303,7 @@ export interface RootRouteChildren {
   ConseilsIndexRoute: typeof ConseilsIndexRoute
   ApiPublicVerifierAlertesRoute: typeof ApiPublicVerifierAlertesRoute
   ConseilsDestinationsCityRoute: typeof ConseilsDestinationsCityRoute
+  ConseilsDestinationsIndexRoute: typeof ConseilsDestinationsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -427,6 +441,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicVerifierAlertesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conseils/destinations/': {
+      id: '/conseils/destinations/'
+      path: '/conseils/destinations'
+      fullPath: '/conseils/destinations/'
+      preLoaderRoute: typeof ConseilsDestinationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/conseils/destinations/$city': {
       id: '/conseils/destinations/$city'
       path: '/conseils/destinations/$city'
@@ -458,6 +479,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConseilsIndexRoute: ConseilsIndexRoute,
   ApiPublicVerifierAlertesRoute: ApiPublicVerifierAlertesRoute,
   ConseilsDestinationsCityRoute: ConseilsDestinationsCityRoute,
+  ConseilsDestinationsIndexRoute: ConseilsDestinationsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
