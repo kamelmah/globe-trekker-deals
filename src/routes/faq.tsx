@@ -11,7 +11,7 @@ const FAQ = [
   {
     question: "Comment fonctionne TrouveMonVol ?",
     answer:
-      "Nous interrogeons les bases tarifaires de nos partenaires de distribution pour la route et les dates que vous demandez, puis nous affichons les offres triées par prix total, taxes incluses. Quand vous cliquez sur « Réserver », vous êtes envoyé directement chez le vendeur du billet, où vous payez. Nous ne vendons pas de billets nous-mêmes et nous n'ajoutons aucun frais de service.",
+      "Nous interrogeons les bases tarifaires de nos partenaires de distribution pour la route et les dates que vous demandez. Important à savoir : cette source renvoie le meilleur prix trouvé par date de départ, et non la liste complète des vols d'une journée. Une recherche sur une date précise affiche donc souvent une seule offre — la moins chère observée — et une recherche en dates flexibles ± 3 jours en affiche une par date testée, ce qui vous permet de comparer les jours entre eux. Quand vous cliquez sur « Réserver », vous êtes envoyé directement chez le vendeur du billet, où vous payez. Nous ne vendons pas de billets nous-mêmes et nous n'ajoutons aucun frais de service.",
   },
   {
     question: "Pourquoi les prix peuvent-ils changer entre la recherche et la réservation ?",
