@@ -214,7 +214,15 @@ function BudgetPage() {
                     </span>
                     <span className="font-semibold text-primary">{format(price.priceEur)}</span>
                   </Link>
+                  <Link
+                    to="/vols/$slug"
+                    params={{ slug: routeSlug(originAirport?.city ?? search.origin, price.city) }}
+                    className="mt-1 block px-3 text-xs text-muted-foreground underline hover:text-foreground"
+                  >
+                    Fiche trajet {price.city} — prix, durée, FAQ
+                  </Link>
                 </li>
+
               );
             })}
           </ul>
