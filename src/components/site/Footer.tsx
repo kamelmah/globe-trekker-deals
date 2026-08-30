@@ -37,7 +37,7 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="text-sm font-semibold">Le site</p>
+          <p className="text-sm font-semibold">Explorer</p>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li>
               <Link
