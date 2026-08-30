@@ -83,6 +83,9 @@ function SearchResultsPage() {
   const [airline, setAirline] = useState("");
   const [morningOnly, setMorningOnly] = useState(false);
   const [maxDuration, setMaxDuration] = useState(0);
+  const [view, setView] = useState<"list" | "calendar">("list");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
 
   const from = cityLabel(search["origin"]);
   const to = cityLabel(search["destination"]);
