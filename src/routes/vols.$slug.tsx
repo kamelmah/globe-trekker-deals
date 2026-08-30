@@ -256,6 +256,26 @@ function DestinationPage() {
         </div>
       </div>
 
+      {guide && (
+        <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-5">
+          <h2 className="font-display text-base font-semibold">
+            Découvrez notre guide complet de {guide.city}
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Meilleure période pour visiter, quartiers à voir, budget moyen sur place, transports,
+            monnaie et formalités : tout ce qu'il faut savoir avant de réserver.
+          </p>
+          <Link
+            to="/conseils/destinations/$city"
+            params={{ city: guide.slug }}
+            className="mt-3 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Lire le guide « Que faire à {guide.city} »
+          </Link>
+        </div>
+      )}
+
+
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>
           {route.sections.map((section) => (
