@@ -158,6 +158,8 @@ function DestinationPage() {
               retour: "",
               flexible: 1,
               budget: 0,
+              adultes: 1,
+              enfants: 0,
               vue: "liste",
             }}
           >
