@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { addDaysIso, nightsBetween, TRIP_DURATIONS } from "@/lib/trip-duration";
+
 
 
 function defaultDate(offsetDays: number): string {
