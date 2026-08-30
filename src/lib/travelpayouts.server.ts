@@ -150,9 +150,10 @@ async function callApi<T>(
   if (!res.ok) {
     console.error(`Travelpayouts ${path} a répondu ${res.status}: ${text.slice(0, 500)}`);
     throw new TravelpayoutsError(
-      `Le service de prix a renvoyé une erreur (${res.status}). Aucun résultat n'est affiché.`,
+      "Impossible de charger les prix pour le moment, réessayez plus tard.",
     );
   }
+
 
   return { data: parsed as T, raw };
 }
