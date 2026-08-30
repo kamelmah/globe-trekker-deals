@@ -7,7 +7,6 @@ export const Route = createFileRoute("/vols-pas-chers/$slug")({
       to: "/vols/$slug",
       params: { slug: params.slug },
       statusCode: 301,
-      throw: true,
     });
   },
 });
