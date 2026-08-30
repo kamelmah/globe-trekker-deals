@@ -1,18 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ShieldCheck } from "lucide-react";
+import { CalendarDays, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { FlightCard } from "@/components/flights/FlightCard";
+import { ResultsPriceCalendar } from "@/components/flights/ResultsPriceCalendar";
 import { passengersSummary } from "@/components/search/PassengerSelector";
 import { SearchForm } from "@/components/search/SearchForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cityLabel } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
@@ -145,6 +153,124 @@ function SearchResultsPage() {
     ? filtered.reduce((best, o) => (o.co2Kg < best.co2Kg ? o : best), filtered[0]!).id
     : undefined;
 
+  const filtersPanel = (
+    <div className="space-y-4 text-sm">
+      <label className="flex cursor-pointer items-center gap-2">
+        <Checkbox checked={directOnly} onCheckedChange={(v) => setDirectOnly(v === true)} />
+        Vols directs uniquement
+      </label>
+      <label className="flex cursor-pointer items-center gap-2">
+        <Checkbox checked={morningOnly} onCheckedChange={(v) => setMorningOnly(v === true)} />
+        Départ le matin (avant 12 h)
+      </label>
+      <div className="space-y-1.5">
+        <Label htmlFor="airline-filter">Compagnie</Label>
+        <select
+          id="airline-filter"
+          value={airline}
+          onChange={(e) => setAirline(e.target.value)}
+          className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+        >
+          <option value="">Toutes les compagnies</option>
+          {airlines.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="duration-filter">Durée maximale</Label>
+        <select
+          id="duration-filter"
+          value={maxDuration}
+          onChange={(e) => setMaxDuration(Number(e.target.value))}
+          className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+        >
+          <option value={0}>Peu importe</option>
+          <option value={4}>Moins de 4 h</option>
+          <option value={8}>Moins de 8 h</option>
+          <option value={14}>Moins de 14 h</option>
+        </select>
+      </div>
+    </div>
+  );
+
+  const searchFormBlock = (
+    <SearchForm
+      initialOrigin={search.origin}
+      initialDestination={search.destination}
+      initialDepart={search.depart}
+      initialRetour={search.retour}
+      initialFlexible={search.flexible === 1}
+      initialDuree={search.duree}
+      initialPassengers={{
+        adults: search.adultes,
+        children: search.enfants,
+        infants: search.bebes,
+      }}
+      compact
+    />
+  );
+
+  const alertBlock = cheapest ? (
+    <AlertForm
+      origin={search.origin}
+      destination={search.destination}
+      departDate={search.depart}
+      {...(search["retour"] ? { returnDate: search["retour"] } : {})}
+      referencePrice={cheapest.priceEur}
+    />
+  ) : null;
+
+  const resultsBlock = (
+    <div className="mt-5 space-y-4">
+      {offersQuery.isPending &&
+        Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-40 w-full rounded-xl" />
+        ))}
+
+      {!offersQuery.isPending && !offersQuery.data?.error && offers.length === 0 && (
+        <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">
+            Aucun vol trouvé pour ces dates, essayez d'élargir votre recherche.
+          </p>
+          <p className="mt-2">
+            Aucune offre n'est actuellement disponible sur {from} — {to} pour ces dates. Essayez
+            d'activer les dates flexibles ± 3 jours, de changer de mois, ou de choisir un autre
+            aéroport de départ.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3"
+            onClick={() => setView("calendar")}
+          >
+            Voir le calendrier des prix
+          </Button>
+        </div>
+      )}
+
+      {!offersQuery.isPending && offers.length > 0 && filtered.length === 0 && (
+        <p className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
+          Aucun vol ne correspond à ces filtres. Essayez d'élargir les dates ou de retirer un
+          filtre.
+        </p>
+      )}
+
+      {filtered.map((offer, index) => (
+        <div key={offer.id}>
+          {index === 0 && (
+            <Badge className="mb-2 bg-success text-success-foreground">
+              Prix le plus bas trouvé
+            </Badge>
+          )}
+          <FlightCard offer={offer} greenest={offer.id === greenestId} />
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="container-page py-8">
       <h1 className="font-display text-2xl font-semibold sm:text-3xl">
@@ -162,7 +288,6 @@ function SearchResultsPage() {
           infants: search["bebes"],
         })}
         .
-
       </p>
 
       <p className="mt-4 inline-flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
@@ -171,75 +296,16 @@ function SearchResultsPage() {
       </p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[320px_1fr]">
-        <aside className="space-y-6">
-          <SearchForm
-            initialOrigin={search.origin}
-            initialDestination={search.destination}
-            initialDepart={search.depart}
-            initialRetour={search.retour}
-            initialFlexible={search.flexible === 1}
-            initialDuree={search.duree}
-            initialPassengers={{
-              adults: search.adultes,
-              children: search.enfants,
-              infants: search.bebes,
-            }}
-            compact
-          />
+        {/* Colonne latérale : uniquement sur grand écran. Sur mobile, tout passe par le bouton Filtres. */}
+        <aside className="hidden space-y-6 lg:block">
+          {searchFormBlock}
 
           <div className="rounded-xl border border-border bg-card p-5">
             <h2 className="font-display text-base font-semibold">Filtres</h2>
-            <div className="mt-4 space-y-4 text-sm">
-              <label className="flex cursor-pointer items-center gap-2">
-                <Checkbox checked={directOnly} onCheckedChange={(v) => setDirectOnly(v === true)} />
-                Vols directs uniquement
-              </label>
-              <label className="flex cursor-pointer items-center gap-2">
-                <Checkbox checked={morningOnly} onCheckedChange={(v) => setMorningOnly(v === true)} />
-                Départ le matin (avant 12 h)
-              </label>
-              <div className="space-y-1.5">
-                <Label htmlFor="airline-filter">Compagnie</Label>
-                <select
-                  id="airline-filter"
-                  value={airline}
-                  onChange={(e) => setAirline(e.target.value)}
-                  className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-                >
-                  <option value="">Toutes les compagnies</option>
-                  {airlines.map((name) => (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="duration-filter">Durée maximale</Label>
-                <select
-                  id="duration-filter"
-                  value={maxDuration}
-                  onChange={(e) => setMaxDuration(Number(e.target.value))}
-                  className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-                >
-                  <option value={0}>Peu importe</option>
-                  <option value={4}>Moins de 4 h</option>
-                  <option value={8}>Moins de 8 h</option>
-                  <option value={14}>Moins de 14 h</option>
-                </select>
-              </div>
-            </div>
+            <div className="mt-4">{filtersPanel}</div>
           </div>
 
-          {cheapest && (
-            <AlertForm
-              origin={search.origin}
-              destination={search.destination}
-              departDate={search.depart}
-              {...(search["retour"] ? { returnDate: search["retour"] } : {})}
-              referencePrice={cheapest.priceEur}
-            />
-          )}
+          {alertBlock}
         </aside>
 
         <section>
@@ -251,6 +317,25 @@ function SearchResultsPage() {
                     filtered.length > 1 ? "s" : ""
                   }`}
             </p>
+            <div className="inline-flex rounded-lg border border-border p-0.5">
+              <Button
+                type="button"
+                size="sm"
+                variant={view === "list" ? "default" : "ghost"}
+                onClick={() => setView("list")}
+              >
+                Liste
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={view === "calendar" ? "default" : "ghost"}
+                onClick={() => setView("calendar")}
+              >
+                <CalendarDays className="size-4" aria-hidden />
+                Calendrier des prix
+              </Button>
+            </div>
           </div>
 
           {offersQuery.isError && (
@@ -267,35 +352,48 @@ function SearchResultsPage() {
 
           <ApiDebugPanel debug={offersQuery.data?.debug} label="Recherche de vols" />
 
-          <div className="mt-5 space-y-4">
-              {offersQuery.isPending &&
-                Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} className="h-40 w-full rounded-xl" />
-                ))}
+          {view === "list" ? (
+            resultsBlock
+          ) : (
+            <div className="mt-5">
+              <ResultsPriceCalendar
+                origin={search.origin}
+                destination={search.destination}
+                departureAt={search.depart}
+                tripDuration={search.duree}
+                onSelectDate={(date) => {
+                  void navigate({
+                    search: (prev) => ({ ...prev, depart: date }),
+                  });
+                  setView("list");
+                }}
+              />
+            </div>
+          )}
 
-              {!offersQuery.isPending && !offersQuery.data?.error && offers.length === 0 && (
-                <p className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
-                  Aucun vol trouvé pour cette recherche, essayez d'autres dates.
-                </p>
-              )}
-
-              {!offersQuery.isPending && offers.length > 0 && filtered.length === 0 && (
-                <p className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
-                  Aucun vol ne correspond à ces filtres. Essayez d'élargir les dates ou de retirer un
-                  filtre.
-                </p>
-              )}
-
-              {filtered.map((offer, index) => (
-                <div key={offer.id}>
-                  {index === 0 && (
-                    <Badge className="mb-2 bg-success text-success-foreground">
-                      Prix le plus bas trouvé
-                    </Badge>
-                  )}
-                  <FlightCard offer={offer} greenest={offer.id === greenestId} />
+          {/* Mobile : accès discret aux filtres, à la recherche et à l'alerte prix. */}
+          <div className="mt-6 lg:hidden">
+            <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <SheetTrigger asChild>
+                <Button type="button" variant="outline" size="sm" className="w-full sm:w-auto">
+                  <SlidersHorizontal className="size-4" aria-hidden />
+                  Filtres
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle>Filtres et recherche</SheetTitle>
+                </SheetHeader>
+                <div className="space-y-6 px-4 pb-8">
+                  {filtersPanel}
+                  <Button type="button" className="w-full" onClick={() => setFiltersOpen(false)}>
+                    Voir les {filtered.length} résultats
+                  </Button>
+                  {searchFormBlock}
+                  {alertBlock}
                 </div>
-              ))}
+              </SheetContent>
+            </Sheet>
           </div>
         </section>
       </div>
