@@ -16,6 +16,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CurrencyProvider } from "@/lib/currency-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import { STAY22_LMA_ID } from "@/components/stay/Stay22Map";
 
 function NotFoundComponent() {
   return (
