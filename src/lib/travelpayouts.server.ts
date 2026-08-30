@@ -267,6 +267,13 @@ export async function fetchOffers(params: {
   }
 
   const offers = offersFromApi(list, creds?.marker ?? "", { adults, children, infants });
+  if ((params.currency ?? "eur").toLowerCase() === "eur") {
+    void recordHistory(params.origin, params.destination, offers);
+  }
+  return { offers, raw };
+}
+
+
 
 
 /** Enregistre l'observation réelle du prix le plus bas du mois (best effort). */
