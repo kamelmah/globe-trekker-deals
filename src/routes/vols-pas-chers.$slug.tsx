@@ -162,7 +162,6 @@ function DestinationPage() {
               adultes: 1,
               enfants: 0,
               bebes: 0,
-              vue: "liste",
             }}
           >
             Comparer les vols {route.originCity} — {route.destinationCity}
