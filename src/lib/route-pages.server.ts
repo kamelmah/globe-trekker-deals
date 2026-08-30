@@ -314,6 +314,8 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     averageDuration: durationLabel(km),
     faq,
     ...(observed ? { observedLowestPrice: observed.priceEur } : {}),
+    ...(observed?.airline ? { observedAirline: observed.airline } : {}),
+    ...(observed?.departureAt ? { observedDepartureAt: observed.departureAt } : {}),
   };
 }
 

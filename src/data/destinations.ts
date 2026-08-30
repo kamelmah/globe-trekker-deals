@@ -21,6 +21,10 @@ export type DestinationRoute = {
   simulatedLowestPrice?: number;
   /** Prix le plus bas réellement relevé (pages générées dynamiquement, €). */
   observedLowestPrice?: number;
+  /** Compagnie relevée sur ce prix le plus bas, si connue. */
+  observedAirline?: string;
+  /** Date/heure de départ relevée (ISO 8601), si connue. */
+  observedDepartureAt?: string;
 };
 
 export const DESTINATIONS: DestinationRoute[] = [
