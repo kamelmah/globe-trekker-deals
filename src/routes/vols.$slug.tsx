@@ -9,6 +9,7 @@ import { getDestination } from "@/data/destinations";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
+import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
 import { SITE_URL, destinationOgImage } from "@/lib/site";
 
@@ -165,6 +166,7 @@ export const Route = createFileRoute("/vols/$slug")({
 
 function DestinationPage() {
   const { route, months, lowestObserved, related } = Route.useLoaderData();
+  const banner = getDestinationImage(route.destination, route.destinationCity);
 
   return (
     <article className="container-page py-10">
@@ -175,8 +177,26 @@ function DestinationPage() {
         / Vols pas chers {route.originCity} — {route.destinationCity}
       </nav>
 
-      <h1 className="mt-3 font-display text-3xl font-semibold">{route.heading}</h1>
-      <p className="mt-3 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
+      <div className="relative mt-4 overflow-hidden rounded-2xl border border-border">
+        <img
+          src={banner.src}
+          alt={banner.alt}
+          width={1200}
+          height={630}
+          decoding="async"
+          className="h-44 w-full object-cover sm:h-64 lg:h-80"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"
+          aria-hidden
+        />
+        <h1 className="absolute inset-x-0 bottom-0 p-4 font-display text-2xl font-semibold text-white drop-shadow sm:p-6 sm:text-3xl">
+          {route.heading}
+        </h1>
+      </div>
+
+      <p className="mt-4 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
+
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4">
@@ -282,18 +302,31 @@ function DestinationPage() {
                 lien mène à la fiche complète du trajet.
               </p>
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                {related.map((item) => (
+                {related.map((item) => {
+                  const thumb = getDestinationImage(null, item.city);
+                  return (
                   <li key={item.slug}>
                     <Link
                       to="/vols/$slug"
                       params={{ slug: item.slug }}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
+                      className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
                     >
-                      <span>
-                        <span className="block font-medium">
+                      <img
+                        src={thumb.src}
+                        alt={thumb.alt}
+                        loading="lazy"
+                        decoding="async"
+                        width={96}
+                        height={72}
+                        className="size-12 shrink-0 rounded-md object-cover"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">
                           {route.originCity} — {item.city}
                         </span>
-                        <span className="block text-xs text-muted-foreground">{item.country}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {item.country}
+                        </span>
                       </span>
                       {item.priceEur !== null && (
                         <span className="font-semibold text-primary">
@@ -302,7 +335,9 @@ function DestinationPage() {
                       )}
                     </Link>
                   </li>
-                ))}
+                  );
+                })}
+
               </ul>
             </section>
           )}
