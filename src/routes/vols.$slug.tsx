@@ -9,6 +9,7 @@ import { getDestination } from "@/data/destinations";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
+import { getCityGuideForRoute } from "@/data/city-guides";
 import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
 import { SITE_URL, destinationOgImage } from "@/lib/site";
@@ -167,6 +168,7 @@ export const Route = createFileRoute("/vols/$slug")({
 function DestinationPage() {
   const { route, months, lowestObserved, related } = Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity);
+  const guide = getCityGuideForRoute(route.slug);
 
   return (
     <article className="container-page py-10">
@@ -255,6 +257,26 @@ function DestinationPage() {
           </Button>
         </div>
       </div>
+
+      {guide && (
+        <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-5">
+          <h2 className="font-display text-base font-semibold">
+            Découvrez notre guide complet de {guide.city}
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Meilleure période pour visiter, quartiers à voir, budget moyen sur place, transports,
+            monnaie et formalités : tout ce qu'il faut savoir avant de réserver.
+          </p>
+          <Link
+            to="/conseils/destinations/$city"
+            params={{ city: guide.slug }}
+            className="mt-3 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Lire le guide « Que faire à {guide.city} »
+          </Link>
+        </div>
+      )}
+
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>
