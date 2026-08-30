@@ -65,38 +65,23 @@ export function SearchForm({
       aria-label="Recherche de vols"
     >
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="origin">Ville de départ</Label>
-          <Select value={origin} onValueChange={setOrigin}>
-            <SelectTrigger id="origin">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {origins.map((a) => (
-                <SelectItem key={a.code} value={a.code}>
-                  {a.city} ({a.code})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <PlaceAutocomplete
+          id="origin"
+          label="Ville ou aéroport de départ"
+          value={origin}
+          onChange={setOrigin}
+          placeholder="Ex. Paris, CDG, Marrakech…"
+        />
 
-        <div className="space-y-1.5">
-          <Label htmlFor="destination">Destination (facultatif)</Label>
-          <Select value={destination || "none"} onValueChange={(v) => setDestination(v === "none" ? "" : v)}>
-            <SelectTrigger id="destination">
-              <SelectValue placeholder="Peu importe — mode budget" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Peu importe — mode budget</SelectItem>
-              {destinations.map((a) => (
-                <SelectItem key={a.code} value={a.code}>
-                  {a.city} ({a.code})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <PlaceAutocomplete
+          id="destination"
+          label="Destination (facultatif — laissez vide pour le mode budget)"
+          value={destination}
+          onChange={setDestination}
+          placeholder="Peu importe — mode budget"
+          allowEmpty
+        />
+
 
         <div className="space-y-1.5">
           <Label htmlFor="depart">Date de départ</Label>
