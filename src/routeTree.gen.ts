@@ -14,6 +14,7 @@ import { Route as CguRouteImport } from './routes/cgu'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as HebergementRouteImport } from './routes/hebergement'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
@@ -54,6 +55,11 @@ const CookiesRoute = CookiesRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HebergementRoute = HebergementRouteImport.update({
+  id: '/hebergement',
+  path: '/hebergement',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
@@ -146,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/confidentialite': typeof ConfidentialiteRoute
   '/cookies': typeof CookiesRoute
   '/faq': typeof FaqRoute
+  '/hebergement': typeof HebergementRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/confidentialite': typeof ConfidentialiteRoute
   '/cookies': typeof CookiesRoute
   '/faq': typeof FaqRoute
+  '/hebergement': typeof HebergementRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/confidentialite': typeof ConfidentialiteRoute
   '/cookies': typeof CookiesRoute
   '/faq': typeof FaqRoute
+  '/hebergement': typeof HebergementRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/cookies'
     | '/faq'
+    | '/hebergement'
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/cookies'
     | '/faq'
+    | '/hebergement'
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/cookies'
     | '/faq'
+    | '/hebergement'
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
@@ -288,6 +300,7 @@ export interface RootRouteChildren {
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   CookiesRoute: typeof CookiesRoute
   FaqRoute: typeof FaqRoute
+  HebergementRoute: typeof HebergementRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hebergement': {
+      id: '/hebergement'
+      path: '/hebergement'
+      fullPath: '/hebergement'
+      preLoaderRoute: typeof HebergementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mentions-legales': {
@@ -464,6 +484,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfidentialiteRoute: ConfidentialiteRoute,
   CookiesRoute: CookiesRoute,
   FaqRoute: FaqRoute,
+  HebergementRoute: HebergementRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,

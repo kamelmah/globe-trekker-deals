@@ -1,6 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Menu, Plane } from "lucide-react";
+import { BedDouble, Menu, Plane } from "lucide-react";
 import { useCallback, useState } from "react";
+
 
 import logo from "@/assets/logo.png";
 import { CurrencySelect } from "@/components/site/CurrencySelect";
