@@ -102,6 +102,19 @@ const SCENES: Record<string, Scene> = {
 
 const SCENE_KEYS = Object.keys(SCENES);
 
+/** Ambiances alternatives cohérentes avec une ambiance régionale donnée. */
+const SCENE_VARIANTS: Record<string, string[]> = {
+  oldtown: ["harbour", "lake"],
+  coast: ["oldtown", "harbour"],
+  harbour: ["oldtown", "lake"],
+  mountain: ["lake", "oldtown"],
+  lake: ["mountain", "oldtown"],
+  skyline: ["nightcity"],
+  medina: ["coast", "oldtown"],
+  tropical: ["coast"],
+  nightcity: ["skyline"],
+};
+
 /** Scène privilégiée selon le pays (français ou anglais, sans accents). */
 const SCENE_BY_COUNTRY: Record<string, string> = {
   // Bassin méditerranéen
@@ -161,9 +174,11 @@ function hashOf(value: string): number {
 }
 
 function genericImage(city?: string | null, country?: string | null): DestinationImage {
-  const key =
-    (country ? SCENE_BY_COUNTRY[normalize(country)] : undefined) ??
-    SCENE_KEYS[hashOf(normalize(city ?? "destination")) % SCENE_KEYS.length]!;
+  const hash = hashOf(normalize(city ?? "destination"));
+  const regional = country ? SCENE_BY_COUNTRY[normalize(country)] : undefined;
+  // Deux ambiances possibles par région : deux villes voisines n'ont pas le même visuel.
+  const pool = regional ? [regional, ...(SCENE_VARIANTS[regional] ?? [])] : SCENE_KEYS;
+  const key = pool[hash % pool.length]!;
   const scene = SCENES[key] ?? SCENES["oldtown"]!;
   const label = city ? `Ambiance de voyage évoquant ${city}` : "Ambiance de voyage";
   return { src: scene.src, alt: `${label} : ${scene.description}` };
