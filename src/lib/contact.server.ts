@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { sendTemplateEmail } from "@/lib/email-templates/send-email";
 import { logOps } from "@/lib/ops-log.server";
 
 const emailSchema = z
@@ -29,16 +30,57 @@ async function admin() {
   return supabaseAdmin;
 }
 
+/** Notifie l'équipe par email ; renvoie false si l'email n'a pas pu partir. */
+async function notifyContactTeam(input: ContactInput, messageId: string): Promise<boolean> {
+  try {
+    const result = await sendTemplateEmail("contact-notification", "contact@trouvemonvol.fr", {
+      templateData: {
+        name: input.name,
+        email: input.email,
+        subject: input.subject,
+        message: input.message,
+        receivedAt: new Date().toLocaleString("fr-FR", {
+          dateStyle: "long",
+          timeStyle: "short",
+          timeZone: "Europe/Paris",
+        }),
+      },
+      idempotencyKey: `contact-notification-${messageId}`,
+      replyTo: input.email,
+    });
+    if (!result.sent) {
+      logOps({
+        kind: "contact",
+        label: "email-notification",
+        ok: false,
+        message: `envoi bloqué: ${result.reason}`,
+      });
+      return false;
+    }
+    logOps({ kind: "contact", label: "email-notification", ok: true });
+    return true;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "erreur inconnue";
+    console.error("Erreur envoi email notification contact", error);
+    logOps({ kind: "contact", label: "email-notification", ok: false, message });
+    return false;
+  }
+}
+
 export async function saveContactMessage(
   input: ContactInput,
 ): Promise<{ ok: boolean; message: string }> {
   const db = await admin();
-  const { error } = await db.from("contact_messages").insert({
-    name: input.name,
-    email: input.email,
-    subject: input.subject,
-    message: input.message,
-  });
+  const { data, error } = await db
+    .from("contact_messages")
+    .insert({
+      name: input.name,
+      email: input.email,
+      subject: input.subject,
+      message: input.message,
+    })
+    .select("id")
+    .single();
   if (error) {
     console.error("Erreur enregistrement message contact", error);
     logOps({
@@ -53,9 +95,20 @@ export async function saveContactMessage(
     };
   }
   logOps({ kind: "contact", label: "message", ok: true, message: `sujet: ${input.subject}` });
+
+  const emailSent = await notifyContactTeam(input, data?.id ?? crypto.randomUUID());
+  if (!emailSent) {
+    return {
+      ok: false,
+      message:
+        "Votre message a bien été enregistré, mais la notification par email à notre équipe n'a pas pu être envoyée. Pour être sûr d'une réponse rapide, écrivez-nous directement à contact@trouvemonvol.fr.",
+    };
+  }
+
   return {
     ok: true,
-    message: "Merci ! Votre message a bien été envoyé. Nous vous répondrons sous 48 h ouvrées.",
+    message:
+      "Votre message a bien été envoyé, nous vous répondrons rapidement (sous 48 h ouvrées).",
   };
 }
 
