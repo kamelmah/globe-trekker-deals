@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
+import { DepartureDatePicker } from "@/components/search/DepartureDatePicker";
 import { PassengerSelector, type Passengers } from "@/components/search/PassengerSelector";
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
@@ -81,7 +82,6 @@ export function SearchForm({
         adultes: passengers.adults,
         enfants: passengers.children,
         bebes: passengers.infants,
-        vue: "liste",
       },
     });
   }
@@ -112,16 +112,14 @@ export function SearchForm({
         />
 
 
-        <div className="space-y-1.5">
-          <Label htmlFor="depart">Date de départ</Label>
-          <Input
-            id="depart"
-            type="date"
-            value={depart}
-            min={defaultDate(1)}
-            onChange={(e) => setDepart(e.target.value)}
-          />
-        </div>
+        <DepartureDatePicker
+          value={depart}
+          onChange={setDepart}
+          origin={origin}
+          destination={destination}
+          tripDuration={duree}
+          minDate={defaultDate(1)}
+        />
 
         {duree > 0 ? (
           <div className="space-y-1.5">

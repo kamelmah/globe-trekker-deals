@@ -50,7 +50,6 @@ export function DestinationPriceGrid({
                   adultes: 1,
                   enfants: 0,
                   bebes: 0,
-                  vue: "liste",
                 }}
                 className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
               >

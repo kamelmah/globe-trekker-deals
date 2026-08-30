@@ -1,0 +1,202 @@
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrency } from "@/lib/currency-context";
+import { calendarPrices } from "@/lib/flights.functions";
+import { cn } from "@/lib/utils";
+
+const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];
+
+function monthOf(date: string): string {
+  return /^\d{4}-\d{2}/.test(date) ? date.slice(0, 7) : new Date().toISOString().slice(0, 7);
+}
+
+function shiftMonth(month: string, delta: number): string {
+  const [y, m] = month.split("-").map(Number);
+  const d = new Date(Date.UTC(y!, (m ?? 1) - 1 + delta, 1));
+  return d.toISOString().slice(0, 7);
+}
+
+function daysInMonth(month: string): string[] {
+  const [y, m] = month.split("-").map(Number);
+  const total = new Date(Date.UTC(y!, m!, 0)).getUTCDate();
+  return Array.from({ length: total }, (_, i) => `${month}-${String(i + 1).padStart(2, "0")}`);
+}
+
+function monthLabel(month: string): string {
+  return new Date(`${month}-01T00:00:00Z`).toLocaleDateString("fr-FR", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function level(price: number, min: number, max: number): "low" | "mid" | "high" {
+  if (max === min) return "mid";
+  const ratio = (price - min) / (max - min);
+  if (ratio <= 0.33) return "low";
+  if (ratio <= 0.66) return "mid";
+  return "high";
+}
+
+export function DepartureDatePicker({
+  value,
+  onChange,
+  origin,
+  destination,
+  tripDuration,
+  minDate,
+}: {
+  value: string;
+  onChange: (date: string) => void;
+  origin: string;
+  destination: string;
+  tripDuration: number;
+  minDate: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [month, setMonth] = useState(() => monthOf(value));
+  const { formatApi: format } = useCurrency();
+  const { currency } = useCurrency();
+  const runCalendar = useServerFn(calendarPrices);
+
+  const canFetch = open && Boolean(origin) && Boolean(destination);
+  const pricesQuery = useQuery({
+    queryKey: ["date-picker-calendar", origin, destination, month, tripDuration, currency],
+    queryFn: () =>
+      runCalendar({ data: { origin, destination, month, tripDuration, currency } }),
+    enabled: canFetch,
+  });
+
+  const priceByDate = new Map<string, number>();
+  for (const day of pricesQuery.data?.days ?? []) priceByDate.set(day.date, day.priceEur);
+  const prices = [...priceByDate.values()];
+  const min = prices.length ? Math.min(...prices) : 0;
+  const max = prices.length ? Math.max(...prices) : 0;
+
+  const days = daysInMonth(month);
+  const firstWeekday = (new Date(`${month}-01T00:00:00Z`).getUTCDay() + 6) % 7;
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor="depart">Date de départ</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            id="depart"
+            type="button"
+            variant="outline"
+            className={cn("w-full justify-start text-left font-normal")}
+          >
+            <CalendarIcon className="size-4" aria-hidden />
+            {value || "Choisir une date"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="z-50 w-[320px] p-3 pointer-events-auto">
+          <div className="flex items-center justify-between">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Mois précédent"
+              onClick={() => setMonth((m) => shiftMonth(m, -1))}
+            >
+              <ChevronLeft className="size-4" aria-hidden />
+            </Button>
+            <span className="text-sm font-medium capitalize">{monthLabel(month)}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Mois suivant"
+              onClick={() => setMonth((m) => shiftMonth(m, 1))}
+            >
+              <ChevronRight className="size-4" aria-hidden />
+            </Button>
+          </div>
+
+          <p className="mt-1 text-xs text-muted-foreground">
+            {!destination
+              ? "Indiquez une destination pour voir les prix par jour."
+              : tripDuration > 0
+                ? `Prix aller-retour le plus bas (séjour de ${tripDuration} nuits).`
+                : "Prix aller simple le plus bas par jour de départ."}
+          </p>
+
+          <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[11px] font-medium text-muted-foreground">
+            {WEEKDAYS.map((d, i) => (
+              <span key={`${d}-${i}`}>{d}</span>
+            ))}
+          </div>
+
+          {canFetch && pricesQuery.isPending ? (
+            <Skeleton className="mt-2 h-56 w-full" />
+          ) : (
+            <div className="mt-1 grid grid-cols-7 gap-1">
+              {Array.from({ length: firstWeekday }).map((_, i) => (
+                <span key={`empty-${i}`} aria-hidden />
+              ))}
+              {days.map((date) => {
+                const price = priceByDate.get(date);
+                const disabled = date < minDate;
+                const l = price === undefined ? null : level(price, min, max);
+                return (
+                  <button
+                    key={date}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => {
+                      onChange(date);
+                      setOpen(false);
+                    }}
+                    aria-label={price === undefined ? date : `${date} : ${format(price)}`}
+                    className={cn(
+                      "flex min-h-11 flex-col items-center justify-center rounded-md border p-0.5 text-center transition-colors",
+                      l === null && "border-border hover:bg-muted",
+                      l === "low" && "border-success/40 bg-success/10 hover:bg-success/20",
+                      l === "mid" && "border-warning/40 bg-warning/10 hover:bg-warning/20",
+                      l === "high" && "border-destructive/30 bg-destructive/10 hover:bg-destructive/20",
+                      value === date && "ring-2 ring-ring",
+                      disabled && "cursor-not-allowed opacity-40",
+                    )}
+                  >
+                    <span className="text-[11px] leading-none text-muted-foreground">
+                      {Number(date.slice(8))}
+                    </span>
+                    {price !== undefined && (
+                      <span className="text-[10px] font-semibold leading-tight">
+                        {format(price)}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {pricesQuery.data?.error && (
+            <p className="mt-2 text-xs text-destructive">{pricesQuery.data.error}</p>
+          )}
+
+          <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="size-2.5 rounded bg-success/40" aria-hidden /> Bas
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="size-2.5 rounded bg-warning/40" aria-hidden /> Moyen
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="size-2.5 rounded bg-destructive/30" aria-hidden /> Élevé
+            </span>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
