@@ -20,9 +20,11 @@ export const Route = createFileRoute("/vols/$slug")({
     const history = await monthlyHistory({
       data: { origin: route.origin, destination: route.destination },
     });
-    const lowestObserved = history.months.length
+    const historyLowest = history.months.length
       ? Math.min(...history.months.map((m) => m.priceEur))
       : null;
+    // Prix d'appel simulé pour la démo, sinon le plancher réellement observé.
+    const lowestObserved = route.simulatedLowestPrice ?? historyLowest;
     return { route, months: history.months, lowestObserved };
   },
   head: ({ loaderData }) => {
