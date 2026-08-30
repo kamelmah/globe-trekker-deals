@@ -180,6 +180,8 @@ function RootComponent() {
           <Footer />
         </div>
         <Toaster />
+        <ThirdPartyScripts />
+
       </CurrencyProvider>
     </QueryClientProvider>
   );
