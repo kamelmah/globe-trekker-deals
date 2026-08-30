@@ -7,7 +7,6 @@ import { DESTINATIONS } from "@/data/destinations";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
-...
 type HomeSearch = {
   origin?: string;
   destination?: string;
