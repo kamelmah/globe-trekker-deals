@@ -15,6 +15,7 @@ export function Stay22Map({
   title,
   description,
   className,
+  id = "hebergement",
 }: {
   city: string;
   checkin?: string;
@@ -22,6 +23,7 @@ export function Stay22Map({
   title: string;
   description?: string;
   className?: string;
+  id?: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
