@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BUDGET_DESTINATION_CODES, getAirport } from "@/data/airports";
+import { getAirport } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { currentMonth, iataOr, monthOr, numberOr } from "@/lib/search-params";
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/mode-budget")({
     const { prices, error, debug } = await cheapestDestinations({
       data: {
         origin,
-        destinations: BUDGET_DESTINATION_CODES,
+        world: true,
         ...(month ? { month } : {}),
       },
     });
@@ -73,7 +73,7 @@ function BudgetPage() {
       runDestinations({
         data: {
           origin: search["origin"],
-          destinations: BUDGET_DESTINATION_CODES,
+          world: true,
           ...(search["month"] ? { month: search["month"] } : {}),
           currency,
         },
