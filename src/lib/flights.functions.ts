@@ -16,6 +16,7 @@ import {
 
 const iata = z.string().trim().min(3).max(3).toUpperCase();
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const currency = z.enum(["EUR", "USD", "GBP", "CHF", "CAD"]).optional();
 
 /** La réponse brute n'est exposée qu'en développement. */
 function debugOf(raw: RawApiCall | null): ApiDebugInfo | null {
@@ -44,6 +45,9 @@ export const searchFlights = createServerFn({ method: "GET" })
         departureAt: isoDate,
         returnAt: isoDate.nullish(),
         flexible: z.boolean().optional(),
+        currency,
+        adults: z.number().int().min(1).max(9).optional(),
+        children: z.number().int().min(0).max(8).optional(),
       })
       .parse(data),
   )
@@ -57,6 +61,9 @@ export const searchFlights = createServerFn({ method: "GET" })
             destination: data.destination,
             departureAt,
             returnAt: data.returnAt ?? null,
+            currency: data.currency ?? "EUR",
+            adults: data.adults ?? 1,
+            children: data.children ?? 0,
           }),
         ),
       );
@@ -87,6 +94,7 @@ export const cheapestDestinations = createServerFn({ method: "GET" })
         origin: iata,
         month: z.string().regex(/^\d{4}-\d{2}$/).nullish(),
         destinations: z.array(iata).min(1).max(80),
+        currency,
       })
       .parse(data),
   )
@@ -96,6 +104,7 @@ export const cheapestDestinations = createServerFn({ method: "GET" })
         origin: data.origin,
         destinations: data.destinations,
         month: data.month ?? undefined,
+        currency: data.currency ?? "EUR",
       });
       return { prices, error: null as string | null, debug: debugOf(raw) };
     } catch (error) {
@@ -110,12 +119,13 @@ export const calendarPrices = createServerFn({ method: "GET" })
         origin: iata,
         destination: iata,
         month: z.string().regex(/^\d{4}-\d{2}$/),
+        currency,
       })
       .parse(data),
   )
   .handler(async ({ data }) => {
     try {
-      const { days, raw } = await fetchCalendarPrices(data);
+      const { days, raw } = await fetchCalendarPrices({ ...data, currency: data.currency ?? "EUR" });
       return { days, error: null as string | null, debug: debugOf(raw) };
     } catch (error) {
       return { days: [], error: messageOf(error), debug: null };
