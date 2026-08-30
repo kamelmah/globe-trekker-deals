@@ -369,6 +369,24 @@ function keepCheapest(map: Map<string, WorldOffer>, code: string, offer: WorldOf
   const current = map.get(code);
   if (!current || offer.price < current.price) map.set(code, offer);
 }
+/** Revalidations mondiales en cours, pour éviter les appels API en rafale. */
+const worldRevalidations = new Set<string>();
+
+/**
+ * Rafraîchit en arrière-plan un balayage mondial périmé : la réponse en cours
+ * continue de servir les données périmées, le cache est réécrit ensuite.
+ */
+function scheduleWorldRevalidation(
+  params: Parameters<typeof fetchCheapestDestinations>[0],
+  cacheKey: string,
+): void {
+  if (worldRevalidations.has(cacheKey)) return;
+  worldRevalidations.add(cacheKey);
+  void fetchCheapestDestinations(params)
+    .catch((error) => console.error("Revalidation du balayage mondial impossible", error))
+    .finally(() => worldRevalidations.delete(cacheKey));
+}
+
 
 /**
  * Balayage mondial : agrège plusieurs endpoints Travelpayouts couvrant toutes les
