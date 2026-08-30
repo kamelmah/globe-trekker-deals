@@ -133,7 +133,8 @@ export const cheapestDestinations = createServerFn({ method: "GET" })
       .object({
         origin: iata,
         month: z.string().regex(/^\d{4}-\d{2}$/).nullish(),
-        destinations: z.array(iata).min(1).max(80),
+        destinations: z.array(iata).min(1).max(80).optional(),
+        world: z.boolean().optional(),
         currency,
       })
       .parse(data),
@@ -142,7 +143,8 @@ export const cheapestDestinations = createServerFn({ method: "GET" })
     try {
       const { prices, raw } = await fetchCheapestDestinations({
         origin: data.origin,
-        destinations: data.destinations,
+        ...(data.destinations ? { destinations: data.destinations } : {}),
+        world: data.world === true,
         month: data.month ?? undefined,
         currency: data.currency ?? "EUR",
       });
