@@ -4,11 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { lazy, Suspense, useState } from "react";
 
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
+import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AIRPORTS, BUDGET_DESTINATION_CODES, getAirport } from "@/data/airports";
+import { BUDGET_DESTINATION_CODES, getAirport } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { currentMonth, iataOr, monthOr, numberOr } from "@/lib/search-params";
