@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CommentOnGagneDeLArgentRouteImport } from './routes/comment-on-gagne-de-l-argent'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -35,6 +36,11 @@ const CommentOnGagneDeLArgentRoute = CommentOnGagneDeLArgentRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
+  id: '/mentions-legales',
+  path: '/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModeBudgetRoute = ModeBudgetRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
   '/faq': typeof FaqRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
   '/faq': typeof FaqRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
   '/faq': typeof FaqRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/'
     | '/comment-on-gagne-de-l-argent'
     | '/faq'
+    | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/'
     | '/comment-on-gagne-de-l-argent'
     | '/faq'
+    | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/'
     | '/comment-on-gagne-de-l-argent'
     | '/faq'
+    | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
@@ -176,6 +188,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CommentOnGagneDeLArgentRoute: typeof CommentOnGagneDeLArgentRoute
   FaqRoute: typeof FaqRoute
+  MentionsLegalesRoute: typeof MentionsLegalesRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -208,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentions-legales': {
+      id: '/mentions-legales'
+      path: '/mentions-legales'
+      fullPath: '/mentions-legales'
+      preLoaderRoute: typeof MentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mode-budget': {
@@ -280,6 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CommentOnGagneDeLArgentRoute: CommentOnGagneDeLArgentRoute,
   FaqRoute: FaqRoute,
+  MentionsLegalesRoute: MentionsLegalesRoute,
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
