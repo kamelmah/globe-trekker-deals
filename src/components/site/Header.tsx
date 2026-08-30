@@ -101,6 +101,10 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <Button onClick={onCtaClick} className="mx-2 mb-2 mt-1 gap-1.5">
+              <Plane className="size-4" aria-hidden />
+              Trouve mon vol
+            </Button>
           </div>
         </nav>
       )}
