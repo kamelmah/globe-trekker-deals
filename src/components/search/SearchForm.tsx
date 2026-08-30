@@ -82,7 +82,6 @@ export function SearchForm({
         adultes: passengers.adults,
         enfants: passengers.children,
         bebes: passengers.infants,
-        vue: "liste",
       },
     });
   }

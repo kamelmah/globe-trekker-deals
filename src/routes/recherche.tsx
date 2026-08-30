@@ -7,7 +7,6 @@ import { useMemo, useState } from "react";
 import { AlertForm } from "@/components/alerts/AlertForm";
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { FlightCard } from "@/components/flights/FlightCard";
-import { PriceCalendar } from "@/components/flights/PriceCalendar";
 import { passengersSummary } from "@/components/search/PassengerSelector";
 import { SearchForm } from "@/components/search/SearchForm";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cityLabel } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
-import { calendarPrices, searchFlights } from "@/lib/flights.functions";
+import { searchFlights } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr, todayPlus } from "@/lib/search-params";
 import { addDaysIso, tripDurationLabel } from "@/lib/trip-duration";
 
@@ -78,7 +77,6 @@ function SearchResultsPage() {
   const search = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const runSearch = useServerFn(searchFlights);
-  const runCalendar = useServerFn(calendarPrices);
   const { currency } = useCurrency();
 
   const [directOnly, setDirectOnly] = useState(false);
@@ -88,7 +86,6 @@ function SearchResultsPage() {
 
   const from = cityLabel(search["origin"]);
   const to = cityLabel(search["destination"]);
-  const month = search.depart.slice(0, 7);
 
   const offersQuery = useQuery({
     queryKey: [
@@ -267,8 +264,7 @@ function SearchResultsPage() {
 
           <ApiDebugPanel debug={offersQuery.data?.debug} label="Recherche de vols" />
 
-          {(
-            <div className="mt-5 space-y-4">
+          <div className="mt-5 space-y-4">
               {offersQuery.isPending &&
                 Array.from({ length: 4 }).map((_, i) => (
                   <Skeleton key={i} className="h-40 w-full rounded-xl" />
@@ -297,8 +293,7 @@ function SearchResultsPage() {
                   <FlightCard offer={offer} greenest={offer.id === greenestId} />
                 </div>
               ))}
-            </div>
-          )}
+          </div>
         </section>
       </div>
     </div>
