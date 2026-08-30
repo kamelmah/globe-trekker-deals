@@ -1,19 +1,21 @@
 # TrouveMonVol — MVP
 
-Comparateur de vols transparent, orienté SEO, avec recherche par budget.
+Comparateur de vols transparent, orienté SEO, avec recherche par budget et vendeur toujours identifié.
 
 ## Ce qui sera livré
 
 ### 1. Page d'accueil (`/`)
 - Barre de recherche mobile-first : départ, destination (optionnelle), dates (+ option « dates flexibles ± 3 jours »), budget max optionnel.
 - Si aucune destination : grille des destinations les moins chères depuis la ville de départ.
-- Section « Pourquoi nous » : prix tout compris, zéro dark pattern, zéro publicité.
+- Section « Pourquoi nous » : prix tout compris, vendeur identifié, zéro dark pattern, zéro publicité.
 - H1 clair, texte indexable rendu côté serveur, liens internes vers les 10 pages destinations.
 
 ### 2. Résultats de recherche (`/recherche`)
 - Liste triée par prix, filtres : escales, compagnie, plage horaire, durée.
 - Chaque offre : prix total taxes incluses, bagages inclus (cabine/soute quand l'API le fournit), compagnie, durée, escales.
-- Bouton « Réserver » redirigeant vers le partenaire via le lien d'affiliation Travelpayouts.
+- Vendeur réel affiché explicitement sous chaque résultat (« Vendu par Air France », « Vendu par Kiwi.com ») à partir du champ `gate`/`agent` de l'API ; aucun résultat sans vendeur nommé.
+- Bouton « Réserver » menant directement à ce vendeur via le lien d'affiliation Travelpayouts, sans page intermédiaire ni cascade de redirections.
+- Mention de confiance : « Prix garanti sans frais cachés — vous payez ce qui est affiché ici ».
 
 ### 3. Pages destinations SEO (`/vols-pas-chers/paris-marrakech`, etc.)
 10 routes populaires au départ de Paris (Marrakech, Bangkok, New York, Lisbonne, Barcelone, Istanbul, Dubaï, Tokyo, Alger, Rome).
