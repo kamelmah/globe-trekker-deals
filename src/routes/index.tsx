@@ -56,7 +56,7 @@ export const Route = createFileRoute("/")({
       return {
         prices: [],
         error: "Les prix ne sont pas disponibles pour le moment. Réessayez dans quelques instants.",
-        debug: undefined,
+        debug: null,
       };
     }
   },
