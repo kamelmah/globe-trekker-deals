@@ -69,7 +69,7 @@ const Email = ({ name, email, subject, message, receivedAt }: Props) => (
 export const template = {
   component: Email,
   subject: (data: Record<string, any>) =>
-    `Contact TrouveMonVol : ${data?.subject || 'nouveau message'}`,
+    `Contact TrouveMonVol : ${data?.['subject'] || 'nouveau message'}`,
   displayName: 'Notification de message de contact',
   to: 'contact@trouvemonvol.fr',
   previewData: {
