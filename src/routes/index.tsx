@@ -47,10 +47,18 @@ export const Route = createFileRoute("/")({
     };
   },
   loader: async () => {
-    const { prices, error, debug } = await cheapestDestinations({
-      data: { origin: "PAR", destinations: HOME_CODES },
-    });
-    return { prices, error, debug };
+    try {
+      const { prices, error, debug } = await cheapestDestinations({
+        data: { origin: "PAR", destinations: HOME_CODES },
+      });
+      return { prices, error, debug };
+    } catch {
+      return {
+        prices: [],
+        error: "Les prix ne sont pas disponibles pour le moment. Réessayez dans quelques instants.",
+        debug: null,
+      };
+    }
   },
   head: () => ({
     meta: [
