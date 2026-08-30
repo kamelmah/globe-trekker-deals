@@ -146,8 +146,9 @@ function HomePage() {
             </div>
           </div>
 
-          <SearchForm
-            key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
+          <div id="recherche" className="scroll-mt-24">
+            <SearchForm
+              key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
             initialOrigin={prefill.origin || "PAR"}
             initialDestination={prefill.destination ?? ""}
             {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
