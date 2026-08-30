@@ -52,6 +52,13 @@ export function Stay22Map({
     aid: STAY22_LMA_ID,
     address: city,
     hidefooter: "true",
+    // Le bouton de redirection Allez charge la page partenaire dans le cadre du
+    // widget, ce que Booking.com bloque (X-Frame-Options → ERR_BLOCKED_BY_RESPONSE).
+    // On le masque : les pins et fiches hôtels ouvrent déjà les offres dans un nouvel onglet.
+    hideallezbutton: "true",
+    currency: "EUR",
+    supportedlang: "fr",
+    unitsystem: "metric",
   });
   if (checkin) params.set("checkin", checkin);
   if (checkout) params.set("checkout", checkout);
@@ -67,6 +74,7 @@ export function Stay22Map({
             src={src}
             title={title}
             loading="lazy"
+            allow="popups; popups-to-escape-sandbox"
             referrerPolicy="no-referrer-when-downgrade"
             className="h-[420px] w-full border-0 sm:h-[520px]"
           />
