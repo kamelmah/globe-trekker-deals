@@ -10,6 +10,7 @@ import { FlightCard } from "@/components/flights/FlightCard";
 import { ResultsPriceCalendar } from "@/components/flights/ResultsPriceCalendar";
 import { passengersSummary } from "@/components/search/PassengerSelector";
 import { SearchForm } from "@/components/search/SearchForm";
+import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
