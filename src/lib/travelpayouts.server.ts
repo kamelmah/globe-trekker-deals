@@ -322,7 +322,9 @@ async function recordHistory(
 /** Cache Supabase générique (mémorisation de réponses API, jamais d'estimation). */
 const DESTINATIONS_TTL_MS = 6 * 60 * 60 * 1000;
 
-async function readJsonCache<T>(key: string): Promise<T | null> {
+async function readJsonCacheEntry<T>(
+  key: string,
+): Promise<{ payload: T; stale: boolean } | null> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
@@ -331,13 +333,18 @@ async function readJsonCache<T>(key: string): Promise<T | null> {
       .eq("cache_key", key)
       .maybeSingle();
     if (!data) return null;
-    if (Date.parse(data.expires_at) < Date.now()) return null;
-    return data.payload as T;
+    return { payload: data.payload as T, stale: Date.parse(data.expires_at) < Date.now() };
   } catch (error) {
     console.error("Lecture du cache destinations impossible", error);
     return null;
   }
 }
+
+async function readJsonCache<T>(key: string): Promise<T | null> {
+  const entry = await readJsonCacheEntry<T>(key);
+  return entry && !entry.stale ? entry.payload : null;
+}
+
 
 async function writeJsonCache(key: string, payload: unknown, ttlMs: number): Promise<void> {
   try {
