@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 const TITLE = "Comment on gagne de l'argent — transparence TrouveMonVol";
 const DESCRIPTION =
-  "Notre modèle économique en clair : une commission d'affiliation versée par le vendeur du billet, sans surcoût pour vous, sans publicité et sans revente de données.";
+  "Notre modèle économique en clair : une commission d'affiliation versée par le vendeur du billet, sans surcoût pour vous et sans revente de données.";
 
 export const Route = createFileRoute("/comment-on-gagne-de-l-argent")({
   head: () => ({
@@ -55,7 +55,7 @@ function MoneyPage() {
 
       <h2 className="mt-8 font-display text-xl font-semibold">Ce que nous ne faisons pas</h2>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        Pas de bandeaux publicitaires, pas de comptes à rebours, pas de faux « plus que 2 places à ce
+        Pas de comptes à rebours, pas de faux « plus que 2 places à ce
         prix », pas de prix d'appel qui gonfle à l'étape du paiement. Nous ne revendons pas votre email
         : il ne sert qu'aux alertes que vous demandez, et chaque message contient un lien de
         désinscription immédiate.

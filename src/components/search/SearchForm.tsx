@@ -162,7 +162,7 @@ export function SearchForm({
         {destination ? "Comparer les vols" : "Voir où partir avec mon budget"}
       </Button>
       <p className="mt-3 text-xs text-muted-foreground">
-        Prix total taxes incluses, vendeur affiché sur chaque résultat. Aucune publicité, aucun compte
+        Prix total taxes incluses, vendeur affiché sur chaque résultat. Aucun compte
         à rebours artificiel.
       </p>
     </form>
