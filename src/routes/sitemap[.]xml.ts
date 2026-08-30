@@ -10,9 +10,13 @@ function siteOrigin(request: Request): string {
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: ({ request }) => {
+      GET: async ({ request }) => {
         const origin = siteOrigin(request);
         const today = new Date().toISOString().slice(0, 10);
+
+        const { listWorldRouteSlugs } = await import("@/lib/route-pages.server");
+        const curated = new Set(DESTINATIONS.map((d) => d.slug));
+        const generated = (await listWorldRouteSlugs()).filter((slug) => !curated.has(slug));
 
         const urls: { loc: string; priority: string; changefreq: string }[] = [
           { loc: "/", priority: "1.0", changefreq: "daily" },
@@ -28,6 +32,11 @@ export const Route = createFileRoute("/sitemap.xml")({
             loc: `/vols/${d.slug}`,
             priority: "0.9",
             changefreq: "daily",
+          })),
+          ...generated.map((slug) => ({
+            loc: `/vols/${slug}`,
+            priority: "0.6",
+            changefreq: "weekly",
           })),
           ...POSTS.map((p) => ({
             loc: `/conseils/${p.slug}`,

@@ -19,6 +19,8 @@ export type DestinationRoute = {
   faq: DestinationFaq[];
   /** Prix d'appel forcé à des fins de démonstration (€). */
   simulatedLowestPrice?: number;
+  /** Prix le plus bas réellement relevé (pages générées dynamiquement, €). */
+  observedLowestPrice?: number;
 };
 
 export const DESTINATIONS: DestinationRoute[] = [

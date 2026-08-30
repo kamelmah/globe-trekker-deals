@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { routeSlug } from "@/lib/slug";
 import { getAirport } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { cheapestDestinations } from "@/lib/flights.functions";
@@ -214,7 +215,15 @@ function BudgetPage() {
                     </span>
                     <span className="font-semibold text-primary">{format(price.priceEur)}</span>
                   </Link>
+                  <Link
+                    to="/vols/$slug"
+                    params={{ slug: routeSlug(originAirport?.city ?? search.origin, price.city) }}
+                    className="mt-1 block px-3 text-xs text-muted-foreground underline hover:text-foreground"
+                  >
+                    Fiche trajet {price.city} — prix, durée, FAQ
+                  </Link>
                 </li>
+
               );
             })}
           </ul>

@@ -7,13 +7,18 @@ import { FaqAccordion } from "@/components/site/FaqAccordion";
 import { Button } from "@/components/ui/button";
 import { getDestination } from "@/data/destinations";
 import { monthlyHistory } from "@/lib/flights.functions";
+import { dynamicRoutePage } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
 import { todayPlus } from "@/lib/search-params";
 import { SITE_URL, destinationOgImage } from "@/lib/site";
 
 export const Route = createFileRoute("/vols/$slug")({
   loader: async ({ params }) => {
-    const route = getDestination(params.slug);
+    // Page éditoriale si le trajet est curé, sinon page générée côté serveur
+    // pour n'importe quelle destination trouvée en mode budget.
+    const route =
+      getDestination(params.slug) ??
+      (await dynamicRoutePage({ data: { slug: params.slug } })).route;
     if (!route) throw notFound();
     // Aucun appel à l'API de vols ici : seul l'historique déjà enregistré en base
     // est lu, pour que les robots n'entament jamais le quota Travelpayouts.
@@ -24,9 +29,10 @@ export const Route = createFileRoute("/vols/$slug")({
       ? Math.min(...history.months.map((m) => m.priceEur))
       : null;
     // Prix d'appel simulé pour la démo, sinon le plancher réellement observé.
-    const lowestObserved = route.simulatedLowestPrice ?? historyLowest;
+    const lowestObserved = route.simulatedLowestPrice ?? route.observedLowestPrice ?? historyLowest;
     return { route, months: history.months, lowestObserved };
   },
+
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
