@@ -7,6 +7,15 @@ import { DESTINATIONS } from "@/data/destinations";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
+
+const HOME_CODES = [
+  "RAK", "LIS", "BCN", "IST", "ROM", "ATH", "MAD", "PRG", "BUD", "OPO", "CMN", "NYC",
+];
+
+const TITLE = "TrouveMonVol — comparateur de vols transparent, prix total et vendeur affiché";
+const DESCRIPTION =
+  "Comparez les vols au prix total taxes incluses, avec le nom du vendeur réel sur chaque résultat. Recherche par budget, dates flexibles ± 3 jours, alertes prix gratuites.";
+
 type HomeSearch = {
   origin?: string;
   destination?: string;

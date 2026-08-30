@@ -200,7 +200,7 @@ function BudgetPage() {
               return (
                 <li key={price.destination}>
                   <Link
-                    to="/recherche"
+                    to="/"
                     search={searchForDestination(price.destination, price.departureAt)}
                     onMouseEnter={() => setSelected(price.destination)}
                     onFocus={() => setSelected(price.destination)}
