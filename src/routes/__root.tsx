@@ -150,8 +150,23 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function ThirdPartyScripts() {
+  useEffect(() => {
+    const id = "tp-cmp-script";
+    if (document.getElementById(id)) return;
+    const script = document.createElement("script");
+    script.id = id;
+    script.async = true;
+    script.setAttribute("data-cmp-ab", "2");
+    script.src = "https://emrldtp.com/NTY4Mzc3.js?t=568377";
+    document.head.appendChild(script);
+  }, []);
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
 
   return (
     <QueryClientProvider client={queryClient}>
