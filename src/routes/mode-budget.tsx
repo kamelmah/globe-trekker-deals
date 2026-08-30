@@ -56,7 +56,6 @@ export const Route = createFileRoute("/mode-budget")({
   component: BudgetPage,
 });
 
-const ORIGIN_CODES = ["PAR", "LYS", "MRS", "BOD", "NCE", "TLS", "NTE", "BRU", "GVA"];
 
 function BudgetPage() {
   const search = Route.useSearch();
