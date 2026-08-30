@@ -236,3 +236,40 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     ...(observed ? { observedLowestPrice: observed.priceEur } : {}),
   };
 }
+
+/**
+ * Slugs des pages de liaison générées, issus du balayage mondial déjà en cache
+ * (aucun appel API) — utilisé par le sitemap. Le nombre est plafonné.
+ */
+export async function listWorldRouteSlugs(limit = 400): Promise<string[]> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("price_cache")
+      .select("cache_key,payload")
+      .like("cache_key", "world-destinations:%")
+      .order("expires_at", { ascending: false })
+      .limit(6);
+    const cities = await getCityIndex();
+    const slugs = new Set<string>();
+    for (const row of data ?? []) {
+      const originCode = row.cache_key.split(":")[1] ?? "";
+      const originCity = cities.get(originCode.toUpperCase());
+      if (!originCity) continue;
+      const prices = (row.payload as { prices?: unknown } | null)?.prices;
+      if (!Array.isArray(prices)) continue;
+      const sorted = [...(prices as { destination?: string; city?: string; priceEur?: number }[])]
+        .filter((p) => p.city && Number.isFinite(Number(p.priceEur)))
+        .sort((a, b) => Number(a.priceEur) - Number(b.priceEur));
+      for (const price of sorted) {
+        if (slugs.size >= limit) break;
+        slugs.add(routeSlug(originCity.city, price.city as string));
+      }
+      if (slugs.size >= limit) break;
+    }
+    return [...slugs];
+  } catch (error) {
+    console.error("Liste des trajets pour le sitemap indisponible", error);
+    return [];
+  }
+}
