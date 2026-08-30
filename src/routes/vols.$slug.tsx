@@ -364,6 +364,13 @@ function DestinationPage() {
               <FaqAccordion items={route.faq} />
             </div>
           </section>
+
+          <Stay22Map
+            className="mt-12"
+            city={route.destinationCity}
+            title={`Trouvez aussi votre hébergement à ${route.destinationCity}`}
+            description={`Hôtels, appartements et auberges disponibles à ${route.destinationCity}, affichés sur une carte. Les prix proviennent directement des plateformes de réservation.`}
+          />
         </div>
 
         <aside className="space-y-6">
