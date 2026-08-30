@@ -27,8 +27,8 @@ export const Route = createFileRoute("/mode-budget")({
     month: monthOr(search["month"], ""),
   }),
   loader: async ({ location }) => {
-    const origin = iataOr((location.search as Record<string, unknown>).origin, "PAR");
-    const month = monthOr((location.search as Record<string, unknown>).month, "");
+    const origin = iataOr((location.search as Record<string, unknown>)["origin"], "PAR");
+    const month = monthOr((location.search as Record<string, unknown>)["month"], "");
     const { prices, demo } = await cheapestDestinations({
       data: {
         origin,

@@ -10,13 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CommentOnGagneDeLArgentRouteImport } from './routes/comment-on-gagne-de-l-argent'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
+import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
+import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommentOnGagneDeLArgentRoute = CommentOnGagneDeLArgentRouteImport.update({
+  id: '/comment-on-gagne-de-l-argent',
+  path: '/comment-on-gagne-de-l-argent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModeBudgetRoute = ModeBudgetRouteImport.update({
@@ -29,6 +43,16 @@ const RechercheRoute = RechercheRouteImport.update({
   path: '/recherche',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConseilsIndexRoute = ConseilsIndexRouteImport.update({
+  id: '/conseils/',
+  path: '/conseils/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConseilsSlugRoute = ConseilsSlugRouteImport.update({
+  id: '/conseils/$slug',
+  path: '/conseils/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VolsPasChersSlugRoute = VolsPasChersSlugRouteImport.update({
   id: '/vols-pas-chers/$slug',
   path: '/vols-pas-chers/$slug',
@@ -37,36 +61,77 @@ const VolsPasChersSlugRoute = VolsPasChersSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
+  '/faq': typeof FaqRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
+  '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
+  '/conseils/': typeof ConseilsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
+  '/faq': typeof FaqRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
+  '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
+  '/conseils': typeof ConseilsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
+  '/faq': typeof FaqRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
+  '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
+  '/conseils/': typeof ConseilsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/mode-budget' | '/recherche' | '/vols-pas-chers/$slug'
+  fullPaths:
+    | '/'
+    | '/comment-on-gagne-de-l-argent'
+    | '/faq'
+    | '/mode-budget'
+    | '/recherche'
+    | '/conseils/$slug'
+    | '/vols-pas-chers/$slug'
+    | '/conseils/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/mode-budget' | '/recherche' | '/vols-pas-chers/$slug'
-  id: '__root__' | '/' | '/mode-budget' | '/recherche' | '/vols-pas-chers/$slug'
+  to:
+    | '/'
+    | '/comment-on-gagne-de-l-argent'
+    | '/faq'
+    | '/mode-budget'
+    | '/recherche'
+    | '/conseils/$slug'
+    | '/vols-pas-chers/$slug'
+    | '/conseils'
+  id:
+    | '__root__'
+    | '/'
+    | '/comment-on-gagne-de-l-argent'
+    | '/faq'
+    | '/mode-budget'
+    | '/recherche'
+    | '/conseils/$slug'
+    | '/vols-pas-chers/$slug'
+    | '/conseils/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CommentOnGagneDeLArgentRoute: typeof CommentOnGagneDeLArgentRoute
+  FaqRoute: typeof FaqRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
+  ConseilsSlugRoute: typeof ConseilsSlugRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
+  ConseilsIndexRoute: typeof ConseilsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,6 +141,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comment-on-gagne-de-l-argent': {
+      id: '/comment-on-gagne-de-l-argent'
+      path: '/comment-on-gagne-de-l-argent'
+      fullPath: '/comment-on-gagne-de-l-argent'
+      preLoaderRoute: typeof CommentOnGagneDeLArgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mode-budget': {
@@ -92,6 +171,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RechercheRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conseils/': {
+      id: '/conseils/'
+      path: '/conseils'
+      fullPath: '/conseils/'
+      preLoaderRoute: typeof ConseilsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conseils/$slug': {
+      id: '/conseils/$slug'
+      path: '/conseils/$slug'
+      fullPath: '/conseils/$slug'
+      preLoaderRoute: typeof ConseilsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vols-pas-chers/$slug': {
       id: '/vols-pas-chers/$slug'
       path: '/vols-pas-chers/$slug'
@@ -104,9 +197,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CommentOnGagneDeLArgentRoute: CommentOnGagneDeLArgentRoute,
+  FaqRoute: FaqRoute,
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,
+  ConseilsSlugRoute: ConseilsSlugRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
+  ConseilsIndexRoute: ConseilsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
