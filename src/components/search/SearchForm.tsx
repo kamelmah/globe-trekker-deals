@@ -67,20 +67,12 @@ export function SearchForm({
   /** Avec un raccourci de durée, le retour est calculé depuis la date de départ. */
   const effectiveRetour = duree > 0 ? addDaysIso(depart, duree) : retour;
 
-  function submit(event: React.FormEvent) {
-    event.preventDefault();
-    if (!destination) {
-      navigate({
-        to: "/mode-budget",
-        search: { origin, budget: budget ? Number(budget) : 400, month: "" },
-      });
-      return;
-    }
+  function goToResults(code: string) {
     navigate({
       to: "/recherche",
       search: {
         origin,
-        destination,
+        destination: code,
         depart,
         retour: effectiveRetour,
         duree,
@@ -92,6 +84,47 @@ export function SearchForm({
       },
     });
   }
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    setDestinationError(null);
+
+    if (destination) {
+      goToResults(destination);
+      return;
+    }
+
+    // Saisie libre non validée par un clic : on tente de la résoudre en code IATA.
+    if (hasTypedDestination) {
+      setResolving(true);
+      try {
+        const result = await resolvePlace({ data: { term: typedDestination } });
+        if (result.place) {
+          setDestination(result.place.code);
+          setDestinationText(`${result.place.city || result.place.name} (${result.place.code})`);
+          goToResults(result.place.code);
+          return;
+        }
+        setDestinationError(
+          result.error ??
+            "Destination introuvable : sélectionnez une destination dans la liste ou laissez le champ vide pour le mode budget.",
+        );
+      } catch {
+        setDestinationError(
+          "Impossible de vérifier cette destination pour le moment. Réessayez dans un instant.",
+        );
+      } finally {
+        setResolving(false);
+      }
+      return;
+    }
+
+    navigate({
+      to: "/mode-budget",
+      search: { origin, budget: budget ? Number(budget) : 400, month: "" },
+    });
+  }
+
 
 
   return (
