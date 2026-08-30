@@ -64,11 +64,21 @@ function BlogIndex() {
       </p>
 
       <section className="mt-10">
-        <h2 className="font-display text-2xl font-semibold">Guides par destination</h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Que faire sur place, quand partir, quel budget prévoir : un guide pratique pour chaque
-          ville desservie sur le site.
-        </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="font-display text-2xl font-semibold">Guides par destination</h2>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+              Que faire sur place, quand partir, quel budget prévoir : un guide pratique pour chaque
+              ville desservie sur le site.
+            </p>
+          </div>
+          <Link
+            to="/conseils/destinations"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+          >
+            Tous les guides
+          </Link>
+        </div>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {CITY_GUIDES.map((guide) => {
             const image = getDestinationImage(guide.destination, guide.city);
