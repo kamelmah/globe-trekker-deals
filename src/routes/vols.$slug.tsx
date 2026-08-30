@@ -302,18 +302,31 @@ function DestinationPage() {
                 lien mène à la fiche complète du trajet.
               </p>
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                {related.map((item) => (
+                {related.map((item) => {
+                  const thumb = getDestinationImage(null, item.city);
+                  return (
                   <li key={item.slug}>
                     <Link
                       to="/vols/$slug"
                       params={{ slug: item.slug }}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
+                      className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
                     >
-                      <span>
-                        <span className="block font-medium">
+                      <img
+                        src={thumb.src}
+                        alt={thumb.alt}
+                        loading="lazy"
+                        decoding="async"
+                        width={96}
+                        height={72}
+                        className="size-12 shrink-0 rounded-md object-cover"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">
                           {route.originCity} — {item.city}
                         </span>
-                        <span className="block text-xs text-muted-foreground">{item.country}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {item.country}
+                        </span>
                       </span>
                       {item.priceEur !== null && (
                         <span className="font-semibold text-primary">
@@ -322,7 +335,9 @@ function DestinationPage() {
                       )}
                     </Link>
                   </li>
-                ))}
+                  );
+                })}
+
               </ul>
             </section>
           )}
