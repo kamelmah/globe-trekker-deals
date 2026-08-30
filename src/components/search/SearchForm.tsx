@@ -1,0 +1,170 @@
+import { useNavigate } from "@tanstack/react-router";
+import { Search } from "lucide-react";
+import { useState } from "react";
+
+import { AIRPORTS } from "@/data/airports";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const ORIGIN_CODES = ["PAR", "LYS", "MRS", "BOD", "NCE", "TLS", "NTE", "BRU", "GVA"];
+
+function defaultDate(offsetDays: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return d.toISOString().slice(0, 10);
+}
+
+export type SearchFormProps = {
+  initialOrigin?: string;
+  initialDestination?: string;
+  compact?: boolean;
+};
+
+export function SearchForm({
+  initialOrigin = "PAR",
+  initialDestination = "",
+  compact = false,
+}: SearchFormProps) {
+  const navigate = useNavigate();
+  const [origin, setOrigin] = useState(initialOrigin);
+  const [destination, setDestination] = useState(initialDestination);
+  const [depart, setDepart] = useState(defaultDate(30));
+  const [retour, setRetour] = useState("");
+  const [flexible, setFlexible] = useState(true);
+  const [budget, setBudget] = useState("");
+
+  const origins = AIRPORTS.filter((a) => ORIGIN_CODES.includes(a.code));
+  const destinations = AIRPORTS.filter((a) => a.code !== origin);
+
+  function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!destination) {
+      navigate({
+        to: "/mode-budget",
+        search: { origin, budget: budget ? Number(budget) : 400, month: "" },
+      });
+      return;
+    }
+    navigate({
+      to: "/recherche",
+      search: {
+        origin,
+        destination,
+        depart,
+        retour,
+        flexible: flexible ? 1 : 0,
+        budget: budget ? Number(budget) : 0,
+        vue: "liste",
+      },
+    });
+  }
+
+  return (
+    <form
+      onSubmit={submit}
+      className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5"
+      aria-label="Recherche de vols"
+    >
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="origin">Ville de départ</Label>
+          <Select value={origin} onValueChange={setOrigin}>
+            <SelectTrigger id="origin">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {origins.map((a) => (
+                <SelectItem key={a.code} value={a.code}>
+                  {a.city} ({a.code})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="destination">Destination (facultatif)</Label>
+          <Select value={destination || "none"} onValueChange={(v) => setDestination(v === "none" ? "" : v)}>
+            <SelectTrigger id="destination">
+              <SelectValue placeholder="Peu importe — mode budget" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Peu importe — mode budget</SelectItem>
+              {destinations.map((a) => (
+                <SelectItem key={a.code} value={a.code}>
+                  {a.city} ({a.code})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="depart">Date de départ</Label>
+          <Input
+            id="depart"
+            type="date"
+            value={depart}
+            min={defaultDate(1)}
+            onChange={(e) => setDepart(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="retour">Date de retour (facultatif)</Label>
+          <Input
+            id="retour"
+            type="date"
+            value={retour}
+            min={depart}
+            onChange={(e) => setRetour(e.target.value)}
+          />
+        </div>
+
+        {!compact && (
+          <div className="space-y-1.5">
+            <Label htmlFor="budget">Budget maximum (facultatif, en €)</Label>
+            <Input
+              id="budget"
+              type="number"
+              min={0}
+              inputMode="numeric"
+              placeholder="Ex. 300"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+            />
+          </div>
+        )}
+
+        <div className="flex items-end">
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+            <Checkbox
+              checked={flexible}
+              onCheckedChange={(v) => setFlexible(v === true)}
+              aria-label="Dates flexibles à plus ou moins trois jours"
+            />
+            Dates flexibles ± 3 jours
+          </label>
+        </div>
+      </div>
+
+      <Button type="submit" size="lg" className="mt-5 w-full sm:w-auto">
+        <Search className="size-4" aria-hidden />
+        {destination ? "Comparer les vols" : "Voir où partir avec mon budget"}
+      </Button>
+      <p className="mt-3 text-xs text-muted-foreground">
+        Prix total taxes incluses, vendeur affiché sur chaque résultat. Aucune publicité, aucun compte
+        à rebours artificiel.
+      </p>
+    </form>
+  );
+}

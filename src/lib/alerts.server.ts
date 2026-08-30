@@ -1,0 +1,172 @@
+import { fetchOffers } from "@/lib/travelpayouts.server";
+import { cityLabel } from "@/data/airports";
+import { formatPrice } from "@/lib/currency";
+
+export type AlertInput = {
+  email: string;
+  origin: string;
+  destination: string;
+  departDate?: string | null;
+  returnDate?: string | null;
+  referencePrice: number;
+};
+
+async function admin() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  return supabaseAdmin;
+}
+
+export async function createAlert(input: AlertInput): Promise<{ ok: boolean; message: string }> {
+  const db = await admin();
+  const { error } = await db.from("price_alerts").upsert(
+    {
+      email: input.email.toLowerCase(),
+      origin: input.origin.toUpperCase(),
+      destination: input.destination.toUpperCase(),
+      depart_date: input.departDate ?? null,
+      return_date: input.returnDate ?? null,
+      initial_price: input.referencePrice,
+      last_price: input.referencePrice,
+      active: true,
+    },
+    { onConflict: "email,origin,destination,depart_date" },
+  );
+
+  if (error) {
+    // Le conflit d'unicité partiel peut échouer selon l'index : on retente en insert simple.
+    const retry = await db.from("price_alerts").insert({
+      email: input.email.toLowerCase(),
+      origin: input.origin.toUpperCase(),
+      destination: input.destination.toUpperCase(),
+      depart_date: input.departDate ?? null,
+      return_date: input.returnDate ?? null,
+      initial_price: input.referencePrice,
+      last_price: input.referencePrice,
+    });
+    if (retry.error && !retry.error.message.includes("duplicate")) {
+      console.error("Création d'alerte impossible", retry.error);
+      return { ok: false, message: "Impossible d'enregistrer l'alerte pour le moment." };
+    }
+  }
+
+  return {
+    ok: true,
+    message: "Alerte créée. Vous recevrez un email dès que le prix baisse sur ce trajet.",
+  };
+}
+
+export async function deactivateAlert(token: string): Promise<boolean> {
+  const db = await admin();
+  const { error } = await db
+    .from("price_alerts")
+    .update({ active: false })
+    .eq("unsubscribe_token", token);
+  return !error;
+}
+
+async function sendDropEmail(params: {
+  email: string;
+  origin: string;
+  destination: string;
+  oldPrice: number;
+  newPrice: number;
+  unsubscribeToken: string;
+  bookingUrl: string;
+  siteUrl: string;
+}): Promise<void> {
+  const apiKey = process.env["LOVABLE_API_KEY"];
+  const from = process.env["ALERTS_FROM_EMAIL"];
+  const route = `${cityLabel(params.origin)} — ${cityLabel(params.destination)}`;
+  const subject = `Le prix baisse sur ${route} : ${formatPrice(params.newPrice)}`;
+  const html = `
+    <div style="font-family:system-ui,sans-serif;color:#0f172a;max-width:520px">
+      <h1 style="font-size:20px">Bonne nouvelle : le prix a baissé</h1>
+      <p>Sur le trajet <strong>${route}</strong>, le prix le plus bas est passé de
+        ${formatPrice(params.oldPrice)} à <strong>${formatPrice(params.newPrice)}</strong>.</p>
+      <p><a href="${params.bookingUrl}" style="background:#0b6bcb;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Voir l'offre</a></p>
+      <p style="font-size:12px;color:#64748b">Prix indicatif au moment de la vérification, taxes incluses.
+        Nous ne prenons aucune commission supplémentaire sur votre réservation.</p>
+      <p style="font-size:12px;color:#64748b">
+        <a href="${params.siteUrl}/alertes/desinscription?token=${params.unsubscribeToken}">Ne plus recevoir d'alerte sur ce trajet</a>
+      </p>
+    </div>`;
+
+  if (!apiKey || !from) {
+    console.log(`[alerte prix] ${params.email} — ${subject} (envoi d'email non configuré)`);
+    return;
+  }
+
+  const res = await fetch("https://api.lovable.dev/v1/emails/send", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({ from, to: [params.email], subject, html }),
+  });
+  if (!res.ok) {
+    console.error(`Envoi d'email en échec [${res.status}]: ${await res.text()}`);
+  }
+}
+
+/** Revérifie toutes les alertes actives et notifie les baisses de prix. */
+export async function runAlertCheck(siteUrl: string): Promise<{
+  checked: number;
+  notified: number;
+}> {
+  const db = await admin();
+  const { data: alerts, error } = await db
+    .from("price_alerts")
+    .select("*")
+    .eq("active", true)
+    .limit(200);
+
+  if (error) {
+    console.error("Lecture des alertes impossible", error);
+    return { checked: 0, notified: 0 };
+  }
+
+  let notified = 0;
+  for (const alert of alerts ?? []) {
+    const departureAt = alert.depart_date ?? defaultDepartureDate();
+    const offers = await fetchOffers({
+      origin: alert.origin,
+      destination: alert.destination,
+      departureAt,
+      returnAt: alert.return_date,
+    });
+    const cheapest = offers[0];
+    if (!cheapest) continue;
+
+    const previous = Number(alert.last_price);
+    if (cheapest.priceEur < previous - 1) {
+      await sendDropEmail({
+        email: alert.email,
+        origin: alert.origin,
+        destination: alert.destination,
+        oldPrice: previous,
+        newPrice: cheapest.priceEur,
+        unsubscribeToken: alert.unsubscribe_token,
+        bookingUrl: cheapest.bookingUrl,
+        siteUrl,
+      });
+      notified++;
+    }
+
+    await db
+      .from("price_alerts")
+      .update({
+        last_price: Math.min(previous, cheapest.priceEur),
+        last_checked_at: new Date().toISOString(),
+      })
+      .eq("id", alert.id);
+  }
+
+  return { checked: alerts?.length ?? 0, notified };
+}
+
+function defaultDepartureDate(): string {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() + 45);
+  return d.toISOString().slice(0, 10);
+}
