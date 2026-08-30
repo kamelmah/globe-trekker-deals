@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Plane } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 
+import logo from "@/assets/logo.png";
 import { CurrencySelect } from "@/components/site/CurrencySelect";
 import { Button } from "@/components/ui/button";
 
@@ -18,9 +19,13 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-3">
         <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Plane className="size-4" aria-hidden />
-          </span>
+          <img
+            src={logo}
+            alt="TrouveMonVol"
+            width={32}
+            height={32}
+            className="size-8 rounded-lg object-contain"
+          />
           TrouveMonVol
         </Link>
 
