@@ -160,7 +160,8 @@ function HomePage() {
               children: prefill.enfants ?? 0,
               infants: Math.min(prefill.bebes ?? 0, prefill.adultes ?? 1),
             }}
-          />
+            />
+          </div>
         </div>
       </section>
 
