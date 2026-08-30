@@ -33,3 +33,15 @@ export function formatPrice(amountEur: number, currency: CurrencyCode = "EUR"): 
 export function isCurrencyCode(value: string): value is CurrencyCode {
   return CURRENCIES.some((c) => c.code === value);
 }
+
+/**
+ * Formate un montant déjà exprimé dans la devise donnée (renvoyé tel quel par
+ * l'API Travelpayouts via son paramètre `currency`), sans aucune conversion.
+ */
+export function formatAmount(amount: number, currency: CurrencyCode = "EUR"): string {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}

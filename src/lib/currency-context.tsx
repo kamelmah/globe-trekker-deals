@@ -1,11 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
-import { formatPrice, isCurrencyCode, type CurrencyCode } from "@/lib/currency";
+import { formatAmount, formatPrice, isCurrencyCode, type CurrencyCode } from "@/lib/currency";
 
 type CurrencyContextValue = {
   currency: CurrencyCode;
   setCurrency: (code: CurrencyCode) => void;
+  /** Formate un montant en euros en le convertissant (données stockées en EUR). */
   format: (amountEur: number) => string;
+  /** Formate un montant déjà renvoyé par l'API dans la devise choisie. */
+  formatApi: (amount: number) => string;
 };
 
 const CurrencyContext = createContext<CurrencyContextValue | null>(null);
@@ -26,9 +29,10 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const format = useCallback((amountEur: number) => formatPrice(amountEur, currency), [currency]);
+  const formatApi = useCallback((amount: number) => formatAmount(amount, currency), [currency]);
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency, format }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency, format, formatApi }}>
       {children}
     </CurrencyContext.Provider>
   );
@@ -37,7 +41,12 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 export function useCurrency(): CurrencyContextValue {
   const ctx = useContext(CurrencyContext);
   if (!ctx) {
-    return { currency: "EUR", setCurrency: () => {}, format: (amount) => formatPrice(amount, "EUR") };
+    return {
+      currency: "EUR",
+      setCurrency: () => {},
+      format: (amount) => formatPrice(amount, "EUR"),
+      formatApi: (amount) => formatAmount(amount, "EUR"),
+    };
   }
   return ctx;
 }
