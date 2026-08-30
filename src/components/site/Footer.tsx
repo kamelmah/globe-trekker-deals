@@ -58,6 +58,11 @@ export function Footer() {
                 Questions fréquentes (FAQ)
               </Link>
             </li>
+            <li>
+              <Link to="/contact" className={linkClass}>
+                Contact & newsletter
+              </Link>
+            </li>
           </ul>
         </div>
 

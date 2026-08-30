@@ -12,6 +12,7 @@ const NAV = [
   { to: "/conseils/destinations", label: "Guides destinations" },
   { to: "/conseils", label: "Conseils" },
   { to: "/faq", label: "FAQ" },
+  { to: "/contact", label: "Contact" },
 ] as const;
 
 export function Header() {

@@ -5,7 +5,7 @@
  * sans le jeton d'administration.
  */
 
-export type OpsLogKind = "travelpayouts" | "alerte";
+export type OpsLogKind = "travelpayouts" | "alerte" | "contact" | "newsletter";
 
 export type OpsLogEntry = {
   kind: OpsLogKind;
