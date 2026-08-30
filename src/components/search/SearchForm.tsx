@@ -60,8 +60,9 @@ export function SearchForm({
         retour,
         flexible: flexible ? 1 : 0,
         budget: budget ? Number(budget) : 0,
-        adultes: adults,
-        enfants: children,
+        adultes: passengers.adults,
+        enfants: passengers.children,
+        bebes: passengers.infants,
         vue: "liste",
       },
     });
