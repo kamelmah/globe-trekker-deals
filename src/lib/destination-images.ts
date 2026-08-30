@@ -110,7 +110,7 @@ const SCENE_BY_COUNTRY: Record<string, string> = {
   croatia: "coast", chypre: "coast", cyprus: "coast", malte: "coast", malta: "coast",
   // Villes historiques d'Europe centrale et de l'Ouest
   france: "oldtown", allemagne: "oldtown", germany: "oldtown",
-  autriche: "oldtown", austria: "oldtown", republique tcheque: "oldtown",
+  autriche: "oldtown", austria: "oldtown", "republique tcheque": "oldtown",
   hongrie: "oldtown", hungary: "oldtown", pologne: "oldtown", poland: "oldtown",
   roumanie: "oldtown", romania: "oldtown", bulgarie: "oldtown", bulgaria: "oldtown",
   serbie: "oldtown", slovaquie: "oldtown", slovenie: "oldtown", belgique: "oldtown",
