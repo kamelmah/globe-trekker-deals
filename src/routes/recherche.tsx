@@ -342,9 +342,11 @@ function SearchResultsPage() {
             <p className="text-sm text-muted-foreground" aria-live="polite">
               {offersQuery.isPending
                 ? "Recherche des meilleurs prix…"
-                : `${filtered.length} résultat${filtered.length > 1 ? "s" : ""} affiché${
-                    filtered.length > 1 ? "s" : ""
-                  }`}
+                : filtered.length === 0
+                  ? "Aucun prix réel disponible pour ces critères"
+                  : filtered.length === 1
+                    ? "Meilleur prix trouvé pour ce trajet"
+                    : `${filtered.length} meilleurs prix trouvés (un par date testée)`}
             </p>
             <div className="inline-flex rounded-lg border border-border p-0.5">
               <Button
@@ -416,7 +418,7 @@ function SearchResultsPage() {
                 <div className="space-y-6 px-4 pb-8">
                   {filtersPanel}
                   <Button type="button" className="w-full" onClick={() => setFiltersOpen(false)}>
-                    Voir les {filtered.length} résultats
+                    Voir les prix trouvés
                   </Button>
                   {searchFormBlock}
                   {alertBlock}
