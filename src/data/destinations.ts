@@ -29,58 +29,44 @@ export const DESTINATIONS: DestinationRoute[] = [
     destination: "RAK",
     destinationCity: "Marrakech",
     country: "Maroc",
-    heading: "Vols pas chers Paris — Marrakech",
+    heading: "Billet d'avion Paris - Marrakech pas cher",
     metaTitle: "Vol pas cher Paris Marrakech : prix, meilleure période | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Marrakech au prix total, taxes incluses, avec le vendeur affiché. Meilleure période, évolution des prix sur 12 mois et alertes gratuites.",
     intro:
-      "Trois heures et demie de vol séparent Paris de Marrakech, avec des départs quotidiens depuis Orly, Roissy et Beauvais. C'est l'une des liaisons les plus concurrentielles au départ de la France, ce qui la rend très intéressante dès que l'on accepte de bouger ses dates.",
-    bestMonths: "Mars-avril et octobre-novembre",
-    averageDuration: "3 h 25 en vol direct",
+      "Vous planifiez un séjour au Maroc ? Trouver un vol Paris Marrakech pas cher est le meilleur moyen de débuter votre voyage vers la ville ocre sans vous ruiner. Cette liaison aérienne est l'une des plus fréquentées au départ de la France, offrant une flexibilité totale aux voyageurs, qu'ils partent pour un week-end prolongé ou pour des vacances prolongées. La durée moyenne d'un vol direct entre Paris et Marrakech est de 3 heures et 15 minutes.",
+    bestMonths: "Mars-mai et septembre-novembre",
+    averageDuration: "3 h 15 en vol direct",
+    simulatedLowestPrice: 39,
     sections: [
+      {
+        heading: "Compagnies et aéroports pour un vol Paris — Marrakech",
+        paragraphs: [
+          "De nombreuses compagnies aériennes opèrent sur ce trajet pour répondre à la forte demande. Si vous cherchez un billet d'avion low-cost, les compagnies Transavia, Ryanair (au départ de Paris Beauvais) et EasyJet proposent des tarifs très compétitifs tout au long de l'année. Pour plus de confort et des services inclus comme le bagage en cabine, Air France et Royal Air Maroc proposent également plusieurs fréquences quotidiennes au départ de Paris Charles de Gaulle (CDG) ou Paris Orly (ORY). L'arrivée s'effectue à l'aéroport de Marrakech-Ménara, situé à seulement quelques minutes du centre-ville et de la célèbre place Jemaa el-Fna.",
+        ],
+      },
       {
         heading: "Quand partir à Marrakech au meilleur prix",
         paragraphs: [
-          "Marrakech connaît deux hautes saisons touristiques : le printemps, de mars à mai, et l'automne, de septembre à novembre. Ce sont aussi les périodes les plus agréables côté météo, avec des journées autour de 24 à 28 degrés et des soirées fraîches. Les tarifs y sont donc plus élevés que la moyenne annuelle, sans atteindre les sommets des vacances scolaires.",
-          "Les prix les plus bas se trouvent généralement en juillet et août : la ville dépasse fréquemment 40 degrés et la demande touristique européenne s'effondre. Si la chaleur ne vous fait pas peur, c'est mathématiquement la meilleure fenêtre pour le budget. Le mois de janvier, hors vacances de Noël, offre également des tarifs bas avec un climat doux en journée.",
-          "À l'inverse, les deux semaines des vacances de Noël, celles de février et le week-end de Pâques concentrent les billets les plus chers de l'année. Sur ces dates, la seule variable qui compte est l'anticipation.",
-        ],
-      },
-      {
-        heading: "Quel aéroport et quelles compagnies",
-        paragraphs: [
-          "La liaison est opérée principalement par Royal Air Maroc, Transavia, Ryanair et Air Arabia Maroc, avec des vols directs au départ d'Orly, de Roissy-Charles-de-Gaulle et de Beauvais. L'arrivée se fait à l'aéroport Marrakech-Ménara, situé à seulement cinq kilomètres de la médina, ce qui évite un long transfert.",
-          "Sur les compagnies à bas coût, pensez à intégrer le bagage dans votre comparaison : un aller-retour avec valise en soute peut ajouter 60 à 90 euros au prix affiché. Sur un trajet aussi court, cet écart change complètement le classement des offres.",
-        ],
-      },
-      {
-        heading: "Combien coûte réellement un billet",
-        paragraphs: [
-          "En basse saison et avec des dates flexibles, un aller simple se trouve régulièrement sous les 60 euros, et un aller-retour autour de 110 à 150 euros. En haute saison, comptez plutôt 220 à 320 euros l'aller-retour, et davantage pendant les vacances scolaires.",
-          "Le graphique ci-dessous montre l'évolution du prix le plus bas relevé mois par mois sur les douze derniers mois. Il sert de repère : si le prix que vous voyez aujourd'hui est nettement au-dessus de la courbe, il y a de fortes chances qu'attendre soit rentable.",
+          "Pour obtenir le meilleur prix pour votre vol Paris-Marrakech, la saisonnalité joue un rôle majeur. Les mois d'été (juillet et août) ainsi que les périodes de fêtes de fin d'année affichent les tarifs les plus élevés. Pour réaliser de vraies économies, privilégiez un départ au printemps (mars à mai) ou à l'automne (septembre à novembre), où le climat est idéal et les billets d'avion beaucoup moins chers. Utiliser notre comparateur de vols en temps réel vous permet d'analyser les tendances tarifaires et de bloquer votre billet dès que le prix baisse.",
         ],
       },
     ],
     faq: [
       {
-        question: "Quel est le meilleur mois pour aller à Marrakech pas cher ?",
+        question: "Quelle est la compagnie aérienne la moins chère pour un vol Paris Marrakech ?",
         answer:
-          "Juillet et août affichent les tarifs les plus bas, car la chaleur fait chuter la demande. Hors été, janvier et la première quinzaine de février (hors vacances scolaires) offrent le meilleur rapport prix / météo.",
+          "Les compagnies low-cost Ryanair et Transavia proposent généralement les tarifs les plus bas, avec des billets réguliers dès 39€ l'aller simple hors options.",
       },
       {
-        question: "Combien de temps dure le vol Paris — Marrakech ?",
+        question: "Quel est le meilleur moment pour réserver un billet d'avion vers Marrakech ?",
         answer:
-          "Environ 3 h 25 en vol direct. Avec une escale, comptez généralement entre 6 et 9 heures selon la correspondance.",
+          "Il est recommandé de réserver votre vol entre 2 et 3 mois à l'avance pour obtenir les meilleurs tarifs.",
       },
       {
-        question: "Combien de temps à l'avance réserver un vol Paris — Marrakech ?",
+        question: "Quel aéroport de Paris propose les vols les plus directs ?",
         answer:
-          "Entre 5 et 10 semaines avant le départ pour une période normale. Pour les vacances scolaires et les fêtes de fin d'année, réservez 3 à 4 mois à l'avance.",
-      },
-      {
-        question: "Y a-t-il des vols directs Paris — Marrakech ?",
-        answer:
-          "Oui, plusieurs vols directs quotidiens depuis Orly, Roissy et Beauvais, opérés notamment par Royal Air Maroc, Transavia et Ryanair.",
+          "L'aéroport d'Orly (ORY) offre le plus grand nombre de vols directs low-cost via Transavia, tandis que CDG accueille principalement Air France et Royal Air Maroc.",
       },
     ],
   },
