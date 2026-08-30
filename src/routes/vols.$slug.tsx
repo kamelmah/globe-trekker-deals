@@ -7,7 +7,7 @@ import { FaqAccordion } from "@/components/site/FaqAccordion";
 import { Button } from "@/components/ui/button";
 import { getDestination } from "@/data/destinations";
 import { monthlyHistory } from "@/lib/flights.functions";
-import { dynamicRoutePage } from "@/lib/route-pages.functions";
+import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
 import { todayPlus } from "@/lib/search-params";
 import { SITE_URL, destinationOgImage } from "@/lib/site";
@@ -30,7 +30,16 @@ export const Route = createFileRoute("/vols/$slug")({
       : null;
     // Prix d'appel simulé pour la démo, sinon le plancher réellement observé.
     const lowestObserved = route.simulatedLowestPrice ?? route.observedLowestPrice ?? historyLowest;
-    return { route, months: history.months, lowestObserved };
+    // Maillage interne : autres pages SSR disponibles depuis la même origine.
+    const { related } = await relatedRoutePages({
+      data: {
+        origin: route.origin,
+        originCity: route.originCity,
+        exclude: route.destination,
+        limit: 12,
+      },
+    });
+    return { route, months: history.months, lowestObserved, related };
   },
 
   head: ({ loaderData }) => {
@@ -62,7 +71,11 @@ export const Route = createFileRoute("/vols/$slug")({
         },
         { name: "twitter:image", content: ogImage },
       ],
-      links: [{ rel: "canonical", href: pageUrl }],
+      links: [
+        { rel: "canonical", href: pageUrl },
+        { rel: "alternate", hrefLang: "fr-FR", href: pageUrl },
+        { rel: "alternate", hrefLang: "x-default", href: pageUrl },
+      ],
       scripts: [
         {
           type: "application/ld+json",
@@ -151,7 +164,7 @@ export const Route = createFileRoute("/vols/$slug")({
 });
 
 function DestinationPage() {
-  const { route, months, lowestObserved } = Route.useLoaderData();
+  const { route, months, lowestObserved, related } = Route.useLoaderData();
 
   return (
     <article className="container-page py-10">
@@ -258,6 +271,41 @@ function DestinationPage() {
               </p>
             )}
           </section>
+
+          {related.length > 0 && (
+            <section className="mt-10">
+              <h2 className="font-display text-xl font-semibold">
+                Autres destinations depuis {route.originCity}
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Prix les plus bas déjà relevés depuis {route.originCity}, taxes incluses. Chaque
+                lien mène à la fiche complète du trajet.
+              </p>
+              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                {related.map((item) => (
+                  <li key={item.slug}>
+                    <Link
+                      to="/vols/$slug"
+                      params={{ slug: item.slug }}
+                      className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
+                    >
+                      <span>
+                        <span className="block font-medium">
+                          {route.originCity} — {item.city}
+                        </span>
+                        <span className="block text-xs text-muted-foreground">{item.country}</span>
+                      </span>
+                      {item.priceEur !== null && (
+                        <span className="font-semibold text-primary">
+                          dès {formatPrice(item.priceEur)}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section className="mt-10">
             <h2 className="font-display text-xl font-semibold">Questions fréquentes</h2>
