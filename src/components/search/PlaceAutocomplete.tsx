@@ -3,7 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { getAirport } from "@/data/airports";
-import { searchPlaces } from "@/lib/places.functions";
+import { resolvePlace, searchPlaces } from "@/lib/places.functions";
 import type { Place } from "@/lib/places.server";
 
 function labelFor(code: string): string {
@@ -20,6 +20,10 @@ export type PlaceAutocompleteProps = {
   placeholder?: string;
   /** Autorise un champ vide (mode budget : destination libre). */
   allowEmpty?: boolean;
+  /** Texte brut saisi au clavier, même sans sélection dans la liste. */
+  onTextChange?: (text: string) => void;
+  /** Message d'erreur inline affiché sous le champ. */
+  error?: string | null;
 };
 
 /**
@@ -33,6 +37,8 @@ export function PlaceAutocomplete({
   onChange,
   placeholder = "Ville ou aéroport",
   allowEmpty = false,
+  onTextChange,
+  error,
 }: PlaceAutocompleteProps) {
   const listId = useId();
   const [text, setText] = useState(() => labelFor(value));
@@ -40,6 +46,7 @@ export function PlaceAutocomplete({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const wrapper = useRef<HTMLDivElement>(null);
+  const skipBlur = useRef(false);
 
   // Debounce 300 ms avant l'appel API.
   useEffect(() => {
@@ -67,12 +74,48 @@ export function PlaceAutocomplete({
 
   function select(place: Place) {
     onChange(place.code);
-    setText(
+    const nextText =
       place.type === "airport"
         ? `${place.name} (${place.code})`
-        : `${place.city || place.name} (${place.code})`,
-    );
+        : `${place.city || place.name} (${place.code})`;
+    setText(nextText);
+    onTextChange?.(nextText);
     setOpen(false);
+  }
+
+  /**
+   * Saisie libre : au blur, on résout le texte tapé en code IATA sans exiger
+   * un clic sur une suggestion.
+   */
+  async function resolveTyped() {
+    if (skipBlur.current) {
+      skipBlur.current = false;
+      return;
+    }
+    const typed = text.trim();
+    if (typed === "") {
+      if (allowEmpty) onChange("");
+      return;
+    }
+    if (value && typed === labelFor(value)) return;
+    if (value && typed.toUpperCase() === value.toUpperCase()) return;
+    const match = places.find(
+      (place) =>
+        typed.toUpperCase() === place.code ||
+        typed.toLowerCase() === (place.city || place.name).toLowerCase(),
+    );
+    if (match) {
+      select(match);
+      return;
+    }
+    try {
+      const result = await resolvePlace({ data: { term: typed } });
+      if (result.place) select(result.place);
+      else onChange("");
+    } catch {
+      // Réseau indisponible : on laisse le formulaire gérer le message d'erreur.
+      onChange("");
+    }
   }
 
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -109,15 +152,26 @@ export function PlaceAutocomplete({
         aria-autocomplete="list"
         placeholder={placeholder}
         value={text}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => {
           setText(event.target.value);
+          onTextChange?.(event.target.value);
           setActive(0);
           setOpen(true);
           if (allowEmpty && event.target.value.trim() === "") onChange("");
         }}
         onFocus={() => setOpen(true)}
+        onBlur={() => void resolveTyped()}
         onKeyDown={onKeyDown}
       />
+
+      {error && (
+        <p id={`${id}-error`} className="mt-1.5 text-xs text-destructive" role="alert">
+          {error}
+        </p>
+      )}
+
 
       {open && enabled && (
         <div
@@ -143,6 +197,9 @@ export function PlaceAutocomplete({
               role="option"
               aria-selected={index === active}
               onMouseEnter={() => setActive(index)}
+              onMouseDown={() => {
+                skipBlur.current = true;
+              }}
               onClick={() => select(place)}
               className={`flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 text-left text-sm ${
                 index === active ? "bg-secondary" : ""

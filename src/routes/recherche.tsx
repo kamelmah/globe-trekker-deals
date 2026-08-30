@@ -324,6 +324,12 @@ function SearchResultsPage() {
         Prix garanti sans frais cachés — vous payez ce qui est affiché ici.
       </p>
 
+      <p className="mt-2 max-w-2xl text-xs text-muted-foreground">
+        Notre source tarifaire renvoie le meilleur prix trouvé par date de départ, pas la liste
+        complète des vols du jour. Avec les dates flexibles ± 3 jours, vous obtenez un prix par date
+        testée pour comparer les jours entre eux.
+      </p>
+
       <div className="mt-8 grid gap-8 lg:grid-cols-[320px_1fr]">
         {/* Colonne latérale : uniquement sur grand écran. Sur mobile, tout passe par le bouton Filtres. */}
         <aside className="hidden space-y-6 lg:block">
@@ -342,9 +348,11 @@ function SearchResultsPage() {
             <p className="text-sm text-muted-foreground" aria-live="polite">
               {offersQuery.isPending
                 ? "Recherche des meilleurs prix…"
-                : `${filtered.length} résultat${filtered.length > 1 ? "s" : ""} affiché${
-                    filtered.length > 1 ? "s" : ""
-                  }`}
+                : filtered.length === 0
+                  ? "Aucun prix réel disponible pour ces critères"
+                  : filtered.length === 1
+                    ? "Meilleur prix trouvé pour ce trajet"
+                    : `${filtered.length} meilleurs prix trouvés (un par date testée)`}
             </p>
             <div className="inline-flex rounded-lg border border-border p-0.5">
               <Button
@@ -416,7 +424,7 @@ function SearchResultsPage() {
                 <div className="space-y-6 px-4 pb-8">
                   {filtersPanel}
                   <Button type="button" className="w-full" onClick={() => setFiltersOpen(false)}>
-                    Voir les {filtered.length} résultats
+                    Voir les prix trouvés
                   </Button>
                   {searchFormBlock}
                   {alertBlock}

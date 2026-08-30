@@ -100,3 +100,32 @@ export async function fetchPlaces(term: string): Promise<Place[]> {
   writeCache(key, places);
   return places;
 }
+
+/**
+ * Résout un texte libre (« Marrakech », « rak ») en un lieu unique.
+ * Retourne null si aucune correspondance crédible n'est trouvée.
+ */
+export async function resolveBestPlace(term: string): Promise<Place | null> {
+  const cleaned = term.trim();
+  if (cleaned.length < 2) return null;
+  const places = await fetchPlaces(cleaned);
+  if (places.length === 0) return null;
+
+  const upper = cleaned.toUpperCase();
+  const lower = cleaned.toLowerCase();
+  const byCode = places.find((p) => p.code === upper);
+  if (byCode) return byCode;
+
+  const exactName = places.find(
+    (p) => p.name.toLowerCase() === lower || p.city.toLowerCase() === lower,
+  );
+  if (exactName) return exactName;
+
+  const startsWith = places.find(
+    (p) => p.name.toLowerCase().startsWith(lower) || p.city.toLowerCase().startsWith(lower),
+  );
+  if (startsWith) return startsWith;
+
+  // La liste renvoyée par l'API est déjà classée par pertinence : on garde une ville si possible.
+  return places.find((p) => p.type === "city") ?? places[0] ?? null;
+}

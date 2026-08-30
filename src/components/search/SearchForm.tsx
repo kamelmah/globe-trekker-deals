@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { resolvePlace } from "@/lib/places.functions";
 import { addDaysIso, nightsBetween, TRIP_DURATIONS } from "@/lib/trip-duration";
 
 
@@ -56,24 +57,23 @@ export function SearchForm({
   );
 
   const [budget, setBudget] = useState(initialBudget);
+  /** Texte brut du champ destination (saisie libre sans clic sur une suggestion). */
+  const [destinationText, setDestinationText] = useState(initialDestination);
+  const [destinationError, setDestinationError] = useState<string | null>(null);
+  const [resolving, setResolving] = useState(false);
+
+  const typedDestination = destinationText.trim();
+  const hasTypedDestination = typedDestination.length > 0;
 
   /** Avec un raccourci de durée, le retour est calculé depuis la date de départ. */
   const effectiveRetour = duree > 0 ? addDaysIso(depart, duree) : retour;
 
-  function submit(event: React.FormEvent) {
-    event.preventDefault();
-    if (!destination) {
-      navigate({
-        to: "/mode-budget",
-        search: { origin, budget: budget ? Number(budget) : 400, month: "" },
-      });
-      return;
-    }
+  function goToResults(code: string) {
     navigate({
       to: "/recherche",
       search: {
         origin,
-        destination,
+        destination: code,
         depart,
         retour: effectiveRetour,
         duree,
@@ -86,10 +86,51 @@ export function SearchForm({
     });
   }
 
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    setDestinationError(null);
+
+    if (destination) {
+      goToResults(destination);
+      return;
+    }
+
+    // Saisie libre non validée par un clic : on tente de la résoudre en code IATA.
+    if (hasTypedDestination) {
+      setResolving(true);
+      try {
+        const result = await resolvePlace({ data: { term: typedDestination } });
+        if (result.place) {
+          setDestination(result.place.code);
+          setDestinationText(`${result.place.city || result.place.name} (${result.place.code})`);
+          goToResults(result.place.code);
+          return;
+        }
+        setDestinationError(
+          result.error ??
+            "Destination introuvable : sélectionnez une destination dans la liste ou laissez le champ vide pour le mode budget.",
+        );
+      } catch {
+        setDestinationError(
+          "Impossible de vérifier cette destination pour le moment. Réessayez dans un instant.",
+        );
+      } finally {
+        setResolving(false);
+      }
+      return;
+    }
+
+    navigate({
+      to: "/mode-budget",
+      search: { origin, budget: budget ? Number(budget) : 400, month: "" },
+    });
+  }
+
+
 
   return (
     <form
-      onSubmit={submit}
+      onSubmit={(event) => void submit(event)}
       className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5"
       aria-label="Recherche de vols"
     >
@@ -106,7 +147,15 @@ export function SearchForm({
           id="destination"
           label="Destination (facultatif — laissez vide pour le mode budget)"
           value={destination}
-          onChange={setDestination}
+          onChange={(code) => {
+            setDestination(code);
+            if (code) setDestinationError(null);
+          }}
+          onTextChange={(value) => {
+            setDestinationText(value);
+            setDestinationError(null);
+          }}
+          error={destinationError}
           placeholder="Peu importe — mode budget"
           allowEmpty
         />
@@ -202,9 +251,13 @@ export function SearchForm({
       </fieldset>
 
 
-      <Button type="submit" size="lg" className="mt-5 w-full sm:w-auto">
+      <Button type="submit" size="lg" className="mt-5 w-full sm:w-auto" disabled={resolving}>
         <Search className="size-4" aria-hidden />
-        {destination ? "Comparer les vols" : "Voir où partir avec mon budget"}
+        {resolving
+          ? "Vérification de la destination…"
+          : destination || hasTypedDestination
+            ? "Chercher le meilleur prix"
+            : "Voir où partir avec mon budget"}
       </Button>
       <p className="mt-3 text-xs text-muted-foreground">
         Prix total taxes incluses, vendeur affiché sur chaque résultat. Aucun compte
