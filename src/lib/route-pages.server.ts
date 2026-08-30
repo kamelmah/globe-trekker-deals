@@ -191,9 +191,9 @@ function frenchMonth(iso: string | null): string | null {
 export async function buildDynamicRoutePage(slug: string): Promise<DestinationRoute | null> {
   const pair = await resolveRouteSlug(slug);
   if (!pair) return null;
-  const { origin, destination } = pair;
+  const { origin, destination, cached } = pair;
 
-  const observed = await readObservedPrice(origin.code, destination.code);
+  const observed = await readObservedPrice(origin.code, destination.code, cached);
   const km = distanceKm(origin, destination);
   const priceLabel = observed ? `${observed.priceEur} €` : null;
   const observedMonth = frenchMonth(observed?.departureAt ?? null);
