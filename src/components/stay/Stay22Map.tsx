@@ -74,6 +74,7 @@ export function Stay22Map({
             src={src}
             title={title}
             loading="lazy"
+            allow="popups; popups-to-escape-sandbox"
             referrerPolicy="no-referrer-when-downgrade"
             className="h-[420px] w-full border-0 sm:h-[520px]"
           />
