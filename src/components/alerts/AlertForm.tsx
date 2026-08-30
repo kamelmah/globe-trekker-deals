@@ -91,6 +91,21 @@ export function AlertForm({
           {pending ? "Enregistrement…" : "Me prévenir"}
         </Button>
       </div>
+      {feedback && (
+        <p
+          role="status"
+          aria-live="polite"
+          className={
+            feedback.ok
+              ? "mt-3 rounded-md border border-primary/40 bg-primary/10 p-3 text-sm text-foreground"
+              : "mt-3 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+          }
+        >
+          {feedback.ok ? "✅ " : "⚠️ "}
+          {feedback.message}
+        </p>
+      )}
     </form>
+
   );
 }
