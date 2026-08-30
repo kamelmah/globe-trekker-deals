@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { routeSlug } from "@/lib/slug";
 import { getAirport } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { cheapestDestinations } from "@/lib/flights.functions";
