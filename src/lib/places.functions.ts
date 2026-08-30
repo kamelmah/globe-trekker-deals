@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { PlacesError, fetchPlaces, type Place } from "@/lib/places.server";
+import { PlacesError, fetchPlaces, resolveBestPlace, type Place } from "@/lib/places.server";
 
 export type PlacesResult = { places: Place[]; error: string | null };
 
