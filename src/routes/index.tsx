@@ -146,7 +146,19 @@ function HomePage() {
             </div>
           </div>
 
-          <SearchForm />
+          <SearchForm
+            initialOrigin={prefill.origin || "PAR"}
+            initialDestination={prefill.destination ?? ""}
+            {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
+            initialRetour={prefill.retour ?? ""}
+            initialBudget={prefill.budget ? String(prefill.budget) : ""}
+            initialFlexible={prefill.flexible ?? true}
+            initialPassengers={{
+              adults: prefill.adultes ?? 1,
+              children: prefill.enfants ?? 0,
+              infants: Math.min(prefill.bebes ?? 0, prefill.adultes ?? 1),
+            }}
+          />
         </div>
       </section>
 
