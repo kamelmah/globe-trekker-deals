@@ -251,7 +251,17 @@ type ApiOffer = {
   transfers?: number;
   gate?: string;
   link?: string;
+  found_at?: string;
 };
+
+/** Date de relevé du prix renvoyée par l'API, sinon l'instant de l'appel. */
+function normalizeFoundAt(foundAt?: string): string {
+  if (foundAt) {
+    const d = new Date(foundAt);
+    if (!Number.isNaN(d.getTime())) return d.toISOString();
+  }
+  return new Date().toISOString();
+}
 
 function offersFromApi(
   list: ApiOffer[],
@@ -279,6 +289,7 @@ function offersFromApi(
         cabinBag: true,
         checkedBag: false,
         co2Kg: estimateCo2Kg(offer.origin, offer.destination, stops),
+        observedAt: normalizeFoundAt(offer.found_at),
         bookingUrl: bookingUrlFromApiLink(offer.link as string, marker, passengers),
       } satisfies FlightOffer;
     })

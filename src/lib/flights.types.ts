@@ -16,6 +16,8 @@ export type FlightOffer = {
   cabinBag: boolean;
   checkedBag: boolean;
   co2Kg: number;
+  /** Date ISO à laquelle ce prix a été relevé par le fournisseur. */
+  observedAt: string;
   /** Lien de réservation exact renvoyé par l'API, avec le marker d'affiliation. */
   bookingUrl: string;
 };
