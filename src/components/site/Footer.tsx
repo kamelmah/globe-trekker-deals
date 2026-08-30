@@ -28,7 +28,7 @@ export function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             {DESTINATIONS.slice(0, 6).map((d) => (
               <li key={d.slug}>
-                <Link to="/vols-pas-chers/$slug" params={{ slug: d.slug }} className={linkClass}>
+                <Link to="/vols/$slug" params={{ slug: d.slug }} className={linkClass}>
                   {d.originCity} — {d.destinationCity}
                 </Link>
               </li>

@@ -117,7 +117,7 @@ function PostPage() {
           {DESTINATIONS.slice(0, 4).map((d) => (
             <li key={d.slug}>
               <Link
-                to="/vols-pas-chers/$slug"
+                to="/vols/$slug"
                 params={{ slug: d.slug }}
                 className="hover:text-foreground"
               >

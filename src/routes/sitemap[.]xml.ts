@@ -25,7 +25,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { loc: "/confidentialite", priority: "0.2", changefreq: "yearly" },
           { loc: "/cookies", priority: "0.2", changefreq: "yearly" },
           ...DESTINATIONS.map((d) => ({
-            loc: `/vols-pas-chers/${d.slug}`,
+            loc: `/vols/${d.slug}`,
             priority: "0.9",
             changefreq: "daily",
           })),
