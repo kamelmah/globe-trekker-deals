@@ -345,8 +345,11 @@ export async function fetchCalendarPrices(params: {
   destination: string;
   /** Mois au format YYYY-MM. */
   month: string;
+  /** Nombre de nuits du séjour recherché (0 = aller simple). */
+  tripDuration?: number;
   currency?: string;
 }): Promise<{ days: CalendarDayPrice[]; raw: RawApiCall }> {
+  const nights = Math.max(0, Math.round(params.tripDuration ?? 0));
   const { data, raw } = await callApi<{ data?: Record<string, ApiOffer> | ApiOffer[] }>(
     "/aviasales/v3/grouped_prices",
     {
@@ -354,7 +357,7 @@ export async function fetchCalendarPrices(params: {
       destination: params.destination,
       departure_at: params.month,
       group_by: "departure_at",
-      one_way: "true",
+      one_way: nights > 0 ? "false" : "true",
     },
     params.currency,
   );
@@ -364,6 +367,15 @@ export async function fetchCalendarPrices(params: {
   for (const offer of entries) {
     const day = offer?.departure_at?.slice(0, 10);
     if (!day) continue;
+    if (nights > 0) {
+      // Seuls les allers-retours de la durée demandée (± 1 nuit) sont retenus.
+      const back = offer.return_at?.slice(0, 10);
+      if (!back) continue;
+      const actual = Math.round(
+        (Date.parse(`${back}T00:00:00Z`) - Date.parse(`${day}T00:00:00Z`)) / 86400000,
+      );
+      if (Math.abs(actual - nights) > 1) continue;
+    }
     const price = Math.round(offer.price);
     if (!map.has(day) || price < map.get(day)!) map.set(day, price);
   }
@@ -374,6 +386,7 @@ export async function fetchCalendarPrices(params: {
 
   return { days, raw };
 }
+
 
 /* -------------------------------------------------------------------------- */
 /* Historique réel observé (table price_history)                               */
