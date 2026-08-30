@@ -56,6 +56,13 @@ export function SearchForm({
   );
 
   const [budget, setBudget] = useState(initialBudget);
+  /** Texte brut du champ destination (saisie libre sans clic sur une suggestion). */
+  const [destinationText, setDestinationText] = useState(initialDestination);
+  const [destinationError, setDestinationError] = useState<string | null>(null);
+  const [resolving, setResolving] = useState(false);
+
+  const typedDestination = destinationText.trim();
+  const hasTypedDestination = typedDestination.length > 0;
 
   /** Avec un raccourci de durée, le retour est calculé depuis la date de départ. */
   const effectiveRetour = duree > 0 ? addDaysIso(depart, duree) : retour;
