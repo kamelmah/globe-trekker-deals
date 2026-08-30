@@ -155,11 +155,14 @@ function SearchResultsPage() {
         Départ le {search.depart}
         {search["retour"] ? `, retour le ${search.retour}` : " (aller simple)"}
         {search["flexible"] === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des prix
-        totaux, taxes incluses pour {search["adultes"]} adulte{search["adultes"] > 1 ? "s" : ""}
-        {search["enfants"] > 0
-          ? ` et ${search["enfants"]} enfant${search["enfants"] > 1 ? "s" : ""}`
-          : ""}
+        totaux, taxes incluses pour{" "}
+        {passengersSummary({
+          adults: search["adultes"],
+          children: search["enfants"],
+          infants: search["bebes"],
+        })}
         .
+
       </p>
 
       <p className="mt-4 inline-flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
