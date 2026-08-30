@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
+import { Route as RechercheRouteImport } from './routes/recherche'
+import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModeBudgetRoute = ModeBudgetRouteImport.update({
+  id: '/mode-budget',
+  path: '/mode-budget',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RechercheRoute = RechercheRouteImport.update({
+  id: '/recherche',
+  path: '/recherche',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VolsPasChersSlugRoute = VolsPasChersSlugRouteImport.update({
+  id: '/vols-pas-chers/$slug',
+  path: '/vols-pas-chers/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/mode-budget': typeof ModeBudgetRoute
+  '/recherche': typeof RechercheRoute
+  '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/mode-budget': typeof ModeBudgetRoute
+  '/recherche': typeof RechercheRoute
+  '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/mode-budget': typeof ModeBudgetRoute
+  '/recherche': typeof RechercheRoute
+  '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/mode-budget' | '/recherche' | '/vols-pas-chers/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/mode-budget' | '/recherche' | '/vols-pas-chers/$slug'
+  id: '__root__' | '/' | '/mode-budget' | '/recherche' | '/vols-pas-chers/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ModeBudgetRoute: typeof ModeBudgetRoute
+  RechercheRoute: typeof RechercheRoute
+  VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mode-budget': {
+      id: '/mode-budget'
+      path: '/mode-budget'
+      fullPath: '/mode-budget'
+      preLoaderRoute: typeof ModeBudgetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recherche': {
+      id: '/recherche'
+      path: '/recherche'
+      fullPath: '/recherche'
+      preLoaderRoute: typeof RechercheRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vols-pas-chers/$slug': {
+      id: '/vols-pas-chers/$slug'
+      path: '/vols-pas-chers/$slug'
+      fullPath: '/vols-pas-chers/$slug'
+      preLoaderRoute: typeof VolsPasChersSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ModeBudgetRoute: ModeBudgetRoute,
+  RechercheRoute: RechercheRoute,
+  VolsPasChersSlugRoute: VolsPasChersSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
