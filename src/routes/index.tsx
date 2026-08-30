@@ -5,18 +5,23 @@ import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { DESTINATIONS } from "@/data/destinations";
 import { cheapestDestinations } from "@/lib/flights.functions";
+import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
-
-const HOME_CODES = [
-  "RAK", "LIS", "BCN", "IST", "ROM", "ATH", "MAD", "PRG", "BUD", "OPO", "CMN", "NYC",
-];
-
-const TITLE = "TrouveMonVol — comparateur de vols transparent, prix total et vendeur affiché";
-const DESCRIPTION =
-  "Comparez les vols au prix total taxes incluses, avec le nom du vendeur réel sur chaque résultat. Recherche par budget, dates flexibles ± 3 jours, alertes prix gratuites.";
+...
+type HomeSearch = {
+  origin?: string;
+  destination?: string;
+  depart?: string;
+  retour?: string;
+  budget?: number;
+  flexible?: boolean;
+  adultes?: number;
+  enfants?: number;
+  bebes?: number;
+};
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): HomeSearch => {
     const clamp = (v: unknown, min: number, max: number, fallback: number) => {
       const n = Math.round(numberOr(v, fallback));
       return Math.min(max, Math.max(min, n));
