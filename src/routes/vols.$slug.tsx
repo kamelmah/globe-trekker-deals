@@ -9,6 +9,7 @@ import { getDestination } from "@/data/destinations";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
+import { getCityGuideForRoute } from "@/data/city-guides";
 import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
 import { SITE_URL, destinationOgImage } from "@/lib/site";
@@ -167,6 +168,7 @@ export const Route = createFileRoute("/vols/$slug")({
 function DestinationPage() {
   const { route, months, lowestObserved, related } = Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity);
+  const guide = getCityGuideForRoute(route.slug);
 
   return (
     <article className="container-page py-10">
