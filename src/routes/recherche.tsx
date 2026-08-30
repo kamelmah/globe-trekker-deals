@@ -103,6 +103,7 @@ function SearchResultsPage() {
       search["adultes"],
       search["enfants"],
       search["bebes"],
+      search["duree"],
       currency,
     ],
     queryFn: () =>
@@ -112,6 +113,7 @@ function SearchResultsPage() {
           destination: search["destination"],
           departureAt: search["depart"],
           returnAt: search["retour"] || null,
+          tripDuration: search["duree"],
           flexible: search["flexible"] === 1,
           adults: search["adultes"],
           children: search["enfants"],
@@ -123,10 +125,23 @@ function SearchResultsPage() {
   });
 
   const calendarQuery = useQuery({
-    queryKey: ["calendar", search["origin"], search["destination"], month, currency],
+    queryKey: [
+      "calendar",
+      search["origin"],
+      search["destination"],
+      month,
+      search["duree"],
+      currency,
+    ],
     queryFn: () =>
       runCalendar({
-        data: { origin: search["origin"], destination: search["destination"], month, currency },
+        data: {
+          origin: search["origin"],
+          destination: search["destination"],
+          month,
+          tripDuration: search["duree"],
+          currency,
+        },
       }),
     enabled: search["vue"] === "calendrier",
   });
@@ -162,6 +177,7 @@ function SearchResultsPage() {
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
         Départ le {search.depart}
         {search["retour"] ? `, retour le ${search.retour}` : " (aller simple)"}
+        {search["duree"] > 0 ? ` · ${tripDurationLabel(search.duree)} (${search.duree} nuits)` : ""}
         {search["flexible"] === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des prix
         totaux, taxes incluses pour{" "}
         {passengersSummary({
@@ -183,6 +199,15 @@ function SearchResultsPage() {
           <SearchForm
             initialOrigin={search.origin}
             initialDestination={search.destination}
+            initialDepart={search.depart}
+            initialRetour={search.retour}
+            initialFlexible={search.flexible === 1}
+            initialDuree={search.duree}
+            initialPassengers={{
+              adults: search.adultes,
+              children: search.enfants,
+              infants: search.bebes,
+            }}
             compact
           />
 
@@ -289,6 +314,7 @@ function SearchResultsPage() {
             <div className="mt-5 rounded-xl border border-border bg-card p-5">
               <h2 className="font-display text-base font-semibold">
                 Prix les plus bas jour par jour ({month})
+                {search["duree"] > 0 ? ` — aller-retour ${search.duree} nuits` : " — aller simple"}
               </h2>
               <p className="mt-1 mb-4 text-sm text-muted-foreground">
                 Cliquez sur un jour pour relancer la recherche à cette date.
