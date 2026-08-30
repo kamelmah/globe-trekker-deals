@@ -152,15 +152,26 @@ export function PlaceAutocomplete({
         aria-autocomplete="list"
         placeholder={placeholder}
         value={text}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => {
           setText(event.target.value);
+          onTextChange?.(event.target.value);
           setActive(0);
           setOpen(true);
           if (allowEmpty && event.target.value.trim() === "") onChange("");
         }}
         onFocus={() => setOpen(true)}
+        onBlur={() => void resolveTyped()}
         onKeyDown={onKeyDown}
       />
+
+      {error && (
+        <p id={`${id}-error`} className="mt-1.5 text-xs text-destructive" role="alert">
+          {error}
+        </p>
+      )}
+
 
       {open && enabled && (
         <div
