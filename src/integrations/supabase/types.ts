@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      ops_logs: {
+        Row: {
+          context: Json
+          created_at: string
+          duration_ms: number | null
+          id: string
+          kind: string
+          label: string
+          message: string | null
+          ok: boolean
+          result_count: number | null
+          status: number | null
+        }
+        Insert: {
+          context?: Json
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          kind: string
+          label: string
+          message?: string | null
+          ok?: boolean
+          result_count?: number | null
+          status?: number | null
+        }
+        Update: {
+          context?: Json
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          kind?: string
+          label?: string
+          message?: string | null
+          ok?: boolean
+          result_count?: number | null
+          status?: number | null
+        }
+        Relationships: []
+      }
       price_alerts: {
         Row: {
           active: boolean

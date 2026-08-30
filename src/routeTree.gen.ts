@@ -21,6 +21,7 @@ import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapPagesDotxmlRouteImport } from './routes/sitemap-pages[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AdminJournalRouteImport } from './routes/admin.journal'
 import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
 import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
@@ -89,6 +90,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminJournalRoute = AdminJournalRouteImport.update({
+  id: '/admin/journal',
+  path: '/admin/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AlertesDesinscriptionRoute = AlertesDesinscriptionRouteImport.update({
   id: '/alertes/desinscription',
   path: '/alertes/desinscription',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap-pages.xml'
     | '/sitemap.xml'
+    | '/admin/journal'
     | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/sitemap-vols/$page.xml'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap-pages.xml'
     | '/sitemap.xml'
+    | '/admin/journal'
     | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/sitemap-vols/$page.xml'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap-pages.xml'
     | '/sitemap.xml'
+    | '/admin/journal'
     | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/sitemap-vols/$page.xml'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapPagesDotxmlRoute: typeof SitemapPagesDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AdminJournalRoute: typeof AdminJournalRoute
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
   SitemapVolsPageDotxmlRoute: typeof SitemapVolsPageDotxmlRoute
@@ -364,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/journal': {
+      id: '/admin/journal'
+      path: '/admin/journal'
+      fullPath: '/admin/journal'
+      preLoaderRoute: typeof AdminJournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/alertes/desinscription': {
       id: '/alertes/desinscription'
       path: '/alertes/desinscription'
@@ -429,6 +449,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapPagesDotxmlRoute: SitemapPagesDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AdminJournalRoute: AdminJournalRoute,
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
   SitemapVolsPageDotxmlRoute: SitemapVolsPageDotxmlRoute,

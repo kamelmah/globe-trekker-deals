@@ -1,4 +1,5 @@
 import { AIRPORTS, getAirport } from "@/data/airports";
+import { logOps } from "@/lib/ops-log.server";
 import { estimateCo2Kg } from "@/lib/co2";
 import type {
   CalendarDayPrice,
@@ -167,13 +168,21 @@ async function callApi<T>(
     currency: currency.toLowerCase(),
     token: creds.token,
   });
+  const startedAt = Date.now();
   let res: Response;
   try {
     res = await fetch(`${API_BASE}${path}?${search.toString()}`, {
       headers: { Accept: "application/json" },
     });
   } catch (error) {
-    console.error("Appel Travelpayouts en échec réseau", error);
+    logOps({
+      kind: "travelpayouts",
+      label: path,
+      ok: false,
+      durationMs: Date.now() - startedAt,
+      message: error instanceof Error ? error.message : "échec réseau",
+      context: params,
+    });
     throw new TravelpayoutsError("Le service de prix est momentanément injoignable.");
   }
 
@@ -190,14 +199,43 @@ async function callApi<T>(
   const raw: RawApiCall = { endpoint: path, params, status: res.status, body };
 
   if (!res.ok) {
-    console.error(`Travelpayouts ${path} a répondu ${res.status}: ${text.slice(0, 500)}`);
+    logOps({
+      kind: "travelpayouts",
+      label: path,
+      ok: false,
+      status: res.status,
+      durationMs: Date.now() - startedAt,
+      message: text.slice(0, 300),
+      context: params,
+    });
     throw new TravelpayoutsError(
       "Impossible de charger les prix pour le moment, réessayez plus tard.",
     );
   }
 
 
+  logOps({
+    kind: "travelpayouts",
+    label: path,
+    ok: true,
+    status: res.status,
+    resultCount: countResults(parsed),
+    durationMs: Date.now() - startedAt,
+    context: params,
+  });
+
   return { data: parsed as T, raw };
+}
+
+/** Nombre d'éléments réellement renvoyés par l'API, quand la forme est connue. */
+function countResults(parsed: unknown): number | null {
+  if (Array.isArray(parsed)) return parsed.length;
+  if (parsed && typeof parsed === "object" && "data" in parsed) {
+    const value = (parsed as { data?: unknown }).data;
+    if (Array.isArray(value)) return value.length;
+    if (value && typeof value === "object") return Object.keys(value).length;
+  }
+  return null;
 }
 
 type ApiOffer = {
@@ -314,6 +352,23 @@ export async function fetchOffers(params: {
   }
 
   const offers = offersFromApi(list, creds?.marker ?? "", { adults, children, infants });
+  logOps({
+    kind: "travelpayouts",
+    label: `recherche ${params.origin}-${params.destination}`,
+    ok: true,
+    resultCount: offers.length,
+    ...(offers.length === 0
+      ? { message: "aucune offre réelle disponible pour cette date" }
+      : {}),
+    context: {
+      origin: params.origin,
+      destination: params.destination,
+      departureAt: params.departureAt.slice(0, 10),
+      returnAt: params.returnAt ?? null,
+      currency: (params.currency ?? "eur").toLowerCase(),
+      passengers: { adults, children, infants },
+    },
+  });
   if ((params.currency ?? "eur").toLowerCase() === "eur") {
     void recordHistory(params.origin, params.destination, offers);
   }
