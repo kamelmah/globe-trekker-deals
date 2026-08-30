@@ -353,3 +353,39 @@ export async function listWorldRouteSlugs(limit = 400): Promise<string[]> {
     return [];
   }
 }
+
+export type RelatedRoute = {
+  slug: string;
+  city: string;
+  country: string;
+  priceEur: number | null;
+};
+
+/**
+ * Autres destinations SSR disponibles depuis la même ville de départ, pour
+ * renforcer le maillage interne des pages /vols/<origine>-<destination>.
+ * Uniquement issues des prix déjà relevés : aucun appel API, aucun prix inventé.
+ */
+export async function listRelatedRoutes(params: {
+  origin: string;
+  originCity: string;
+  exclude?: string;
+  limit?: number;
+}): Promise<RelatedRoute[]> {
+  const limit = params.limit ?? 12;
+  const entries = await readWorldCache(params.origin.toUpperCase());
+  const best = new Map<string, RelatedRoute>();
+  for (const entry of entries) {
+    if (entry.destination === params.exclude?.toUpperCase()) continue;
+    const slug = routeSlug(params.originCity, entry.city);
+    if (!slug.includes("-")) continue;
+    const priceEur = Math.round(Number(entry.priceEur));
+    const current = best.get(slug);
+    if (!current || (current.priceEur !== null && priceEur < current.priceEur)) {
+      best.set(slug, { slug, city: entry.city, country: entry.country, priceEur });
+    }
+  }
+  return [...best.values()]
+    .sort((a, b) => (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity))
+    .slice(0, limit);
+}
