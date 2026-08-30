@@ -61,18 +61,26 @@ type CachedEntry = {
   departureAt?: string;
 };
 
-/** Relit le balayage mondial déjà en cache pour une origine (aucun appel API). */
+/**
+ * Relit le balayage mondial déjà en cache pour une origine (aucun appel API).
+ * Les lignes périmées sont conservées comme fallback SEO ; une revalidation en
+ * arrière-plan est déclenchée pour rafraîchir les prix.
+ */
 async function readWorldCache(origin: string): Promise<CachedEntry[]> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
       .from("price_cache")
-      .select("payload,expires_at")
+      .select("cache_key,payload,expires_at")
       .like("cache_key", `world-destinations:${origin}:%`)
       .order("expires_at", { ascending: false })
       .limit(4);
     const entries: CachedEntry[] = [];
+    let allStale = (data?.length ?? 0) > 0;
+    let freshestKey: string | null = null;
     for (const row of data ?? []) {
+      if (Date.parse(row.expires_at) >= Date.now()) allStale = false;
+      freshestKey ??= row.cache_key;
       const prices = (row.payload as { prices?: unknown } | null)?.prices;
       if (!Array.isArray(prices)) continue;
       for (const entry of prices as CachedEntry[]) {
@@ -81,12 +89,36 @@ async function readWorldCache(origin: string): Promise<CachedEntry[]> {
         }
       }
     }
+    if (allStale && freshestKey) void revalidateWorldCache(origin, freshestKey);
     return entries;
   } catch (error) {
     console.error("Lecture du cache des destinations impossible", error);
     return [];
   }
 }
+
+const revalidating = new Set<string>();
+
+/** Relance le balayage mondial quand le cache 6 h a expiré (sans bloquer la page). */
+async function revalidateWorldCache(origin: string, cacheKey: string): Promise<void> {
+  if (revalidating.has(cacheKey)) return;
+  revalidating.add(cacheKey);
+  try {
+    const month = cacheKey.split(":")[2];
+    const { fetchCheapestDestinations } = await import("@/lib/travelpayouts.server");
+    await fetchCheapestDestinations({
+      origin,
+      world: true,
+      forceRefresh: true,
+      ...(month && month !== "any" ? { month } : {}),
+    });
+  } catch (error) {
+    console.error("Revalidation des destinations impossible", error);
+  } finally {
+    revalidating.delete(cacheKey);
+  }
+}
+
 
 /** Découpe "paris-new-york" en (origine, destination) en testant chaque césure. */
 export async function resolveRouteSlug(slug: string): Promise<{
@@ -320,4 +352,40 @@ export async function listWorldRouteSlugs(limit = 400): Promise<string[]> {
     console.error("Liste des trajets pour le sitemap indisponible", error);
     return [];
   }
+}
+
+export type RelatedRoute = {
+  slug: string;
+  city: string;
+  country: string;
+  priceEur: number | null;
+};
+
+/**
+ * Autres destinations SSR disponibles depuis la même ville de départ, pour
+ * renforcer le maillage interne des pages /vols/<origine>-<destination>.
+ * Uniquement issues des prix déjà relevés : aucun appel API, aucun prix inventé.
+ */
+export async function listRelatedRoutes(params: {
+  origin: string;
+  originCity: string;
+  exclude?: string | undefined;
+  limit?: number | undefined;
+}): Promise<RelatedRoute[]> {
+  const limit = params.limit ?? 12;
+  const entries = await readWorldCache(params.origin.toUpperCase());
+  const best = new Map<string, RelatedRoute>();
+  for (const entry of entries) {
+    if (entry.destination === params.exclude?.toUpperCase()) continue;
+    const slug = routeSlug(params.originCity, entry.city);
+    if (!slug.includes("-")) continue;
+    const priceEur = Math.round(Number(entry.priceEur));
+    const current = best.get(slug);
+    if (!current || (current.priceEur !== null && priceEur < current.priceEur)) {
+      best.set(slug, { slug, city: entry.city, country: entry.country, priceEur });
+    }
+  }
+  return [...best.values()]
+    .sort((a, b) => (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity))
+    .slice(0, limit);
 }

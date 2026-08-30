@@ -19,10 +19,12 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapPagesDotxmlRouteImport } from './routes/sitemap-pages[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
 import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
+import { Route as SitemapVolsPageDotxmlRouteImport } from './routes/sitemap-vols.$page[.]xml'
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
 import { Route as VolsSlugRouteImport } from './routes/vols.$slug'
 import { Route as ApiPublicVerifierAlertesRouteImport } from './routes/api/public/verifier-alertes'
@@ -77,6 +79,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapPagesDotxmlRoute = SitemapPagesDotxmlRouteImport.update({
+  id: '/sitemap-pages.xml',
+  path: '/sitemap-pages.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -95,6 +102,11 @@ const ConseilsIndexRoute = ConseilsIndexRouteImport.update({
 const ConseilsSlugRoute = ConseilsSlugRouteImport.update({
   id: '/conseils/$slug',
   path: '/conseils/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapVolsPageDotxmlRoute = SitemapVolsPageDotxmlRouteImport.update({
+  id: '/sitemap-vols/$page.xml',
+  path: '/sitemap-vols/$page.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VolsPasChersSlugRoute = VolsPasChersSlugRouteImport.update({
@@ -125,9 +137,11 @@ export interface FileRoutesByFullPath {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
+  '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/conseils/': typeof ConseilsIndexRoute
@@ -144,9 +158,11 @@ export interface FileRoutesByTo {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
+  '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/conseils': typeof ConseilsIndexRoute
@@ -164,9 +180,11 @@ export interface FileRoutesById {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
+  '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/conseils/': typeof ConseilsIndexRoute
@@ -185,9 +203,11 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
+    | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/alertes/desinscription'
     | '/conseils/$slug'
+    | '/sitemap-vols/$page.xml'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/conseils/'
@@ -204,9 +224,11 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
+    | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/alertes/desinscription'
     | '/conseils/$slug'
+    | '/sitemap-vols/$page.xml'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/conseils'
@@ -223,9 +245,11 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
+    | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/alertes/desinscription'
     | '/conseils/$slug'
+    | '/sitemap-vols/$page.xml'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/conseils/'
@@ -243,9 +267,11 @@ export interface RootRouteChildren {
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapPagesDotxmlRoute: typeof SitemapPagesDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
+  SitemapVolsPageDotxmlRoute: typeof SitemapVolsPageDotxmlRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
   VolsSlugRoute: typeof VolsSlugRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
@@ -324,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap-pages.xml': {
+      id: '/sitemap-pages.xml'
+      path: '/sitemap-pages.xml'
+      fullPath: '/sitemap-pages.xml'
+      preLoaderRoute: typeof SitemapPagesDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -350,6 +383,13 @@ declare module '@tanstack/react-router' {
       path: '/conseils/$slug'
       fullPath: '/conseils/$slug'
       preLoaderRoute: typeof ConseilsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-vols/$page.xml': {
+      id: '/sitemap-vols/$page.xml'
+      path: '/sitemap-vols/$page.xml'
+      fullPath: '/sitemap-vols/$page.xml'
+      preLoaderRoute: typeof SitemapVolsPageDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vols-pas-chers/$slug': {
@@ -387,9 +427,11 @@ const rootRouteChildren: RootRouteChildren = {
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapPagesDotxmlRoute: SitemapPagesDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
+  SitemapVolsPageDotxmlRoute: SitemapVolsPageDotxmlRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
   VolsSlugRoute: VolsSlugRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,

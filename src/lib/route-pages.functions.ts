@@ -8,3 +8,19 @@ export const dynamicRoutePage = createServerFn({ method: "GET" })
     const route = await buildDynamicRoutePage(data.slug);
     return { route };
   });
+
+export const relatedRoutePages = createServerFn({ method: "GET" })
+  .inputValidator((data) =>
+    z
+      .object({
+        origin: z.string().trim().min(3).max(3),
+        originCity: z.string().trim().min(1).max(80),
+        exclude: z.string().trim().max(3).optional(),
+        limit: z.number().int().min(1).max(24).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { listRelatedRoutes } = await import("@/lib/route-pages.server");
+    return { related: await listRelatedRoutes(data) };
+  });
