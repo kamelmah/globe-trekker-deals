@@ -83,13 +83,13 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          <Button onClick={onCtaClick} className="ml-2 gap-1.5 shadow-sm">
-            <Plane className="size-4" aria-hidden />
-            Trouve mon vol
-          </Button>
-          <Button variant="outline" onClick={onStayClick} className="ml-1 gap-1.5">
+          <Button variant="outline" onClick={onStayClick} className="ml-2 gap-1.5">
             <BedDouble className="size-4" aria-hidden />
             Trouver un hébergement
+          </Button>
+          <Button onClick={onCtaClick} className="ml-1 gap-1.5 shadow-sm">
+            <Plane className="size-4" aria-hidden />
+            Trouve mon vol
           </Button>
 
         </nav>
@@ -123,13 +123,13 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Button onClick={onCtaClick} className="mx-2 mb-2 mt-1 gap-1.5">
-              <Plane className="size-4" aria-hidden />
-              Trouve mon vol
-            </Button>
-            <Button variant="outline" onClick={onStayClick} className="mx-2 mb-2 gap-1.5">
+            <Button variant="outline" onClick={onStayClick} className="mx-2 mb-2 mt-1 gap-1.5">
               <BedDouble className="size-4" aria-hidden />
               Trouver un hébergement
+            </Button>
+            <Button onClick={onCtaClick} className="mx-2 mb-2 gap-1.5">
+              <Plane className="size-4" aria-hidden />
+              Trouve mon vol
             </Button>
 
           </div>
