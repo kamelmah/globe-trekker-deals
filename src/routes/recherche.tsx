@@ -8,6 +8,7 @@ import { AlertForm } from "@/components/alerts/AlertForm";
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { FlightCard } from "@/components/flights/FlightCard";
 import { PriceCalendar } from "@/components/flights/PriceCalendar";
+import { passengersSummary } from "@/components/search/PassengerSelector";
 import { SearchForm } from "@/components/search/SearchForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
