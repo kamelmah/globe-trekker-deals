@@ -2,20 +2,12 @@ import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
-import { AIRPORTS } from "@/data/airports";
+import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-const ORIGIN_CODES = ["PAR", "LYS", "MRS", "BOD", "NCE", "TLS", "NTE", "BRU", "GVA"];
 
 function defaultDate(offsetDays: number): string {
   const d = new Date();
@@ -42,8 +34,6 @@ export function SearchForm({
   const [flexible, setFlexible] = useState(true);
   const [budget, setBudget] = useState("");
 
-  const origins = AIRPORTS.filter((a) => ORIGIN_CODES.includes(a.code));
-  const destinations = AIRPORTS.filter((a) => a.code !== origin);
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -75,38 +65,23 @@ export function SearchForm({
       aria-label="Recherche de vols"
     >
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="origin">Ville de départ</Label>
-          <Select value={origin} onValueChange={setOrigin}>
-            <SelectTrigger id="origin">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {origins.map((a) => (
-                <SelectItem key={a.code} value={a.code}>
-                  {a.city} ({a.code})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <PlaceAutocomplete
+          id="origin"
+          label="Ville ou aéroport de départ"
+          value={origin}
+          onChange={setOrigin}
+          placeholder="Ex. Paris, CDG, Marrakech…"
+        />
 
-        <div className="space-y-1.5">
-          <Label htmlFor="destination">Destination (facultatif)</Label>
-          <Select value={destination || "none"} onValueChange={(v) => setDestination(v === "none" ? "" : v)}>
-            <SelectTrigger id="destination">
-              <SelectValue placeholder="Peu importe — mode budget" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Peu importe — mode budget</SelectItem>
-              {destinations.map((a) => (
-                <SelectItem key={a.code} value={a.code}>
-                  {a.city} ({a.code})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <PlaceAutocomplete
+          id="destination"
+          label="Destination (facultatif — laissez vide pour le mode budget)"
+          value={destination}
+          onChange={setDestination}
+          placeholder="Peu importe — mode budget"
+          allowEmpty
+        />
+
 
         <div className="space-y-1.5">
           <Label htmlFor="depart">Date de départ</Label>

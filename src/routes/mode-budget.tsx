@@ -4,11 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { lazy, Suspense, useState } from "react";
 
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
+import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AIRPORTS, BUDGET_DESTINATION_CODES, getAirport } from "@/data/airports";
+import { BUDGET_DESTINATION_CODES, getAirport } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { currentMonth, iataOr, monthOr, numberOr } from "@/lib/search-params";
@@ -55,7 +56,6 @@ export const Route = createFileRoute("/mode-budget")({
   component: BudgetPage,
 });
 
-const ORIGIN_CODES = ["PAR", "LYS", "MRS", "BOD", "NCE", "TLS", "NTE", "BRU", "GVA"];
 
 function BudgetPage() {
   const search = Route.useSearch();
@@ -83,7 +83,7 @@ function BudgetPage() {
   const originAirport = getAirport(search["origin"]);
   const prices = [...(query.data?.prices ?? [])].sort((a, b) => a.priceEur - b.priceEur);
   const affordable = prices.filter((p) => p.priceEur <= search["budget"]);
-  const origins = AIRPORTS.filter((a) => ORIGIN_CODES.includes(a.code));
+  
 
   return (
     <div>
@@ -108,21 +108,18 @@ function BudgetPage() {
             });
           }}
         >
-          <div className="space-y-1.5 sm:w-56">
-            <Label htmlFor="budget-origin">Ville de départ</Label>
-            <select
+          <div className="sm:w-64">
+            <PlaceAutocomplete
               id="budget-origin"
+              label="Ville ou aéroport de départ"
               value={search.origin}
-              onChange={(e) => navigate({ search: (prev) => ({ ...prev, origin: e.target.value }) })}
-              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-            >
-              {origins.map((a) => (
-                <option key={a.code} value={a.code}>
-                  {a.city} ({a.code})
-                </option>
-              ))}
-            </select>
+              onChange={(code) =>
+                code && navigate({ search: (prev) => ({ ...prev, origin: code }) })
+              }
+              placeholder="Ex. Paris, Lyon, CDG…"
+            />
           </div>
+
           <div className="space-y-1.5 sm:w-48">
             <Label htmlFor="budget-amount">Budget maximum (€)</Label>
             <Input
