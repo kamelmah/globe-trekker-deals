@@ -129,21 +129,25 @@ export const calendarPrices = createServerFn({ method: "GET" })
         month: z.string().regex(/^\d{4}-\d{2}$/),
         tripDuration: z.number().int().min(0).max(30).optional(),
         currency,
+        mode: z.enum(["departure", "return"]).optional(),
+        departureAt: isoDate.nullish(),
       })
       .parse(data),
   )
   .handler(async ({ data }) => {
     try {
-      const { days, raw } = await fetchCalendarPrices({
+      const { days, raw, cached } = await fetchCalendarPrices({
         origin: data.origin,
         destination: data.destination,
         month: data.month,
         tripDuration: data.tripDuration ?? 0,
         currency: data.currency ?? "EUR",
+        mode: data.mode ?? "departure",
+        departureAt: data.departureAt ?? null,
       });
-      return { days, error: null as string | null, debug: debugOf(raw) };
+      return { days, error: null as string | null, debug: debugOf(raw), cached };
     } catch (error) {
-      return { days: [], error: messageOf(error), debug: null };
+      return { days: [], error: messageOf(error), debug: null, cached: false };
     }
   });
 
