@@ -94,6 +94,7 @@ function SearchResultsPage() {
       search.flexible,
       search["adultes"],
       search["enfants"],
+      search["bebes"],
       currency,
     ],
     queryFn: () =>
@@ -106,8 +107,10 @@ function SearchResultsPage() {
           flexible: search["flexible"] === 1,
           adults: search["adultes"],
           children: search["enfants"],
+          infants: search["bebes"],
           currency,
         },
+
       }),
   });
 
