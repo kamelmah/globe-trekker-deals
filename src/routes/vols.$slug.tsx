@@ -9,6 +9,7 @@ import { getDestination } from "@/data/destinations";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
+import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
 import { SITE_URL, destinationOgImage } from "@/lib/site";
 
