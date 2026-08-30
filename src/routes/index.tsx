@@ -5,6 +5,7 @@ import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { DESTINATIONS } from "@/data/destinations";
 import { cheapestDestinations } from "@/lib/flights.functions";
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const HOME_CODES = [
   "RAK", "LIS", "BCN", "IST", "ROM", "ATH", "MAD", "PRG", "BUD", "OPO", "CMN", "NYC",
@@ -27,6 +28,31 @@ export const Route = createFileRoute("/")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
+    ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "TrouveMonVol",
+          url: SITE_URL,
+          inLanguage: "fr-FR",
+          description: DESCRIPTION,
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `${SITE_URL}/recherche?origin=PAR&destination={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }),
+      },
     ],
   }),
   component: HomePage,

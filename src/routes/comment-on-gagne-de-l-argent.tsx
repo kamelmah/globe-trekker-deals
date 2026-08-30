@@ -1,5 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
+
 const TITLE = "Comment on gagne de l'argent — transparence TrouveMonVol";
 const DESCRIPTION =
   "Notre modèle économique en clair : une commission d'affiliation versée par le vendeur du billet, sans surcoût pour vous et sans revente de données.";
@@ -11,7 +13,11 @@ export const Route = createFileRoute("/comment-on-gagne-de-l-argent")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
+      { property: "og:url", content: `${SITE_URL}/comment-on-gagne-de-l-argent` },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/comment-on-gagne-de-l-argent` }],
   }),
   component: MoneyPage,
 });

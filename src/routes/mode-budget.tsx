@@ -12,6 +12,7 @@ import { AIRPORTS, BUDGET_DESTINATION_CODES, getAirport } from "@/data/airports"
 import { useCurrency } from "@/lib/currency-context";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { currentMonth, iataOr, monthOr, numberOr } from "@/lib/search-params";
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const BudgetMap = lazy(() => import("@/components/budget/BudgetMap"));
 
@@ -45,7 +46,11 @@ export const Route = createFileRoute("/mode-budget")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
+      { property: "og:url", content: `${SITE_URL}/mode-budget` },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/mode-budget` }],
   }),
   component: BudgetPage,
 });

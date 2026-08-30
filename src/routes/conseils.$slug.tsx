@@ -2,6 +2,7 @@ import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
 import { DESTINATIONS } from "@/data/destinations";
 import { getPost } from "@/data/posts";
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/conseils/$slug")({
   loader: ({ params }) => {
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/conseils/$slug")({
       };
     }
     const { post } = loaderData;
+    const pageUrl = `${SITE_URL}/conseils/${post.slug}`;
     return {
       meta: [
         { title: post.metaTitle },
@@ -23,6 +25,42 @@ export const Route = createFileRoute("/conseils/$slug")({
         { property: "og:title", content: post.metaTitle },
         { property: "og:description", content: post.description },
         { property: "og:type", content: "article" },
+        { property: "og:url", content: pageUrl },
+        { property: "og:image", content: DEFAULT_OG_IMAGE },
+        { name: "twitter:image", content: DEFAULT_OG_IMAGE },
+      ],
+      links: [{ rel: "canonical", href: pageUrl }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.metaTitle,
+            description: post.description,
+            inLanguage: "fr-FR",
+            mainEntityOfPage: pageUrl,
+            image: DEFAULT_OG_IMAGE,
+            author: { "@type": "Organization", name: "TrouveMonVol", url: SITE_URL },
+            publisher: {
+              "@type": "Organization",
+              name: "TrouveMonVol",
+              logo: { "@type": "ImageObject", url: `${SITE_URL}/icons/icon-512.png` },
+            },
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_URL}/` },
+              { "@type": "ListItem", position: 2, name: "Conseils", item: `${SITE_URL}/conseils` },
+              { "@type": "ListItem", position: 3, name: post.metaTitle, item: pageUrl },
+            ],
+          }),
+        },
       ],
     };
   },

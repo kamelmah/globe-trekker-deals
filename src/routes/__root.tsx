@@ -15,6 +15,7 @@ import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { CurrencyProvider } from "@/lib/currency-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
@@ -82,6 +83,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "author", content: "TrouveMonVol" },
+      { name: "theme-color", content: "#1b6fd0" },
+      { name: "apple-mobile-web-app-title", content: "TrouveMonVol" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "application-name", content: "TrouveMonVol" },
+      { name: "mobile-web-app-capable", content: "yes" },
       { property: "og:site_name", content: "TrouveMonVol" },
       { property: "og:locale", content: "fr_FR" },
       { property: "og:type", content: "website" },
@@ -92,7 +99,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
+      { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/icons/icon-16.png", type: "image/png", sizes: "16x16" },
+      { rel: "icon", href: "/icons/icon-48.png", type: "image/png", sizes: "48x48" },
+      { rel: "icon", href: "/icons/icon-192.png", type: "image/png", sizes: "192x192" },
+      { rel: "icon", href: "/icons/icon-512.png", type: "image/png", sizes: "512x512" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -102,6 +115,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     scripts: [
       { src: "https://emrldtp.com/NTY4Mzc3.js?t=568377", async: true, "data-cmp-ab": "2" },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: SITE_NAME,
+          url: SITE_URL,
+          logo: absoluteUrl("/icons/icon-512.png"),
+          description:
+            "Comparateur de vols transparent : prix total taxes incluses et vendeur réel affiché sur chaque résultat.",
+        }),
+      },
     ],
   }),
 

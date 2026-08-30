@@ -9,6 +9,7 @@ import { getDestination } from "@/data/destinations";
 import { cheapestDestinations, monthlyHistory } from "@/lib/flights.functions";
 import { formatPrice } from "@/lib/currency";
 import { todayPlus } from "@/lib/search-params";
+import { SITE_URL, destinationOgImage } from "@/lib/site";
 
 export const Route = createFileRoute("/vols-pas-chers/$slug")({
   loader: async ({ params }) => {
@@ -34,7 +35,9 @@ export const Route = createFileRoute("/vols-pas-chers/$slug")({
         meta: [{ title: "Destination introuvable | TrouveMonVol" }, { name: "robots", content: "noindex" }],
       };
     }
-    const { route } = loaderData;
+    const { route, lowestPrice } = loaderData;
+    const pageUrl = `${SITE_URL}/vols-pas-chers/${route.slug}`;
+    const ogImage = destinationOgImage(route.slug);
     return {
       meta: [
         { title: route.metaTitle },
@@ -42,18 +45,66 @@ export const Route = createFileRoute("/vols-pas-chers/$slug")({
         { property: "og:title", content: route.metaTitle },
         { property: "og:description", content: route.metaDescription },
         { property: "og:type", content: "article" },
+        { property: "og:url", content: pageUrl },
+        { property: "og:image", content: ogImage },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { property: "og:image:alt", content: `Vols pas chers ${route.originCity} — ${route.destinationCity}` },
+        { name: "twitter:image", content: ogImage },
       ],
+      links: [{ rel: "canonical", href: pageUrl }],
       scripts: [
         {
           type: "application/ld+json",
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
+            name: route.metaTitle,
+            url: pageUrl,
+            inLanguage: "fr-FR",
             mainEntity: route.faq.map((item) => ({
               "@type": "Question",
               name: item.question,
               acceptedAnswer: { "@type": "Answer", text: item.answer },
             })),
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_URL}/` },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: `Vols ${route.originCity} — ${route.destinationCity}`,
+                item: pageUrl,
+              },
+            ],
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: `Vol ${route.originCity} — ${route.destinationCity}`,
+            description: route.metaDescription,
+            image: ogImage,
+            url: pageUrl,
+            ...(lowestPrice
+              ? {
+                  offers: {
+                    "@type": "AggregateOffer",
+                    priceCurrency: "EUR",
+                    lowPrice: lowestPrice,
+                    availability: "https://schema.org/InStock",
+                    url: pageUrl,
+                  },
+                }
+              : {}),
           }),
         },
       ],

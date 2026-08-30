@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { POSTS } from "@/data/posts";
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const TITLE = "Conseils pour payer son billet d'avion moins cher | TrouveMonVol";
 const DESCRIPTION =
@@ -13,6 +14,27 @@ export const Route = createFileRoute("/conseils/")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
+      { property: "og:url", content: `${SITE_URL}/conseils` },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
+    ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/conseils` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: TITLE,
+          url: `${SITE_URL}/conseils`,
+          itemListElement: POSTS.map((post, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            name: post.title,
+            url: `${SITE_URL}/conseils/${post.slug}`,
+          })),
+        }),
+      },
     ],
   }),
   component: BlogIndex,

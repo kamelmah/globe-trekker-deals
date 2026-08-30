@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { FaqAccordion } from "@/components/site/FaqAccordion";
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const TITLE = "Questions fréquentes sur TrouveMonVol | comparateur de vols";
 const DESCRIPTION =
@@ -56,18 +57,36 @@ export const Route = createFileRoute("/faq")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
+      { property: "og:url", content: `${SITE_URL}/faq` },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/faq` }],
     scripts: [
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "FAQPage",
+          name: TITLE,
+          url: `${SITE_URL}/faq`,
+          inLanguage: "fr-FR",
           mainEntity: FAQ.map((item) => ({
             "@type": "Question",
             name: item.question,
             acceptedAnswer: { "@type": "Answer", text: item.answer },
           })),
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_URL}/` },
+            { "@type": "ListItem", position: 2, name: "FAQ", item: `${SITE_URL}/faq` },
+          ],
         }),
       },
     ],
