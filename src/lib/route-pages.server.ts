@@ -7,6 +7,7 @@
  * consommer le quota Travelpayouts avec les robots et ne jamais inventer un prix.
  */
 
+import { AIRPORTS } from "@/data/airports";
 import type { DestinationRoute } from "@/data/destinations";
 import { getCityIndex, type CityRecord } from "@/lib/geo.server";
 import { routeSlug, slugify } from "@/lib/slug";
@@ -18,6 +19,14 @@ let slugIndexPromise: Promise<SlugIndex> | null = null;
 async function buildSlugIndex(): Promise<SlugIndex> {
   const cities = await getCityIndex();
   const index: SlugIndex = new Map();
+  // Les aéroports curés passent d'abord : ils tranchent les homonymes
+  // (Paris, France plutôt que Paris, Texas).
+  for (const airport of AIRPORTS) {
+    const city = cities.get(airport.code.toUpperCase());
+    const slug = slugify(city?.city ?? airport.city);
+    if (!slug || index.has(slug)) continue;
+    index.set(slug, city ?? { code: airport.code, city: airport.city, country: airport.country, lat: airport.lat, lng: airport.lng });
+  }
   for (const city of cities.values()) {
     const slug = slugify(city.city);
     if (!slug) continue;
