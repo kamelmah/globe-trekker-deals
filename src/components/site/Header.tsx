@@ -42,6 +42,21 @@ export function Header() {
     });
   }, [pathname, navigate, focusSearchForm]);
 
+  /**
+   * Si la page courante contient déjà un widget d'hébergement Stay22, on scrolle vers lui.
+   * Sinon on redirige vers la page dédiée /hebergement.
+   */
+  const onStayClick = useCallback(() => {
+    setOpen(false);
+    const section = document.getElementById("hebergement");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    void navigate({ to: "/hebergement" });
+  }, [navigate]);
+
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-3">
