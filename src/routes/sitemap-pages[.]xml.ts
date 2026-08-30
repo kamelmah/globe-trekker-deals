@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DESTINATIONS } from "@/data/destinations";
+import { CITY_GUIDES } from "@/data/city-guides";
 import { POSTS } from "@/data/posts";
 import { urlsetXml, xmlResponse, type SitemapEntry } from "@/lib/sitemap-xml";
 
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/sitemap-pages.xml")({
           { loc: "/", priority: "1.0", changefreq: "daily" },
           { loc: "/mode-budget", priority: "0.9", changefreq: "daily" },
           { loc: "/conseils", priority: "0.7", changefreq: "weekly" },
+          { loc: "/conseils/destinations", priority: "0.7", changefreq: "weekly" },
           { loc: "/faq", priority: "0.6", changefreq: "monthly" },
           { loc: "/mentions-legales", priority: "0.2", changefreq: "yearly" },
           { loc: "/cgu", priority: "0.2", changefreq: "yearly" },
@@ -23,6 +25,11 @@ export const Route = createFileRoute("/sitemap-pages.xml")({
             loc: `/vols/${d.slug}`,
             priority: "0.9",
             changefreq: "daily",
+          })),
+          ...CITY_GUIDES.map((g) => ({
+            loc: `/conseils/destinations/${g.slug}`,
+            priority: "0.7",
+            changefreq: "monthly",
           })),
           ...POSTS.map((p) => ({
             loc: `/conseils/${p.slug}`,

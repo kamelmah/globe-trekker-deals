@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
+import { CITY_GUIDES } from "@/data/city-guides";
 import { POSTS } from "@/data/posts";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
@@ -67,6 +68,34 @@ function BlogIndex() {
           </li>
         ))}
       </ul>
+
+      <section className="mt-12">
+        <h2 className="font-display text-2xl font-semibold">Guides par destination</h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Que faire sur place, quand partir, quel budget prévoir : un guide pratique pour chaque
+          ville desservie sur le site.
+        </p>
+        <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {CITY_GUIDES.map((guide) => (
+            <li key={guide.slug}>
+              <Link
+                to="/conseils/destinations/$city"
+                params={{ city: guide.slug }}
+                className="block rounded-xl border border-border bg-card p-4 text-sm transition-colors hover:bg-secondary"
+              >
+                <span className="block font-medium">Que faire à {guide.city}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{guide.country}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <Link
+          to="/conseils/destinations"
+          className="mt-4 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
+        >
+          Voir tous les guides destinations
+        </Link>
+      </section>
 
       <div className="mt-10 rounded-xl border border-border bg-secondary/40 p-5 text-sm text-muted-foreground">
         Prêt à passer à la pratique ? Testez le{" "}
