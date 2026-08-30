@@ -108,21 +108,18 @@ function BudgetPage() {
             });
           }}
         >
-          <div className="space-y-1.5 sm:w-56">
-            <Label htmlFor="budget-origin">Ville de départ</Label>
-            <select
+          <div className="sm:w-64">
+            <PlaceAutocomplete
               id="budget-origin"
+              label="Ville ou aéroport de départ"
               value={search.origin}
-              onChange={(e) => navigate({ search: (prev) => ({ ...prev, origin: e.target.value }) })}
-              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-            >
-              {origins.map((a) => (
-                <option key={a.code} value={a.code}>
-                  {a.city} ({a.code})
-                </option>
-              ))}
-            </select>
+              onChange={(code) =>
+                code && navigate({ search: (prev) => ({ ...prev, origin: code }) })
+              }
+              placeholder="Ex. Paris, Lyon, CDG…"
+            />
           </div>
+
           <div className="space-y-1.5 sm:w-48">
             <Label htmlFor="budget-amount">Budget maximum (€)</Label>
             <Input
