@@ -236,10 +236,38 @@ function SearchResultsPage() {
             Aucun vol trouvé pour ces dates, essayez d'élargir votre recherche.
           </p>
           <p className="mt-2">
-            Aucune offre n'est actuellement disponible sur {from} — {to} pour ces dates. Essayez
-            d'activer les dates flexibles ± 3 jours, de changer de mois, ou de choisir un autre
-            aéroport de départ.
+            L'API de recherche a bien été interrogée pour le {search["depart"]} sur {from} — {to} :
+            aucune offre n'existe réellement pour cette date. Essayez les dates flexibles ± 3 jours,
+            une autre date, ou un autre aéroport de départ.
           </p>
+          {(offersQuery.data?.alternatives?.length ?? 0) > 0 && (
+            <div className="mt-4">
+              <p className="font-medium text-foreground">
+                Dates réellement disponibles ce mois-ci :
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {offersQuery.data?.alternatives.map((alt) => (
+                  <Button
+                    key={alt.date}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      navigate({
+                        search: (prev) => ({
+                          ...prev,
+                          depart: alt.date,
+                          retour: search["duree"] > 0 ? addDaysIso(alt.date, search["duree"]) : prev["retour"],
+                        }),
+                      })
+                    }
+                  >
+                    {alt.date} · {alt.priceEur} €
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
           <Button
             type="button"
             variant="outline"
@@ -250,6 +278,7 @@ function SearchResultsPage() {
           </Button>
         </div>
       )}
+
 
       {!offersQuery.isPending && offers.length > 0 && filtered.length === 0 && (
         <p className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
