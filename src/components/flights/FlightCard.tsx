@@ -36,7 +36,7 @@ export function FlightCard({
   offer: FlightOffer;
   greenest?: boolean;
 }) {
-  const { format } = useCurrency();
+  const { formatApi: format } = useCurrency();
 
   return (
     <article className="rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">

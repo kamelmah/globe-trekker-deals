@@ -62,13 +62,12 @@ function BudgetPage() {
   const initial = Route.useLoaderData();
   const navigate = useNavigate({ from: Route.fullPath });
   const runDestinations = useServerFn(cheapestDestinations);
-  const { format } = useCurrency();
-  const { currency } = useCurrency();
+  const { formatApi: format, currency } = useCurrency();
   const [selected, setSelected] = useState<string | undefined>(undefined);
   const [budgetInput, setBudgetInput] = useState(String(search["budget"]));
 
   const query = useQuery({
-    queryKey: ["budget", search["origin"], search.month],
+    queryKey: ["budget", search["origin"], search.month, currency],
     queryFn: () =>
       runDestinations({
         data: {

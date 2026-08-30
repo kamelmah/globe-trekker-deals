@@ -23,7 +23,7 @@ export function PriceCalendar({
   onSelect?: (date: string) => void;
   selected?: string;
 }) {
-  const { format } = useCurrency();
+  const { formatApi: format } = useCurrency();
   if (days.length === 0) {
     return <p className="text-sm text-muted-foreground">Aucun prix disponible pour ce mois.</p>;
   }
