@@ -45,13 +45,17 @@ function level(price: number, min: number, max: number): "low" | "mid" | "high" 
   return "high";
 }
 
-export function DepartureDatePicker({
+export function PriceDatePicker({
   value,
   onChange,
   origin,
   destination,
   tripDuration,
   minDate,
+  mode = "departure",
+  departureAt = null,
+  id = "depart",
+  label = "Date de départ",
 }: {
   value: string;
   onChange: (date: string) => void;
@@ -59,18 +63,45 @@ export function DepartureDatePicker({
   destination: string;
   tripDuration: number;
   minDate: string;
+  mode?: "departure" | "return";
+  departureAt?: string | null;
+  id?: string;
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [month, setMonth] = useState(() => monthOf(value));
+  const [month, setMonth] = useState(() => monthOf(value || departureAt || ""));
   const { formatApi: format } = useCurrency();
   const { currency } = useCurrency();
   const runCalendar = useServerFn(calendarPrices);
 
-  const canFetch = open && Boolean(origin) && Boolean(destination);
+  const canFetch =
+    open &&
+    Boolean(origin) &&
+    Boolean(destination) &&
+    (mode === "departure" || Boolean(departureAt));
   const pricesQuery = useQuery({
-    queryKey: ["date-picker-calendar", origin, destination, month, tripDuration, currency],
+    queryKey: [
+      "date-picker-calendar",
+      mode,
+      origin,
+      destination,
+      month,
+      tripDuration,
+      currency,
+      departureAt,
+    ],
     queryFn: () =>
-      runCalendar({ data: { origin, destination, month, tripDuration, currency } }),
+      runCalendar({
+        data: {
+          origin,
+          destination,
+          month,
+          tripDuration: mode === "return" ? 0 : tripDuration,
+          currency,
+          mode,
+          departureAt: mode === "return" ? departureAt : null,
+        },
+      }),
     enabled: canFetch,
   });
 
@@ -85,11 +116,11 @@ export function DepartureDatePicker({
 
   return (
     <div className="space-y-1.5">
-      <Label htmlFor="depart">Date de départ</Label>
+      <Label htmlFor={id}>{label}</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            id="depart"
+            id={id}
             type="button"
             variant="outline"
             className={cn("w-full justify-start text-left font-normal")}
@@ -124,9 +155,13 @@ export function DepartureDatePicker({
           <p className="mt-1 text-xs text-muted-foreground">
             {!destination
               ? "Indiquez une destination pour voir les prix par jour."
-              : tripDuration > 0
-                ? `Prix aller-retour le plus bas (séjour de ${tripDuration} nuits).`
-                : "Prix aller simple le plus bas par jour de départ."}
+              : mode === "return"
+                ? departureAt
+                  ? `Prix aller-retour le plus bas pour un retour ce jour-là (départ le ${departureAt}).`
+                  : "Choisissez d'abord une date de départ pour voir les prix de retour."
+                : tripDuration > 0
+                  ? `Prix aller-retour le plus bas (séjour de ${tripDuration} nuits).`
+                  : "Prix aller simple le plus bas par jour de départ."}
           </p>
 
           <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[11px] font-medium text-muted-foreground">
@@ -199,4 +234,11 @@ export function DepartureDatePicker({
       </Popover>
     </div>
   );
+}
+
+/** Compatibilité : le champ de départ garde son nom historique. */
+export function DepartureDatePicker(
+  props: Omit<Parameters<typeof PriceDatePicker>[0], "mode" | "id" | "label">,
+) {
+  return <PriceDatePicker {...props} mode="departure" id="depart" label="Date de départ" />;
 }
