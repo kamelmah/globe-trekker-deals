@@ -160,6 +160,7 @@ function DestinationPage() {
               budget: 0,
               adultes: 1,
               enfants: 0,
+              bebes: 0,
               vue: "liste",
             }}
           >
