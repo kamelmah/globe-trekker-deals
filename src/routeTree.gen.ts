@@ -14,9 +14,13 @@ import { Route as CommentOnGagneDeLArgentRouteImport } from './routes/comment-on
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
 import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
+import { Route as ApiPublicVerifierAlertesRouteImport } from './routes/api/public/verifier-alertes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -43,6 +47,21 @@ const RechercheRoute = RechercheRouteImport.update({
   path: '/recherche',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertesDesinscriptionRoute = AlertesDesinscriptionRouteImport.update({
+  id: '/alertes/desinscription',
+  path: '/alertes/desinscription',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConseilsIndexRoute = ConseilsIndexRouteImport.update({
   id: '/conseils/',
   path: '/conseils/',
@@ -58,6 +77,12 @@ const VolsPasChersSlugRoute = VolsPasChersSlugRouteImport.update({
   path: '/vols-pas-chers/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicVerifierAlertesRoute =
+  ApiPublicVerifierAlertesRouteImport.update({
+    id: '/api/public/verifier-alertes',
+    path: '/api/public/verifier-alertes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,9 +90,13 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/conseils/': typeof ConseilsIndexRoute
+  '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,9 +104,13 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/conseils': typeof ConseilsIndexRoute
+  '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,9 +119,13 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/conseils/': typeof ConseilsIndexRoute
+  '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -98,9 +135,13 @@ export interface FileRouteTypes {
     | '/faq'
     | '/mode-budget'
     | '/recherche'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
     | '/conseils/'
+    | '/api/public/verifier-alertes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -108,9 +149,13 @@ export interface FileRouteTypes {
     | '/faq'
     | '/mode-budget'
     | '/recherche'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
     | '/conseils'
+    | '/api/public/verifier-alertes'
   id:
     | '__root__'
     | '/'
@@ -118,9 +163,13 @@ export interface FileRouteTypes {
     | '/faq'
     | '/mode-budget'
     | '/recherche'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
     | '/conseils/'
+    | '/api/public/verifier-alertes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -129,9 +178,13 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
+  ApiPublicVerifierAlertesRoute: typeof ApiPublicVerifierAlertesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -171,6 +224,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RechercheRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alertes/desinscription': {
+      id: '/alertes/desinscription'
+      path: '/alertes/desinscription'
+      fullPath: '/alertes/desinscription'
+      preLoaderRoute: typeof AlertesDesinscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/conseils/': {
       id: '/conseils/'
       path: '/conseils'
@@ -192,6 +266,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VolsPasChersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/verifier-alertes': {
+      id: '/api/public/verifier-alertes'
+      path: '/api/public/verifier-alertes'
+      fullPath: '/api/public/verifier-alertes'
+      preLoaderRoute: typeof ApiPublicVerifierAlertesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -201,9 +282,13 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
+  ApiPublicVerifierAlertesRoute: ApiPublicVerifierAlertesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

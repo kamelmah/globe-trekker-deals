@@ -7,7 +7,7 @@ function siteOrigin(request: Request): string {
   return new URL(request.url).origin;
 }
 
-export const Route = createFileRoute("/sitemap[.]xml")({
+export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: ({ request }) => {

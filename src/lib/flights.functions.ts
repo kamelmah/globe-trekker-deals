@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { createAlert } from "@/lib/alerts.server";
+import { createAlert, deactivateAlert } from "@/lib/alerts.server";
 import {
   fetchCalendarPrices,
   fetchCheapestDestinations,
@@ -106,3 +106,7 @@ export const subscribeToAlert = createServerFn({ method: "POST" })
       referencePrice: data.referencePrice,
     }),
   );
+
+export const unsubscribeAlert = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.object({ token: z.string().trim().min(8).max(128) }).parse(data))
+  .handler(async ({ data }) => ({ ok: await deactivateAlert(data.token) }));

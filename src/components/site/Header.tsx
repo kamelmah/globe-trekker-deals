@@ -29,7 +29,7 @@ export function Header() {
             <Link
               key={item.to}
               to={item.to}
-              search={"search" in item ? item.search : undefined}
+              search={"search" in item ? item.search : {}}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
               activeProps={{ className: "bg-secondary text-foreground" }}
             >
@@ -60,7 +60,7 @@ export function Header() {
               <Link
                 key={item.to}
                 to={item.to}
-                search={"search" in item ? item.search : undefined}
+                search={"search" in item ? item.search : {}}
                 onClick={() => setOpen(false)}
                 className="rounded-md px-2 py-3 text-sm font-medium text-foreground"
               >
