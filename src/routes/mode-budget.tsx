@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { ClientOnly, Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ClientOnly, Link, createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
@@ -63,6 +63,7 @@ function BudgetPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const runDestinations = useServerFn(cheapestDestinations);
   const { formatApi: format, currency } = useCurrency();
+  const router = useRouter();
   const [selected, setSelected] = useState<string | undefined>(undefined);
   const [budgetInput, setBudgetInput] = useState(String(search["budget"]));
 
@@ -79,6 +80,30 @@ function BudgetPage() {
       }),
     ...(currency === "EUR" ? { initialData: initial } : {}),
   });
+
+  const searchForDestination = useCallback(
+    (destination: string, departureAt: string) => ({
+      origin: search["origin"],
+      destination,
+      depart: departureAt.slice(0, 10),
+      retour: "",
+      flexible: 1,
+      budget: 0,
+      adultes: 1,
+      enfants: 0,
+      vue: "liste",
+    }),
+    [search],
+  );
+
+  const hrefFor = useCallback(
+    (price: { destination: string; departureAt: string }) =>
+      router.buildLocation({
+        to: "/recherche",
+        search: searchForDestination(price.destination, price.departureAt),
+      }).href,
+    [router, searchForDestination],
+  );
 
   const originAirport = getAirport(search["origin"]);
   const prices = [...(query.data?.prices ?? [])].sort((a, b) => a.priceEur - b.priceEur);
@@ -146,6 +171,7 @@ function BudgetPage() {
                 originLat={originAirport?.lat ?? 48.86}
                 originLng={originAirport?.lng ?? 2.35}
                 onSelect={setSelected}
+                hrefFor={hrefFor}
                 {...(selected ? { selected } : {})}
               />
             </Suspense>
@@ -174,18 +200,9 @@ function BudgetPage() {
                 <li key={price.destination}>
                   <Link
                     to="/recherche"
-                    search={{
-                      origin: search["origin"],
-                      destination: price.destination,
-                      depart: price.departureAt.slice(0, 10),
-                      retour: "",
-                      flexible: 1,
-                      budget: 0,
-                      adultes: 1,
-                      enfants: 0,
-                      vue: "liste",
-                    }}
+                    search={searchForDestination(price.destination, price.departureAt)}
                     onMouseEnter={() => setSelected(price.destination)}
+                    onFocus={() => setSelected(price.destination)}
                     className={`flex items-center justify-between gap-3 rounded-lg border p-3 text-sm transition-colors hover:bg-secondary ${
                       inBudget ? "border-border" : "border-dashed border-border opacity-55"
                     } ${selected === price.destination ? "ring-2 ring-ring" : ""}`}
