@@ -42,7 +42,13 @@ export const Route = createFileRoute("/recherche")({
     budget: Math.max(0, numberOr(search["budget"], 0)),
     adultes: Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
     enfants: Math.min(8, Math.max(0, Math.round(numberOr(search["enfants"], 0)))),
+    // Un bébé par adulte maximum (règle des compagnies aériennes).
+    bebes: Math.min(
+      Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
+      Math.max(0, Math.round(numberOr(search["bebes"], 0))),
+    ),
     vue: search["vue"] === "calendrier" ? "calendrier" : "liste",
+
   }),
   head: ({ match }) => {
     const from = cityLabel(match.search["origin"]);
