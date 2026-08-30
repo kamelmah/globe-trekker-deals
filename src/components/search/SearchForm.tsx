@@ -34,8 +34,6 @@ export function SearchForm({
   const [flexible, setFlexible] = useState(true);
   const [budget, setBudget] = useState("");
 
-  const origins = AIRPORTS.filter((a) => ORIGIN_CODES.includes(a.code));
-  const destinations = AIRPORTS.filter((a) => a.code !== origin);
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
