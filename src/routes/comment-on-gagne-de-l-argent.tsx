@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 const TITLE = "Comment on gagne de l'argent — transparence TrouveMonVol";
 const DESCRIPTION =
-  "Notre modèle économique en clair : une commission d'affiliation versée par le vendeur du billet, sans surcoût pour vous, sans publicité et sans revente de données.";
+  "Notre modèle économique en clair : une commission d'affiliation versée par le vendeur du billet, sans surcoût pour vous et sans revente de données.";
 
 export const Route = createFileRoute("/comment-on-gagne-de-l-argent")({
   head: () => ({
@@ -24,7 +24,17 @@ function MoneyPage() {
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
         Un comparateur gratuit doit bien se financer d'une manière ou d'une autre. Chez la plupart des
         sites, cela passe par la publicité, la mise en avant payante de certains partenaires ou la
-        revente de données de navigation. Nous avons choisi un seul mécanisme, et le voici en entier.
+        revente de données de navigation. Nous avons choisi deux sources de revenus seulement, et les
+        voici en entier.
+      </p>
+
+      <h2 className="mt-8 font-display text-xl font-semibold">Un partenaire publicitaire</h2>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        Le site charge un script publicitaire tiers qui peut afficher des emplacements sponsorisés et
+        gère votre consentement aux cookies. Il ne modifie jamais le classement des vols : les
+        résultats restent triés par prix réel, et aucun vendeur ne peut payer pour remonter dans la
+        liste. Vous pouvez refuser le dépôt de cookies publicitaires depuis la bannière de
+        consentement.
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Une commission versée par le vendeur</h2>
@@ -55,7 +65,7 @@ function MoneyPage() {
 
       <h2 className="mt-8 font-display text-xl font-semibold">Ce que nous ne faisons pas</h2>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        Pas de bandeaux publicitaires, pas de comptes à rebours, pas de faux « plus que 2 places à ce
+        Pas de comptes à rebours, pas de faux « plus que 2 places à ce
         prix », pas de prix d'appel qui gonfle à l'étape du paiement. Nous ne revendons pas votre email
         : il ne sert qu'aux alertes que vous demandez, et chaque message contient un lien de
         désinscription immédiate.

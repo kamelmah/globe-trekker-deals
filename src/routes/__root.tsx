@@ -100,7 +100,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap",
       },
     ],
+    scripts: [
+      { src: "https://emrldtp.com/NTY4Mzc3.js?t=568377", async: true, "data-cmp-ab": "2" },
+    ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

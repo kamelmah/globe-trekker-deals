@@ -9,7 +9,7 @@ export function Footer() {
         <div className="md:col-span-2">
           <p className="font-display text-lg font-semibold">TrouveMonVol</p>
           <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-            Comparateur de vols sans publicité, sans faux compte à rebours et sans frais surprise.
+            Comparateur de vols sans faux compte à rebours, sans classement payant et sans frais surprise.
             Nous affichons le prix total et le nom du vendeur réel sur chaque résultat.
           </p>
         </div>

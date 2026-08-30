@@ -46,7 +46,7 @@ const REASONS = [
   {
     icon: EyeOff,
     title: "Zéro dark pattern",
-    text: "Aucune publicité, aucun faux compte à rebours, aucun « plus que 2 places à ce prix ». Vous décidez à votre rythme.",
+    text: "Aucun faux compte à rebours, aucun « plus que 2 places à ce prix », aucune mise en avant payante dans le classement. Vous décidez à votre rythme.",
   },
   {
     icon: ShieldCheck,
@@ -110,7 +110,7 @@ function HomePage() {
         <div className="container-page">
           <h2 className="font-display text-2xl font-semibold">Pourquoi passer par nous</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            La plupart des comparateurs vivent de la publicité et de l'urgence artificielle. Nous avons
+            La plupart des comparateurs vivent de l'urgence artificielle et du classement payant. Nous avons
             fait le choix inverse : une information complète, vérifiable, et un chemin de réservation le
             plus court possible.
           </p>
