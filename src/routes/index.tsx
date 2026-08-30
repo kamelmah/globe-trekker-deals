@@ -16,6 +16,23 @@ const DESCRIPTION =
   "Comparez les vols au prix total taxes incluses, avec le nom du vendeur réel sur chaque résultat. Recherche par budget, dates flexibles ± 3 jours, alertes prix gratuites.";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const clamp = (v: unknown, min: number, max: number, fallback: number) => {
+      const n = Math.round(numberOr(v, fallback));
+      return Math.min(max, Math.max(min, n));
+    };
+    return {
+      origin: search["origin"] ? iataOr(search["origin"], "PAR") : "",
+      destination: search["destination"] ? iataOr(search["destination"], "") : "",
+      depart: dateOr(search["depart"], ""),
+      retour: dateOr(search["retour"], ""),
+      budget: Math.max(0, Math.round(numberOr(search["budget"], 0))),
+      flexible: numberOr(search["flexible"], 1) === 1,
+      adultes: clamp(search["adultes"], 1, 9, 1),
+      enfants: clamp(search["enfants"], 0, 8, 0),
+      bebes: clamp(search["bebes"], 0, 8, 0),
+    };
+  },
   loader: async () => {
     const { prices, error, debug } = await cheapestDestinations({
       data: { origin: "PAR", destinations: HOME_CODES },
