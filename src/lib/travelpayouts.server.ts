@@ -246,12 +246,28 @@ export async function fetchOffers(params: {
     query,
     params.currency,
   );
-  const offers = offersFromApi(data?.data ?? [], creds?.marker ?? "", { adults, children, infants });
-  if ((params.currency ?? "eur").toLowerCase() === "eur") {
-    void recordHistory(params.origin, params.destination, offers);
+  let list = data?.data ?? [];
+
+  // Repli : requête fraîche au niveau du mois puis filtrage sur la date exacte.
+  // La recherche ne dépend jamais du cache du calendrier.
+  if (list.length === 0) {
+    const day = params.departureAt.slice(0, 10);
+    const monthQuery = { ...query, departure_at: day.slice(0, 7), limit: "1000" };
+    if (params.returnAt) monthQuery["return_at"] = params.returnAt.slice(0, 7);
+    const monthCall = await callApi<{ data?: ApiOffer[] }>(
+      "/aviasales/v3/prices_for_dates",
+      monthQuery,
+      params.currency,
+    );
+    list = (monthCall.data?.data ?? []).filter((offer) => {
+      if (offer?.departure_at?.slice(0, 10) !== day) return false;
+      if (!params.returnAt) return true;
+      return offer?.return_at?.slice(0, 10) === params.returnAt.slice(0, 10);
+    });
   }
-  return { offers, raw };
-}
+
+  const offers = offersFromApi(list, creds?.marker ?? "", { adults, children, infants });
+
 
 /** Enregistre l'observation réelle du prix le plus bas du mois (best effort). */
 async function recordHistory(
