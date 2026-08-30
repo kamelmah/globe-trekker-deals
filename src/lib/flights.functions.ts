@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { createAlert, deactivateAlert } from "@/lib/alerts.server";
 import type { ApiDebugInfo } from "@/lib/flights.types";
+import { addDaysIso as addDays } from "@/lib/trip-duration";
 import {
   TravelpayoutsError,
   fetchCalendarPrices,
@@ -126,13 +127,20 @@ export const calendarPrices = createServerFn({ method: "GET" })
         origin: iata,
         destination: iata,
         month: z.string().regex(/^\d{4}-\d{2}$/),
+        tripDuration: z.number().int().min(0).max(30).optional(),
         currency,
       })
       .parse(data),
   )
   .handler(async ({ data }) => {
     try {
-      const { days, raw } = await fetchCalendarPrices({ ...data, currency: data.currency ?? "EUR" });
+      const { days, raw } = await fetchCalendarPrices({
+        origin: data.origin,
+        destination: data.destination,
+        month: data.month,
+        tripDuration: data.tripDuration ?? 0,
+        currency: data.currency ?? "EUR",
+      });
       return { days, error: null as string | null, debug: debugOf(raw) };
     } catch (error) {
       return { days: [], error: messageOf(error), debug: null };
