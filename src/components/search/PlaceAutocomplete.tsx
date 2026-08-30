@@ -3,7 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { getAirport } from "@/data/airports";
-import { searchPlaces } from "@/lib/places.functions";
+import { resolvePlace, searchPlaces } from "@/lib/places.functions";
 import type { Place } from "@/lib/places.server";
 
 function labelFor(code: string): string {
