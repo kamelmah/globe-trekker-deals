@@ -129,12 +129,18 @@ export async function runAlertCheck(siteUrl: string): Promise<{
   let notified = 0;
   for (const alert of alerts ?? []) {
     const departureAt = alert.depart_date ?? defaultDepartureDate();
-    const offers = await fetchOffers({
-      origin: alert.origin,
-      destination: alert.destination,
-      departureAt,
-      returnAt: alert.return_date,
-    });
+    let offers;
+    try {
+      ({ offers } = await fetchOffers({
+        origin: alert.origin,
+        destination: alert.destination,
+        departureAt,
+        returnAt: alert.return_date,
+      }));
+    } catch (fetchError) {
+      console.error("Vérification d'alerte impossible", fetchError);
+      continue;
+    }
     const cheapest = offers[0];
     if (!cheapest) continue;
 

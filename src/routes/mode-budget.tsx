@@ -29,14 +29,14 @@ export const Route = createFileRoute("/mode-budget")({
   loader: async ({ location }) => {
     const origin = iataOr((location.search as Record<string, unknown>)["origin"], "PAR");
     const month = monthOr((location.search as Record<string, unknown>)["month"], "");
-    const { prices, demo } = await cheapestDestinations({
+    const { prices, error, debug } = await cheapestDestinations({
       data: {
         origin,
         destinations: BUDGET_DESTINATION_CODES,
         ...(month ? { month } : {}),
       },
     });
-    return { prices, demo };
+    return { prices, error, debug };
   },
   head: () => ({
     meta: [

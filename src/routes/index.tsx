@@ -16,10 +16,10 @@ const DESCRIPTION =
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const { prices, demo } = await cheapestDestinations({
+    const { prices, error, debug } = await cheapestDestinations({
       data: { origin: "PAR", destinations: HOME_CODES },
     });
-    return { prices, demo };
+    return { prices, error, debug };
   },
   head: () => ({
     meta: [
@@ -56,7 +56,7 @@ const REASONS = [
 ];
 
 function HomePage() {
-  const { prices, demo } = Route.useLoaderData();
+  const { prices, error, debug } = Route.useLoaderData();
 
   return (
     <div>
@@ -102,7 +102,7 @@ function HomePage() {
           destination pour voir les vols et le vendeur de chaque billet.
         </p>
         <div className="mt-6">
-          <DestinationPriceGrid prices={prices} origin="PAR" demo={demo} />
+          <DestinationPriceGrid prices={prices} origin="PAR" error={error} debug={debug} />
         </div>
       </section>
 
