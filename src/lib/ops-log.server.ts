@@ -29,7 +29,8 @@ export type OpsLogRow = {
   result_count: number | null;
   duration_ms: number | null;
   message: string | null;
-  context: Record<string, unknown> | null;
+  /** Contexte sérialisé en JSON pour rester transportable côté client. */
+  context: string | null;
 };
 
 async function admin() {
@@ -94,13 +95,17 @@ export async function readOpsLogs(params: {
   const { data, error } = await query;
   if (error) throw new Error(error.message);
 
-  let rows = (data ?? []) as unknown as OpsLogRow[];
+  const raw = (data ?? []) as unknown as (Omit<OpsLogRow, "context"> & { context: unknown })[];
+  let rows: OpsLogRow[] = raw.map((row) => ({
+    ...row,
+    context: row.context ? JSON.stringify(row.context) : null,
+  }));
   if (params.onlyProblems) {
     rows = rows.filter((row) => !row.ok || row.result_count === 0);
   }
 
   const byKind = new Map<string, OpsLogStats>();
-  for (const row of (data ?? []) as unknown as OpsLogRow[]) {
+  for (const row of raw) {
     const stat =
       byKind.get(row.kind) ?? { kind: row.kind, total: 0, failures: 0, emptyResults: 0 };
     stat.total += 1;
