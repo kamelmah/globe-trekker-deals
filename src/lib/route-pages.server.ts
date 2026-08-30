@@ -369,8 +369,8 @@ export type RelatedRoute = {
 export async function listRelatedRoutes(params: {
   origin: string;
   originCity: string;
-  exclude?: string;
-  limit?: number;
+  exclude?: string | undefined;
+  limit?: number | undefined;
 }): Promise<RelatedRoute[]> {
   const limit = params.limit ?? 12;
   const entries = await readWorldCache(params.origin.toUpperCase());
