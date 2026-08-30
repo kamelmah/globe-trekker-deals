@@ -123,16 +123,28 @@ export function SearchForm({
           />
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="retour">Date de retour (facultatif)</Label>
-          <Input
-            id="retour"
-            type="date"
-            value={retour}
-            min={depart}
-            onChange={(e) => setRetour(e.target.value)}
-          />
-        </div>
+        {duree > 0 ? (
+          <div className="space-y-1.5">
+            <Label>Date de retour (calculée)</Label>
+            <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm">
+              {effectiveRetour
+                ? `Retour le ${effectiveRetour} · ${duree} nuits`
+                : "Choisissez une date de départ"}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            <Label htmlFor="retour">Date de retour (facultatif)</Label>
+            <Input
+              id="retour"
+              type="date"
+              value={retour}
+              min={depart}
+              onChange={(e) => setRetour(e.target.value)}
+            />
+          </div>
+        )}
+
 
         <PassengerSelector value={passengers} onChange={setPassengers} />
 
