@@ -208,7 +208,7 @@ function HomePage() {
           {DESTINATIONS.map((d) => (
             <li key={d.slug}>
               <Link
-                to="/vols-pas-chers/$slug"
+                to="/vols/$slug"
                 params={{ slug: d.slug }}
                 className="block rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
               >

@@ -24,6 +24,7 @@ import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desi
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
 import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
+import { Route as VolsSlugRouteImport } from './routes/vols.$slug'
 import { Route as ApiPublicVerifierAlertesRouteImport } from './routes/api/public/verifier-alertes'
 
 const IndexRoute = IndexRouteImport.update({
@@ -101,6 +102,11 @@ const VolsPasChersSlugRoute = VolsPasChersSlugRouteImport.update({
   path: '/vols-pas-chers/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VolsSlugRoute = VolsSlugRouteImport.update({
+  id: '/vols/$slug',
+  path: '/vols/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicVerifierAlertesRoute =
   ApiPublicVerifierAlertesRouteImport.update({
     id: '/api/public/verifier-alertes',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
+  '/vols/$slug': typeof VolsSlugRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
 }
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
+  '/vols/$slug': typeof VolsSlugRoute
   '/conseils': typeof ConseilsIndexRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
 }
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
+  '/vols/$slug': typeof VolsSlugRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
 }
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
+    | '/vols/$slug'
     | '/conseils/'
     | '/api/public/verifier-alertes'
   fileRoutesByTo: FileRoutesByTo
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
+    | '/vols/$slug'
     | '/conseils'
     | '/api/public/verifier-alertes'
   id:
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/alertes/desinscription'
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
+    | '/vols/$slug'
     | '/conseils/'
     | '/api/public/verifier-alertes'
   fileRoutesById: FileRoutesById
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
+  VolsSlugRoute: typeof VolsSlugRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
   ApiPublicVerifierAlertesRoute: typeof ApiPublicVerifierAlertesRoute
 }
@@ -346,6 +359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VolsPasChersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vols/$slug': {
+      id: '/vols/$slug'
+      path: '/vols/$slug'
+      fullPath: '/vols/$slug'
+      preLoaderRoute: typeof VolsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/verifier-alertes': {
       id: '/api/public/verifier-alertes'
       path: '/api/public/verifier-alertes'
@@ -371,6 +391,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
+  VolsSlugRoute: VolsSlugRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
   ApiPublicVerifierAlertesRoute: ApiPublicVerifierAlertesRoute,
 }

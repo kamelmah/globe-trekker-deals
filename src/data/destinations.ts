@@ -634,6 +634,65 @@ export const DESTINATIONS: DestinationRoute[] = [
       },
     ],
   },
+  {
+    slug: "lyon-tunis",
+    origin: "LYS",
+    originCity: "Lyon",
+    destination: "TUN",
+    destinationCity: "Tunis",
+    country: "Tunisie",
+    heading: "Vols pas chers Lyon — Tunis",
+    metaTitle: "Vol pas cher Lyon Tunis : prix, compagnies, meilleure période | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Lyon — Tunis au prix total taxes incluses, avec le vendeur affiché. Compagnies, durée du vol, meilleure période et alerte prix gratuite.",
+    intro:
+      "Environ deux heures de vol séparent Lyon-Saint-Exupéry de Tunis-Carthage. La liaison est desservie toute l'année, avec une offre qui s'étoffe nettement au printemps et en été, période où les écarts de prix d'un jour à l'autre deviennent les plus marqués.",
+    bestMonths: "Mars-avril et octobre-novembre",
+    averageDuration: "Environ 2 h en vol direct",
+    sections: [
+      {
+        heading: "Quand partir à Tunis au meilleur prix",
+        paragraphs: [
+          "La demande sur Lyon — Tunis suit deux logiques qui se superposent : le tourisme balnéaire, concentré de juin à septembre, et les voyages familiaux, qui explosent pendant les vacances scolaires françaises et autour des fêtes. Quand ces deux courbes se croisent, en juillet et en août, les billets atteignent leurs sommets de l'année et les vols directs se remplissent plusieurs semaines à l'avance.",
+          "Les meilleures fenêtres budget se situent au printemps, en mars et avril hors vacances de Pâques, puis à l'automne, en octobre et novembre. Le climat y reste doux, autour de 20 à 25 degrés en journée à Tunis, et les tarifs redescendent souvent d'un tiers par rapport au plein été. Janvier et février, hors vacances, offrent également des prix bas, avec des journées plus fraîches et un peu de pluie.",
+          "Sur cette liaison, le jour de la semaine compte beaucoup : un départ en milieu de semaine, mardi ou mercredi, est régulièrement moins cher qu'un départ le vendredi soir ou le samedi matin, très demandés. Décaler son vol d'un ou deux jours suffit souvent à faire baisser la facture, ce que l'option « dates flexibles ± 3 jours » permet de vérifier en une seule recherche.",
+        ],
+      },
+      {
+        heading: "Quelles compagnies et quels aéroports",
+        paragraphs: [
+          "Le trajet est opéré en direct depuis Lyon-Saint-Exupéry vers Tunis-Carthage, principalement par Tunisair, Nouvelair et Transavia France selon les saisons. On trouve aussi des billets avec une escale, souvent via Paris, Marseille, Rome ou Istanbul : ils sont parfois moins chers, mais ajoutent trois à huit heures de trajet, ce qui a peu de sens sur une distance aussi courte sauf en cas de vraie économie.",
+          "Tunis-Carthage se trouve à moins de dix kilomètres du centre-ville, ce qui évite un transfert long et coûteux à l'arrivée. Si votre séjour se déroule dans le sud du pays, comparez aussi les arrivées sur Djerba ou Monastir : selon la saison, elles peuvent revenir moins cher que Tunis plus un trajet intérieur.",
+          "Attention aux bagages sur les tarifs les plus bas : un aller-retour avec valise en soute peut ajouter 50 à 80 euros au prix d'appel. Sur TrouveMonVol, le prix affiché est le prix total taxes incluses, et le vendeur réel du billet est nommé sous chaque résultat.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir et quand réserver",
+        paragraphs: [
+          "Hors haute saison et avec des dates souples, un aller-retour Lyon — Tunis se trouve régulièrement entre 120 et 190 euros. En juillet et août, ou pendant les vacances scolaires, comptez plutôt 280 à 400 euros, davantage encore si vous réservez dans les trois dernières semaines.",
+          "La règle qui fonctionne le mieux sur ce trajet est simple : six à dix semaines d'anticipation pour un voyage en période normale, et trois à quatre mois pour l'été et les fêtes. Passé ce délai, les classes tarifaires les moins chères disparaissent et le prix ne redescend presque jamais.",
+          "Le graphique d'évolution ci-dessous sert de repère : si le tarif que vous voyez aujourd'hui est nettement au-dessus du plancher observé les mois précédents, une alerte prix est plus efficace que de vérifier manuellement chaque jour.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Quand réserver un vol Lyon — Tunis pour payer moins cher ?",
+        answer:
+          "Six à dix semaines avant le départ en période normale, et trois à quatre mois à l'avance pour l'été, les vacances scolaires et les fêtes. Les départs en milieu de semaine sont souvent moins chers que ceux du vendredi ou du samedi.",
+      },
+      {
+        question: "Quelle compagnie choisir sur Lyon — Tunis ?",
+        answer:
+          "Tunisair, Nouvelair et Transavia France assurent l'essentiel des vols directs selon les saisons. Comparez toujours bagage inclus : sur les tarifs les plus bas, la valise en soute peut ajouter 50 à 80 euros à l'aller-retour.",
+      },
+      {
+        question: "Combien de temps dure le vol Lyon — Tunis ?",
+        answer:
+          "Environ 2 heures en vol direct. Avec une escale, comptez généralement entre 5 et 9 heures selon la correspondance.",
+      },
+    ],
+  },
 ];
 
 export function getDestination(slug: string): DestinationRoute | undefined {
