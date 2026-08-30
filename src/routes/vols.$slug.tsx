@@ -20,9 +20,11 @@ export const Route = createFileRoute("/vols/$slug")({
     const history = await monthlyHistory({
       data: { origin: route.origin, destination: route.destination },
     });
-    const lowestObserved = history.months.length
+    const historyLowest = history.months.length
       ? Math.min(...history.months.map((m) => m.priceEur))
       : null;
+    // Prix d'appel simulé pour la démo, sinon le plancher réellement observé.
+    const lowestObserved = route.simulatedLowestPrice ?? historyLowest;
     return { route, months: history.months, lowestObserved };
   },
   head: ({ loaderData }) => {
@@ -163,7 +165,11 @@ function DestinationPage() {
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Prix le plus bas déjà relevé</p>
           <p className="mt-1 font-display text-2xl font-semibold text-primary">
-            {lowestObserved ? `Dès ${formatPrice(lowestObserved)}` : "Historique en constitution"}
+            {lowestObserved
+              ? route.simulatedLowestPrice
+                ? `Dès ${route.simulatedLowestPrice}€`
+                : `Dès ${formatPrice(lowestObserved)}`
+              : "Historique en constitution"}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
             Relevé lors de recherches passées, taxes incluses
