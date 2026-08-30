@@ -8,7 +8,8 @@ export type AlertInput = {
   destination: string;
   departDate?: string | null;
   returnDate?: string | null;
-  referencePrice: number;
+  /** Prix de référence connu côté page ; résolu via l'API quand il est absent. */
+  referencePrice?: number | null;
 };
 
 async function admin() {
@@ -16,8 +17,40 @@ async function admin() {
   return supabaseAdmin;
 }
 
+/**
+ * Aucun prix inventé : quand la page n'affiche pas encore de prix, on interroge
+ * l'API pour obtenir le tarif réel qui servira de point de comparaison.
+ */
+async function resolveReferencePrice(input: AlertInput): Promise<number | null> {
+  if (typeof input.referencePrice === "number" && input.referencePrice > 0) {
+    return input.referencePrice;
+  }
+  const departureAt = input.departDate ?? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
+  try {
+    const { offers } = await fetchOffers({
+      origin: input.origin.toUpperCase(),
+      destination: input.destination.toUpperCase(),
+      departureAt,
+      returnAt: input.returnDate ?? null,
+    });
+    return offers[0]?.priceEur ?? null;
+  } catch (error) {
+    console.error("Prix de référence introuvable pour l'alerte", error);
+    return null;
+  }
+}
+
 export async function createAlert(input: AlertInput): Promise<{ ok: boolean; message: string }> {
+  const referencePrice = await resolveReferencePrice(input);
+  if (referencePrice === null) {
+    return {
+      ok: false,
+      message:
+        "Aucun prix n'est disponible pour ce trajet en ce moment : impossible de fixer un point de comparaison. Réessayez avec une date de départ.",
+    };
+  }
   const db = await admin();
+
   const { error } = await db.from("price_alerts").upsert(
     {
       email: input.email.toLowerCase(),
@@ -25,8 +58,8 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
       destination: input.destination.toUpperCase(),
       depart_date: input.departDate ?? null,
       return_date: input.returnDate ?? null,
-      initial_price: input.referencePrice,
-      last_price: input.referencePrice,
+      initial_price: referencePrice,
+      last_price: referencePrice,
       active: true,
     },
     { onConflict: "email,origin,destination,depart_date" },
@@ -40,8 +73,8 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
       destination: input.destination.toUpperCase(),
       depart_date: input.departDate ?? null,
       return_date: input.returnDate ?? null,
-      initial_price: input.referencePrice,
-      last_price: input.referencePrice,
+      initial_price: referencePrice,
+      last_price: referencePrice,
     });
     if (retry.error && !retry.error.message.includes("duplicate")) {
       console.error("Création d'alerte impossible", retry.error);

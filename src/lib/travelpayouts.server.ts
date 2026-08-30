@@ -73,11 +73,53 @@ function airlineName(code: string): string {
   return AIRLINE_NAMES[code.toUpperCase()] ?? code.toUpperCase();
 }
 
-/** Le vendeur affiché est celui renvoyé par l'API (champ gate/agent). */
+/**
+ * Certains partenaires Travelpayouts renvoient leur raison sociale localisée
+ * (en cyrillique) dans le champ `gate`/`agent`. On normalise ces noms vers leur
+ * marque commerciale latine pour ne jamais afficher un vendeur illisible.
+ */
+const SELLER_ALIASES: Record<string, string> = {
+  "авиасейлс": "Aviasales",
+  "авиасэйлс": "Aviasales",
+  "аviasales": "Aviasales",
+  "джетрадар": "Jetradar",
+  "купибилет": "Kupibilet",
+  "билетик аэро": "Biletik.aero",
+  "билетикаэро": "Biletik.aero",
+  "трип.ком": "Trip.com",
+  "тинькофф": "Tinkoff Travel",
+  "аэрофлот": "Aeroflot",
+  "победа": "Pobeda",
+  "с7": "S7 Airlines",
+  "уральские авиалинии": "Ural Airlines",
+  "оnetwotrip": "OneTwoTrip",
+  "вантутрип": "OneTwoTrip",
+  "клиkавиа": "Clickavia",
+  "кликавиа": "Clickavia",
+  "мультибилет": "Multibilet",
+  "чип.трэвел": "Cheap.travel",
+};
+
+const NON_LATIN_RE = /[^\u0000-\u024F]/;
+
+/** Le vendeur affiché est celui renvoyé par l'API (champ gate/agent), normalisé. */
 function resolveSeller(gate: unknown, airline: string): string {
   const raw = typeof gate === "string" ? gate.trim() : "";
-  return raw.length > 1 ? raw : airline;
+  if (raw.length <= 1) return airline;
+
+  const alias = SELLER_ALIASES[raw.toLowerCase()];
+  if (alias) return alias;
+
+  // Nom encore non latin (partenaire inconnu) : on retire les caractères
+  // illisibles et, s'il ne reste rien d'exploitable, on affiche la compagnie.
+  if (NON_LATIN_RE.test(raw)) {
+    const latin = raw.replace(/[^\u0020-\u024F]/g, "").replace(/\s{2,}/g, " ").trim();
+    return latin.length > 1 ? latin : airline;
+  }
+
+  return raw;
 }
+
 
 /* -------------------------------------------------------------------------- */
 /* Lien de réservation : exactement celui renvoyé par l'API                    */

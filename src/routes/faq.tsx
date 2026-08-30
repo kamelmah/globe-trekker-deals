@@ -26,7 +26,7 @@ const FAQ = [
   {
     question: "Qui vend réellement le billet ?",
     answer:
-      "Chaque résultat affiche le nom du vendeur : soit la compagnie aérienne elle-même, soit une agence de voyage en ligne nommée. Nous n'affichons jamais un intermédiaire anonyme, et le bouton de réservation mène directement chez ce vendeur, sans page intermédiaire ni cascade de redirections. C'est important : en cas de retard, d'annulation ou de remboursement, c'est ce vendeur qui est votre interlocuteur.",
+      "Chaque résultat affiche le nom du vendeur : soit la compagnie aérienne elle-même, soit une agence de voyage en ligne nommée. Nous n'affichons jamais un intermédiaire anonyme, et le bouton de réservation ouvre en un clic le lien de réservation de ce vendeur (le lien passe par la redirection technique Aviasales qui porte notre identifiant d'affiliation, invisible et instantanée pour vous), sans comparateur intermédiaire caché ni page de captation. C'est important : en cas de retard, d'annulation ou de remboursement, c'est ce vendeur qui est votre interlocuteur.",
   },
   {
     question: "Comment fonctionnent les alertes prix ?",

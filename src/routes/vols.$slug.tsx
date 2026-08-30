@@ -316,13 +316,11 @@ function DestinationPage() {
         </div>
 
         <aside className="space-y-6">
-          {lowestObserved !== null && (
-            <AlertForm
-              origin={route.origin}
-              destination={route.destination}
-              referencePrice={lowestObserved}
-            />
-          )}
+          <AlertForm
+            origin={route.origin}
+            destination={route.destination}
+            referencePrice={lowestObserved}
+          />
           <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
             <h2 className="font-display text-base font-semibold text-foreground">
               Pas encore décidé sur la destination ?

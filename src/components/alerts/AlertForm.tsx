@@ -19,7 +19,7 @@ export function AlertForm({
   destination: string;
   departDate?: string;
   returnDate?: string;
-  referencePrice: number;
+  referencePrice?: number | null;
 }) {
   const subscribe = useServerFn(subscribeToAlert);
   const [email, setEmail] = useState("");
@@ -37,7 +37,7 @@ export function AlertForm({
           destination,
           departDate: departDate ?? null,
           returnDate: returnDate ?? null,
-          referencePrice,
+          referencePrice: referencePrice ?? null,
         },
       });
       if (result.ok) {

@@ -201,7 +201,7 @@ export const subscribeToAlert = createServerFn({ method: "POST" })
         destination: iata,
         departDate: isoDate.nullish(),
         returnDate: isoDate.nullish(),
-        referencePrice: z.number().positive().max(100000),
+        referencePrice: z.number().positive().max(100000).nullish(),
       })
       .parse(data),
   )
@@ -212,7 +212,7 @@ export const subscribeToAlert = createServerFn({ method: "POST" })
       destination: data.destination,
       departDate: data.departDate ?? null,
       returnDate: data.returnDate ?? null,
-      referencePrice: data.referencePrice,
+      referencePrice: data.referencePrice ?? null,
     }),
   );
 
