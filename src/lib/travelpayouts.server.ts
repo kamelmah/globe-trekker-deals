@@ -1,4 +1,4 @@
-import { AIRPORTS, distanceKm, getAirport } from "@/data/airports";
+import { AIRPORTS, getAirport } from "@/data/airports";
 import { estimateCo2Kg } from "@/lib/co2";
 import type {
   CalendarDayPrice,
@@ -18,15 +18,28 @@ function getCredentials(): Credentials | null {
   return { token, marker };
 }
 
-/** Taux de change indicatifs pour ramener les réponses API en euros. */
-const TO_EUR: Record<string, number> = { eur: 1, usd: 0.92, rub: 0.01, gbp: 1.18 };
-
-function toEur(value: number, currency = "eur"): number {
-  return Math.round(value * (TO_EUR[currency.toLowerCase()] ?? 1));
+export function hasApiCredentials(): boolean {
+  return getCredentials() !== null;
 }
 
+/** Toute donnée affichée provient de l'API : en cas d'échec on remonte l'erreur. */
+export class TravelpayoutsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TravelpayoutsError";
+  }
+}
+
+export type RawApiCall = {
+  endpoint: string;
+  params: Record<string, string>;
+  status: number;
+  /** Corps de réponse brut (JSON indenté) pour le panneau de debug. */
+  body: string;
+};
+
 /* -------------------------------------------------------------------------- */
-/* Vendeurs                                                                    */
+/* Noms de compagnies (libellés d'affichage uniquement)                        */
 /* -------------------------------------------------------------------------- */
 
 const AIRLINE_NAMES: Record<string, string> = {
@@ -55,162 +68,72 @@ const AIRLINE_NAMES: Record<string, string> = {
   TU: "Tunisair",
 };
 
-/** Agences connues renvoyées par le champ gate/agent de l'API. */
-const KNOWN_AGENCIES = [
-  "Kiwi.com",
-  "Expedia",
-  "Opodo",
-  "eDreams",
-  "Trip.com",
-  "Gotogate",
-  "Mytrip",
-];
-
 function airlineName(code: string): string {
-  return AIRLINE_NAMES[code?.toUpperCase()] ?? code ?? "Compagnie aérienne";
+  if (!code) return "Compagnie non communiquée";
+  return AIRLINE_NAMES[code.toUpperCase()] ?? code.toUpperCase();
 }
 
-/** Le vendeur doit toujours être nommé : compagnie ou agence identifiée. */
+/** Le vendeur affiché est celui renvoyé par l'API (champ gate/agent). */
 function resolveSeller(gate: unknown, airline: string): string {
   const raw = typeof gate === "string" ? gate.trim() : "";
-  if (raw.length > 1) return raw;
-  return airline;
+  return raw.length > 1 ? raw : airline;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Liens d'affiliation                                                         */
+/* Lien de réservation : exactement celui renvoyé par l'API                    */
 /* -------------------------------------------------------------------------- */
 
-export function buildBookingUrl(params: {
-  origin: string;
-  destination: string;
-  departureAt: string;
-  returnAt?: string | null;
-  marker?: string;
-  link?: string | null;
-}): string {
-  const marker = params.marker ?? process.env["TRAVELPAYOUTS_MARKER"] ?? "";
-  if (params.link) {
-    const url = `https://www.aviasales.com${params.link}`;
-    return marker ? `${url}${params.link.includes("?") ? "&" : "?"}marker=${marker}` : url;
-  }
-  const d = params.departureAt.slice(0, 10);
-  const search = new URLSearchParams({
-    origin_iata: params.origin,
-    destination_iata: params.destination,
-    depart_date: d,
-    adults: "1",
-  });
-  if (params.returnAt) search.set("return_date", params.returnAt.slice(0, 10));
-  if (marker) search.set("marker", marker);
-  return `https://www.aviasales.com/search?${search.toString()}`;
+function bookingUrlFromApiLink(link: string, marker: string): string {
+  const url = new URL(link, "https://www.aviasales.com");
+  if (marker && !url.searchParams.has("marker")) url.searchParams.set("marker", marker);
+  return url.toString();
 }
 
 /* -------------------------------------------------------------------------- */
-/* Générateur de démonstration (déterministe, utilisé sans clé API)            */
+/* Appel API                                                                   */
 /* -------------------------------------------------------------------------- */
 
-function seededRandom(seed: string): () => number {
-  let h = 2166136261;
-  for (let i = 0; i < seed.length; i++) {
-    h ^= seed.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return () => {
-    h ^= h << 13;
-    h ^= h >>> 17;
-    h ^= h << 5;
-    return ((h >>> 0) % 100000) / 100000;
-  };
-}
-
-function basePriceEur(origin: string, destination: string): number {
-  const km = distanceKm(origin, destination);
-  const rand = seededRandom(`${origin}${destination}`);
-  const base = 38 + km * 0.041;
-  return Math.round(base * (0.85 + rand() * 0.4));
-}
-
-const DEMO_AIRLINES = ["AF", "TO", "FR", "U2", "TP", "TK", "LH", "KL", "IB", "AT"];
-
-function demoOffers(params: {
-  origin: string;
-  destination: string;
-  departureAt: string;
-  returnAt?: string | null;
-}): FlightOffer[] {
-  const { origin, destination, departureAt, returnAt } = params;
-  const rand = seededRandom(`${origin}${destination}${departureAt}`);
-  const base = basePriceEur(origin, destination);
-  const km = distanceKm(origin, destination);
-  const count = 12;
-  const offers: FlightOffer[] = [];
-  for (let i = 0; i < count; i++) {
-    const r = rand();
-    const stops = r < 0.42 ? 0 : r < 0.85 ? 1 : 2;
-    const priceEur = Math.max(29, Math.round(base * (0.92 + r * 0.9) - stops * 14));
-    const airlineCode = DEMO_AIRLINES[Math.floor(rand() * DEMO_AIRLINES.length)] ?? "AF";
-    const airline = airlineName(airlineCode);
-    const sellerRand = rand();
-    const seller =
-      sellerRand < 0.45
-        ? airline
-        : (KNOWN_AGENCIES[Math.floor(sellerRand * KNOWN_AGENCIES.length) % KNOWN_AGENCIES.length] ??
-          airline);
-    const hour = Math.floor(rand() * 22);
-    const flightMinutes = Math.round(km / 12 + 45 + stops * (90 + rand() * 150));
-    offers.push({
-      id: `${origin}-${destination}-${departureAt}-${i}`,
-      origin,
-      destination,
-      priceEur,
-      airline,
-      airlineCode,
-      seller,
-      flightNumber: `${airlineCode}${100 + Math.floor(rand() * 899)}`,
-      departureAt: `${departureAt.slice(0, 10)}T${String(hour).padStart(2, "0")}:${
-        rand() < 0.5 ? "10" : "45"
-      }:00`,
-      returnAt: returnAt ? `${returnAt.slice(0, 10)}T09:30:00` : null,
-      durationMinutes: flightMinutes,
-      stops,
-      cabinBag: true,
-      checkedBag: priceEur > base * 1.25 || stops === 0 ? rand() > 0.5 : rand() > 0.75,
-      co2Kg: estimateCo2Kg(origin, destination, stops),
-      bookingUrl: buildBookingUrl({ origin, destination, departureAt, returnAt: returnAt ?? null }),
-      isDemo: true,
-    });
-  }
-  return offers.sort((a, b) => a.priceEur - b.priceEur);
-}
-
-function nextMonthDate(offsetDays: number): string {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() + offsetDays);
-  return d.toISOString().slice(0, 10);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Appels API                                                                  */
-/* -------------------------------------------------------------------------- */
-
-async function callApi<T>(path: string, params: Record<string, string>): Promise<T | null> {
+async function callApi<T>(
+  path: string,
+  params: Record<string, string>,
+): Promise<{ data: T; raw: RawApiCall }> {
   const creds = getCredentials();
-  if (!creds) return null;
-  const search = new URLSearchParams({ ...params, token: creds.token, currency: "eur" });
+  if (!creds) {
+    throw new TravelpayoutsError(
+      "La clé API Travelpayouts n'est pas configurée sur le serveur (TRAVELPAYOUTS_TOKEN).",
+    );
+  }
+  const search = new URLSearchParams({ ...params, currency: "eur", token: creds.token });
+  let res: Response;
   try {
-    const res = await fetch(`${API_BASE}${path}?${search.toString()}`, {
+    res = await fetch(`${API_BASE}${path}?${search.toString()}`, {
       headers: { Accept: "application/json" },
     });
-    if (!res.ok) {
-      console.error(`Travelpayouts ${path} a répondu ${res.status}: ${await res.text()}`);
-      return null;
-    }
-    return (await res.json()) as T;
   } catch (error) {
-    console.error("Appel Travelpayouts en échec", error);
-    return null;
+    console.error("Appel Travelpayouts en échec réseau", error);
+    throw new TravelpayoutsError("Le service de prix est momentanément injoignable.");
   }
+
+  const text = await res.text();
+  let parsed: unknown = text;
+  let body = text;
+  try {
+    parsed = JSON.parse(text);
+    body = JSON.stringify(parsed, null, 2);
+  } catch {
+    /* réponse non JSON : conservée telle quelle pour le debug */
+  }
+
+  const raw: RawApiCall = { endpoint: path, params, status: res.status, body };
+
+  if (!res.ok) {
+    console.error(`Travelpayouts ${path} a répondu ${res.status}: ${text.slice(0, 500)}`);
+    throw new TravelpayoutsError(
+      `Le service de prix a renvoyé une erreur (${res.status}). Aucun résultat n'est affiché.`,
+    );
+  }
+
+  return { data: parsed as T, raw };
 }
 
 type ApiOffer = {
@@ -228,12 +151,45 @@ type ApiOffer = {
   link?: string;
 };
 
+function offersFromApi(list: ApiOffer[], marker: string): FlightOffer[] {
+  return list
+    .filter((offer) => typeof offer?.link === "string" && offer.link.length > 0)
+    .map((offer, index) => {
+      const airline = airlineName(offer.airline);
+      const stops = offer.transfers ?? 0;
+      return {
+        id: `${offer.origin}-${offer.destination}-${offer.departure_at}-${index}`,
+        origin: offer.origin,
+        destination: offer.destination,
+        priceEur: Math.round(offer.price),
+        airline,
+        airlineCode: offer.airline,
+        seller: resolveSeller(offer.gate, airline),
+        flightNumber: offer.flight_number ? `${offer.airline}${offer.flight_number}` : "",
+        departureAt: offer.departure_at,
+        returnAt: offer.return_at ?? null,
+        durationMinutes: offer.duration ?? offer.duration_to ?? 0,
+        stops,
+        cabinBag: true,
+        checkedBag: false,
+        co2Kg: estimateCo2Kg(offer.origin, offer.destination, stops),
+        bookingUrl: bookingUrlFromApiLink(offer.link as string, marker),
+      } satisfies FlightOffer;
+    })
+    .sort((a, b) => a.priceEur - b.priceEur);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recherche de vols                                                           */
+/* -------------------------------------------------------------------------- */
+
 export async function fetchOffers(params: {
   origin: string;
   destination: string;
   departureAt: string;
   returnAt?: string | null;
-}): Promise<FlightOffer[]> {
+}): Promise<{ offers: FlightOffer[]; raw: RawApiCall }> {
+  const creds = getCredentials();
   const query: Record<string, string> = {
     origin: params.origin,
     destination: params.destination,
@@ -246,170 +202,162 @@ export async function fetchOffers(params: {
   };
   if (params.returnAt) query["return_at"] = params.returnAt.slice(0, 10);
 
-  const data = await callApi<{ data?: ApiOffer[] }>("/aviasales/v3/prices_for_dates", query);
-  if (!data?.data?.length) {
-    return demoOffers(params);
-  }
-  return data.data
-    .map((offer, index) => {
-      const airline = airlineName(offer.airline);
-      const stops = offer.transfers ?? 0;
-      return {
-        id: `${offer.origin}-${offer.destination}-${offer.departure_at}-${index}`,
-        origin: offer.origin,
-        destination: offer.destination,
-        priceEur: toEur(offer.price),
-        airline,
-        airlineCode: offer.airline,
-        seller: resolveSeller(offer.gate, airline),
-        flightNumber: `${offer.airline}${offer.flight_number ?? ""}`,
-        departureAt: offer.departure_at,
-        returnAt: offer.return_at ?? null,
-        durationMinutes: offer.duration ?? offer.duration_to ?? 0,
-        stops,
-        cabinBag: true,
-        checkedBag: false,
-        co2Kg: estimateCo2Kg(offer.origin, offer.destination, stops),
-        bookingUrl: buildBookingUrl({
-          origin: offer.origin,
-          destination: offer.destination,
-          departureAt: offer.departure_at,
-          returnAt: offer.return_at ?? null,
-          link: offer.link ?? null,
-        }),
-        isDemo: false,
-      } satisfies FlightOffer;
-    })
-    .sort((a, b) => a.priceEur - b.priceEur);
+  const { data, raw } = await callApi<{ data?: ApiOffer[] }>(
+    "/aviasales/v3/prices_for_dates",
+    query,
+  );
+  const offers = offersFromApi(data?.data ?? [], creds?.marker ?? "");
+  void recordHistory(params.origin, params.destination, offers);
+  return { offers, raw };
 }
+
+/** Enregistre l'observation réelle du prix le plus bas du mois (best effort). */
+async function recordHistory(
+  origin: string,
+  destination: string,
+  offers: FlightOffer[],
+): Promise<void> {
+  const cheapest = offers[0];
+  if (!cheapest) return;
+  const month = cheapest.departureAt.slice(0, 7);
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("price_history")
+      .select("id,lowest_price")
+      .eq("origin", origin)
+      .eq("destination", destination)
+      .eq("month", month)
+      .maybeSingle();
+    if (data && Number(data.lowest_price) <= cheapest.priceEur) return;
+    if (data) {
+      await supabaseAdmin
+        .from("price_history")
+        .update({ lowest_price: cheapest.priceEur, updated_at: new Date().toISOString() })
+        .eq("id", data.id);
+      return;
+    }
+    await supabaseAdmin
+      .from("price_history")
+      .insert({ origin, destination, month, lowest_price: cheapest.priceEur, currency: "eur" });
+  } catch (error) {
+    console.error("Historique de prix non enregistré", error);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Destinations les moins chères                                               */
+/* -------------------------------------------------------------------------- */
 
 export async function fetchCheapestDestinations(params: {
   origin: string;
   destinations: string[];
   month?: string | undefined;
-}): Promise<DestinationPrice[]> {
-  const creds = getCredentials();
-  const results: DestinationPrice[] = [];
+}): Promise<{ prices: DestinationPrice[]; raw: RawApiCall }> {
+  const query: Record<string, string> = {
+    origin: params.origin,
+    one_way: "true",
+    limit: "1000",
+    sorting: "price",
+  };
+  if (params.month) query["departure_at"] = params.month;
 
-  if (creds) {
-    const query: Record<string, string> = {
-      origin: params.origin,
-      one_way: "true",
-      limit: "1000",
-      sorting: "price",
-    };
-    if (params.month) query["departure_at"] = params.month;
-    const data = await callApi<{ data?: ApiOffer[] }>("/aviasales/v3/prices_for_dates", query);
-    const cheapest = new Map<string, ApiOffer>();
-    for (const offer of data?.data ?? []) {
-      const current = cheapest.get(offer.destination);
-      if (!current || offer.price < current.price) cheapest.set(offer.destination, offer);
-    }
-    for (const code of params.destinations) {
-      const airport = getAirport(code);
-      const offer = cheapest.get(code);
-      if (!airport || !offer) continue;
-      results.push({
-        destination: code,
-        city: airport.city,
-        country: airport.country,
-        lat: airport.lat,
-        lng: airport.lng,
-        priceEur: toEur(offer.price),
-        airline: airlineName(offer.airline),
-        departureAt: offer.departure_at,
-        isDemo: false,
-      });
-    }
-    if (results.length > 0) return results.sort((a, b) => a.priceEur - b.priceEur);
+  const { data, raw } = await callApi<{ data?: ApiOffer[] }>(
+    "/aviasales/v3/prices_for_dates",
+    query,
+  );
+
+  const cheapest = new Map<string, ApiOffer>();
+  for (const offer of data?.data ?? []) {
+    const current = cheapest.get(offer.destination);
+    if (!current || offer.price < current.price) cheapest.set(offer.destination, offer);
   }
 
-  // Démonstration : prix déterministes par trajet.
+  const prices: DestinationPrice[] = [];
   for (const code of params.destinations) {
     const airport = getAirport(code);
-    if (!airport || code === params.origin) continue;
-    const rand = seededRandom(`${params.origin}${code}${params.month ?? ""}`);
-    results.push({
+    const offer = cheapest.get(code);
+    if (!airport || !offer) continue;
+    prices.push({
       destination: code,
       city: airport.city,
       country: airport.country,
       lat: airport.lat,
       lng: airport.lng,
-      priceEur: Math.round(basePriceEur(params.origin, code) * (0.95 + rand() * 0.25)),
-      airline: airlineName(DEMO_AIRLINES[Math.floor(rand() * DEMO_AIRLINES.length)] ?? "AF"),
-      departureAt: nextMonthDate(21 + Math.floor(rand() * 60)),
-      isDemo: true,
+      priceEur: Math.round(offer.price),
+      airline: airlineName(offer.airline),
+      departureAt: offer.departure_at,
     });
   }
-  return results.sort((a, b) => a.priceEur - b.priceEur);
+
+  return { prices: prices.sort((a, b) => a.priceEur - b.priceEur), raw };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Calendrier des prix                                                         */
+/* -------------------------------------------------------------------------- */
 
 export async function fetchCalendarPrices(params: {
   origin: string;
   destination: string;
   /** Mois au format YYYY-MM. */
   month: string;
-}): Promise<CalendarDayPrice[]> {
-  const data = await callApi<{ data?: ApiOffer[] }>("/aviasales/v3/grouped_prices", {
-    origin: params.origin,
-    destination: params.destination,
-    departure_at: params.month,
-    group_by: "departure_at",
-    one_way: "true",
-  });
+}): Promise<{ days: CalendarDayPrice[]; raw: RawApiCall }> {
+  const { data, raw } = await callApi<{ data?: Record<string, ApiOffer> | ApiOffer[] }>(
+    "/aviasales/v3/grouped_prices",
+    {
+      origin: params.origin,
+      destination: params.destination,
+      departure_at: params.month,
+      group_by: "departure_at",
+      one_way: "true",
+    },
+  );
 
-  const days = daysInMonth(params.month);
-  if (data?.data) {
-    const entries = Object.values(data.data) as ApiOffer[];
-    if (entries.length) {
-      const map = new Map<string, number>();
-      for (const offer of entries) {
-        const day = offer.departure_at?.slice(0, 10);
-        if (!day) continue;
-        const price = toEur(offer.price);
-        if (!map.has(day) || price < map.get(day)!) map.set(day, price);
-      }
-      if (map.size) {
-        return days
-          .filter((d) => map.has(d))
-          .map((d) => ({ date: d, priceEur: map.get(d)! }));
-      }
-    }
+  const entries = Object.values(data?.data ?? {}) as ApiOffer[];
+  const map = new Map<string, number>();
+  for (const offer of entries) {
+    const day = offer?.departure_at?.slice(0, 10);
+    if (!day) continue;
+    const price = Math.round(offer.price);
+    if (!map.has(day) || price < map.get(day)!) map.set(day, price);
   }
 
-  const base = basePriceEur(params.origin, params.destination);
-  return days.map((date) => {
-    const rand = seededRandom(`${params.origin}${params.destination}${date}`);
-    const weekday = new Date(`${date}T00:00:00Z`).getUTCDay();
-    const weekendPenalty = weekday === 5 || weekday === 0 ? 1.18 : weekday === 2 ? 0.88 : 1;
-    return {
-      date,
-      priceEur: Math.max(25, Math.round(base * weekendPenalty * (0.82 + rand() * 0.6))),
-    };
-  });
+  const days = daysInMonth(params.month)
+    .filter((d) => map.has(d))
+    .map((d) => ({ date: d, priceEur: map.get(d)! }));
+
+  return { days, raw };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Historique réel observé (table price_history)                               */
+/* -------------------------------------------------------------------------- */
 
 export async function fetchMonthlyHistory(params: {
   origin: string;
   destination: string;
-}): Promise<MonthlyPrice[]> {
-  const base = basePriceEur(params.origin, params.destination);
-  const months: MonthlyPrice[] = [];
-  const now = new Date();
-  for (let i = 11; i >= 0; i--) {
-    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
-    const key = d.toISOString().slice(0, 7);
-    const rand = seededRandom(`${params.origin}${params.destination}${key}`);
-    const monthIndex = d.getUTCMonth();
-    // Saisonnalité : plus cher en juillet/août et fin décembre.
-    const seasonal =
-      [0.92, 0.88, 0.9, 0.98, 1.0, 1.12, 1.28, 1.3, 1.02, 0.9, 0.86, 1.15][monthIndex] ?? 1;
-    months.push({
-      month: key,
-      priceEur: Math.round(base * seasonal * (0.92 + rand() * 0.2)),
-    });
+}): Promise<{ months: MonthlyPrice[] }> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("price_history")
+      .select("month,lowest_price")
+      .eq("origin", params.origin)
+      .eq("destination", params.destination)
+      .order("month", { ascending: true })
+      .limit(24);
+    if (error) throw error;
+    return {
+      months: (data ?? []).map((row) => ({
+        month: row.month.slice(0, 7),
+        priceEur: Math.round(Number(row.lowest_price)),
+      })),
+    };
+  } catch (error) {
+    console.error("Lecture de l'historique impossible", error);
+    return { months: [] };
   }
-  return months;
 }
 
 export function daysInMonth(month: string): string[] {
@@ -417,14 +365,7 @@ export function daysInMonth(month: string): string[] {
   const year = Number(yearRaw);
   const m = Number(monthRaw);
   const total = new Date(Date.UTC(year, m, 0)).getUTCDate();
-  return Array.from(
-    { length: total },
-    (_, i) => `${month}-${String(i + 1).padStart(2, "0")}`,
-  );
-}
-
-export function hasApiCredentials(): boolean {
-  return getCredentials() !== null;
+  return Array.from({ length: total }, (_, i) => `${month}-${String(i + 1).padStart(2, "0")}`);
 }
 
 export const ALL_AIRPORT_CODES = AIRPORTS.map((a) => a.code);

@@ -1,6 +1,7 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
+import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { PriceHistoryChart } from "@/components/flights/PriceHistoryChart";
 import { FaqAccordion } from "@/components/site/FaqAccordion";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,8 @@ export const Route = createFileRoute("/vols-pas-chers/$slug")({
       route,
       months: history.months,
       lowestPrice: cheapest.prices[0]?.priceEur ?? null,
-      demo: history.demo,
+      priceError: cheapest.error,
+      debug: cheapest.debug,
     };
   },
   head: ({ loaderData }) => {
@@ -61,7 +63,7 @@ export const Route = createFileRoute("/vols-pas-chers/$slug")({
 });
 
 function DestinationPage() {
-  const { route, months, lowestPrice, demo } = Route.useLoaderData();
+  const { route, months, lowestPrice, priceError, debug } = Route.useLoaderData();
   const chartMin = months.length ? Math.min(...months.map((m) => m.priceEur)) : null;
 
   return (
@@ -138,11 +140,16 @@ function DestinationPage() {
             <div className="mt-4 rounded-xl border border-border bg-card p-4">
               <PriceHistoryChart months={months} />
             </div>
-            {demo && (
+            {months.length === 0 && (
               <p className="mt-2 text-xs text-muted-foreground">
-                Données de démonstration en attente de la configuration du partenaire de distribution.
+                Aucune observation de prix enregistrée pour l'instant sur ce trajet : l'historique se
+                constitue à partir des prix réellement relevés lors des recherches.
               </p>
             )}
+            {priceError && (
+              <p className="mt-2 text-xs text-destructive">{priceError}</p>
+            )}
+            <ApiDebugPanel debug={debug} />
           </section>
 
           <section className="mt-10">
@@ -154,11 +161,13 @@ function DestinationPage() {
         </div>
 
         <aside className="space-y-6">
-          <AlertForm
-            origin={route.origin}
-            destination={route.destination}
-            referencePrice={lowestPrice ?? 200}
-          />
+          {lowestPrice !== null && (
+            <AlertForm
+              origin={route.origin}
+              destination={route.destination}
+              referencePrice={lowestPrice}
+            />
+          )}
           <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
             <h2 className="font-display text-base font-semibold text-foreground">
               Pas encore décidé sur la destination ?

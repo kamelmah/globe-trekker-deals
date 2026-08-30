@@ -2,17 +2,38 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { createAlert, deactivateAlert } from "@/lib/alerts.server";
+import type { ApiDebugInfo } from "@/lib/flights.types";
 import {
+  TravelpayoutsError,
   fetchCalendarPrices,
   fetchCheapestDestinations,
   fetchMonthlyHistory,
   fetchOffers,
   hasApiCredentials,
   shiftDates,
+  type RawApiCall,
 } from "@/lib/travelpayouts.server";
 
 const iata = z.string().trim().min(3).max(3).toUpperCase();
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+
+/** La réponse brute n'est exposée qu'en développement. */
+function debugOf(raw: RawApiCall | null): ApiDebugInfo | null {
+  if (process.env["NODE_ENV"] === "production") return null;
+  if (!raw) return null;
+  return {
+    endpoint: raw.endpoint,
+    params: raw.params,
+    status: raw.status,
+    body: raw.body.length > 20000 ? `${raw.body.slice(0, 20000)}\n… (tronqué)` : raw.body,
+  };
+}
+
+function messageOf(error: unknown): string {
+  if (error instanceof TravelpayoutsError) return error.message;
+  console.error("Erreur inattendue côté prix", error);
+  return "Une erreur est survenue lors de la récupération des prix. Aucun résultat n'est affiché.";
+}
 
 export const searchFlights = createServerFn({ method: "GET" })
   .inputValidator((data) =>
@@ -28,18 +49,35 @@ export const searchFlights = createServerFn({ method: "GET" })
   )
   .handler(async ({ data }) => {
     const dates = data.flexible ? shiftDates(data.departureAt, 3) : [data.departureAt];
-    const batches = await Promise.all(
-      dates.map((departureAt) =>
-        fetchOffers({
-          origin: data.origin,
-          destination: data.destination,
-          departureAt,
-          returnAt: data.returnAt ?? null,
-        }),
-      ),
-    );
-    const offers = batches.flat().sort((a, b) => a.priceEur - b.priceEur).slice(0, 40);
-    return { offers, demo: !hasApiCredentials() };
+    try {
+      const batches = await Promise.all(
+        dates.map((departureAt) =>
+          fetchOffers({
+            origin: data.origin,
+            destination: data.destination,
+            departureAt,
+            returnAt: data.returnAt ?? null,
+          }),
+        ),
+      );
+      const offers = batches
+        .flatMap((batch) => batch.offers)
+        .sort((a, b) => a.priceEur - b.priceEur)
+        .slice(0, 40);
+      return {
+        offers,
+        error: null as string | null,
+        debug: debugOf(batches[0]?.raw ?? null),
+        configured: hasApiCredentials(),
+      };
+    } catch (error) {
+      return {
+        offers: [],
+        error: messageOf(error),
+        debug: null,
+        configured: hasApiCredentials(),
+      };
+    }
   });
 
 export const cheapestDestinations = createServerFn({ method: "GET" })
@@ -53,12 +91,16 @@ export const cheapestDestinations = createServerFn({ method: "GET" })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    const prices = await fetchCheapestDestinations({
-      origin: data.origin,
-      destinations: data.destinations,
-      month: data.month ?? undefined,
-    });
-    return { prices, demo: !hasApiCredentials() };
+    try {
+      const { prices, raw } = await fetchCheapestDestinations({
+        origin: data.origin,
+        destinations: data.destinations,
+        month: data.month ?? undefined,
+      });
+      return { prices, error: null as string | null, debug: debugOf(raw) };
+    } catch (error) {
+      return { prices: [], error: messageOf(error), debug: null };
+    }
   });
 
 export const calendarPrices = createServerFn({ method: "GET" })
@@ -72,15 +114,19 @@ export const calendarPrices = createServerFn({ method: "GET" })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    const days = await fetchCalendarPrices(data);
-    return { days, demo: !hasApiCredentials() };
+    try {
+      const { days, raw } = await fetchCalendarPrices(data);
+      return { days, error: null as string | null, debug: debugOf(raw) };
+    } catch (error) {
+      return { days: [], error: messageOf(error), debug: null };
+    }
   });
 
 export const monthlyHistory = createServerFn({ method: "GET" })
   .inputValidator((data) => z.object({ origin: iata, destination: iata }).parse(data))
   .handler(async ({ data }) => {
-    const months = await fetchMonthlyHistory(data);
-    return { months, demo: !hasApiCredentials() };
+    const { months } = await fetchMonthlyHistory(data);
+    return { months };
   });
 
 export const subscribeToAlert = createServerFn({ method: "POST" })

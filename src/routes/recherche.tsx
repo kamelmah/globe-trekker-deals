@@ -5,6 +5,7 @@ import { ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
+import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { FlightCard } from "@/components/flights/FlightCard";
 import { PriceCalendar } from "@/components/flights/PriceCalendar";
 import { SearchForm } from "@/components/search/SearchForm";
@@ -221,11 +222,21 @@ function SearchResultsPage() {
             </div>
           </div>
 
-          {offersQuery.data?.demo && (
-            <p className="mt-3 text-xs text-muted-foreground">
-              Prix de démonstration : la connexion au partenaire de distribution n'est pas encore
-              configurée sur cet environnement.
+          {offersQuery.isError && (
+            <p className="mt-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+              La recherche n'a pas abouti. Rechargez la page ou essayez d'autres dates.
             </p>
+          )}
+
+          {offersQuery.data?.error && (
+            <p className="mt-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+              {offersQuery.data.error}
+            </p>
+          )}
+
+          <ApiDebugPanel debug={offersQuery.data?.debug} label="Recherche de vols" />
+          {search["vue"] === "calendrier" && (
+            <ApiDebugPanel debug={calendarQuery.data?.debug} label="Calendrier des prix" />
           )}
 
           {search["vue"] === "calendrier" ? (
@@ -239,6 +250,13 @@ function SearchResultsPage() {
               {calendarQuery.isPending ? (
                 <Skeleton className="h-72 w-full" />
               ) : (
+                calendarQuery.data?.error ? (
+                <p className="text-sm text-destructive">{calendarQuery.data.error}</p>
+              ) : (calendarQuery.data?.days ?? []).length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Aucun prix trouvé pour ce mois, essayez un autre mois.
+                </p>
+              ) : (
                 <PriceCalendar
                   days={calendarQuery.data?.days ?? []}
                   month={month}
@@ -247,6 +265,7 @@ function SearchResultsPage() {
                     navigate({ search: (prev) => ({ ...prev, depart: date, vue: "liste" }) })
                   }
                 />
+              )
               )}
             </div>
           ) : (
@@ -256,7 +275,13 @@ function SearchResultsPage() {
                   <Skeleton key={i} className="h-40 w-full rounded-xl" />
                 ))}
 
-              {!offersQuery.isPending && filtered.length === 0 && (
+              {!offersQuery.isPending && !offersQuery.data?.error && offers.length === 0 && (
+                <p className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
+                  Aucun vol trouvé pour cette recherche, essayez d'autres dates.
+                </p>
+              )}
+
+              {!offersQuery.isPending && offers.length > 0 && filtered.length === 0 && (
                 <p className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
                   Aucun vol ne correspond à ces filtres. Essayez d'élargir les dates ou de retirer un
                   filtre.
