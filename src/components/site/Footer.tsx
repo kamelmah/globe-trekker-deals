@@ -58,11 +58,6 @@ export function Footer() {
                 Questions fréquentes (FAQ)
               </Link>
             </li>
-            <li>
-              <Link to="/comment-on-gagne-de-l-argent" className={linkClass}>
-                Comment on gagne de l'argent
-              </Link>
-            </li>
           </ul>
         </div>
 

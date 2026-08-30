@@ -15,7 +15,6 @@ export const Route = createFileRoute("/sitemap-pages.xml")({
           { loc: "/mode-budget", priority: "0.9", changefreq: "daily" },
           { loc: "/conseils", priority: "0.7", changefreq: "weekly" },
           { loc: "/faq", priority: "0.6", changefreq: "monthly" },
-          { loc: "/comment-on-gagne-de-l-argent", priority: "0.5", changefreq: "monthly" },
           { loc: "/mentions-legales", priority: "0.2", changefreq: "yearly" },
           { loc: "/cgu", priority: "0.2", changefreq: "yearly" },
           { loc: "/confidentialite", priority: "0.2", changefreq: "yearly" },

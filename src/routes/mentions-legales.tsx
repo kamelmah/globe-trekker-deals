@@ -61,8 +61,8 @@ function LegalPage() {
       <h2 className="mt-8 font-display text-xl font-semibold">Liens d'affiliation</h2>
       <p className="mt-2 text-muted-foreground">
         Le site perçoit une commission d'affiliation lorsqu'une réservation est effectuée après un
-        clic depuis TrouveMonVol, sans surcoût pour vous. Les détails sont expliqués sur la page
-        « Comment on gagne de l'argent ».
+        clic depuis TrouveMonVol, sans surcoût pour vous. Le prix payé reste identique à celui
+        pratiqué directement par le vendeur du billet.
       </p>
     </article>
   );
