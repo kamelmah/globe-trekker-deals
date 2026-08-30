@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
+import { PassengerSelector, type Passengers } from "@/components/search/PassengerSelector";
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,8 +33,12 @@ export function SearchForm({
   const [depart, setDepart] = useState(defaultDate(30));
   const [retour, setRetour] = useState("");
   const [flexible, setFlexible] = useState(true);
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
+  const [passengers, setPassengers] = useState<Passengers>({
+    adults: 1,
+    children: 0,
+    infants: 0,
+  });
+
   const [budget, setBudget] = useState("");
 
 
