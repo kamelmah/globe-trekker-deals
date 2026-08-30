@@ -166,6 +166,7 @@ export const Route = createFileRoute("/vols/$slug")({
 
 function DestinationPage() {
   const { route, months, lowestObserved, related } = Route.useLoaderData();
+  const banner = getDestinationImage(route.destination, route.destinationCity);
 
   return (
     <article className="container-page py-10">
@@ -176,8 +177,26 @@ function DestinationPage() {
         / Vols pas chers {route.originCity} — {route.destinationCity}
       </nav>
 
-      <h1 className="mt-3 font-display text-3xl font-semibold">{route.heading}</h1>
-      <p className="mt-3 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
+      <div className="relative mt-4 overflow-hidden rounded-2xl border border-border">
+        <img
+          src={banner.src}
+          alt={banner.alt}
+          width={1200}
+          height={630}
+          decoding="async"
+          className="h-44 w-full object-cover sm:h-64 lg:h-80"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"
+          aria-hidden
+        />
+        <h1 className="absolute inset-x-0 bottom-0 p-4 font-display text-2xl font-semibold text-white drop-shadow sm:p-6 sm:text-3xl">
+          {route.heading}
+        </h1>
+      </div>
+
+      <p className="mt-4 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
+
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4">
