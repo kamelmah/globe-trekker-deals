@@ -197,6 +197,9 @@ export function PlaceAutocomplete({
               role="option"
               aria-selected={index === active}
               onMouseEnter={() => setActive(index)}
+              onMouseDown={() => {
+                skipBlur.current = true;
+              }}
               onClick={() => select(place)}
               className={`flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 text-left text-sm ${
                 index === active ? "bg-secondary" : ""
