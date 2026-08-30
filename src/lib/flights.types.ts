@@ -2,11 +2,11 @@ export type FlightOffer = {
   id: string;
   origin: string;
   destination: string;
-  /** Prix total taxes incluses, en euros. */
+  /** Prix total taxes incluses, en euros, tel que renvoyé par l'API. */
   priceEur: number;
   airline: string;
   airlineCode: string;
-  /** Vendeur réel du billet (compagnie ou agence), jamais anonyme. */
+  /** Vendeur réel du billet renvoyé par l'API (compagnie ou agence nommée). */
   seller: string;
   flightNumber: string;
   departureAt: string;
@@ -16,8 +16,8 @@ export type FlightOffer = {
   cabinBag: boolean;
   checkedBag: boolean;
   co2Kg: number;
+  /** Lien de réservation exact renvoyé par l'API, avec le marker d'affiliation. */
   bookingUrl: string;
-  isDemo: boolean;
 };
 
 export type DestinationPrice = {
@@ -29,7 +29,6 @@ export type DestinationPrice = {
   priceEur: number;
   airline: string;
   departureAt: string;
-  isDemo: boolean;
 };
 
 export type CalendarDayPrice = {
@@ -40,4 +39,12 @@ export type CalendarDayPrice = {
 export type MonthlyPrice = {
   month: string;
   priceEur: number;
+};
+
+/** Trace de l'appel API, exposée uniquement en développement. */
+export type ApiDebugInfo = {
+  endpoint: string;
+  params: Record<string, string>;
+  status: number;
+  body: string;
 };
