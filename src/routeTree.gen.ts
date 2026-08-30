@@ -19,6 +19,7 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapPagesDotxmlRouteImport } from './routes/sitemap-pages[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
@@ -77,6 +78,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapPagesDotxmlRoute = SitemapPagesDotxmlRouteImport.update({
+  id: '/sitemap-pages.xml',
+  path: '/sitemap-pages.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
+    | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/alertes/desinscription'
     | '/conseils/$slug'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
+    | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/alertes/desinscription'
     | '/conseils/$slug'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/robots.txt'
+    | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/alertes/desinscription'
     | '/conseils/$slug'
@@ -243,6 +255,7 @@ export interface RootRouteChildren {
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapPagesDotxmlRoute: typeof SitemapPagesDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap-pages.xml': {
+      id: '/sitemap-pages.xml'
+      path: '/sitemap-pages.xml'
+      fullPath: '/sitemap-pages.xml'
+      preLoaderRoute: typeof SitemapPagesDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -387,6 +407,7 @@ const rootRouteChildren: RootRouteChildren = {
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapPagesDotxmlRoute: SitemapPagesDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
