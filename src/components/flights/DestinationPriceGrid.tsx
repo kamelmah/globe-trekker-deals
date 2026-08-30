@@ -2,7 +2,9 @@ import { Link } from "@tanstack/react-router";
 
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { useCurrency } from "@/lib/currency-context";
+import { getDestinationImage } from "@/lib/destination-images";
 import type { ApiDebugInfo, DestinationPrice } from "@/lib/flights.types";
+
 
 export function DestinationPriceGrid({
   prices,
