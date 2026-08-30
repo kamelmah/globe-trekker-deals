@@ -125,9 +125,18 @@ function HomePage() {
 
   return (
     <div>
-      <section className="border-b border-border bg-sky-soft">
+      <section className="relative isolate overflow-hidden border-b border-border bg-sky-soft">
+        <img
+          src={heroSky}
+          alt="Aile d'avion au-dessus d'une mer de nuages au lever du soleil"
+          width={1920}
+          height={1080}
+          decoding="async"
+          className="absolute inset-0 -z-10 size-full object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/85 via-background/80 to-background/95" aria-hidden />
         <div className="container-page grid gap-10 py-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-16">
-          <div>
+
             <h1 className="font-display text-3xl font-semibold leading-tight sm:text-4xl">
               Trouvez un vol pas cher sans mauvaise surprise au moment de payer
             </h1>
