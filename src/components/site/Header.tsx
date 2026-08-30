@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { Menu } from "lucide-react";
-import { useState } from "react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Menu, Plane } from "lucide-react";
+import { useCallback, useState } from "react";
 
 import logo from "@/assets/logo.png";
 import { CurrencySelect } from "@/components/site/CurrencySelect";
@@ -14,6 +14,31 @@ const NAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  /** Scroll vers le formulaire de recherche et focus sur le champ départ. */
+  const focusSearchForm = useCallback(() => {
+    const form = document.getElementById("recherche");
+    form?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const firstField = document.getElementById("origin");
+    if (firstField instanceof HTMLElement) {
+      // Léger délai pour laisser le scroll démarrer avant le focus.
+      window.setTimeout(() => firstField.focus({ preventScroll: true }), 350);
+    }
+  }, []);
+
+  const onCtaClick = useCallback(() => {
+    setOpen(false);
+    if (pathname === "/") {
+      focusSearchForm();
+      return;
+    }
+    void navigate({ to: "/" }).then(() => {
+      // Attendre que la page d'accueil soit montée avant de scroller.
+      window.setTimeout(focusSearchForm, 300);
+    });
+  }, [pathname, navigate, focusSearchForm]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
