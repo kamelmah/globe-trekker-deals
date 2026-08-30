@@ -114,8 +114,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
     scripts: [
-      { src: "https://emrldtp.com/NTY4Mzc3.js?t=568377", async: true, "data-cmp-ab": "2" },
       {
+
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
