@@ -434,6 +434,15 @@ function SearchResultsPage() {
           </div>
         </section>
       </div>
+
+      <Stay22Map
+        className="mt-12 border-t border-border pt-8"
+        city={to}
+        {...(search.depart ? { checkin: search.depart } : {})}
+        {...(search.retour ? { checkout: search.retour } : {})}
+        title="Et pour dormir sur place ?"
+        description={`Hébergements disponibles à ${to}${search.depart ? ` pour votre séjour du ${search.depart}${search.retour ? ` au ${search.retour}` : ""}` : ""}, affichés sur une carte.`}
+      />
     </div>
   );
 }
