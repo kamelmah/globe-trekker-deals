@@ -219,6 +219,15 @@ export function PriceDatePicker({
             <p className="mt-2 text-xs text-destructive">{pricesQuery.data.error}</p>
           )}
 
+          {!pricesQuery.isFetching &&
+            !pricesQuery.data?.error &&
+            (pricesQuery.data?.days?.length ?? 0) === 0 && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Aucun prix disponible pour ce mois sur ce trajet. Essayez un autre mois.
+              </p>
+            )}
+
+
           <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <span className="size-2.5 rounded bg-success/40" aria-hidden /> Bas

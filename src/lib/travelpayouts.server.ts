@@ -150,9 +150,10 @@ async function callApi<T>(
   if (!res.ok) {
     console.error(`Travelpayouts ${path} a répondu ${res.status}: ${text.slice(0, 500)}`);
     throw new TravelpayoutsError(
-      `Le service de prix a renvoyé une erreur (${res.status}). Aucun résultat n'est affiché.`,
+      "Impossible de charger les prix pour le moment, réessayez plus tard.",
     );
   }
+
 
   return { data: parsed as T, raw };
 }
@@ -418,37 +419,39 @@ export async function fetchCalendarPrices(params: {
   let raw: RawApiCall | null = null;
 
   if (mode === "return") {
-    // L'API ne groupe pas par date de retour : on interroge chaque jour du mois
-    // (résultat mis en cache par trajet + mois + date de départ).
-    const candidates = daysInMonth(params.month).filter((d) => d > departureAt!);
-    const CONCURRENCY = 6;
-    for (let i = 0; i < candidates.length; i += CONCURRENCY) {
-      const slice = candidates.slice(i, i + CONCURRENCY);
-      const results = await Promise.all(
-        slice.map((day) =>
-          callApi<{ data?: ApiOffer[] }>(
-            "/aviasales/v3/prices_for_dates",
-            {
-              origin: params.origin,
-              destination: params.destination,
-              departure_at: departureAt!,
-              return_at: day,
-              one_way: "false",
-              sorting: "price",
-              limit: "1",
-            },
-            currency,
-          ).then((r) => ({ day, ...r })),
-        ),
+    // L'API refuse un écart de plus de 30 jours entre départ et retour :
+    // on ne consulte que la fenêtre valide du mois demandé.
+    const dayMs = 86400000;
+    const depMs = Date.parse(`${departureAt!}T00:00:00Z`);
+    const monthDays = daysInMonth(params.month).filter((d) => {
+      const t = Date.parse(`${d}T00:00:00Z`);
+      return t > depMs && t - depMs <= 30 * dayMs;
+    });
+    if (monthDays.length > 0) {
+      // Un seul appel par mois : l'API accepte return_at au format YYYY-MM.
+      const call = await callApi<{ data?: ApiOffer[] }>(
+        "/aviasales/v3/prices_for_dates",
+        {
+          origin: params.origin,
+          destination: params.destination,
+          departure_at: departureAt!,
+          return_at: params.month,
+          one_way: "false",
+          sorting: "price",
+          limit: "1000",
+        },
+        currency,
       );
-      for (const result of results) {
-        raw ??= result.raw;
-        const offer = (result.data?.data ?? [])[0];
+      raw = call.raw;
+      const allowed = new Set(monthDays);
+      for (const offer of call.data?.data ?? []) {
         const back = offer?.return_at?.slice(0, 10);
-        if (!offer || back !== result.day) continue;
-        map.set(result.day, Math.round(offer.price));
+        if (!back || !allowed.has(back)) continue;
+        const price = Math.round(offer.price);
+        if (!map.has(back) || price < map.get(back)!) map.set(back, price);
       }
     }
+
   } else {
     const call = await callApi<{ data?: Record<string, ApiOffer> | ApiOffer[] }>(
       "/aviasales/v3/grouped_prices",
