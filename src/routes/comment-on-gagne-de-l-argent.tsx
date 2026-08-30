@@ -24,7 +24,17 @@ function MoneyPage() {
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
         Un comparateur gratuit doit bien se financer d'une manière ou d'une autre. Chez la plupart des
         sites, cela passe par la publicité, la mise en avant payante de certains partenaires ou la
-        revente de données de navigation. Nous avons choisi un seul mécanisme, et le voici en entier.
+        revente de données de navigation. Nous avons choisi deux sources de revenus seulement, et les
+        voici en entier.
+      </p>
+
+      <h2 className="mt-8 font-display text-xl font-semibold">Un partenaire publicitaire</h2>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        Le site charge un script publicitaire tiers qui peut afficher des emplacements sponsorisés et
+        gère votre consentement aux cookies. Il ne modifie jamais le classement des vols : les
+        résultats restent triés par prix réel, et aucun vendeur ne peut payer pour remonter dans la
+        liste. Vous pouvez refuser le dépôt de cookies publicitaires depuis la bannière de
+        consentement.
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Une commission versée par le vendeur</h2>
