@@ -4,6 +4,7 @@ import { AlertForm } from "@/components/alerts/AlertForm";
 import { LivePriceButton } from "@/components/flights/LivePriceButton";
 import { PriceHistoryChart } from "@/components/flights/PriceHistoryChart";
 import { FaqAccordion } from "@/components/site/FaqAccordion";
+import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
 import { getDestination } from "@/data/destinations";
 import { monthlyHistory } from "@/lib/flights.functions";
@@ -364,6 +365,13 @@ function DestinationPage() {
               <FaqAccordion items={route.faq} />
             </div>
           </section>
+
+          <Stay22Map
+            className="mt-12"
+            city={route.destinationCity}
+            title={`Trouvez aussi votre hébergement à ${route.destinationCity}`}
+            description={`Hôtels, appartements et auberges disponibles à ${route.destinationCity}, affichés sur une carte. Les prix proviennent directement des plateformes de réservation.`}
+          />
         </div>
 
         <aside className="space-y-6">

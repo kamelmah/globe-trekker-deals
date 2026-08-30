@@ -16,6 +16,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CurrencyProvider } from "@/lib/currency-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import { STAY22_LMA_ID } from "@/components/stay/Stay22Map";
 
 function NotFoundComponent() {
   return (
@@ -156,6 +157,21 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  // Script d'affiliation Stay22 (Let Me Allez) : chargé une seule fois, côté client, en asynchrone.
+  useEffect(() => {
+    const w = window as typeof window & { Stay22?: { params?: Record<string, string> } };
+    if (document.getElementById("stay22-letmeallez")) return;
+    w.Stay22 = w.Stay22 || {};
+    w.Stay22.params = { lmaID: STAY22_LMA_ID };
+    const script = document.createElement("script");
+    script.id = "stay22-letmeallez";
+    script.async = true;
+    script.src = "https://scripts.stay22.com/letmeallez.js";
+    document.head.appendChild(script);
+  }, []);
+
+
 
   return (
     <QueryClientProvider client={queryClient}>
