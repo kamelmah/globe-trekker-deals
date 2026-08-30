@@ -114,38 +114,32 @@ export const Route = createFileRoute("/vols/$slug")({
           type: "application/ld+json",
           children: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Product",
-            name: `Vol ${route.originCity} — ${route.destinationCity}`,
-            description: route.metaDescription,
-            image: ogImage,
-            url: pageUrl,
-            category: "Billet d'avion",
-            ...(lowestObserved
-              ? {
-                  offers: {
-                    "@type": "AggregateOffer",
-                    priceCurrency: "EUR",
-                    lowPrice: lowestObserved,
-                    offerCount: 1,
-                    availability: "https://schema.org/InStock",
-                    url: pageUrl,
-                  },
-                }
-              : {}),
-          }),
-        },
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
+            // Google recommande le type Flight (et non Product/Offer) pour un billet d'avion.
             "@type": "Flight",
             name: `Vol ${route.originCity} — ${route.destinationCity}`,
+            description: route.metaDescription,
+            url: pageUrl,
+            image: ogImage,
             departureAirport: { "@type": "Airport", iataCode: route.origin, name: route.originCity },
             arrivalAirport: {
               "@type": "Airport",
               iataCode: route.destination,
               name: route.destinationCity,
             },
+            ...(route.observedDepartureAt
+              ? { departureTime: new Date(route.observedDepartureAt).toISOString() }
+              : {}),
+            ...(route.observedAirline
+              ? {
+                  airline: {
+                    "@type": "Airline",
+                    name: route.observedAirline,
+                    ...(/^[A-Z0-9]{2}$/.test(route.observedAirline)
+                      ? { iataCode: route.observedAirline }
+                      : {}),
+                  },
+                }
+              : {}),
             ...(lowestObserved
               ? {
                   offers: {
