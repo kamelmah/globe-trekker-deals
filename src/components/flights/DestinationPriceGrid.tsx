@@ -37,7 +37,9 @@ export function DestinationPriceGrid({
 
       {sorted.length > 0 && (
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {sorted.map((price) => (
+          {sorted.map((price) => {
+            const image = getDestinationImage(price.destination, price.city);
+            return (
             <li key={price.destination}>
               <Link
                 to="/recherche"
@@ -53,11 +55,20 @@ export function DestinationPriceGrid({
                   enfants: 0,
                   bebes: 0,
                 }}
-                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
+                className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-secondary"
               >
-                <span>
-                  <span className="block text-sm font-semibold">{price.city}</span>
-                  <span className="block text-xs text-muted-foreground">
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  loading="lazy"
+                  decoding="async"
+                  width={112}
+                  height={80}
+                  className="size-14 shrink-0 rounded-lg object-cover sm:h-16 sm:w-20"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold">{price.city}</span>
+                  <span className="block truncate text-xs text-muted-foreground">
                     {price.country} · {price.airline}
                   </span>
                 </span>
@@ -66,7 +77,9 @@ export function DestinationPriceGrid({
                 </span>
               </Link>
             </li>
-          ))}
+            );
+          })}
+
         </ul>
       )}
 
