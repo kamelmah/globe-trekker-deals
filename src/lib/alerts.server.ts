@@ -1,4 +1,5 @@
 import { fetchOffers } from "@/lib/travelpayouts.server";
+import { logOps } from "@/lib/ops-log.server";
 import { cityLabel } from "@/data/airports";
 import { formatPrice } from "@/lib/currency";
 
@@ -42,7 +43,22 @@ async function resolveReferencePrice(input: AlertInput): Promise<number | null> 
 
 export async function createAlert(input: AlertInput): Promise<{ ok: boolean; message: string }> {
   const referencePrice = await resolveReferencePrice(input);
+  const logContext = {
+    origin: input.origin.toUpperCase(),
+    destination: input.destination.toUpperCase(),
+    departDate: input.departDate ?? null,
+    returnDate: input.returnDate ?? null,
+    hasReferencePrice: typeof input.referencePrice === "number",
+  };
   if (referencePrice === null) {
+    logOps({
+      kind: "alerte",
+      label: "création refusée",
+      ok: false,
+      resultCount: 0,
+      message: "aucun prix de référence réel disponible",
+      context: logContext,
+    });
     return {
       ok: false,
       message:
@@ -77,10 +93,24 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
       last_price: referencePrice,
     });
     if (retry.error && !retry.error.message.includes("duplicate")) {
-      console.error("Création d'alerte impossible", retry.error);
+      logOps({
+        kind: "alerte",
+        label: "création en échec",
+        ok: false,
+        message: retry.error.message,
+        context: logContext,
+      });
       return { ok: false, message: "Impossible d'enregistrer l'alerte pour le moment." };
     }
   }
+
+  logOps({
+    kind: "alerte",
+    label: "création réussie",
+    ok: true,
+    resultCount: 1,
+    context: { ...logContext, referencePrice },
+  });
 
   return {
     ok: true,
