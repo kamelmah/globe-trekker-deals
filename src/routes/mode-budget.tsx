@@ -81,18 +81,18 @@ function BudgetPage() {
     ...(currency === "EUR" ? { initialData: initial } : {}),
   });
 
+  /** Pré-remplit le formulaire de recherche de l'accueil avec ce trajet. */
   const searchForDestination = useCallback(
     (destination: string, departureAt: string) => ({
       origin: search["origin"],
       destination,
       depart: departureAt.slice(0, 10),
       retour: "",
-      flexible: 1,
-      budget: 0,
+      budget: search["budget"],
+      flexible: true,
       adultes: 1,
       enfants: 0,
       bebes: 0,
-      vue: "liste",
     }),
     [search],
   );
@@ -100,7 +100,7 @@ function BudgetPage() {
   const hrefFor = useCallback(
     (price: { destination: string; departureAt: string }) =>
       router.buildLocation({
-        to: "/recherche",
+        to: "/",
         search: searchForDestination(price.destination, price.departureAt),
       }).href,
     [router, searchForDestination],

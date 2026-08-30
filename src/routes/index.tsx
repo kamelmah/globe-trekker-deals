@@ -104,6 +104,7 @@ const REASONS = [
 
 function HomePage() {
   const { prices, error, debug } = Route.useLoaderData();
+  const prefill = Route.useSearch();
 
   return (
     <div>
