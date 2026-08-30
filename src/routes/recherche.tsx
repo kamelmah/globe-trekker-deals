@@ -19,6 +19,7 @@ import { cityLabel } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { calendarPrices, searchFlights } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr, todayPlus } from "@/lib/search-params";
+import { addDaysIso, tripDurationLabel } from "@/lib/trip-duration";
 
 type SearchParams = {
   origin: string;

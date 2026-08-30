@@ -44,6 +44,7 @@ export function DestinationPriceGrid({
                   destination: price.destination,
                   depart: price.departureAt.slice(0, 10),
                   retour: "",
+                  duree: 0,
                   flexible: 1,
                   budget: 0,
                   adultes: 1,
