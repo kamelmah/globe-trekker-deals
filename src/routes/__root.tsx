@@ -83,6 +83,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "author", content: "TrouveMonVol" },
+      {
+        name: "google-site-verification",
+        content: "KKsNIWH1YJpMl4i0VxQsvpNVUQ_j43QbYM3GIkAHD4g",
+      },
       { name: "theme-color", content: "#1b6fd0" },
       { name: "apple-mobile-web-app-title", content: "TrouveMonVol" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
