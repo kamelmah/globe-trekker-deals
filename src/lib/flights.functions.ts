@@ -44,6 +44,8 @@ export const searchFlights = createServerFn({ method: "GET" })
         destination: iata,
         departureAt: isoDate,
         returnAt: isoDate.nullish(),
+        /** Nombre de nuits imposé par le raccourci de durée (0 = dates libres). */
+        tripDuration: z.number().int().min(0).max(30).optional(),
         flexible: z.boolean().optional(),
         currency,
         adults: z.number().int().min(1).max(9).optional(),
@@ -54,6 +56,7 @@ export const searchFlights = createServerFn({ method: "GET" })
   )
   .handler(async ({ data }) => {
     const dates = data.flexible ? shiftDates(data.departureAt, 3) : [data.departureAt];
+    const nights = data.tripDuration ?? 0;
     try {
       const batches = await Promise.all(
         dates.map((departureAt) =>
@@ -61,7 +64,8 @@ export const searchFlights = createServerFn({ method: "GET" })
             origin: data.origin,
             destination: data.destination,
             departureAt,
-            returnAt: data.returnAt ?? null,
+            // Avec un raccourci de durée, le retour suit chaque date de départ testée.
+            returnAt: nights > 0 ? addDays(departureAt, nights) : data.returnAt ?? null,
             currency: data.currency ?? "EUR",
             adults: data.adults ?? 1,
             children: data.children ?? 0,
@@ -69,6 +73,7 @@ export const searchFlights = createServerFn({ method: "GET" })
           }),
         ),
       );
+
       const offers = batches
         .flatMap((batch) => batch.offers)
         .sort((a, b) => a.priceEur - b.priceEur)
