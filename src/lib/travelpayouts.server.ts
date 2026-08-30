@@ -340,52 +340,155 @@ export async function fetchCheapestDestinations(params: {
 /* Calendrier des prix                                                         */
 /* -------------------------------------------------------------------------- */
 
+/** Cache Supabase des mois de calendrier (aucune donnée estimée, juste mémorisée). */
+const CALENDAR_TTL_MS = 6 * 60 * 60 * 1000;
+
+async function readCalendarCache(key: string): Promise<CalendarDayPrice[] | null> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("price_cache")
+      .select("payload,expires_at")
+      .eq("cache_key", key)
+      .maybeSingle();
+    if (error || !data) return null;
+    if (Date.parse(data.expires_at) < Date.now()) return null;
+    const payload = data.payload as { days?: CalendarDayPrice[] } | null;
+    return Array.isArray(payload?.days) ? payload!.days : null;
+  } catch (error) {
+    console.error("Lecture du cache calendrier impossible", error);
+    return null;
+  }
+}
+
+async function writeCalendarCache(key: string, days: CalendarDayPrice[]): Promise<void> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("price_cache").upsert(
+      {
+        cache_key: key,
+        payload: { days },
+        expires_at: new Date(Date.now() + CALENDAR_TTL_MS).toISOString(),
+      },
+      { onConflict: "cache_key" },
+    );
+  } catch (error) {
+    console.error("Écriture du cache calendrier impossible", error);
+  }
+}
+
 export async function fetchCalendarPrices(params: {
   origin: string;
   destination: string;
-  /** Mois au format YYYY-MM. */
+  /** Mois au format YYYY-MM à remplir (mois de départ, ou mois de retour en mode retour). */
   month: string;
   /** Nombre de nuits du séjour recherché (0 = aller simple). */
   tripDuration?: number;
   currency?: string;
-}): Promise<{ days: CalendarDayPrice[]; raw: RawApiCall }> {
+  /** "departure" = prix par jour de départ ; "return" = prix par jour de retour. */
+  mode?: "departure" | "return";
+  /** Date de départ déjà choisie (obligatoire en mode retour). */
+  departureAt?: string | null;
+}): Promise<{ days: CalendarDayPrice[]; raw: RawApiCall | null; cached: boolean }> {
   const nights = Math.max(0, Math.round(params.tripDuration ?? 0));
-  const { data, raw } = await callApi<{ data?: Record<string, ApiOffer> | ApiOffer[] }>(
-    "/aviasales/v3/grouped_prices",
-    {
-      origin: params.origin,
-      destination: params.destination,
-      departure_at: params.month,
-      group_by: "departure_at",
-      one_way: nights > 0 ? "false" : "true",
-    },
-    params.currency,
-  );
+  const mode = params.mode ?? "departure";
+  const currency = (params.currency ?? "EUR").toUpperCase();
+  const departureAt = params.departureAt ?? null;
 
-  const entries = Object.values(data?.data ?? {}) as ApiOffer[];
+  if (mode === "return" && !departureAt) {
+    throw new TravelpayoutsError(
+      "Choisissez d'abord une date de départ pour afficher les prix de retour.",
+    );
+  }
+
+  const cacheKey = [
+    "calendar",
+    mode,
+    params.origin,
+    params.destination,
+    params.month,
+    currency,
+    mode === "return" ? departureAt : String(nights),
+  ].join(":");
+
+  const cached = await readCalendarCache(cacheKey);
+  if (cached) return { days: cached, raw: null, cached: true };
+
   const map = new Map<string, number>();
-  for (const offer of entries) {
-    const day = offer?.departure_at?.slice(0, 10);
-    if (!day) continue;
-    if (nights > 0) {
-      // Seuls les allers-retours de la durée demandée (± 1 nuit) sont retenus.
-      const back = offer.return_at?.slice(0, 10);
-      if (!back) continue;
-      const actual = Math.round(
-        (Date.parse(`${back}T00:00:00Z`) - Date.parse(`${day}T00:00:00Z`)) / 86400000,
+  let raw: RawApiCall | null = null;
+
+  if (mode === "return") {
+    // L'API ne groupe pas par date de retour : on interroge chaque jour du mois
+    // (résultat mis en cache par trajet + mois + date de départ).
+    const candidates = daysInMonth(params.month).filter((d) => d > departureAt!);
+    const CONCURRENCY = 6;
+    for (let i = 0; i < candidates.length; i += CONCURRENCY) {
+      const slice = candidates.slice(i, i + CONCURRENCY);
+      const results = await Promise.all(
+        slice.map((day) =>
+          callApi<{ data?: ApiOffer[] }>(
+            "/aviasales/v3/prices_for_dates",
+            {
+              origin: params.origin,
+              destination: params.destination,
+              departure_at: departureAt!,
+              return_at: day,
+              one_way: "false",
+              sorting: "price",
+              limit: "1",
+            },
+            currency,
+          ).then((r) => ({ day, ...r })),
+        ),
       );
-      if (Math.abs(actual - nights) > 1) continue;
+      for (const result of results) {
+        raw ??= result.raw;
+        const offer = (result.data?.data ?? [])[0];
+        const back = offer?.return_at?.slice(0, 10);
+        if (!offer || back !== result.day) continue;
+        map.set(result.day, Math.round(offer.price));
+      }
     }
-    const price = Math.round(offer.price);
-    if (!map.has(day) || price < map.get(day)!) map.set(day, price);
+  } else {
+    const call = await callApi<{ data?: Record<string, ApiOffer> | ApiOffer[] }>(
+      "/aviasales/v3/grouped_prices",
+      {
+        origin: params.origin,
+        destination: params.destination,
+        departure_at: params.month,
+        group_by: "departure_at",
+        one_way: nights > 0 ? "false" : "true",
+      },
+      currency,
+    );
+    raw = call.raw;
+    for (const offer of Object.values(call.data?.data ?? {}) as ApiOffer[]) {
+      const day = offer?.departure_at?.slice(0, 10);
+      const back = offer?.return_at?.slice(0, 10);
+      if (!day) continue;
+      if (nights > 0) {
+        // Seuls les allers-retours de la durée demandée (± 1 nuit) sont retenus.
+        if (!back) continue;
+        const actual = Math.round(
+          (Date.parse(`${back}T00:00:00Z`) - Date.parse(`${day}T00:00:00Z`)) / 86400000,
+        );
+        if (Math.abs(actual - nights) > 1) continue;
+      }
+      const price = Math.round(offer.price);
+      if (!map.has(day) || price < map.get(day)!) map.set(day, price);
+    }
   }
 
   const days = daysInMonth(params.month)
     .filter((d) => map.has(d))
     .map((d) => ({ date: d, priceEur: map.get(d)! }));
 
-  return { days, raw };
+
+  await writeCalendarCache(cacheKey, days);
+
+  return { days, raw, cached: false };
 }
+
 
 
 /* -------------------------------------------------------------------------- */
