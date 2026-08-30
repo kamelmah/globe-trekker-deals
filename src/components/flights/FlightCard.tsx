@@ -1,4 +1,5 @@
-import { Luggage, Leaf, Plane, Store } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Luggage, Leaf, Plane, Store, Clock } from "lucide-react";
 
 import { co2Label } from "@/lib/co2";
 import { useCurrency } from "@/lib/currency-context";
@@ -24,6 +25,28 @@ function formatTime(iso: string): string {
   });
 }
 
+/** Fraîcheur du relevé de prix, calculée côté client pour éviter tout écart SSR. */
+function freshnessLabel(iso: string): string | null {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const minutes = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
+  if (minutes < 1) return "prix relevé à l'instant";
+  if (minutes < 60) return `prix relevé il y a ${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `prix relevé il y a ${hours} h`;
+  return `prix relevé le ${d.toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}`;
+}
+
+function useFreshness(iso: string): string | null {
+  const [label, setLabel] = useState<string | null>(null);
+  useEffect(() => {
+    setLabel(freshnessLabel(iso));
+    const timer = setInterval(() => setLabel(freshnessLabel(iso)), 60000);
+    return () => clearInterval(timer);
+  }, [iso]);
+  return label;
+}
+
 function stopsLabel(stops: number): string {
   if (stops === 0) return "Vol direct";
   return stops === 1 ? "1 escale" : `${stops} escales`;
@@ -37,6 +60,7 @@ export function FlightCard({
   greenest?: boolean;
 }) {
   const { formatApi: format } = useCurrency();
+  const freshness = useFreshness(offer.observedAt);
 
   return (
     <article className="rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
@@ -83,6 +107,12 @@ export function FlightCard({
         <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
           <p className="font-display text-2xl font-semibold">{format(offer.priceEur)}</p>
           <p className="text-xs text-muted-foreground">Prix total, taxes incluses</p>
+          {freshness && (
+            <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+              <Clock className="size-3" aria-hidden />
+              {freshness}
+            </p>
+          )}
           <Button asChild>
             <a href={offer.bookingUrl} target="_blank" rel="noopener noreferrer nofollow sponsored">
               Réserver chez {offer.seller}

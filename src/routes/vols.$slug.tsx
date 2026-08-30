@@ -197,7 +197,7 @@ function DestinationPage() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">Prix le plus bas déjà relevé</p>
+          <p className="text-xs text-muted-foreground">Prix de référence</p>
           <p className="mt-1 font-display text-2xl font-semibold text-primary">
             {lowestObserved
               ? route.simulatedLowestPrice
@@ -206,7 +206,7 @@ function DestinationPage() {
               : "Historique en constitution"}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Relevé lors de recherches passées, taxes incluses
+            Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
@@ -294,9 +294,9 @@ function DestinationPage() {
               Évolution du prix le plus bas sur 12 mois
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              {lowestObserved
-                ? `Sur la dernière année, le plancher observé sur ce trajet est de ${formatPrice(lowestObserved)}.`
-                : "Historique en cours de constitution sur ce trajet."}
+              {months.length > 0
+                ? `Historique mesuré : le plancher relevé sur les 12 derniers mois est de ${formatPrice(Math.min(...months.map((m) => m.priceEur)))}.`
+                : "Historique mesuré en cours de constitution sur ce trajet."}
             </p>
             <div className="mt-4 rounded-xl border border-border bg-card p-4">
               <PriceHistoryChart months={months} />

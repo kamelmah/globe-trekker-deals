@@ -79,9 +79,11 @@ export function Stay22Map({
             className="h-[420px] w-full border-0 sm:h-[520px]"
           />
         ) : (
-          <div className="flex h-[420px] w-full items-center justify-center text-sm text-muted-foreground sm:h-[520px]">
-            Chargement de la carte des hébergements…
-          </div>
+          <div
+            className="h-[420px] w-full animate-pulse bg-secondary sm:h-[520px]"
+            role="status"
+            aria-label="Chargement de la carte des hébergements"
+          />
         )}
       </div>
     </section>
