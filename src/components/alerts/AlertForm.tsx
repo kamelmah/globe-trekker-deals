@@ -24,11 +24,13 @@ export function AlertForm({
   const subscribe = useServerFn(subscribeToAlert);
   const [email, setEmail] = useState("");
   const [pending, setPending] = useState(false);
+  const [feedback, setFeedback] = useState<{ ok: boolean; message: string } | null>(null);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     if (!email) return;
     setPending(true);
+    setFeedback(null);
     try {
       const result = await subscribe({
         data: {
@@ -42,16 +44,21 @@ export function AlertForm({
       });
       if (result.ok) {
         toast.success(result.message);
+        setFeedback({ ok: true, message: result.message });
         setEmail("");
       } else {
         toast.error(result.message);
+        setFeedback({ ok: false, message: result.message });
       }
     } catch {
-      toast.error("L'enregistrement de l'alerte a échoué. Merci de réessayer.");
+      const message = "L'enregistrement de l'alerte a échoué. Merci de réessayer.";
+      toast.error(message);
+      setFeedback({ ok: false, message });
     } finally {
       setPending(false);
     }
   }
+
 
   return (
     <form
