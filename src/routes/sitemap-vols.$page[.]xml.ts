@@ -15,7 +15,7 @@ export const Route = createFileRoute("/sitemap-vols/$page.xml")({
     handlers: {
       GET: async ({ request, params }) => {
         const origin = new URL(request.url).origin;
-        const page = Number.parseInt(params.page, 10);
+        const page = Number.parseInt((params as Record<string, string>)["page.xml"] ?? "", 10);
         if (!Number.isFinite(page) || page < 1) {
           return new Response("Segment de sitemap inconnu", { status: 404 });
         }
