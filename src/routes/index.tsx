@@ -97,7 +97,7 @@ const REASONS = [
   {
     icon: Store,
     title: "Vous savez toujours qui vous vend le billet",
-    text: "Chaque résultat indique le vendeur réel — la compagnie ou l'agence nommée — et le bouton mène directement chez lui, sans cascade de redirections.",
+    text: "Chaque résultat indique le vendeur réel — la compagnie ou l'agence nommée — et le bouton mène directement chez lui, — le bouton ouvre le lien de réservation de ce vendeur en un clic, sans comparateur intermédiaire caché ni page de captation.",
   },
   {
     icon: EyeOff,
