@@ -109,38 +109,8 @@ export function SearchForm({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="adultes">Adultes</Label>
-            <select
-              id="adultes"
-              value={adults}
-              onChange={(e) => setAdults(Number(e.target.value))}
-              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-            >
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-                <option key={n} value={n}>
-                  {n} adulte{n > 1 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="enfants">Enfants</Label>
-            <select
-              id="enfants"
-              value={children}
-              onChange={(e) => setChildren(Number(e.target.value))}
-              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-            >
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                <option key={n} value={n}>
-                  {n} enfant{n > 1 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <PassengerSelector value={passengers} onChange={setPassengers} />
+
 
         {!compact && (
           <div className="space-y-1.5">
