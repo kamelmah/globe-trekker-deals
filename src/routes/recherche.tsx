@@ -213,15 +213,15 @@ function SearchResultsPage() {
     />
   );
 
-  const alertBlock = cheapest ? (
+  const alertBlock = (
     <AlertForm
       origin={search.origin}
       destination={search.destination}
       departDate={search.depart}
       {...(search["retour"] ? { returnDate: search["retour"] } : {})}
-      referencePrice={cheapest.priceEur}
+      referencePrice={cheapest?.priceEur ?? null}
     />
-  ) : null;
+  );
 
   const resultsBlock = (
     <div className="mt-5 space-y-4">
