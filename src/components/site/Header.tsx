@@ -127,6 +127,11 @@ export function Header() {
               <Plane className="size-4" aria-hidden />
               Trouve mon vol
             </Button>
+            <Button variant="outline" onClick={onStayClick} className="mx-2 mb-2 gap-1.5">
+              <BedDouble className="size-4" aria-hidden />
+              Trouver un hébergement
+            </Button>
+
           </div>
         </nav>
       )}
