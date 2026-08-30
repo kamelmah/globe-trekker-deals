@@ -20,6 +20,10 @@ export type PlaceAutocompleteProps = {
   placeholder?: string;
   /** Autorise un champ vide (mode budget : destination libre). */
   allowEmpty?: boolean;
+  /** Texte brut saisi au clavier, même sans sélection dans la liste. */
+  onTextChange?: (text: string) => void;
+  /** Message d'erreur inline affiché sous le champ. */
+  error?: string | null;
 };
 
 /**
