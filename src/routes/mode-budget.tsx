@@ -3,6 +3,7 @@ import { ClientOnly, Link, createFileRoute, useNavigate } from "@tanstack/react-
 import { useServerFn } from "@tanstack/react-start";
 import { lazy, Suspense, useState } from "react";
 
+import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -151,6 +152,19 @@ function BudgetPage() {
 
         <aside className="max-h-[640px] overflow-y-auto rounded-xl border border-border bg-card p-4">
           <h2 className="font-display text-base font-semibold">Destinations, du moins cher au plus cher</h2>
+          {query.isFetching && (
+            <p className="mt-3 text-sm text-muted-foreground">Chargement des prix…</p>
+          )}
+          {query.data?.error && (
+            <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+              {query.data.error}
+            </p>
+          )}
+          {!query.isFetching && !query.data?.error && prices.length === 0 && (
+            <p className="mt-3 text-sm text-muted-foreground">
+              Aucun vol trouvé pour cette recherche, essayez un autre mois ou une autre ville de départ.
+            </p>
+          )}
           <ul className="mt-3 space-y-2">
             {prices.map((price) => {
               const inBudget = price.priceEur <= search.budget;
@@ -182,6 +196,7 @@ function BudgetPage() {
               );
             })}
           </ul>
+          <ApiDebugPanel debug={query.data?.debug} label="Mode budget" />
         </aside>
       </div>
     </div>
