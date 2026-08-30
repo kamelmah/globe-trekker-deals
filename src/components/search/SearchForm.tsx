@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { addDaysIso, nightsBetween, TRIP_DURATIONS } from "@/lib/trip-duration";
+
 
 
 function defaultDate(offsetDays: number): string {
@@ -23,6 +25,7 @@ export type SearchFormProps = {
   initialRetour?: string;
   initialBudget?: string;
   initialFlexible?: boolean;
+  initialDuree?: number;
   initialPassengers?: Passengers;
   compact?: boolean;
 };
@@ -34,6 +37,7 @@ export function SearchForm({
   initialRetour = "",
   initialBudget = "",
   initialFlexible = true,
+  initialDuree,
   initialPassengers,
   compact = false,
 }: SearchFormProps) {
@@ -43,12 +47,17 @@ export function SearchForm({
   const [depart, setDepart] = useState(initialDepart ?? defaultDate(30));
   const [retour, setRetour] = useState(initialRetour);
   const [flexible, setFlexible] = useState(initialFlexible);
+  const [duree, setDuree] = useState(
+    initialDuree ?? (initialRetour ? nightsBetween(initialDepart ?? "", initialRetour) : 0),
+  );
   const [passengers, setPassengers] = useState<Passengers>(
     initialPassengers ?? { adults: 1, children: 0, infants: 0 },
   );
 
   const [budget, setBudget] = useState(initialBudget);
 
+  /** Avec un raccourci de durée, le retour est calculé depuis la date de départ. */
+  const effectiveRetour = duree > 0 ? addDaysIso(depart, duree) : retour;
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -65,7 +74,8 @@ export function SearchForm({
         origin,
         destination,
         depart,
-        retour,
+        retour: effectiveRetour,
+        duree,
         flexible: flexible ? 1 : 0,
         budget: budget ? Number(budget) : 0,
         adultes: passengers.adults,
@@ -75,6 +85,7 @@ export function SearchForm({
       },
     });
   }
+
 
   return (
     <form
@@ -112,16 +123,28 @@ export function SearchForm({
           />
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="retour">Date de retour (facultatif)</Label>
-          <Input
-            id="retour"
-            type="date"
-            value={retour}
-            min={depart}
-            onChange={(e) => setRetour(e.target.value)}
-          />
-        </div>
+        {duree > 0 ? (
+          <div className="space-y-1.5">
+            <Label>Date de retour (calculée)</Label>
+            <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm">
+              {effectiveRetour
+                ? `Retour le ${effectiveRetour} · ${duree} nuits`
+                : "Choisissez une date de départ"}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            <Label htmlFor="retour">Date de retour (facultatif)</Label>
+            <Input
+              id="retour"
+              type="date"
+              value={retour}
+              min={depart}
+              onChange={(e) => setRetour(e.target.value)}
+            />
+          </div>
+        )}
+
 
         <PassengerSelector value={passengers} onChange={setPassengers} />
 
@@ -152,6 +175,32 @@ export function SearchForm({
           </label>
         </div>
       </div>
+
+      <fieldset className="mt-4">
+        <legend className="text-sm font-medium">Durée du séjour</legend>
+        <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Durée du séjour">
+          {TRIP_DURATIONS.map((preset) => (
+            <Button
+              key={preset.days}
+              type="button"
+              size="sm"
+              variant={duree === preset.days ? "default" : "outline"}
+              aria-pressed={duree === preset.days}
+              onClick={() => setDuree(preset.days)}
+            >
+              {preset.label}
+            </Button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {duree > 0
+            ? `Séjour de ${duree} nuits — choisissez seulement la date de départ${
+                flexible ? ", nous testons aussi les départs à ± 3 jours" : ""
+              }.`
+            : "Choisissez librement vos dates d'aller et de retour."}
+        </p>
+      </fieldset>
+
 
       <Button type="submit" size="lg" className="mt-5 w-full sm:w-auto">
         <Search className="size-4" aria-hidden />

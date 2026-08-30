@@ -156,6 +156,7 @@ function DestinationPage() {
               destination: route.destination,
               depart: todayPlus(30),
               retour: "",
+              duree: 0,
               flexible: 1,
               budget: 0,
               adultes: 1,
