@@ -233,5 +233,6 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     bestMonths: "Hors vacances scolaires et week-ends de départs",
     averageDuration: durationLabel(km),
     faq,
+    ...(observed ? { observedLowestPrice: observed.priceEur } : {}),
   };
 }
