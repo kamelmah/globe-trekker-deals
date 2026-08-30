@@ -37,8 +37,8 @@ export default function BudgetMap({
       worldCopyJump: true,
       scrollWheelZoom: true,
     });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      attribution: "&copy; OpenStreetMap, &copy; CARTO",
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap",
       maxZoom: 18,
     }).addTo(map);
     layerRef.current = L.layerGroup().addTo(map);
@@ -59,28 +59,21 @@ export default function BudgetMap({
     for (const price of prices) {
       const affordable = price.priceEur <= budget;
       const isSelected = selected === price.destination;
-      const marker = L.marker([price.lat, price.lng], {
-        opacity: affordable ? 1 : 0.45,
-        icon: L.divIcon({
-          className: "",
-          html: `<div class="rounded-full border px-2 py-1 text-xs font-semibold shadow-sm ${
-            affordable
-              ? "border-primary/40 bg-white text-primary"
-              : "border-slate-300 bg-white/70 text-slate-400"
-          } ${isSelected ? "ring-2 ring-sky-500" : ""}">${price.city} · ${formatPrice(
-            price.priceEur,
-            currency,
-          )}</div>`,
-          iconSize: [0, 0],
-          iconAnchor: [0, 0],
-        }),
+      const marker = L.circleMarker([price.lat, price.lng], {
+        radius: isSelected ? 9 : 7,
+        weight: 2,
+        color: affordable ? "#1d6fd0" : "#94a3b8",
+        fillColor: affordable ? "#2f8ae0" : "#cbd5e1",
+        fillOpacity: affordable ? 0.9 : 0.4,
       });
-      marker.on("click", () => onSelect(price.destination));
       marker.bindTooltip(
         `${price.city} (${price.country}) — ${formatPrice(price.priceEur, currency)}${
           affordable ? "" : " · au-dessus du budget"
         }`,
+        { direction: "top", opacity: 1 },
       );
+      if (isSelected) marker.bindTooltip(marker.getTooltip()!.getContent() as string, { permanent: true, direction: "top" });
+      marker.on("click", () => onSelect(price.destination));
       marker.addTo(layer);
     }
   }, [prices, budget, currency, onSelect, selected]);
