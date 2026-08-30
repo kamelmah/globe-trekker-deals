@@ -38,7 +38,7 @@ export function DestinationPriceGrid({
       {sorted.length > 0 && (
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {sorted.map((price) => {
-            const image = getDestinationImage(price.destination, price.city);
+            const image = getDestinationImage(price.destination, price.city, price.country);
             return (
             <li key={price.destination}>
               <Link
