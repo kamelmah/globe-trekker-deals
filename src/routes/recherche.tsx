@@ -28,6 +28,7 @@ type SearchParams = {
   budget: number;
   adultes: number;
   enfants: number;
+  bebes: number;
   vue: string;
 };
 
