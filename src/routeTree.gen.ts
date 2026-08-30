@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CguRouteImport } from './routes/cgu'
 import { Route as CommentOnGagneDeLArgentRouteImport } from './routes/comment-on-gagne-de-l-argent'
+import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
@@ -37,6 +38,11 @@ const CguRoute = CguRouteImport.update({
 const CommentOnGagneDeLArgentRoute = CommentOnGagneDeLArgentRouteImport.update({
   id: '/comment-on-gagne-de-l-argent',
   path: '/comment-on-gagne-de-l-argent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cgu': typeof CguRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/faq': typeof FaqRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cgu': typeof CguRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/faq': typeof FaqRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cgu': typeof CguRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/faq': typeof FaqRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cgu'
     | '/comment-on-gagne-de-l-argent'
+    | '/confidentialite'
     | '/faq'
     | '/mentions-legales'
     | '/mode-budget'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cgu'
     | '/comment-on-gagne-de-l-argent'
+    | '/confidentialite'
     | '/faq'
     | '/mentions-legales'
     | '/mode-budget'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cgu'
     | '/comment-on-gagne-de-l-argent'
+    | '/confidentialite'
     | '/faq'
     | '/mentions-legales'
     | '/mode-budget'
@@ -200,6 +212,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CguRoute: typeof CguRoute
   CommentOnGagneDeLArgentRoute: typeof CommentOnGagneDeLArgentRoute
+  ConfidentialiteRoute: typeof ConfidentialiteRoute
   FaqRoute: typeof FaqRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
@@ -234,6 +247,13 @@ declare module '@tanstack/react-router' {
       path: '/comment-on-gagne-de-l-argent'
       fullPath: '/comment-on-gagne-de-l-argent'
       preLoaderRoute: typeof CommentOnGagneDeLArgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confidentialite': {
+      id: '/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/confidentialite'
+      preLoaderRoute: typeof ConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -320,6 +340,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CguRoute: CguRoute,
   CommentOnGagneDeLArgentRoute: CommentOnGagneDeLArgentRoute,
+  ConfidentialiteRoute: ConfidentialiteRoute,
   FaqRoute: FaqRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   ModeBudgetRoute: ModeBudgetRoute,
