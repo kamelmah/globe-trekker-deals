@@ -24,7 +24,7 @@ export const Route = createFileRoute("/confidentialite")({
 
 function PrivacyPage() {
   return (
-    <article className="container-page prose-page py-12">
+    <article className="container-page max-w-3xl py-12">
       <h1 className="font-display text-3xl font-semibold">Politique de confidentialité</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Dernière mise à jour : [date à compléter]. Responsable du traitement :

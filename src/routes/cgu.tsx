@@ -24,7 +24,7 @@ export const Route = createFileRoute("/cgu")({
 
 function TermsPage() {
   return (
-    <article className="container-page prose-page py-12">
+    <article className="container-page max-w-3xl py-12">
       <h1 className="font-display text-3xl font-semibold">Conditions générales d'utilisation</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Dernière mise à jour : [date à compléter]. Éditeur : [nom de l'éditeur — à compléter].

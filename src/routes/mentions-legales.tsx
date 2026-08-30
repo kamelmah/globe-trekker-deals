@@ -24,7 +24,7 @@ export const Route = createFileRoute("/mentions-legales")({
 
 function LegalPage() {
   return (
-    <article className="container-page prose-page py-12">
+    <article className="container-page max-w-3xl py-12">
       <h1 className="font-display text-3xl font-semibold">Mentions légales</h1>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Éditeur du site</h2>
