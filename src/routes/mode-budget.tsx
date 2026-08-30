@@ -83,7 +83,7 @@ function BudgetPage() {
   const originAirport = getAirport(search["origin"]);
   const prices = [...(query.data?.prices ?? [])].sort((a, b) => a.priceEur - b.priceEur);
   const affordable = prices.filter((p) => p.priceEur <= search["budget"]);
-  const origins = AIRPORTS.filter((a) => ORIGIN_CODES.includes(a.code));
+  
 
   return (
     <div>
