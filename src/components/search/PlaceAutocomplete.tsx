@@ -73,12 +73,48 @@ export function PlaceAutocomplete({
 
   function select(place: Place) {
     onChange(place.code);
-    setText(
+    const nextText =
       place.type === "airport"
         ? `${place.name} (${place.code})`
-        : `${place.city || place.name} (${place.code})`,
-    );
+        : `${place.city || place.name} (${place.code})`;
+    setText(nextText);
+    onTextChange?.(nextText);
     setOpen(false);
+  }
+
+  /**
+   * Saisie libre : au blur, on résout le texte tapé en code IATA sans exiger
+   * un clic sur une suggestion.
+   */
+  async function resolveTyped() {
+    if (skipBlur.current) {
+      skipBlur.current = false;
+      return;
+    }
+    const typed = text.trim();
+    if (typed === "") {
+      if (allowEmpty) onChange("");
+      return;
+    }
+    if (value && typed === labelFor(value)) return;
+    if (value && typed.toUpperCase() === value.toUpperCase()) return;
+    const match = places.find(
+      (place) =>
+        typed.toUpperCase() === place.code ||
+        typed.toLowerCase() === (place.city || place.name).toLowerCase(),
+    );
+    if (match) {
+      select(match);
+      return;
+    }
+    try {
+      const result = await resolvePlace({ data: { term: typed } });
+      if (result.place) select(result.place);
+      else onChange("");
+    } catch {
+      // Réseau indisponible : on laisse le formulaire gérer le message d'erreur.
+      onChange("");
+    }
   }
 
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
