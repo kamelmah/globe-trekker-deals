@@ -1,5 +1,6 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
+import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
 import { getCityGuide } from "@/data/city-guides";
 import { getDestinationImage } from "@/lib/destination-images";
@@ -158,6 +159,23 @@ function CityGuidePage() {
                 </div>
               ))}
             </dl>
+          </section>
+
+          <section className="mt-10">
+            <h2 className="font-display text-xl font-semibold">
+              Budget sur place : où dormir à {guide.city}
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              L'hébergement est souvent le premier poste de dépense du budget sur place. La carte
+              ci-dessous affiche des hôtels et locations à {guide.city} avec leurs prix, pour vous
+              aider à estimer le coût réel de votre séjour.
+            </p>
+            <Stay22Map
+              className="mt-4"
+              city={guide.city}
+              title={`Hébergements à ${guide.city}`}
+              description={`Carte interactive des hôtels et locations à ${guide.city} (via notre partenaire Stay22).`}
+            />
           </section>
         </div>
 
