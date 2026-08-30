@@ -19,27 +19,35 @@ function defaultDate(offsetDays: number): string {
 export type SearchFormProps = {
   initialOrigin?: string;
   initialDestination?: string;
+  initialDepart?: string;
+  initialRetour?: string;
+  initialBudget?: string;
+  initialFlexible?: boolean;
+  initialPassengers?: Passengers;
   compact?: boolean;
 };
 
 export function SearchForm({
   initialOrigin = "PAR",
   initialDestination = "",
+  initialDepart,
+  initialRetour = "",
+  initialBudget = "",
+  initialFlexible = true,
+  initialPassengers,
   compact = false,
 }: SearchFormProps) {
   const navigate = useNavigate();
   const [origin, setOrigin] = useState(initialOrigin);
   const [destination, setDestination] = useState(initialDestination);
-  const [depart, setDepart] = useState(defaultDate(30));
-  const [retour, setRetour] = useState("");
-  const [flexible, setFlexible] = useState(true);
-  const [passengers, setPassengers] = useState<Passengers>({
-    adults: 1,
-    children: 0,
-    infants: 0,
-  });
+  const [depart, setDepart] = useState(initialDepart ?? defaultDate(30));
+  const [retour, setRetour] = useState(initialRetour);
+  const [flexible, setFlexible] = useState(initialFlexible);
+  const [passengers, setPassengers] = useState<Passengers>(
+    initialPassengers ?? { adults: 1, children: 0, infants: 0 },
+  );
 
-  const [budget, setBudget] = useState("");
+  const [budget, setBudget] = useState(initialBudget);
 
 
   function submit(event: React.FormEvent) {

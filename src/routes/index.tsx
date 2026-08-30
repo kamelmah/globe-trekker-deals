@@ -5,6 +5,7 @@ import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { DESTINATIONS } from "@/data/destinations";
 import { cheapestDestinations } from "@/lib/flights.functions";
+import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const HOME_CODES = [
@@ -15,7 +16,36 @@ const TITLE = "TrouveMonVol — comparateur de vols transparent, prix total et v
 const DESCRIPTION =
   "Comparez les vols au prix total taxes incluses, avec le nom du vendeur réel sur chaque résultat. Recherche par budget, dates flexibles ± 3 jours, alertes prix gratuites.";
 
+type HomeSearch = {
+  origin?: string;
+  destination?: string;
+  depart?: string;
+  retour?: string;
+  budget?: number;
+  flexible?: boolean;
+  adultes?: number;
+  enfants?: number;
+  bebes?: number;
+};
+
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>): HomeSearch => {
+    const clamp = (v: unknown, min: number, max: number, fallback: number) => {
+      const n = Math.round(numberOr(v, fallback));
+      return Math.min(max, Math.max(min, n));
+    };
+    return {
+      origin: search["origin"] ? iataOr(search["origin"], "PAR") : "",
+      destination: search["destination"] ? iataOr(search["destination"], "") : "",
+      depart: dateOr(search["depart"], ""),
+      retour: dateOr(search["retour"], ""),
+      budget: Math.max(0, Math.round(numberOr(search["budget"], 0))),
+      flexible: numberOr(search["flexible"], 1) === 1,
+      adultes: clamp(search["adultes"], 1, 9, 1),
+      enfants: clamp(search["enfants"], 0, 8, 0),
+      bebes: clamp(search["bebes"], 0, 8, 0),
+    };
+  },
   loader: async () => {
     const { prices, error, debug } = await cheapestDestinations({
       data: { origin: "PAR", destinations: HOME_CODES },
@@ -83,6 +113,7 @@ const REASONS = [
 
 function HomePage() {
   const { prices, error, debug } = Route.useLoaderData();
+  const prefill = Route.useSearch();
 
   return (
     <div>
@@ -115,7 +146,20 @@ function HomePage() {
             </div>
           </div>
 
-          <SearchForm />
+          <SearchForm
+            key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
+            initialOrigin={prefill.origin || "PAR"}
+            initialDestination={prefill.destination ?? ""}
+            {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
+            initialRetour={prefill.retour ?? ""}
+            initialBudget={prefill.budget ? String(prefill.budget) : ""}
+            initialFlexible={prefill.flexible ?? true}
+            initialPassengers={{
+              adults: prefill.adultes ?? 1,
+              children: prefill.enfants ?? 0,
+              infants: Math.min(prefill.bebes ?? 0, prefill.adultes ?? 1),
+            }}
+          />
         </div>
       </section>
 

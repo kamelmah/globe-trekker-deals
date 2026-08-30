@@ -101,7 +101,7 @@ export default function BudgetMap({
            )}${affordable ? "" : " · au-dessus du budget"}</p>
            <a href="${escapeHtml(hrefFor(price))}"
               class="mt-1 inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90"
-              data-destination="${escapeHtml(price.destination)}">Voir les vols</a>
+              data-destination="${escapeHtml(price.destination)}">Affiner ce trajet</a>
          </div>`,
         { closeButton: true, autoPan: true },
       );
