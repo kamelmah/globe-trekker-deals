@@ -2,20 +2,12 @@ import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
-import { AIRPORTS } from "@/data/airports";
+import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-const ORIGIN_CODES = ["PAR", "LYS", "MRS", "BOD", "NCE", "TLS", "NTE", "BRU", "GVA"];
 
 function defaultDate(offsetDays: number): string {
   const d = new Date();
