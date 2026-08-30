@@ -13,7 +13,11 @@ import { SITE_URL, destinationOgImage } from "@/lib/site";
 
 export const Route = createFileRoute("/vols/$slug")({
   loader: async ({ params }) => {
-    const route = getDestination(params.slug);
+    // Page éditoriale si le trajet est curé, sinon page générée côté serveur
+    // pour n'importe quelle destination trouvée en mode budget.
+    const route =
+      getDestination(params.slug) ??
+      (await dynamicRoutePage({ data: { slug: params.slug } })).route;
     if (!route) throw notFound();
     // Aucun appel à l'API de vols ici : seul l'historique déjà enregistré en base
     // est lu, pour que les robots n'entament jamais le quota Travelpayouts.
@@ -27,6 +31,7 @@ export const Route = createFileRoute("/vols/$slug")({
     const lowestObserved = route.simulatedLowestPrice ?? historyLowest;
     return { route, months: history.months, lowestObserved };
   },
+
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
