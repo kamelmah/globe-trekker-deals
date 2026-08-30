@@ -25,6 +25,7 @@ export type SearchFormProps = {
   initialRetour?: string;
   initialBudget?: string;
   initialFlexible?: boolean;
+  initialDuree?: number;
   initialPassengers?: Passengers;
   compact?: boolean;
 };
@@ -36,6 +37,7 @@ export function SearchForm({
   initialRetour = "",
   initialBudget = "",
   initialFlexible = true,
+  initialDuree,
   initialPassengers,
   compact = false,
 }: SearchFormProps) {
@@ -45,12 +47,17 @@ export function SearchForm({
   const [depart, setDepart] = useState(initialDepart ?? defaultDate(30));
   const [retour, setRetour] = useState(initialRetour);
   const [flexible, setFlexible] = useState(initialFlexible);
+  const [duree, setDuree] = useState(
+    initialDuree ?? (initialRetour ? nightsBetween(initialDepart ?? "", initialRetour) : 0),
+  );
   const [passengers, setPassengers] = useState<Passengers>(
     initialPassengers ?? { adults: 1, children: 0, infants: 0 },
   );
 
   const [budget, setBudget] = useState(initialBudget);
 
+  /** Avec un raccourci de durée, le retour est calculé depuis la date de départ. */
+  const effectiveRetour = duree > 0 ? addDaysIso(depart, duree) : retour;
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -67,7 +74,8 @@ export function SearchForm({
         origin,
         destination,
         depart,
-        retour,
+        retour: effectiveRetour,
+        duree,
         flexible: flexible ? 1 : 0,
         budget: budget ? Number(budget) : 0,
         adultes: passengers.adults,
@@ -77,6 +85,7 @@ export function SearchForm({
       },
     });
   }
+
 
   return (
     <form
