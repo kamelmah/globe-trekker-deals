@@ -1,6 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Menu, Plane } from "lucide-react";
+import { BedDouble, Menu, Plane } from "lucide-react";
 import { useCallback, useState } from "react";
+
 
 import logo from "@/assets/logo.png";
 import { CurrencySelect } from "@/components/site/CurrencySelect";
@@ -41,6 +42,21 @@ export function Header() {
     });
   }, [pathname, navigate, focusSearchForm]);
 
+  /**
+   * Si la page courante contient déjà un widget d'hébergement Stay22, on scrolle vers lui.
+   * Sinon on redirige vers la page dédiée /hebergement.
+   */
+  const onStayClick = useCallback(() => {
+    setOpen(false);
+    const section = document.getElementById("hebergement");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    void navigate({ to: "/hebergement" });
+  }, [navigate]);
+
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-3">
@@ -71,6 +87,11 @@ export function Header() {
             <Plane className="size-4" aria-hidden />
             Trouve mon vol
           </Button>
+          <Button variant="outline" onClick={onStayClick} className="ml-1 gap-1.5">
+            <BedDouble className="size-4" aria-hidden />
+            Trouver un hébergement
+          </Button>
+
         </nav>
 
         <div className="flex items-center gap-2">
@@ -106,6 +127,11 @@ export function Header() {
               <Plane className="size-4" aria-hidden />
               Trouve mon vol
             </Button>
+            <Button variant="outline" onClick={onStayClick} className="mx-2 mb-2 gap-1.5">
+              <BedDouble className="size-4" aria-hidden />
+              Trouver un hébergement
+            </Button>
+
           </div>
         </nav>
       )}
