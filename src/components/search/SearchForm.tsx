@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { resolvePlace } from "@/lib/places.functions";
 import { addDaysIso, nightsBetween, TRIP_DURATIONS } from "@/lib/trip-duration";
 
 
@@ -146,7 +147,15 @@ export function SearchForm({
           id="destination"
           label="Destination (facultatif — laissez vide pour le mode budget)"
           value={destination}
-          onChange={setDestination}
+          onChange={(code) => {
+            setDestination(code);
+            if (code) setDestinationError(null);
+          }}
+          onTextChange={(value) => {
+            setDestinationText(value);
+            setDestinationError(null);
+          }}
+          error={destinationError}
           placeholder="Peu importe — mode budget"
           allowEmpty
         />
@@ -242,9 +251,13 @@ export function SearchForm({
       </fieldset>
 
 
-      <Button type="submit" size="lg" className="mt-5 w-full sm:w-auto">
+      <Button type="submit" size="lg" className="mt-5 w-full sm:w-auto" disabled={resolving}>
         <Search className="size-4" aria-hidden />
-        {destination ? "Comparer les vols" : "Voir où partir avec mon budget"}
+        {resolving
+          ? "Vérification de la destination…"
+          : destination || hasTypedDestination
+            ? "Chercher le meilleur prix"
+            : "Voir où partir avec mon budget"}
       </Button>
       <p className="mt-3 text-xs text-muted-foreground">
         Prix total taxes incluses, vendeur affiché sur chaque résultat. Aucun compte
