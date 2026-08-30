@@ -1,6 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { BadgeEuro, EyeOff, Map as MapIcon, ShieldCheck, Store } from "lucide-react";
 
+import heroSky from "@/assets/hero-sky.jpg";
+
 import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { DESTINATIONS } from "@/data/destinations";
