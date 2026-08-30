@@ -37,6 +37,8 @@ export function PlaceAutocomplete({
   onChange,
   placeholder = "Ville ou aéroport",
   allowEmpty = false,
+  onTextChange,
+  error,
 }: PlaceAutocompleteProps) {
   const listId = useId();
   const [text, setText] = useState(() => labelFor(value));
