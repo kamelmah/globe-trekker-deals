@@ -79,8 +79,38 @@ export const searchFlights = createServerFn({ method: "GET" })
         .flatMap((batch) => batch.offers)
         .sort((a, b) => a.priceEur - b.priceEur)
         .slice(0, 40);
+
+      // Vrai zéro API : on propose les dates réellement disponibles du mois.
+      let alternatives: { date: string; priceEur: number }[] = [];
+      if (offers.length === 0) {
+        try {
+          const month = data.departureAt.slice(0, 7);
+          const { days } = await fetchCalendarPrices({
+            origin: data.origin,
+            destination: data.destination,
+            month,
+            tripDuration: nights,
+            currency: data.currency ?? "EUR",
+            mode: "departure",
+          });
+          const ref = Date.parse(`${data.departureAt}T00:00:00Z`);
+          alternatives = days
+            .filter((d) => d.date !== data.departureAt)
+            .sort(
+              (a, b) =>
+                Math.abs(Date.parse(`${a.date}T00:00:00Z`) - ref) -
+                Math.abs(Date.parse(`${b.date}T00:00:00Z`) - ref),
+            )
+            .slice(0, 6)
+            .sort((a, b) => a.date.localeCompare(b.date));
+        } catch (calendarError) {
+          console.error("Dates alternatives indisponibles", calendarError);
+        }
+      }
+
       return {
         offers,
+        alternatives,
         error: null as string | null,
         debug: debugOf(batches[0]?.raw ?? null),
         configured: hasApiCredentials(),
@@ -88,11 +118,13 @@ export const searchFlights = createServerFn({ method: "GET" })
     } catch (error) {
       return {
         offers: [],
+        alternatives: [] as { date: string; priceEur: number }[],
         error: messageOf(error),
         debug: null,
         configured: hasApiCredentials(),
       };
     }
+
   });
 
 export const cheapestDestinations = createServerFn({ method: "GET" })
