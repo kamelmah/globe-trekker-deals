@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CguRouteImport } from './routes/cgu'
 import { Route as CommentOnGagneDeLArgentRouteImport } from './routes/comment-on-gagne-de-l-argent'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
@@ -43,6 +44,11 @@ const CommentOnGagneDeLArgentRoute = CommentOnGagneDeLArgentRouteImport.update({
 const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
   id: '/confidentialite',
   path: '/confidentialite',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/cgu': typeof CguRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
   '/confidentialite': typeof ConfidentialiteRoute
+  '/cookies': typeof CookiesRoute
   '/faq': typeof FaqRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/cgu': typeof CguRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
   '/confidentialite': typeof ConfidentialiteRoute
+  '/cookies': typeof CookiesRoute
   '/faq': typeof FaqRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/cgu': typeof CguRoute
   '/comment-on-gagne-de-l-argent': typeof CommentOnGagneDeLArgentRoute
   '/confidentialite': typeof ConfidentialiteRoute
+  '/cookies': typeof CookiesRoute
   '/faq': typeof FaqRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/cgu'
     | '/comment-on-gagne-de-l-argent'
     | '/confidentialite'
+    | '/cookies'
     | '/faq'
     | '/mentions-legales'
     | '/mode-budget'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/cgu'
     | '/comment-on-gagne-de-l-argent'
     | '/confidentialite'
+    | '/cookies'
     | '/faq'
     | '/mentions-legales'
     | '/mode-budget'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/cgu'
     | '/comment-on-gagne-de-l-argent'
     | '/confidentialite'
+    | '/cookies'
     | '/faq'
     | '/mentions-legales'
     | '/mode-budget'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   CguRoute: typeof CguRoute
   CommentOnGagneDeLArgentRoute: typeof CommentOnGagneDeLArgentRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
+  CookiesRoute: typeof CookiesRoute
   FaqRoute: typeof FaqRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
@@ -254,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/confidentialite'
       fullPath: '/confidentialite'
       preLoaderRoute: typeof ConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -341,6 +361,7 @@ const rootRouteChildren: RootRouteChildren = {
   CguRoute: CguRoute,
   CommentOnGagneDeLArgentRoute: CommentOnGagneDeLArgentRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
+  CookiesRoute: CookiesRoute,
   FaqRoute: FaqRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   ModeBudgetRoute: ModeBudgetRoute,
