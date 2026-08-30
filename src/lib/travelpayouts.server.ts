@@ -252,8 +252,13 @@ export async function fetchOffers(params: {
   // La recherche ne dépend jamais du cache du calendrier.
   if (list.length === 0) {
     const day = params.departureAt.slice(0, 10);
-    const monthQuery = { ...query, departure_at: day.slice(0, 7), limit: "1000" };
+    const monthQuery: Record<string, string> = {
+      ...query,
+      departure_at: day.slice(0, 7),
+      limit: "1000",
+    };
     if (params.returnAt) monthQuery["return_at"] = params.returnAt.slice(0, 7);
+
     const monthCall = await callApi<{ data?: ApiOffer[] }>(
       "/aviasales/v3/prices_for_dates",
       monthQuery,
