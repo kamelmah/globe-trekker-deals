@@ -201,57 +201,44 @@ export const DESTINATIONS: DestinationRoute[] = [
     destination: "LIS",
     destinationCity: "Lisbonne",
     country: "Portugal",
-    heading: "Vols pas chers Paris — Lisbonne",
+    heading: "Vol Paris - Lisbonne au meilleur prix",
     metaTitle: "Vol pas cher Paris Lisbonne : prix et meilleure saison | TrouveMonVol",
     metaDescription:
       "Vols Paris — Lisbonne comparés au prix total, vendeur affiché, sans frais cachés. Meilleure période, courbe de prix 12 mois et alerte prix gratuite.",
     intro:
-      "Deux heures trente de vol, une dizaine de rotations quotidiennes et une forte concurrence entre compagnies classiques et à bas coût : Lisbonne est l'une des capitales européennes les plus accessibles depuis Paris.",
-    bestMonths: "Février, mars et novembre",
-    averageDuration: "2 h 35 en vol direct",
+      "Envie de découvrir les charmes de la capitale portugaise, ses tramways historiques et ses célèbres pastéis de nata ? Trouver un vol Paris Lisbonne pas cher n'a jamais été aussi simple grâce à l'importante offre aérienne reliant ces deux capitales européennes. Un vol direct dure environ 2 heures et 30 minutes, ce qui en fait la destination parfaite pour un city-break ou des vacances ensoleillées au bord de l'Atlantique.",
+    bestMonths: "Janvier, février et novembre",
+    averageDuration: "2 h 30 en vol direct",
+    simulatedLowestPrice: 29,
     sections: [
+      {
+        heading: "Compagnies et aéroports pour un vol Paris — Lisbonne",
+        paragraphs: [
+          "Le marché des billets d'avion entre Paris et Lisbonne est ultra-concurrentiel, ce qui profite directement à votre budget. Les géants du low-cost comme EasyJet, Ryanair (depuis Beauvais) et Transavia (depuis Orly) se livrent une bataille de prix féroce, permettant de trouver des billets aller-simple à moins de 30€ en période creuse. Si vous voyagez pour les affaires ou préférez une compagnie régulière, TAP Air Portugal et Air France assurent de nombreuses liaisons quotidiennes depuis Paris Charles de Gaulle, incluant souvent un meilleur confort de cabine et des options de flexibilité. Tous les vols atterrissent à l'aéroport Humberto Delgado de Lisbonne, idéalement connecté au centre-ville par le métro.",
+        ],
+      },
       {
         heading: "Quand partir à Lisbonne au meilleur prix",
         paragraphs: [
-          "Lisbonne se visite toute l'année grâce à un climat doux. Les prix suivent donc surtout le calendrier scolaire français et les vacances portugaises plutôt que la météo.",
-          "Les meilleurs tarifs se trouvent de janvier à mars, hors vacances de février, ainsi qu'en novembre. Sur ces périodes, un aller-retour sous les 90 euros n'a rien d'exceptionnel si vous partez en semaine.",
-          "Juillet, août et les week-ends prolongés du printemps concentrent la demande. La différence de prix entre un départ un mercredi et un départ un vendredi soir peut dépasser 70 euros sur un simple aller-retour.",
-        ],
-      },
-      {
-        heading: "Compagnies et aéroports",
-        paragraphs: [
-          "TAP Air Portugal, Transavia, Ryanair, easyJet et Vueling se partagent la ligne au départ d'Orly, Roissy et Beauvais. L'aéroport Humberto-Delgado se trouve à sept kilomètres du centre, relié par métro en une vingtaine de minutes.",
-          "Porto peut être une alternative pertinente : si votre itinéraire prévoit le nord du pays, comparez les deux villes d'arrivée plutôt que d'ajouter un vol intérieur.",
-        ],
-      },
-      {
-        heading: "Ce qui fait vraiment varier le prix",
-        paragraphs: [
-          "Sur un trajet aussi court, le bagage pèse proportionnellement très lourd. Un billet à 39 euros avec un simple sac à dos devient un billet à 95 euros avec une valise en soute aller-retour.",
-          "Le second facteur est l'horaire. Les départs très tôt le matin ou tard le soir sont systématiquement moins chers, mais peuvent impliquer un taxi ou une nuit près de l'aéroport. Regardez le coût complet de la porte à porte.",
+          "Notre comparateur analyse des centaines de combinaisons pour vous aider à dénicher le vol idéal. Pour économiser au maximum, évitez les week-ends de grands départs et essayez de voyager un mardi ou un mercredi. Les mois de janvier, février et novembre sont statistiquement les moins chers pour s'envoler vers le Portugal, tout en profitant d'une météo souvent plus douce que dans le reste de l'Europe.",
         ],
       },
     ],
     faq: [
       {
-        question: "Quel est le meilleur mois pour aller à Lisbonne pas cher ?",
+        question: "Quelle est la durée d'un vol direct Paris Lisbonne ?",
         answer:
-          "Février et novembre offrent les tarifs les plus bas, avec un climat qui reste doux. Évitez les vacances scolaires françaises et les longs week-ends de printemps.",
+          "Le temps de vol direct moyen est de 2 heures et 30 minutes entre les aéroports parisiens et Lisbonne.",
       },
       {
-        question: "Combien de temps dure le vol Paris — Lisbonne ?",
-        answer: "Environ 2 h 35 en vol direct depuis Paris.",
+        question: "Comment aller de l'aéroport de Lisbonne au centre-ville ?",
+        answer:
+          "L'aéroport est directement relié au centre-ville par la ligne rouge du métro, pour un trajet d'environ 20 minutes seulement.",
       },
       {
-        question: "Combien coûte un aller-retour Paris — Lisbonne ?",
+        question: "Quand les billets d'avion pour Lisbonne sont-ils les moins chers ?",
         answer:
-          "Entre 80 et 130 euros hors saison avec des dates flexibles, et 180 à 260 euros en juillet-août ou sur un week-end prolongé.",
-      },
-      {
-        question: "Quel aéroport parisien choisir pour Lisbonne ?",
-        answer:
-          "Orly et Roissy proposent le plus de fréquences, Beauvais les prix d'appel les plus bas. Intégrez le coût et la durée du transfert avant de trancher.",
+          "Les prix sont au plus bas durant l'hiver (hors fêtes de fin d'année), notamment en janvier et février.",
       },
     ],
   },

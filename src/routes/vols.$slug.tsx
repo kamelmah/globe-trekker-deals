@@ -156,9 +156,7 @@ function DestinationPage() {
         / Vols pas chers {route.originCity} — {route.destinationCity}
       </nav>
 
-      <h1 className="mt-3 font-display text-3xl font-semibold">
-        Billet d'avion {route.originCity} - {route.destinationCity} pas cher
-      </h1>
+      <h1 className="mt-3 font-display text-3xl font-semibold">{route.heading}</h1>
       <p className="mt-3 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
