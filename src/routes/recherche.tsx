@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cityLabel } from "@/data/airports";
+import { useCurrency } from "@/lib/currency-context";
 import { calendarPrices, searchFlights } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr, todayPlus } from "@/lib/search-params";
 
@@ -25,6 +26,8 @@ type SearchParams = {
   retour: string;
   flexible: number;
   budget: number;
+  adultes: number;
+  enfants: number;
   vue: string;
 };
 
@@ -36,6 +39,8 @@ export const Route = createFileRoute("/recherche")({
     retour: dateOr(search["retour"], ""),
     flexible: numberOr(search["flexible"], 1) ? 1 : 0,
     budget: Math.max(0, numberOr(search["budget"], 0)),
+    adultes: Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
+    enfants: Math.min(8, Math.max(0, Math.round(numberOr(search["enfants"], 0)))),
     vue: search["vue"] === "calendrier" ? "calendrier" : "liste",
   }),
   head: ({ match }) => {
@@ -61,6 +66,7 @@ function SearchResultsPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const runSearch = useServerFn(searchFlights);
   const runCalendar = useServerFn(calendarPrices);
+  const { currency } = useCurrency();
 
   const [directOnly, setDirectOnly] = useState(false);
   const [airline, setAirline] = useState("");
@@ -72,7 +78,17 @@ function SearchResultsPage() {
   const month = search.depart.slice(0, 7);
 
   const offersQuery = useQuery({
-    queryKey: ["offers", search["origin"], search["destination"], search["depart"], search["retour"], search.flexible],
+    queryKey: [
+      "offers",
+      search["origin"],
+      search["destination"],
+      search["depart"],
+      search["retour"],
+      search.flexible,
+      search["adultes"],
+      search["enfants"],
+      currency,
+    ],
     queryFn: () =>
       runSearch({
         data: {
@@ -81,14 +97,19 @@ function SearchResultsPage() {
           departureAt: search["depart"],
           returnAt: search["retour"] || null,
           flexible: search["flexible"] === 1,
+          adults: search["adultes"],
+          children: search["enfants"],
+          currency,
         },
       }),
   });
 
   const calendarQuery = useQuery({
-    queryKey: ["calendar", search["origin"], search["destination"], month],
+    queryKey: ["calendar", search["origin"], search["destination"], month, currency],
     queryFn: () =>
-      runCalendar({ data: { origin: search["origin"], destination: search["destination"], month } }),
+      runCalendar({
+        data: { origin: search["origin"], destination: search["destination"], month, currency },
+      }),
     enabled: search["vue"] === "calendrier",
   });
 
@@ -124,7 +145,11 @@ function SearchResultsPage() {
         Départ le {search.depart}
         {search["retour"] ? `, retour le ${search.retour}` : " (aller simple)"}
         {search["flexible"] === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des prix
-        totaux, taxes incluses.
+        totaux, taxes incluses pour {search["adultes"]} adulte{search["adultes"] > 1 ? "s" : ""}
+        {search["enfants"] > 0
+          ? ` et ${search["enfants"]} enfant${search["enfants"] > 1 ? "s" : ""}`
+          : ""}
+        .
       </p>
 
       <p className="mt-4 inline-flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">

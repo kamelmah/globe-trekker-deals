@@ -74,9 +74,10 @@ function BudgetPage() {
           origin: search["origin"],
           destinations: BUDGET_DESTINATION_CODES,
           ...(search["month"] ? { month: search["month"] } : {}),
+          currency,
         },
       }),
-    initialData: initial,
+    ...(currency === "EUR" ? { initialData: initial } : {}),
   });
 
   const originAirport = getAirport(search["origin"]);
