@@ -371,16 +371,29 @@ function keepCheapest(map: Map<string, WorldOffer>, code: string, offer: WorldOf
  */
 export async function fetchCheapestDestinations(params: {
   origin: string;
-  /** Ignoré : conservé pour compatibilité, le balayage est mondial. */
+  /** Restreint le résultat à ces codes (accueil, page liaison). Ignoré en mode monde. */
   destinations?: string[];
+  /** true = balayage mondial complet (mode budget). */
+  world?: boolean;
   month?: string | undefined;
   currency?: string;
-}): Promise<{ prices: DestinationPrice[]; raw: RawApiCall }> {
+}): Promise<{ prices: DestinationPrice[]; raw: RawApiCall | null }> {
   const origin = params.origin.toUpperCase();
   const currency = (params.currency ?? "EUR").toUpperCase();
+  const world = params.world === true;
   const cacheKey = ["world-destinations", origin, params.month ?? "any", currency].join(":");
 
-  const cached = await readJsonCache<{ prices: DestinationPrice[] }>(cacheKey);
+  const restrict =
+    !world && params.destinations && params.destinations.length > 0
+      ? new Set(params.destinations.map((code) => code.toUpperCase()))
+      : null;
+
+  // Un seul balayage par ville de départ : le cache évite de re-solliciter l'API
+  // à chaque changement de budget.
+  if (world) {
+    const cached = await readJsonCache<{ prices: DestinationPrice[] }>(cacheKey);
+    if (cached?.prices?.length) return { prices: cached.prices, raw: null };
+  }
 
   const monthQuery: Record<string, string> = {
     origin,
@@ -397,9 +410,6 @@ export async function fetchCheapestDestinations(params: {
     currency,
   );
 
-  if (cached?.prices?.length) {
-    return { prices: cached.prices, raw: datesCall.raw };
-  }
 
   const cheapest = new Map<string, WorldOffer>();
   for (const offer of datesCall.data?.data ?? []) {
