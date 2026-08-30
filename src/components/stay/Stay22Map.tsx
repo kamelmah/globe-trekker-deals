@@ -58,7 +58,7 @@ export function Stay22Map({
   const src = `https://www.stay22.com/embed/gm?${params.toString()}`;
 
   return (
-    <section ref={containerRef} className={className}>
+    <section ref={containerRef} id={id} className={`scroll-mt-24 ${className ?? ""}`}>
       <h2 className="font-display text-xl font-semibold">{title}</h2>
       {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
       <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
