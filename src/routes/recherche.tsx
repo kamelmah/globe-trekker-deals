@@ -25,6 +25,7 @@ type SearchParams = {
   destination: string;
   depart: string;
   retour: string;
+  duree: number;
   flexible: number;
   budget: number;
   adultes: number;
@@ -34,23 +35,28 @@ type SearchParams = {
 };
 
 export const Route = createFileRoute("/recherche")({
-  validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    origin: iataOr(search["origin"], "PAR"),
-    destination: iataOr(search["destination"], "RAK"),
-    depart: dateOr(search["depart"], todayPlus(30)),
-    retour: dateOr(search["retour"], ""),
-    flexible: numberOr(search["flexible"], 1) ? 1 : 0,
-    budget: Math.max(0, numberOr(search["budget"], 0)),
-    adultes: Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
-    enfants: Math.min(8, Math.max(0, Math.round(numberOr(search["enfants"], 0)))),
-    // Un bébé par adulte maximum (règle des compagnies aériennes).
-    bebes: Math.min(
-      Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
-      Math.max(0, Math.round(numberOr(search["bebes"], 0))),
-    ),
-    vue: search["vue"] === "calendrier" ? "calendrier" : "liste",
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    const duree = Math.min(30, Math.max(0, Math.round(numberOr(search["duree"], 0))));
+    const depart = dateOr(search["depart"], todayPlus(30));
+    return {
+      origin: iataOr(search["origin"], "PAR"),
+      destination: iataOr(search["destination"], "RAK"),
+      depart,
+      retour: duree > 0 ? addDaysIso(depart, duree) : dateOr(search["retour"], ""),
+      duree,
+      flexible: numberOr(search["flexible"], 1) ? 1 : 0,
+      budget: Math.max(0, numberOr(search["budget"], 0)),
+      adultes: Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
+      enfants: Math.min(8, Math.max(0, Math.round(numberOr(search["enfants"], 0)))),
+      // Un bébé par adulte maximum (règle des compagnies aériennes).
+      bebes: Math.min(
+        Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
+        Math.max(0, Math.round(numberOr(search["bebes"], 0))),
+      ),
+      vue: search["vue"] === "calendrier" ? "calendrier" : "liste",
+    };
+  },
 
-  }),
   head: ({ match }) => {
     const from = cityLabel(match.search["origin"]);
     const to = cityLabel(match.search["destination"]);
