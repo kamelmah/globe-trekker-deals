@@ -1,4 +1,4 @@
-import { Baggage, Leaf, Plane, Store } from "lucide-react";
+import { Luggage, Leaf, Plane, Store } from "lucide-react";
 
 import { co2Label } from "@/lib/co2";
 import { useCurrency } from "@/lib/currency-context";
@@ -70,7 +70,7 @@ export function FlightCard({
 
           <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <li className="inline-flex items-center gap-1">
-              <Baggage className="size-3.5" aria-hidden />
+              <Luggage className="size-3.5" aria-hidden />
               Bagage cabine {offer.cabinBag ? "inclus" : "en option"}
             </li>
             <li>
