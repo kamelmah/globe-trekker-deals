@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
+import { PassengerSelector, type Passengers } from "@/components/search/PassengerSelector";
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,8 +33,12 @@ export function SearchForm({
   const [depart, setDepart] = useState(defaultDate(30));
   const [retour, setRetour] = useState("");
   const [flexible, setFlexible] = useState(true);
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
+  const [passengers, setPassengers] = useState<Passengers>({
+    adults: 1,
+    children: 0,
+    infants: 0,
+  });
+
   const [budget, setBudget] = useState("");
 
 
@@ -55,8 +60,9 @@ export function SearchForm({
         retour,
         flexible: flexible ? 1 : 0,
         budget: budget ? Number(budget) : 0,
-        adultes: adults,
-        enfants: children,
+        adultes: passengers.adults,
+        enfants: passengers.children,
+        bebes: passengers.infants,
         vue: "liste",
       },
     });
@@ -109,38 +115,8 @@ export function SearchForm({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="adultes">Adultes</Label>
-            <select
-              id="adultes"
-              value={adults}
-              onChange={(e) => setAdults(Number(e.target.value))}
-              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-            >
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-                <option key={n} value={n}>
-                  {n} adulte{n > 1 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="enfants">Enfants</Label>
-            <select
-              id="enfants"
-              value={children}
-              onChange={(e) => setChildren(Number(e.target.value))}
-              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-            >
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                <option key={n} value={n}>
-                  {n} enfant{n > 1 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <PassengerSelector value={passengers} onChange={setPassengers} />
+
 
         {!compact && (
           <div className="space-y-1.5">

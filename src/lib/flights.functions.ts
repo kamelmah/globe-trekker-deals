@@ -48,6 +48,7 @@ export const searchFlights = createServerFn({ method: "GET" })
         currency,
         adults: z.number().int().min(1).max(9).optional(),
         children: z.number().int().min(0).max(8).optional(),
+        infants: z.number().int().min(0).max(9).optional(),
       })
       .parse(data),
   )
@@ -64,6 +65,7 @@ export const searchFlights = createServerFn({ method: "GET" })
             currency: data.currency ?? "EUR",
             adults: data.adults ?? 1,
             children: data.children ?? 0,
+            infants: Math.min(data.adults ?? 1, data.infants ?? 0),
           }),
         ),
       );

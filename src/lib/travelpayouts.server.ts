@@ -86,17 +86,21 @@ function resolveSeller(gate: unknown, airline: string): string {
 function bookingUrlFromApiLink(
   link: string,
   marker: string,
-  passengers?: { adults: number; children: number },
+  passengers?: { adults: number; children: number; infants: number },
 ): string {
   const url = new URL(link, "https://www.aviasales.com");
   if (marker && !url.searchParams.has("marker")) url.searchParams.set("marker", marker);
   if (passengers) {
     // Le deep link Aviasales encode le nombre de voyageurs en fin de chemin
     // (…/search/PAR0110RAK1). On ajuste ce compteur sans toucher au reste du lien.
-    const total = Math.min(9, Math.max(1, passengers.adults + passengers.children));
+    const total = Math.min(
+      9,
+      Math.max(1, passengers.adults + passengers.children + passengers.infants),
+    );
     url.pathname = url.pathname.replace(/(\/search\/[A-Z0-9]+?)\d$/i, `$1${total}`);
     url.searchParams.set("adults", String(passengers.adults));
     if (passengers.children > 0) url.searchParams.set("children", String(passengers.children));
+    if (passengers.infants > 0) url.searchParams.set("infants", String(passengers.infants));
   }
   return url.toString();
 }
@@ -171,7 +175,7 @@ type ApiOffer = {
 function offersFromApi(
   list: ApiOffer[],
   marker: string,
-  passengers?: { adults: number; children: number },
+  passengers?: { adults: number; children: number; infants: number },
 ): FlightOffer[] {
   return list
     .filter((offer) => typeof offer?.link === "string" && offer.link.length > 0)
@@ -212,6 +216,7 @@ export async function fetchOffers(params: {
   currency?: string;
   adults?: number;
   children?: number;
+  infants?: number;
 }): Promise<{ offers: FlightOffer[]; raw: RawApiCall }> {
   const creds = getCredentials();
   const query: Record<string, string> = {
@@ -228,14 +233,19 @@ export async function fetchOffers(params: {
 
   const adults = Math.min(9, Math.max(1, params.adults ?? 1));
   const children = Math.min(8, Math.max(0, params.children ?? 0));
-  query["passengers"] = String(adults + children);
+  // Un bébé par adulte maximum (règle des compagnies aériennes).
+  const infants = Math.min(adults, Math.max(0, params.infants ?? 0));
+  query["adults"] = String(adults);
+  if (children > 0) query["children"] = String(children);
+  if (infants > 0) query["infants"] = String(infants);
+  query["passengers"] = String(adults + children + infants);
 
   const { data, raw } = await callApi<{ data?: ApiOffer[] }>(
     "/aviasales/v3/prices_for_dates",
     query,
     params.currency,
   );
-  const offers = offersFromApi(data?.data ?? [], creds?.marker ?? "", { adults, children });
+  const offers = offersFromApi(data?.data ?? [], creds?.marker ?? "", { adults, children, infants });
   if ((params.currency ?? "eur").toLowerCase() === "eur") {
     void recordHistory(params.origin, params.destination, offers);
   }

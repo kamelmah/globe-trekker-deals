@@ -91,6 +91,7 @@ function BudgetPage() {
       budget: 0,
       adultes: 1,
       enfants: 0,
+      bebes: 0,
       vue: "liste",
     }),
     [search],

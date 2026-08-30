@@ -8,6 +8,7 @@ import { AlertForm } from "@/components/alerts/AlertForm";
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { FlightCard } from "@/components/flights/FlightCard";
 import { PriceCalendar } from "@/components/flights/PriceCalendar";
+import { passengersSummary } from "@/components/search/PassengerSelector";
 import { SearchForm } from "@/components/search/SearchForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ type SearchParams = {
   budget: number;
   adultes: number;
   enfants: number;
+  bebes: number;
   vue: string;
 };
 
@@ -41,7 +43,13 @@ export const Route = createFileRoute("/recherche")({
     budget: Math.max(0, numberOr(search["budget"], 0)),
     adultes: Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
     enfants: Math.min(8, Math.max(0, Math.round(numberOr(search["enfants"], 0)))),
+    // Un bébé par adulte maximum (règle des compagnies aériennes).
+    bebes: Math.min(
+      Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
+      Math.max(0, Math.round(numberOr(search["bebes"], 0))),
+    ),
     vue: search["vue"] === "calendrier" ? "calendrier" : "liste",
+
   }),
   head: ({ match }) => {
     const from = cityLabel(match.search["origin"]);
@@ -87,6 +95,7 @@ function SearchResultsPage() {
       search.flexible,
       search["adultes"],
       search["enfants"],
+      search["bebes"],
       currency,
     ],
     queryFn: () =>
@@ -99,8 +108,10 @@ function SearchResultsPage() {
           flexible: search["flexible"] === 1,
           adults: search["adultes"],
           children: search["enfants"],
+          infants: search["bebes"],
           currency,
         },
+
       }),
   });
 
@@ -145,11 +156,14 @@ function SearchResultsPage() {
         Départ le {search.depart}
         {search["retour"] ? `, retour le ${search.retour}` : " (aller simple)"}
         {search["flexible"] === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des prix
-        totaux, taxes incluses pour {search["adultes"]} adulte{search["adultes"] > 1 ? "s" : ""}
-        {search["enfants"] > 0
-          ? ` et ${search["enfants"]} enfant${search["enfants"] > 1 ? "s" : ""}`
-          : ""}
+        totaux, taxes incluses pour{" "}
+        {passengersSummary({
+          adults: search["adultes"],
+          children: search["enfants"],
+          infants: search["bebes"],
+        })}
         .
+
       </p>
 
       <p className="mt-4 inline-flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
