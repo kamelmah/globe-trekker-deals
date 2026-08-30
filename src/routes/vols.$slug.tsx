@@ -73,8 +73,8 @@ export const Route = createFileRoute("/vols/$slug")({
       ],
       links: [
         { rel: "canonical", href: pageUrl },
-        { rel: "alternate", hrefLang: "fr-FR", href: pageUrl },
-        { rel: "alternate", hrefLang: "x-default", href: pageUrl },
+        { rel: "alternate", hreflang: "fr-FR", href: pageUrl },
+        { rel: "alternate", hreflang: "x-default", href: pageUrl },
       ],
       scripts: [
         {
