@@ -41,19 +41,81 @@ function getSlugIndex(): Promise<SlugIndex> {
   return slugIndexPromise;
 }
 
+type CachedEntry = {
+  destination: string;
+  city: string;
+  country: string;
+  lat: number;
+  lng: number;
+  priceEur: number;
+  airline?: string;
+  departureAt?: string;
+};
+
+/** Relit le balayage mondial déjà en cache pour une origine (aucun appel API). */
+async function readWorldCache(origin: string): Promise<CachedEntry[]> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("price_cache")
+      .select("payload,expires_at")
+      .like("cache_key", `world-destinations:${origin}:%`)
+      .order("expires_at", { ascending: false })
+      .limit(4);
+    const entries: CachedEntry[] = [];
+    for (const row of data ?? []) {
+      const prices = (row.payload as { prices?: unknown } | null)?.prices;
+      if (!Array.isArray(prices)) continue;
+      for (const entry of prices as CachedEntry[]) {
+        if (entry?.destination && entry?.city && Number.isFinite(Number(entry.priceEur))) {
+          entries.push(entry);
+        }
+      }
+    }
+    return entries;
+  } catch (error) {
+    console.error("Lecture du cache des destinations impossible", error);
+    return [];
+  }
+}
+
 /** Découpe "paris-new-york" en (origine, destination) en testant chaque césure. */
-export async function resolveRouteSlug(
-  slug: string,
-): Promise<{ origin: CityRecord; destination: CityRecord } | null> {
+export async function resolveRouteSlug(slug: string): Promise<{
+  origin: CityRecord;
+  destination: CityRecord;
+  cached: CachedEntry | null;
+} | null> {
   const clean = slugify(slug);
   if (!clean.includes("-")) return null;
   const index = await getSlugIndex();
   const parts = clean.split("-");
   for (let cut = 1; cut < parts.length; cut += 1) {
     const origin = index.get(parts.slice(0, cut).join("-"));
-    const destination = index.get(parts.slice(cut).join("-"));
-    if (origin && destination && origin.code !== destination.code) {
-      return { origin, destination };
+    if (!origin) continue;
+    const destSlug = parts.slice(cut).join("-");
+
+    // Priorité au balayage budget déjà en cache : c'est lui qui donne le bon
+    // code IATA (homonymes de villes) et le prix réellement observé.
+    const cached = (await readWorldCache(origin.code))
+      .filter((e) => slugify(e.city) === destSlug && e.destination !== origin.code)
+      .sort((a, b) => Number(a.priceEur) - Number(b.priceEur))[0];
+    if (cached) {
+      return {
+        origin,
+        destination: {
+          code: cached.destination,
+          city: cached.city,
+          country: cached.country,
+          lat: cached.lat,
+          lng: cached.lng,
+        },
+        cached,
+      };
+    }
+
+    const destination = index.get(destSlug);
+    if (destination && destination.code !== origin.code) {
+      return { origin, destination, cached: null };
     }
   }
   return null;
@@ -65,39 +127,17 @@ type ObservedPrice = { priceEur: number; airline: string | null; departureAt: st
 async function readObservedPrice(
   origin: string,
   destination: string,
+  cached: CachedEntry | null,
 ): Promise<ObservedPrice | null> {
+  let best: ObservedPrice | null = cached
+    ? {
+        priceEur: Math.round(Number(cached.priceEur)),
+        airline: cached.airline ?? null,
+        departureAt: cached.departureAt ?? null,
+      }
+    : null;
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("price_cache")
-      .select("payload,expires_at")
-      .like("cache_key", `world-destinations:${origin}:%`)
-      .order("expires_at", { ascending: false })
-      .limit(4);
-
-    let best: ObservedPrice | null = null;
-    for (const row of data ?? []) {
-      const prices = (row.payload as { prices?: unknown } | null)?.prices;
-      if (!Array.isArray(prices)) continue;
-      for (const entry of prices as {
-        destination?: string;
-        priceEur?: number;
-        airline?: string;
-        departureAt?: string;
-      }[]) {
-        if (entry.destination !== destination) continue;
-        const price = Number(entry.priceEur);
-        if (!Number.isFinite(price) || price <= 0) continue;
-        if (!best || price < best.priceEur) {
-          best = {
-            priceEur: Math.round(price),
-            airline: entry.airline ?? null,
-            departureAt: entry.departureAt ?? null,
-          };
-        }
-      }
-    }
-
     const { data: history } = await supabaseAdmin
       .from("price_history")
       .select("lowest_price")
@@ -109,13 +149,12 @@ async function readObservedPrice(
     if (historyLow && historyLow > 0 && (!best || historyLow < best.priceEur)) {
       best = { priceEur: historyLow, airline: best?.airline ?? null, departureAt: null };
     }
-
-    return best;
   } catch (error) {
-    console.error("Lecture du prix observé impossible", error);
-    return null;
+    console.error("Lecture de l'historique impossible", error);
   }
+  return best;
 }
+
 
 function distanceKm(a: CityRecord, b: CityRecord): number {
   const toRad = (v: number) => (v * Math.PI) / 180;
