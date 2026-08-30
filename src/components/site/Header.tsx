@@ -6,7 +6,7 @@ import { CurrencySelect } from "@/components/site/CurrencySelect";
 import { Button } from "@/components/ui/button";
 
 const NAV = [
-  { to: "/mode-budget", label: "Mode budget" },
+  { to: "/mode-budget", label: "Mode budget", search: { origin: "PAR", budget: 400, month: "" } },
   { to: "/conseils", label: "Conseils" },
   { to: "/faq", label: "FAQ" },
 ] as const;
@@ -29,6 +29,7 @@ export function Header() {
             <Link
               key={item.to}
               to={item.to}
+              search={"search" in item ? item.search : {}}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
               activeProps={{ className: "bg-secondary text-foreground" }}
             >
@@ -59,6 +60,7 @@ export function Header() {
               <Link
                 key={item.to}
                 to={item.to}
+                search={"search" in item ? item.search : {}}
                 onClick={() => setOpen(false)}
                 className="rounded-md px-2 py-3 text-sm font-medium text-foreground"
               >

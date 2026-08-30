@@ -1,0 +1,96 @@
+import { Link, createFileRoute } from "@tanstack/react-router";
+
+import { FaqAccordion } from "@/components/site/FaqAccordion";
+
+const TITLE = "Questions fréquentes sur TrouveMonVol | comparateur de vols";
+const DESCRIPTION =
+  "Comment fonctionne TrouveMonVol, pourquoi un prix peut changer, qui vend réellement le billet et comment marchent les alertes prix par email.";
+
+const FAQ = [
+  {
+    question: "Comment fonctionne TrouveMonVol ?",
+    answer:
+      "Nous interrogeons les bases tarifaires de nos partenaires de distribution pour la route et les dates que vous demandez, puis nous affichons les offres triées par prix total, taxes incluses. Quand vous cliquez sur « Réserver », vous êtes envoyé directement chez le vendeur du billet, où vous payez. Nous ne vendons pas de billets nous-mêmes et nous n'ajoutons aucun frais de service.",
+  },
+  {
+    question: "Pourquoi les prix peuvent-ils changer entre la recherche et la réservation ?",
+    answer:
+      "Les prix des billets d'avion évoluent en continu : chaque compagnie ouvre et ferme des classes tarifaires selon le remplissage du vol. Un tarif trouvé il y a dix minutes peut donc avoir disparu. Nous affichons le dernier prix connu et l'heure de la recherche ; si l'écart est important à l'arrivée chez le vendeur, revenez comparer, une autre offre est souvent plus intéressante.",
+  },
+  {
+    question: "Est-ce que je paie plus cher en passant par vous ?",
+    answer:
+      "Non. Le prix que vous payez est celui du vendeur, exactement comme si vous étiez allé sur son site directement. Notre rémunération vient d'une commission d'affiliation versée par le vendeur, prélevée sur sa marge, pas ajoutée à votre facture.",
+  },
+  {
+    question: "Qui vend réellement le billet ?",
+    answer:
+      "Chaque résultat affiche le nom du vendeur : soit la compagnie aérienne elle-même, soit une agence de voyage en ligne nommée. Nous n'affichons jamais un intermédiaire anonyme, et le bouton de réservation mène directement chez ce vendeur, sans page intermédiaire ni cascade de redirections. C'est important : en cas de retard, d'annulation ou de remboursement, c'est ce vendeur qui est votre interlocuteur.",
+  },
+  {
+    question: "Comment fonctionnent les alertes prix ?",
+    answer:
+      "Vous laissez votre email sur une page de résultats ou de destination, sans créer de compte. Nous enregistrons le trajet, les dates et le prix du moment. Une fois par jour, nous revérifions ce prix et nous vous écrivons uniquement s'il a baissé. Chaque email contient un lien de désinscription en un clic.",
+  },
+  {
+    question: "Pourquoi n'affichez-vous pas de compte à rebours ni de « dernières places » ?",
+    answer:
+      "Parce que ces éléments sont conçus pour créer de l'urgence, pas pour vous informer. Nous préférons vous donner l'historique des prix sur douze mois et la vue calendrier du mois : avec ces deux repères, vous pouvez juger vous-même si le prix affiché est bon.",
+  },
+  {
+    question: "Les prix incluent-ils les bagages ?",
+    answer:
+      "Le prix affiché est le prix total taxes et frais obligatoires inclus. Le bagage cabine et le bagage en soute sont indiqués séparément sur chaque résultat, car ils ne sont pas toujours compris. Sur les compagnies à bas coût, une valise en soute peut ajouter plusieurs dizaines d'euros et changer le classement des offres.",
+  },
+  {
+    question: "Comment est calculée l'estimation CO₂ ?",
+    answer:
+      "Nous estimons les émissions à partir de la distance réelle entre les aéroports, d'un facteur d'émission par passager qui varie selon la longueur du vol, et d'une majoration lorsque le trajet comporte des escales. C'est un ordre de grandeur destiné à comparer deux itinéraires, pas une mesure certifiée.",
+  },
+];
+
+export const Route = createFileRoute("/faq")({
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: { "@type": "Answer", text: item.answer },
+          })),
+        }),
+      },
+    ],
+  }),
+  component: FaqPage,
+});
+
+function FaqPage() {
+  return (
+    <div className="container-page py-10">
+      <h1 className="font-display text-3xl font-semibold">Questions fréquentes</h1>
+      <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+        Tout ce qu'il faut savoir sur le fonctionnement du site, la formation des prix et notre modèle
+        économique. Pour les conseils de réservation, rendez-vous dans nos{" "}
+        <Link to="/conseils" className="font-medium text-primary underline-offset-2 hover:underline">
+          articles
+        </Link>
+        .
+      </p>
+
+      <div className="mt-8 max-w-3xl">
+        <FaqAccordion items={FAQ} />
+      </div>
+    </div>
+  );
+}

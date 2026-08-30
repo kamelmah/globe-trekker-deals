@@ -22,13 +22,13 @@ type SearchParams = { origin: string; budget: number; month: string };
 
 export const Route = createFileRoute("/mode-budget")({
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    origin: iataOr(search.origin, "PAR"),
-    budget: Math.max(20, numberOr(search.budget, 400)),
-    month: monthOr(search.month, ""),
+    origin: iataOr(search["origin"], "PAR"),
+    budget: Math.max(20, numberOr(search["budget"], 400)),
+    month: monthOr(search["month"], ""),
   }),
   loader: async ({ location }) => {
-    const origin = iataOr((location.search as Record<string, unknown>).origin, "PAR");
-    const month = monthOr((location.search as Record<string, unknown>).month, "");
+    const origin = iataOr((location.search as Record<string, unknown>)["origin"], "PAR");
+    const month = monthOr((location.search as Record<string, unknown>)["month"], "");
     const { prices, demo } = await cheapestDestinations({
       data: {
         origin,
@@ -59,31 +59,31 @@ function BudgetPage() {
   const { format } = useCurrency();
   const { currency } = useCurrency();
   const [selected, setSelected] = useState<string | undefined>(undefined);
-  const [budgetInput, setBudgetInput] = useState(String(search.budget));
+  const [budgetInput, setBudgetInput] = useState(String(search["budget"]));
 
   const query = useQuery({
-    queryKey: ["budget", search.origin, search.month],
+    queryKey: ["budget", search["origin"], search.month],
     queryFn: () =>
       runDestinations({
         data: {
-          origin: search.origin,
+          origin: search["origin"],
           destinations: BUDGET_DESTINATION_CODES,
-          ...(search.month ? { month: search.month } : {}),
+          ...(search["month"] ? { month: search["month"] } : {}),
         },
       }),
     initialData: initial,
   });
 
-  const originAirport = getAirport(search.origin);
+  const originAirport = getAirport(search["origin"]);
   const prices = [...(query.data?.prices ?? [])].sort((a, b) => a.priceEur - b.priceEur);
-  const affordable = prices.filter((p) => p.priceEur <= search.budget);
+  const affordable = prices.filter((p) => p.priceEur <= search["budget"]);
   const origins = AIRPORTS.filter((a) => ORIGIN_CODES.includes(a.code));
 
   return (
     <div>
       <div className="container-page pt-8">
         <h1 className="font-display text-2xl font-semibold sm:text-3xl">
-          Mode budget : où partir de {originAirport?.city ?? search.origin} avec {format(search.budget)}
+          Mode budget : où partir de {originAirport?.city ?? search.origin} avec {format(search["budget"])}
         </h1>
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
           Entrez votre budget maximum, sans destination imposée. Chaque point de la carte correspond à
@@ -159,7 +159,7 @@ function BudgetPage() {
                   <Link
                     to="/recherche"
                     search={{
-                      origin: search.origin,
+                      origin: search["origin"],
                       destination: price.destination,
                       depart: price.departureAt.slice(0, 10),
                       retour: "",

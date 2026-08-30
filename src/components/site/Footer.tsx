@@ -35,7 +35,10 @@ export function Footer() {
           <p className="text-sm font-semibold">Le site</p>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li>
-              <Link to="/mode-budget" className="transition-colors hover:text-foreground">
+              <Link
+                to="/mode-budget"
+                search={{ origin: "PAR", budget: 400, month: "" }}
+                className="transition-colors hover:text-foreground">
                 Mode budget
               </Link>
             </li>

@@ -29,17 +29,17 @@ type SearchParams = {
 
 export const Route = createFileRoute("/recherche")({
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    origin: iataOr(search.origin, "PAR"),
-    destination: iataOr(search.destination, "RAK"),
-    depart: dateOr(search.depart, todayPlus(30)),
-    retour: dateOr(search.retour, ""),
-    flexible: numberOr(search.flexible, 1) ? 1 : 0,
-    budget: Math.max(0, numberOr(search.budget, 0)),
-    vue: search.vue === "calendrier" ? "calendrier" : "liste",
+    origin: iataOr(search["origin"], "PAR"),
+    destination: iataOr(search["destination"], "RAK"),
+    depart: dateOr(search["depart"], todayPlus(30)),
+    retour: dateOr(search["retour"], ""),
+    flexible: numberOr(search["flexible"], 1) ? 1 : 0,
+    budget: Math.max(0, numberOr(search["budget"], 0)),
+    vue: search["vue"] === "calendrier" ? "calendrier" : "liste",
   }),
   head: ({ match }) => {
-    const from = cityLabel(match.search.origin);
-    const to = cityLabel(match.search.destination);
+    const from = cityLabel(match.search["origin"]);
+    const to = cityLabel(match.search["destination"]);
     const title = `Vols ${from} — ${to} : comparer les prix totaux | TrouveMonVol`;
     const description = `Résultats de vols ${from} — ${to} triés par prix total taxes incluses, avec le vendeur réel de chaque billet et une vue calendrier des prix du mois.`;
     return {
@@ -66,29 +66,29 @@ function SearchResultsPage() {
   const [morningOnly, setMorningOnly] = useState(false);
   const [maxDuration, setMaxDuration] = useState(0);
 
-  const from = cityLabel(search.origin);
-  const to = cityLabel(search.destination);
+  const from = cityLabel(search["origin"]);
+  const to = cityLabel(search["destination"]);
   const month = search.depart.slice(0, 7);
 
   const offersQuery = useQuery({
-    queryKey: ["offers", search.origin, search.destination, search.depart, search.retour, search.flexible],
+    queryKey: ["offers", search["origin"], search["destination"], search["depart"], search["retour"], search.flexible],
     queryFn: () =>
       runSearch({
         data: {
-          origin: search.origin,
-          destination: search.destination,
-          departureAt: search.depart,
-          returnAt: search.retour || null,
-          flexible: search.flexible === 1,
+          origin: search["origin"],
+          destination: search["destination"],
+          departureAt: search["depart"],
+          returnAt: search["retour"] || null,
+          flexible: search["flexible"] === 1,
         },
       }),
   });
 
   const calendarQuery = useQuery({
-    queryKey: ["calendar", search.origin, search.destination, month],
+    queryKey: ["calendar", search["origin"], search["destination"], month],
     queryFn: () =>
-      runCalendar({ data: { origin: search.origin, destination: search.destination, month } }),
-    enabled: search.vue === "calendrier",
+      runCalendar({ data: { origin: search["origin"], destination: search["destination"], month } }),
+    enabled: search["vue"] === "calendrier",
   });
 
   const offers = offersQuery.data?.offers ?? [];
@@ -100,7 +100,7 @@ function SearchResultsPage() {
   const filtered = offers.filter((offer) => {
     if (directOnly && offer.stops > 0) return false;
     if (airline && offer.airline !== airline) return false;
-    if (search.budget && offer.priceEur > search.budget) return false;
+    if (search["budget"] && offer.priceEur > search["budget"]) return false;
     if (maxDuration && offer.durationMinutes > maxDuration * 60) return false;
     if (morningOnly) {
       const hour = new Date(offer.departureAt).getHours();
@@ -121,8 +121,8 @@ function SearchResultsPage() {
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
         Départ le {search.depart}
-        {search.retour ? `, retour le ${search.retour}` : " (aller simple)"}
-        {search.flexible === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des prix
+        {search["retour"] ? `, retour le ${search.retour}` : " (aller simple)"}
+        {search["flexible"] === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des prix
         totaux, taxes incluses.
       </p>
 
@@ -188,7 +188,7 @@ function SearchResultsPage() {
               origin={search.origin}
               destination={search.destination}
               departDate={search.depart}
-              {...(search.retour ? { returnDate: search.retour } : {})}
+              {...(search["retour"] ? { returnDate: search["retour"] } : {})}
               referencePrice={cheapest.priceEur}
             />
           )}
@@ -205,14 +205,14 @@ function SearchResultsPage() {
             </p>
             <div className="flex gap-2">
               <Button
-                variant={search.vue === "liste" ? "default" : "outline"}
+                variant={search["vue"] === "liste" ? "default" : "outline"}
                 size="sm"
                 onClick={() => navigate({ search: (prev) => ({ ...prev, vue: "liste" }) })}
               >
                 Liste
               </Button>
               <Button
-                variant={search.vue === "calendrier" ? "default" : "outline"}
+                variant={search["vue"] === "calendrier" ? "default" : "outline"}
                 size="sm"
                 onClick={() => navigate({ search: (prev) => ({ ...prev, vue: "calendrier" }) })}
               >
@@ -228,7 +228,7 @@ function SearchResultsPage() {
             </p>
           )}
 
-          {search.vue === "calendrier" ? (
+          {search["vue"] === "calendrier" ? (
             <div className="mt-5 rounded-xl border border-border bg-card p-5">
               <h2 className="font-display text-base font-semibold">
                 Prix les plus bas jour par jour ({month})
