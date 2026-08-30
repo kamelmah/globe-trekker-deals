@@ -176,6 +176,32 @@ export function SearchForm({
         </div>
       </div>
 
+      <fieldset className="mt-4">
+        <legend className="text-sm font-medium">Durée du séjour</legend>
+        <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Durée du séjour">
+          {TRIP_DURATIONS.map((preset) => (
+            <Button
+              key={preset.days}
+              type="button"
+              size="sm"
+              variant={duree === preset.days ? "default" : "outline"}
+              aria-pressed={duree === preset.days}
+              onClick={() => setDuree(preset.days)}
+            >
+              {preset.label}
+            </Button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {duree > 0
+            ? `Séjour de ${duree} nuits — choisissez seulement la date de départ${
+                flexible ? ", nous testons aussi les départs à ± 3 jours" : ""
+              }.`
+            : "Choisissez librement vos dates d'aller et de retour."}
+        </p>
+      </fieldset>
+
+
       <Button type="submit" size="lg" className="mt-5 w-full sm:w-auto">
         <Search className="size-4" aria-hidden />
         {destination ? "Comparer les vols" : "Voir où partir avec mon budget"}
