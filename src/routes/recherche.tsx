@@ -32,7 +32,6 @@ type SearchParams = {
   adultes: number;
   enfants: number;
   bebes: number;
-  vue: string;
 };
 
 export const Route = createFileRoute("/recherche")({
@@ -54,7 +53,6 @@ export const Route = createFileRoute("/recherche")({
         Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1)))),
         Math.max(0, Math.round(numberOr(search["bebes"], 0))),
       ),
-      vue: search["vue"] === "calendrier" ? "calendrier" : "liste",
     };
   },
 
@@ -122,28 +120,6 @@ function SearchResultsPage() {
         },
 
       }),
-  });
-
-  const calendarQuery = useQuery({
-    queryKey: [
-      "calendar",
-      search["origin"],
-      search["destination"],
-      month,
-      search["duree"],
-      currency,
-    ],
-    queryFn: () =>
-      runCalendar({
-        data: {
-          origin: search["origin"],
-          destination: search["destination"],
-          month,
-          tripDuration: search["duree"],
-          currency,
-        },
-      }),
-    enabled: search["vue"] === "calendrier",
   });
 
   const offers = offersQuery.data?.offers ?? [];
@@ -275,22 +251,6 @@ function SearchResultsPage() {
                     filtered.length > 1 ? "s" : ""
                   }`}
             </p>
-            <div className="flex gap-2">
-              <Button
-                variant={search["vue"] === "liste" ? "default" : "outline"}
-                size="sm"
-                onClick={() => navigate({ search: (prev) => ({ ...prev, vue: "liste" }) })}
-              >
-                Liste
-              </Button>
-              <Button
-                variant={search["vue"] === "calendrier" ? "default" : "outline"}
-                size="sm"
-                onClick={() => navigate({ search: (prev) => ({ ...prev, vue: "calendrier" }) })}
-              >
-                Calendrier des prix
-              </Button>
-            </div>
           </div>
 
           {offersQuery.isError && (
@@ -306,41 +266,8 @@ function SearchResultsPage() {
           )}
 
           <ApiDebugPanel debug={offersQuery.data?.debug} label="Recherche de vols" />
-          {search["vue"] === "calendrier" && (
-            <ApiDebugPanel debug={calendarQuery.data?.debug} label="Calendrier des prix" />
-          )}
 
-          {search["vue"] === "calendrier" ? (
-            <div className="mt-5 rounded-xl border border-border bg-card p-5">
-              <h2 className="font-display text-base font-semibold">
-                Prix les plus bas jour par jour ({month})
-                {search["duree"] > 0 ? ` — aller-retour ${search.duree} nuits` : " — aller simple"}
-              </h2>
-              <p className="mt-1 mb-4 text-sm text-muted-foreground">
-                Cliquez sur un jour pour relancer la recherche à cette date.
-              </p>
-              {calendarQuery.isPending ? (
-                <Skeleton className="h-72 w-full" />
-              ) : (
-                calendarQuery.data?.error ? (
-                <p className="text-sm text-destructive">{calendarQuery.data.error}</p>
-              ) : (calendarQuery.data?.days ?? []).length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Aucun prix trouvé pour ce mois, essayez un autre mois.
-                </p>
-              ) : (
-                <PriceCalendar
-                  days={calendarQuery.data?.days ?? []}
-                  month={month}
-                  selected={search.depart}
-                  onSelect={(date) =>
-                    navigate({ search: (prev) => ({ ...prev, depart: date, vue: "liste" }) })
-                  }
-                />
-              )
-              )}
-            </div>
-          ) : (
+          {(
             <div className="mt-5 space-y-4">
               {offersQuery.isPending &&
                 Array.from({ length: 4 }).map((_, i) => (
