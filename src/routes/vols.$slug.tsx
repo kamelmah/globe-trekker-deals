@@ -319,7 +319,7 @@ function DestinationPage() {
               </p>
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {related.map((item) => {
-                  const thumb = getDestinationImage(null, item.city);
+                  const thumb = getDestinationImage(null, item.city, item.country);
                   return (
                   <li key={item.slug}>
                     <Link
