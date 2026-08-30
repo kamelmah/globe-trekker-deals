@@ -2,11 +2,23 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { CITY_GUIDES } from "@/data/city-guides";
 import { POSTS } from "@/data/posts";
+import { getDestinationImage } from "@/lib/destination-images";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const TITLE = "Conseils pour payer son billet d'avion moins cher | TrouveMonVol";
 const DESCRIPTION =
   "Nos guides concrets pour trouver un vol pas cher : quand réserver, comment fonctionnent les prix des compagnies, comment éviter les frais cachés.";
+
+const listItems = [
+  ...CITY_GUIDES.map((guide) => ({
+    name: guide.title,
+    url: `${SITE_URL}/conseils/destinations/${guide.slug}`,
+  })),
+  ...POSTS.map((post) => ({
+    name: post.title,
+    url: `${SITE_URL}/conseils/${post.slug}`,
+  })),
+];
 
 export const Route = createFileRoute("/conseils/")({
   head: () => ({
@@ -28,11 +40,11 @@ export const Route = createFileRoute("/conseils/")({
           "@type": "ItemList",
           name: TITLE,
           url: `${SITE_URL}/conseils`,
-          itemListElement: POSTS.map((post, index) => ({
+          itemListElement: listItems.map((item, index) => ({
             "@type": "ListItem",
             position: index + 1,
-            name: post.title,
-            url: `${SITE_URL}/conseils/${post.slug}`,
+            name: item.name,
+            url: item.url,
           })),
         }),
       },
@@ -46,48 +58,43 @@ function BlogIndex() {
     <div className="container-page py-10">
       <h1 className="font-display text-3xl font-semibold">Conseils voyage</h1>
       <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-        Des articles courts et concrets, sans jargon, pour comprendre comment se forment les prix des
-        billets d'avion et payer le vôtre moins cher. Pas de listes recopiées : uniquement ce qui
-        change vraiment le prix final.
+        Deux types de contenus pour bien préparer votre voyage et payer moins cher votre billet
+        d'avion : des guides pratiques par destination, et des articles généraux sur le fonctionnement
+        des prix des compagnies aériennes.
       </p>
 
-      <ul className="mt-8 grid gap-4 md:grid-cols-2">
-        {POSTS.map((post) => (
-          <li key={post.slug}>
-            <Link
-              to="/conseils/$slug"
-              params={{ slug: post.slug }}
-              className="block h-full rounded-xl border border-border bg-card p-5 transition-colors hover:bg-secondary"
-            >
-              <h2 className="font-display text-lg font-semibold">{post.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{post.description}</p>
-              <p className="mt-3 text-xs text-muted-foreground">
-                {post.readingMinutes} min de lecture · mis à jour le {post.updated}
-              </p>
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      <section className="mt-12">
+      <section className="mt-10">
         <h2 className="font-display text-2xl font-semibold">Guides par destination</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Que faire sur place, quand partir, quel budget prévoir : un guide pratique pour chaque
           ville desservie sur le site.
         </p>
-        <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {CITY_GUIDES.map((guide) => (
-            <li key={guide.slug}>
-              <Link
-                to="/conseils/destinations/$city"
-                params={{ city: guide.slug }}
-                className="block rounded-xl border border-border bg-card p-4 text-sm transition-colors hover:bg-secondary"
-              >
-                <span className="block font-medium">Que faire à {guide.city}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{guide.country}</span>
-              </Link>
-            </li>
-          ))}
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {CITY_GUIDES.map((guide) => {
+            const image = getDestinationImage(guide.destination, guide.city);
+            return (
+              <li key={guide.slug}>
+                <Link
+                  to="/conseils/destinations/$city"
+                  params={{ city: guide.slug }}
+                  className="group block overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-secondary"
+                >
+                  <div className="aspect-[16/9] overflow-hidden">
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <span className="block font-medium">Que faire à {guide.city}</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">{guide.country}</span>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
         <Link
           to="/conseils/destinations"
@@ -95,6 +102,31 @@ function BlogIndex() {
         >
           Voir tous les guides destinations
         </Link>
+      </section>
+
+      <section className="mt-14">
+        <h2 className="font-display text-2xl font-semibold">Conseils généraux</h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Articles courts et concrets, sans jargon, pour comprendre comment se forment les prix des
+          billets d'avion et payer le vôtre moins cher.
+        </p>
+        <ul className="mt-6 grid gap-4 md:grid-cols-2">
+          {POSTS.map((post) => (
+            <li key={post.slug}>
+              <Link
+                to="/conseils/$slug"
+                params={{ slug: post.slug }}
+                className="block h-full rounded-xl border border-border bg-card p-5 transition-colors hover:bg-secondary"
+              >
+                <h3 className="font-display text-lg font-semibold">{post.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{post.description}</p>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  {post.readingMinutes} min de lecture · mis à jour le {post.updated}
+                </p>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <div className="mt-10 rounded-xl border border-border bg-secondary/40 p-5 text-sm text-muted-foreground">
