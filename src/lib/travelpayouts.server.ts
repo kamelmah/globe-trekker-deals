@@ -384,6 +384,8 @@ export async function fetchCheapestDestinations(params: {
   world?: boolean;
   month?: string | undefined;
   currency?: string;
+  /** Ignore le cache : utilisé par la revalidation en arrière-plan. */
+  forceRefresh?: boolean;
 }): Promise<{ prices: DestinationPrice[]; raw: RawApiCall | null }> {
   const origin = params.origin.toUpperCase();
   const currency = (params.currency ?? "EUR").toUpperCase();
@@ -396,11 +398,16 @@ export async function fetchCheapestDestinations(params: {
       : null;
 
   // Un seul balayage par ville de départ : le cache évite de re-solliciter l'API
-  // à chaque changement de budget.
-  if (world) {
-    const cached = await readJsonCache<{ prices: DestinationPrice[] }>(cacheKey);
-    if (cached?.prices?.length) return { prices: cached.prices, raw: null };
+  // à chaque changement de budget. Quand le cache a dépassé ses 6 h, on renvoie
+  // quand même les prix périmés (fallback SEO propre) et on rafraîchit en fond.
+  if (world && !params.forceRefresh) {
+    const entry = await readJsonCacheEntry<{ prices: DestinationPrice[] }>(cacheKey);
+    if (entry?.payload?.prices?.length) {
+      if (entry.stale) scheduleWorldRevalidation({ ...params, forceRefresh: true }, cacheKey);
+      return { prices: entry.payload.prices, raw: null };
+    }
   }
+
 
   const monthQuery: Record<string, string> = {
     origin,
