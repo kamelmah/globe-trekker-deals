@@ -32,6 +32,8 @@ export function SearchForm({
   const [depart, setDepart] = useState(defaultDate(30));
   const [retour, setRetour] = useState("");
   const [flexible, setFlexible] = useState(true);
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
   const [budget, setBudget] = useState("");
 
 
@@ -53,6 +55,8 @@ export function SearchForm({
         retour,
         flexible: flexible ? 1 : 0,
         budget: budget ? Number(budget) : 0,
+        adultes: adults,
+        enfants: children,
         vue: "liste",
       },
     });
@@ -103,6 +107,39 @@ export function SearchForm({
             min={depart}
             onChange={(e) => setRetour(e.target.value)}
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="adultes">Adultes</Label>
+            <select
+              id="adultes"
+              value={adults}
+              onChange={(e) => setAdults(Number(e.target.value))}
+              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                <option key={n} value={n}>
+                  {n} adulte{n > 1 ? "s" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="enfants">Enfants</Label>
+            <select
+              id="enfants"
+              value={children}
+              onChange={(e) => setChildren(Number(e.target.value))}
+              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+            >
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <option key={n} value={n}>
+                  {n} enfant{n > 1 ? "s" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {!compact && (

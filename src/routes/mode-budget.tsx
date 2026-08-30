@@ -62,22 +62,22 @@ function BudgetPage() {
   const initial = Route.useLoaderData();
   const navigate = useNavigate({ from: Route.fullPath });
   const runDestinations = useServerFn(cheapestDestinations);
-  const { format } = useCurrency();
-  const { currency } = useCurrency();
+  const { formatApi: format, currency } = useCurrency();
   const [selected, setSelected] = useState<string | undefined>(undefined);
   const [budgetInput, setBudgetInput] = useState(String(search["budget"]));
 
   const query = useQuery({
-    queryKey: ["budget", search["origin"], search.month],
+    queryKey: ["budget", search["origin"], search.month, currency],
     queryFn: () =>
       runDestinations({
         data: {
           origin: search["origin"],
           destinations: BUDGET_DESTINATION_CODES,
           ...(search["month"] ? { month: search["month"] } : {}),
+          currency,
         },
       }),
-    initialData: initial,
+    ...(currency === "EUR" ? { initialData: initial } : {}),
   });
 
   const originAirport = getAirport(search["origin"]);
@@ -181,6 +181,8 @@ function BudgetPage() {
                       retour: "",
                       flexible: 1,
                       budget: 0,
+                      adultes: 1,
+                      enfants: 0,
                       vue: "liste",
                     }}
                     onMouseEnter={() => setSelected(price.destination)}

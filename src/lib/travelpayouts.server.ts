@@ -83,9 +83,21 @@ function resolveSeller(gate: unknown, airline: string): string {
 /* Lien de réservation : exactement celui renvoyé par l'API                    */
 /* -------------------------------------------------------------------------- */
 
-function bookingUrlFromApiLink(link: string, marker: string): string {
+function bookingUrlFromApiLink(
+  link: string,
+  marker: string,
+  passengers?: { adults: number; children: number },
+): string {
   const url = new URL(link, "https://www.aviasales.com");
   if (marker && !url.searchParams.has("marker")) url.searchParams.set("marker", marker);
+  if (passengers) {
+    // Le deep link Aviasales encode le nombre de voyageurs en fin de chemin
+    // (…/search/PAR0110RAK1). On ajuste ce compteur sans toucher au reste du lien.
+    const total = Math.min(9, Math.max(1, passengers.adults + passengers.children));
+    url.pathname = url.pathname.replace(/(\/search\/[A-Z0-9]+?)\d$/i, `$1${total}`);
+    url.searchParams.set("adults", String(passengers.adults));
+    if (passengers.children > 0) url.searchParams.set("children", String(passengers.children));
+  }
   return url.toString();
 }
 
@@ -96,6 +108,7 @@ function bookingUrlFromApiLink(link: string, marker: string): string {
 async function callApi<T>(
   path: string,
   params: Record<string, string>,
+  currency = "eur",
 ): Promise<{ data: T; raw: RawApiCall }> {
   const creds = getCredentials();
   if (!creds) {
@@ -103,7 +116,11 @@ async function callApi<T>(
       "La clé API Travelpayouts n'est pas configurée sur le serveur (TRAVELPAYOUTS_TOKEN).",
     );
   }
-  const search = new URLSearchParams({ ...params, currency: "eur", token: creds.token });
+  const search = new URLSearchParams({
+    ...params,
+    currency: currency.toLowerCase(),
+    token: creds.token,
+  });
   let res: Response;
   try {
     res = await fetch(`${API_BASE}${path}?${search.toString()}`, {
@@ -151,7 +168,11 @@ type ApiOffer = {
   link?: string;
 };
 
-function offersFromApi(list: ApiOffer[], marker: string): FlightOffer[] {
+function offersFromApi(
+  list: ApiOffer[],
+  marker: string,
+  passengers?: { adults: number; children: number },
+): FlightOffer[] {
   return list
     .filter((offer) => typeof offer?.link === "string" && offer.link.length > 0)
     .map((offer, index) => {
@@ -173,7 +194,7 @@ function offersFromApi(list: ApiOffer[], marker: string): FlightOffer[] {
         cabinBag: true,
         checkedBag: false,
         co2Kg: estimateCo2Kg(offer.origin, offer.destination, stops),
-        bookingUrl: bookingUrlFromApiLink(offer.link as string, marker),
+        bookingUrl: bookingUrlFromApiLink(offer.link as string, marker, passengers),
       } satisfies FlightOffer;
     })
     .sort((a, b) => a.priceEur - b.priceEur);
@@ -188,6 +209,9 @@ export async function fetchOffers(params: {
   destination: string;
   departureAt: string;
   returnAt?: string | null;
+  currency?: string;
+  adults?: number;
+  children?: number;
 }): Promise<{ offers: FlightOffer[]; raw: RawApiCall }> {
   const creds = getCredentials();
   const query: Record<string, string> = {
@@ -202,12 +226,19 @@ export async function fetchOffers(params: {
   };
   if (params.returnAt) query["return_at"] = params.returnAt.slice(0, 10);
 
+  const adults = Math.min(9, Math.max(1, params.adults ?? 1));
+  const children = Math.min(8, Math.max(0, params.children ?? 0));
+  query["passengers"] = String(adults + children);
+
   const { data, raw } = await callApi<{ data?: ApiOffer[] }>(
     "/aviasales/v3/prices_for_dates",
     query,
+    params.currency,
   );
-  const offers = offersFromApi(data?.data ?? [], creds?.marker ?? "");
-  void recordHistory(params.origin, params.destination, offers);
+  const offers = offersFromApi(data?.data ?? [], creds?.marker ?? "", { adults, children });
+  if ((params.currency ?? "eur").toLowerCase() === "eur") {
+    void recordHistory(params.origin, params.destination, offers);
+  }
   return { offers, raw };
 }
 
@@ -253,6 +284,7 @@ export async function fetchCheapestDestinations(params: {
   origin: string;
   destinations: string[];
   month?: string | undefined;
+  currency?: string;
 }): Promise<{ prices: DestinationPrice[]; raw: RawApiCall }> {
   const query: Record<string, string> = {
     origin: params.origin,
@@ -265,6 +297,7 @@ export async function fetchCheapestDestinations(params: {
   const { data, raw } = await callApi<{ data?: ApiOffer[] }>(
     "/aviasales/v3/prices_for_dates",
     query,
+    params.currency,
   );
 
   const cheapest = new Map<string, ApiOffer>();
@@ -302,6 +335,7 @@ export async function fetchCalendarPrices(params: {
   destination: string;
   /** Mois au format YYYY-MM. */
   month: string;
+  currency?: string;
 }): Promise<{ days: CalendarDayPrice[]; raw: RawApiCall }> {
   const { data, raw } = await callApi<{ data?: Record<string, ApiOffer> | ApiOffer[] }>(
     "/aviasales/v3/grouped_prices",
@@ -312,6 +346,7 @@ export async function fetchCalendarPrices(params: {
       group_by: "departure_at",
       one_way: "true",
     },
+    params.currency,
   );
 
   const entries = Object.values(data?.data ?? {}) as ApiOffer[];

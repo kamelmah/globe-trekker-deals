@@ -3,7 +3,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useRef } from "react";
 
-import { formatPrice, type CurrencyCode } from "@/lib/currency";
+import { formatAmount, type CurrencyCode } from "@/lib/currency";
 import type { DestinationPrice } from "@/lib/flights.types";
 
 export type BudgetMapProps = {
@@ -67,7 +67,7 @@ export default function BudgetMap({
         fillOpacity: affordable ? 0.9 : 0.4,
       });
       marker.bindTooltip(
-        `${price.city} (${price.country}) — ${formatPrice(price.priceEur, currency)}${
+        `${price.city} (${price.country}) — ${formatAmount(price.priceEur, currency)}${
           affordable ? "" : " · au-dessus du budget"
         }`,
         { direction: "top", opacity: 1 },
