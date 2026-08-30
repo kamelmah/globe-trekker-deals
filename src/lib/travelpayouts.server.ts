@@ -34,7 +34,8 @@ export type RawApiCall = {
   endpoint: string;
   params: Record<string, string>;
   status: number;
-  body: unknown;
+  /** Corps de réponse brut (JSON indenté) pour le panneau de debug. */
+  body: string;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -114,9 +115,11 @@ async function callApi<T>(
   }
 
   const text = await res.text();
-  let body: unknown = text;
+  let parsed: unknown = text;
+  let body = text;
   try {
-    body = JSON.parse(text);
+    parsed = JSON.parse(text);
+    body = JSON.stringify(parsed, null, 2);
   } catch {
     /* réponse non JSON : conservée telle quelle pour le debug */
   }
@@ -130,7 +133,7 @@ async function callApi<T>(
     );
   }
 
-  return { data: body as T, raw };
+  return { data: parsed as T, raw };
 }
 
 type ApiOffer = {
