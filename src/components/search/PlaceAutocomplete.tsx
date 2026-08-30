@@ -46,6 +46,7 @@ export function PlaceAutocomplete({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const wrapper = useRef<HTMLDivElement>(null);
+  const skipBlur = useRef(false);
 
   // Debounce 300 ms avant l'appel API.
   useEffect(() => {
