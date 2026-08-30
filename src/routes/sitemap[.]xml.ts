@@ -20,6 +20,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           { loc: "/conseils", priority: "0.7", changefreq: "weekly" },
           { loc: "/faq", priority: "0.6", changefreq: "monthly" },
           { loc: "/comment-on-gagne-de-l-argent", priority: "0.5", changefreq: "monthly" },
+          { loc: "/mentions-legales", priority: "0.2", changefreq: "yearly" },
+          { loc: "/cgu", priority: "0.2", changefreq: "yearly" },
+          { loc: "/confidentialite", priority: "0.2", changefreq: "yearly" },
+          { loc: "/cookies", priority: "0.2", changefreq: "yearly" },
           ...DESTINATIONS.map((d) => ({
             loc: `/vols-pas-chers/${d.slug}`,
             priority: "0.9",
