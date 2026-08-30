@@ -147,6 +147,7 @@ function HomePage() {
           </div>
 
           <SearchForm
+            key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
             initialOrigin={prefill.origin || "PAR"}
             initialDestination={prefill.destination ?? ""}
             {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
