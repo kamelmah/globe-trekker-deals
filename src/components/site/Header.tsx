@@ -66,6 +66,10 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <Button onClick={onCtaClick} className="ml-2 gap-1.5 shadow-sm">
+            <Plane className="size-4" aria-hidden />
+            Trouve mon vol
+          </Button>
         </nav>
 
         <div className="flex items-center gap-2">
