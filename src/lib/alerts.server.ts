@@ -58,8 +58,8 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
       destination: input.destination.toUpperCase(),
       depart_date: input.departDate ?? null,
       return_date: input.returnDate ?? null,
-      initial_price: input.referencePrice,
-      last_price: input.referencePrice,
+      initial_price: referencePrice,
+      last_price: referencePrice,
       active: true,
     },
     { onConflict: "email,origin,destination,depart_date" },
@@ -73,8 +73,8 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
       destination: input.destination.toUpperCase(),
       depart_date: input.departDate ?? null,
       return_date: input.returnDate ?? null,
-      initial_price: input.referencePrice,
-      last_price: input.referencePrice,
+      initial_price: referencePrice,
+      last_price: referencePrice,
     });
     if (retry.error && !retry.error.message.includes("duplicate")) {
       console.error("Création d'alerte impossible", retry.error);
