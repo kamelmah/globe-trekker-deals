@@ -420,68 +420,72 @@ export async function fetchCheapestDestinations(params: {
     });
   }
 
-  // 2) Derniers prix observés dans le monde entier (plusieurs centaines de villes).
-  type LatestRow = {
-    destination?: string;
-    value?: number;
-    airline?: string;
-    gate?: string;
-    depart_date?: string;
-  };
-  const latestQueries: Record<string, string>[] = [1, 2].map((page) => ({
-    origin,
-    period_type: "year",
-    one_way: "true",
-    page: String(page),
-    limit: "1000",
-    sorting: "price",
-    show_to_affiliates: "true",
-  }));
-  for (const query of latestQueries) {
+  if (world) {
+    // 2) Derniers prix observés dans le monde entier (plusieurs centaines de villes).
+    type LatestRow = {
+      destination?: string;
+      value?: number;
+      airline?: string;
+      depart_date?: string;
+    };
+    const latestQueries: Record<string, string>[] = [1, 2].map((page) => ({
+      origin,
+      period_type: "year",
+      one_way: "true",
+      page: String(page),
+      limit: "1000",
+      sorting: "price",
+      show_to_affiliates: "true",
+    }));
+    for (const query of latestQueries) {
+      try {
+        const call = await callApi<{ data?: LatestRow[] }>("/v2/prices/latest", query, currency);
+        for (const row of call.data?.data ?? []) {
+          keepCheapest(cheapest, row.destination?.toUpperCase() ?? "", {
+            price: Number(row.value ?? 0),
+            airline: row.airline ?? "",
+            departureAt: row.depart_date ?? "",
+          });
+        }
+      } catch (error) {
+        console.error("Balayage mondial partiel (prices/latest)", error);
+      }
+    }
+
+    // 3) Directions connues depuis la ville de départ.
     try {
-      const call = await callApi<{ data?: LatestRow[] }>("/v2/prices/latest", query, currency);
-      for (const row of call.data?.data ?? []) {
-        keepCheapest(cheapest, row.destination?.toUpperCase() ?? "", {
-          price: Number(row.value ?? 0),
-          airline: row.airline ?? "",
-          departureAt: row.depart_date ?? "",
+      const call = await callApi<{ data?: Record<string, ApiOffer> }>(
+        "/v1/city-directions",
+        { origin },
+        currency,
+      );
+      for (const [code, offer] of Object.entries(call.data?.data ?? {})) {
+        keepCheapest(cheapest, code.toUpperCase(), {
+          price: offer.price,
+          airline: offer.airline,
+          departureAt: offer.departure_at,
         });
       }
     } catch (error) {
-      console.error("Balayage mondial partiel (prices/latest)", error);
+      console.error("Balayage mondial partiel (city-directions)", error);
     }
-  }
-
-  // 3) Directions connues depuis la ville de départ.
-  try {
-    const call = await callApi<{ data?: Record<string, ApiOffer> }>(
-      "/v1/city-directions",
-      { origin },
-      currency,
-    );
-    for (const [code, offer] of Object.entries(call.data?.data ?? {})) {
-      keepCheapest(cheapest, code.toUpperCase(), {
-        price: offer.price,
-        airline: offer.airline,
-        departureAt: offer.departure_at,
-      });
-    }
-  } catch (error) {
-    console.error("Balayage mondial partiel (city-directions)", error);
   }
 
   // Localisation des codes IATA via le référentiel mondial des villes.
   let cityIndex = new Map<string, { city: string; country: string; lat: number; lng: number }>();
-  try {
-    const { getCityIndex } = await import("@/lib/geo.server");
-    cityIndex = await getCityIndex();
-  } catch (error) {
-    console.error("Référentiel des villes indisponible, repli sur les aéroports connus", error);
+  if (world) {
+    try {
+      const { getCityIndex } = await import("@/lib/geo.server");
+      cityIndex = await getCityIndex();
+    } catch (error) {
+      console.error("Référentiel des villes indisponible, repli sur les aéroports connus", error);
+    }
   }
 
   const prices: DestinationPrice[] = [];
   for (const [code, offer] of cheapest) {
     if (code === origin) continue;
+    if (restrict && !restrict.has(code)) continue;
     const place = cityIndex.get(code) ?? getAirport(code);
     if (!place) continue;
     prices.push({
@@ -497,7 +501,8 @@ export async function fetchCheapestDestinations(params: {
   }
 
   prices.sort((a, b) => a.priceEur - b.priceEur);
-  if (prices.length > 0) await writeJsonCache(cacheKey, { prices }, DESTINATIONS_TTL_MS);
+  if (world && prices.length > 0) await writeJsonCache(cacheKey, { prices }, DESTINATIONS_TTL_MS);
+
 
   return { prices, raw: datesCall.raw };
 }
