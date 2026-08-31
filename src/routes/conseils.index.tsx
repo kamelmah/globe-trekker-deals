@@ -59,7 +59,7 @@ function BlogIndex() {
 
       {seasonalPosts.length > 0 && (
         <section className="mt-10">
-          <h2 className="font-display text-2xl font-semibold">Bons plans saisonniers</h2>
+          <h2 className="font-display">Bons plans saisonniers</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Vacances scolaires, périodes de forte demande : ce qui change sur ces dates précises et
             comment s'y prendre.
@@ -85,7 +85,7 @@ function BlogIndex() {
       )}
 
       <section className="mt-10">
-        <h2 className="font-display text-2xl font-semibold">Conseils généraux</h2>
+        <h2 className="font-display">Conseils généraux</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Quand réserver, comment fonctionnent les prix des compagnies, comment éviter les frais
           cachés : nos articles pratiques pour bien préparer votre voyage.

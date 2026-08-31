@@ -10,6 +10,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90 hover:-translate-y-0.5 hover:shadow-lg",
+        // Accent chaud "Ciel dégagé" : réservé au call-to-action principal d'une
+        // page (ex. lancer une recherche), jamais aux boutons secondaires.
+        cta: "bg-highlight text-highlight-foreground shadow hover:bg-highlight/90 hover:-translate-y-0.5 hover:shadow-lg",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",

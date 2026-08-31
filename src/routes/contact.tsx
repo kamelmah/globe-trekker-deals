@@ -116,7 +116,7 @@ function ContactPage() {
 
   return (
     <main className="container-page max-w-3xl py-12">
-      <h1 className="font-display text-3xl font-semibold md:text-4xl">Contact & newsletter</h1>
+      <h1 className="font-display">Contact & newsletter</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">
         Une question sur un prix affiché, un bug à signaler ou une suggestion ? Écrivez-nous à{" "}
         <a href="mailto:contact@trouvemonvol.fr" className="font-medium text-primary underline-offset-4 hover:underline">

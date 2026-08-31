@@ -31,14 +31,13 @@ function HebergementPage() {
   const [city, setCity] = useState("Paris");
 
   return (
-    <div className="container-page py-12">
-      <h1 className="font-display text-3xl font-semibold leading-tight sm:text-4xl">
-        Trouver un hébergement
+    <div className="container-page py-10">
+      <h1 className="font-display leading-tight">
+        Votre hôtel, avant même d'avoir choisi votre vol
       </h1>
       <p className="mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-        Indiquez une ville pour afficher les hôtels, appartements et auberges disponibles sur une
-        carte, avec leurs prix issus directement des plateformes de réservation. Vous n'avez pas
-        besoin d'avoir déjà choisi un vol.
+        Comparez les prix réels sur la carte, sans attendre d'avoir votre billet en poche : hôtels,
+        appartements et auberges, avec leurs tarifs issus directement des plateformes de réservation.
       </p>
 
       <form

@@ -194,7 +194,7 @@ function DestinationPage() {
           className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"
           aria-hidden
         />
-        <h1 className="absolute inset-x-0 bottom-0 p-4 font-display text-2xl font-semibold text-white drop-shadow sm:p-6 sm:text-3xl">
+        <h1 className="absolute inset-x-0 bottom-0 p-4 font-display text-white drop-shadow sm:p-6">
           {route.heading}
         </h1>
       </div>

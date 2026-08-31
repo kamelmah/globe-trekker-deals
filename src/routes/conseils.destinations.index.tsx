@@ -63,7 +63,7 @@ function CityGuidesIndex() {
         / Guides destinations
       </nav>
 
-      <h1 className="mt-3 font-display text-3xl font-semibold">Guides destinations</h1>
+      <h1 className="mt-3 font-display">Guides destinations</h1>
       <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
         Pour chaque ville desservie sur le site, un guide pratique : quand partir, quels quartiers
         voir, quel budget prévoir sur place, comment se déplacer et quelles formalités anticiper.
@@ -75,7 +75,7 @@ function CityGuidesIndex() {
           return (
             <li
               key={guide.slug}
-              className="flex h-full flex-col rounded-xl border border-border bg-card p-4"
+              className="flex h-full flex-col rounded-xl border border-border bg-card p-5"
             >
               <Link
                 to="/conseils/destinations/$city"

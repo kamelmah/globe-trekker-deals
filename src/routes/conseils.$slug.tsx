@@ -84,7 +84,7 @@ function PostPage() {
         / {post.title}
       </nav>
 
-      <h1 className="mt-3 max-w-3xl font-display text-3xl font-semibold">{post.title}</h1>
+      <h1 className="mt-3 max-w-3xl font-display">{post.title}</h1>
       <p className="mt-2 text-xs text-muted-foreground">
         {post.readingMinutes} min de lecture · mis à jour le {post.updated}
       </p>

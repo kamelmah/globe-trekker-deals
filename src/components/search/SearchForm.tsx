@@ -251,7 +251,7 @@ export function SearchForm({
       </fieldset>
 
 
-      <Button type="submit" size="lg" className="mt-5 w-full sm:w-auto" disabled={resolving}>
+      <Button type="submit" variant="cta" size="lg" className="mt-5 w-full sm:w-auto" disabled={resolving}>
         <Search className="size-4" aria-hidden />
         {resolving
           ? "Vérification de la destination…"

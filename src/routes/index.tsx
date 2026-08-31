@@ -19,6 +19,7 @@ import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { PriceRefreshStatus } from "@/components/flights/PriceRefreshStatus";
 import { HOME_DESTINATION_CODES } from "@/lib/price-refresh.shared";
+import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
 import { getDestinationImage } from "@/lib/destination-images";
@@ -114,23 +115,23 @@ export const Route = createFileRoute("/")({
 const REASONS = [
   {
     icon: BadgeEuro,
-    title: "Le prix total, dès la première ligne",
+    title: "Ce que vous voyez, c'est ce que vous payez",
     text: "Taxes et frais obligatoires sont déjà inclus dans le prix affiché. Pas de tarif d'appel qui gonfle au moment de payer.",
   },
   {
     icon: Store,
-    title: "Vous savez toujours qui vous vend le billet",
+    title: "Vous savez toujours à qui vous parlez",
     text: "Chaque résultat indique le vendeur réel — la compagnie ou l'agence nommée — et le bouton ouvre son lien de réservation en un clic, sans comparateur intermédiaire caché ni page de captation.",
   },
   {
     icon: EyeOff,
-    title: "Zéro dark pattern",
+    title: "On ne vous met jamais la pression",
     text: "Aucun faux compte à rebours, aucun « plus que 2 places à ce prix », aucune mise en avant payante dans le classement. Vous décidez à votre rythme.",
   },
   {
     icon: ShieldCheck,
-    title: "Notre rémunération est expliquée",
-    text: "Nous touchons une commission d'affiliation si vous réservez, sans surcoût pour vous. C'est écrit noir sur blanc.",
+    title: "Notre commission ? Écrite noir sur blanc",
+    text: "Nous touchons une commission d'affiliation si vous réservez, sans surcoût pour vous.",
   },
 ];
 
@@ -155,15 +156,14 @@ function HomePage() {
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/35 via-background/15 to-background/45" aria-hidden />
         <div className="container-page grid gap-10 py-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-16">
           <div className="rounded-2xl bg-gradient-to-br from-background/95 via-background/90 to-background/70 p-6 lg:p-8 shadow-sm">
-            <h1 className="hero-in hero-in-1 font-display text-3xl font-semibold leading-tight sm:text-4xl">
-              Trouvez un vol pas cher sans mauvaise surprise au moment de payer
+            <h1 className="hero-in hero-in-1 font-display leading-tight">
+              Le prix que vous voyez est celui que vous payez
             </h1>
             <div className="hero-in hero-in-2">
               <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-                TrouveMonVol compare les prix des vols en affichant le montant total taxes incluses et le
-                nom du vendeur réel du billet. Vous pouvez aussi partir de votre budget : indiquez la
-                somme que vous voulez dépenser et découvrez toutes les destinations accessibles depuis
-                votre ville.
+                Taxes incluses, vendeur affiché, aucune surprise à la caisse. TrouveMonVol compare les
+                vols au prix total réel — ou partez de votre budget : indiquez la somme que vous voulez
+                dépenser et découvrez toutes les destinations accessibles depuis votre ville.
               </p>
               <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
                 <li>• Dates flexibles ± 3 jours pour repérer le jour le moins cher</li>
@@ -202,79 +202,85 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="container-page py-14">
-        <h2 className="font-display text-2xl font-semibold">
-          Où partir au départ de Paris, du moins cher au plus cher
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Prix les plus bas relevés récemment pour un aller simple, taxes incluses. Cliquez sur une
-          destination pour voir les vols et le vendeur de chaque billet.
-        </p>
-        <div className="mt-6">
-          <DestinationPriceGrid prices={prices} origin="PAR" error={error} />
-          <PriceRefreshStatus />
-        </div>
-      </section>
-
-      <section className="border-y border-border bg-secondary/40 py-14">
-        <div className="container-page">
-          <h2 className="font-display text-2xl font-semibold">Pourquoi passer par nous</h2>
+      <Reveal>
+        <section className="container-page py-14">
+          <h2 className="font-display">
+            Où partir au départ de Paris, du moins cher au plus cher
+          </h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            La plupart des comparateurs vivent de l'urgence artificielle et du classement payant. Nous avons
-            fait le choix inverse : une information complète, vérifiable, et un chemin de réservation le
-            plus court possible.
+            Prix les plus bas relevés récemment pour un aller simple, taxes incluses. Cliquez sur une
+            destination pour voir les vols et le vendeur de chaque billet.
           </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            {REASONS.map((reason) => (
-              <div key={reason.title} className="rounded-xl border border-border bg-card p-5">
-                <reason.icon className="size-5 text-primary" aria-hidden />
-                <h3 className="mt-3 text-base font-semibold">{reason.title}</h3>
-                <p className="mt-1.5 text-sm text-muted-foreground">{reason.text}</p>
-              </div>
-            ))}
+          <div className="mt-6">
+            <DestinationPriceGrid prices={prices} origin="PAR" error={error} />
+            <PriceRefreshStatus />
           </div>
-        </div>
-      </section>
+        </section>
+      </Reveal>
 
-      <section className="container-page py-14">
-        <h2 className="font-display text-2xl font-semibold">Nos pages destinations</h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Chaque page détaille la meilleure période pour partir, l'évolution des prix sur douze mois et
-          les questions les plus fréquentes sur le trajet.
-        </p>
-        <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {DESTINATIONS.map((d) => {
-            const image = getDestinationImage(d.destination, d.destinationCity, d.country);
-            return (
-              <li key={d.slug}>
-                <Link
-                  to="/vols/$slug"
-                  params={{ slug: d.slug }}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
-                >
-                  <ResponsivePicture
-                    src={image.thumb}
-                    webp={image.thumbWebp}
-                    alt={image.alt}
-                    loading="lazy"
-                    width={128}
-                    height={96}
-                    className="size-16 shrink-0 rounded-lg object-cover"
-                  />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold">
-                      Vols pas chers {d.originCity} — {d.destinationCity}
+      <Reveal>
+        <section className="border-y border-border bg-secondary/40 py-14">
+          <div className="container-page">
+            <h2 className="font-display">Pourquoi passer par nous</h2>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+              La plupart des comparateurs vivent de l'urgence artificielle et du classement payant. Nous avons
+              fait le choix inverse : une information complète, vérifiable, et un chemin de réservation le
+              plus court possible.
+            </p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {REASONS.map((reason) => (
+                <div key={reason.title} className="rounded-xl border border-border bg-card p-5">
+                  <reason.icon className="size-5 text-primary" aria-hidden />
+                  <h3 className="mt-3">{reason.title}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground">{reason.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className="container-page py-14">
+          <h2 className="font-display">Nos pages destinations</h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Chaque page détaille la meilleure période pour partir, l'évolution des prix sur douze mois et
+            les questions les plus fréquentes sur le trajet.
+          </p>
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {DESTINATIONS.map((d) => {
+              const image = getDestinationImage(d.destination, d.destinationCity, d.country);
+              return (
+                <li key={d.slug}>
+                  <Link
+                    to="/vols/$slug"
+                    params={{ slug: d.slug }}
+                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-5 transition-colors hover:bg-secondary"
+                  >
+                    <ResponsivePicture
+                      src={image.thumb}
+                      webp={image.thumbWebp}
+                      alt={image.alt}
+                      loading="lazy"
+                      width={128}
+                      height={96}
+                      className="size-16 shrink-0 rounded-lg object-cover"
+                    />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold">
+                        Vols pas chers {d.originCity} — {d.destinationCity}
+                      </span>
+                      <span className="mt-1 block text-xs text-muted-foreground">
+                        {d.country} · {d.bestMonths}
+                      </span>
                     </span>
-                    <span className="mt-1 block text-xs text-muted-foreground">
-                      {d.country} · {d.bestMonths}
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      </Reveal>
     </div>
   );
 }

@@ -167,6 +167,8 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
   --color-sky-soft: var(--sky-soft);
   --color-border: var(--border);
   --color-input: var(--input);
@@ -195,7 +197,9 @@
   --card-foreground: oklch(0.24 0.035 250);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.24 0.035 250);
-  --primary: oklch(0.55 0.155 249);
+  /* Direction "Ciel dégagé" : bleu ciel approfondi (plus saturé que l'origine),
+     réservé aux liens/boutons/éléments d'interface habituels. */
+  --primary: oklch(0.52 0.175 251);
   --primary-foreground: oklch(0.99 0.005 240);
   --secondary: oklch(0.955 0.021 240);
   --secondary-foreground: oklch(0.32 0.06 250);
@@ -209,6 +213,11 @@
   --success-foreground: oklch(0.99 0.005 240);
   --warning: oklch(0.75 0.14 70);
   --warning-foreground: oklch(0.26 0.04 60);
+  /* Accent chaud "Ciel dégagé" : corail/ambre, réservé aux appels à l'action
+     principaux (jamais aux liens ou boutons secondaires, pour rester un signal
+     fort et pas une deuxième couleur de marque). */
+  --highlight: oklch(0.7 0.19 41);
+  --highlight-foreground: oklch(0.18 0.03 40);
   --border: oklch(0.915 0.014 240);
   --input: oklch(0.915 0.014 240);
   --ring: oklch(0.62 0.13 249);
@@ -233,6 +242,8 @@
   --success-foreground: oklch(0.16 0.03 250);
   --warning: oklch(0.8 0.13 70);
   --warning-foreground: oklch(0.18 0.03 60);
+  --highlight: oklch(0.76 0.18 43);
+  --highlight-foreground: oklch(0.16 0.03 40);
   --sky-soft: oklch(0.28 0.04 240);
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
@@ -283,11 +294,48 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /*
+   * Échelle typographique déclarée : chaque niveau a une taille par défaut,
+   * pour qu'une nouvelle page reste cohérente sans y penser. Une classe
+   * Tailwind explicite (ex. text-xl sur un <h2>) reste prioritaire — c'est
+   * volontaire, ça permet des exceptions assumées (sous-titres d'article,
+   * titres de carte) sans casser la règle générale.
+   * - h1 : titre de page — text-3xl / sm:text-4xl
+   * - h2 : titre de section principale — text-2xl / sm:text-3xl
+   * - h3 : titre de carte — text-lg / sm:text-xl
+   */
   h1,
   h2,
   h3 {
     font-family: var(--font-display);
+    font-weight: 600;
     letter-spacing: -0.02em;
+  }
+  h1 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  h3 {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  @media (min-width: 40rem) {
+    h1 {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+    }
+    h2 {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+    }
+    h3 {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+    }
   }
 }
 

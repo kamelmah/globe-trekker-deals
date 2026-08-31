@@ -114,14 +114,14 @@ function BudgetPage() {
 
   return (
     <div>
-      <div className="container-page pt-8">
-        <h1 className="font-display text-2xl font-semibold sm:text-3xl">
+      <div className="container-page py-10">
+        <h1 className="font-display">
           Mode budget : où partir de {originAirport?.city ?? search.origin} avec {format(search["budget"])}
         </h1>
-        <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-          Entrez votre budget maximum, sans destination imposée. Chaque point de la carte correspond à
-          une ville accessible avec le prix le plus bas relevé récemment, taxes incluses. Les
-          destinations au-dessus de votre budget restent visibles, simplement estompées, pour vous
+        <p className="mt-4 max-w-3xl text-sm text-muted-foreground">
+          Dites-nous votre budget, on vous montre le monde qui rentre dedans. Chaque point de la carte
+          correspond à une ville accessible avec le prix le plus bas relevé récemment, taxes incluses.
+          Les destinations au-dessus de votre budget restent visibles, simplement estompées, pour vous
           laisser explorer. Aujourd'hui, {affordable.length} destinations sur {prices.length} tiennent
           dans votre budget.
         </p>
