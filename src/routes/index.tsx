@@ -212,6 +212,7 @@ function HomePage() {
         </p>
         <div className="mt-6">
           <DestinationPriceGrid prices={prices} origin="PAR" error={error} />
+          <PriceRefreshStatus />
         </div>
       </section>
 
