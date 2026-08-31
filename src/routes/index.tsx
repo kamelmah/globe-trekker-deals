@@ -24,9 +24,7 @@ import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
-const HOME_CODES = [
-  "RAK", "LIS", "BCN", "IST", "ROM", "ATH", "MAD", "PRG", "BUD", "OPO", "CMN", "NYC",
-];
+const HOME_CODES = HOME_DESTINATION_CODES;
 
 const TITLE = "TrouveMonVol — comparateur de vols transparent, prix total et vendeur affiché";
 const DESCRIPTION =
