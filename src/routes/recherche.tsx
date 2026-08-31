@@ -99,6 +99,13 @@ function SearchResultsPage() {
   const from = cityLabel(search["origin"]);
   const to = cityLabel(search["destination"]);
 
+  // Durée réelle du séjour recherché : le raccourci "Durée du séjour" la fixe
+  // directement, mais un aller-retour saisi avec deux dates précises ne passe
+  // jamais par ce raccourci — sans ce calcul, le calendrier et le
+  // recalcul de la date de retour retomberaient à tort sur un aller simple.
+  const effectiveTripDuration =
+    search["duree"] > 0 ? search["duree"] : nightsBetween(search["depart"], search["retour"]);
+
   const offersQuery = useQuery({
     queryKey: [
       "offers",
@@ -266,15 +273,14 @@ function SearchResultsPage() {
                       // Décale le retour de la vraie durée du séjour (raccourci ou
                       // dates précises), sinon un aller-retour de plus de 30 jours
                       // écarte l'écart max accepté par l'API et provoque une erreur.
-                      const nights =
-                        search["duree"] > 0
-                          ? search["duree"]
-                          : nightsBetween(search["depart"], search["retour"]);
                       navigate({
                         search: (prev) => ({
                           ...prev,
                           depart: alt.date,
-                          retour: nights > 0 ? addDaysIso(alt.date, nights) : prev["retour"],
+                          retour:
+                            effectiveTripDuration > 0
+                              ? addDaysIso(alt.date, effectiveTripDuration)
+                              : prev["retour"],
                         }),
                       });
                     }}
@@ -435,10 +441,20 @@ function SearchResultsPage() {
                 origin={search.origin}
                 destination={search.destination}
                 departureAt={search.depart}
-                tripDuration={search.duree}
+                tripDuration={effectiveTripDuration}
                 onSelectDate={(date) => {
                   void navigate({
-                    search: (prev) => ({ ...prev, depart: date }),
+                    search: (prev) => ({
+                      ...prev,
+                      depart: date,
+                      // Recalculé sur la même durée que la recherche initiale : sinon
+                      // l'ancienne date de retour reste figée et ne correspond plus
+                      // au séjour voulu une fois la date de départ changée.
+                      retour:
+                        effectiveTripDuration > 0
+                          ? addDaysIso(date, effectiveTripDuration)
+                          : prev["retour"],
+                    }),
                   });
                   setView("list");
                 }}
