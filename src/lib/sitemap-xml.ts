@@ -4,6 +4,8 @@ export type SitemapEntry = {
   loc: string;
   changefreq?: string;
   priority?: string;
+  /** Date ISO (YYYY-MM-DD) de dernière modification connue. Omis si inconnue plutôt qu'inventé. */
+  lastmod?: string;
 };
 
 export const SITEMAP_SEGMENT_SIZE = 500;
@@ -24,6 +26,7 @@ export function urlsetXml(origin: string, entries: SitemapEntry[]): string {
       [
         "  <url>",
         `    <loc>${origin}${entry.loc}</loc>`,
+        entry.lastmod ? `    <lastmod>${entry.lastmod}</lastmod>` : null,
         entry.changefreq ? `    <changefreq>${entry.changefreq}</changefreq>` : null,
         entry.priority ? `    <priority>${entry.priority}</priority>` : null,
         "  </url>",

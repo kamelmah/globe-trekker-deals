@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
+import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { useCurrency } from "@/lib/currency-context";
 import { getDestinationImage } from "@/lib/destination-images";
 import type { ApiDebugInfo, DestinationPrice } from "@/lib/flights.types";
@@ -57,11 +58,11 @@ export function DestinationPriceGrid({
                 }}
                 className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-secondary"
               >
-                <img
+                <ResponsivePicture
                   src={image.src}
+                  webp={image.webp}
                   alt={image.alt}
                   loading="lazy"
-                  decoding="async"
                   width={112}
                   height={80}
                   className="size-14 shrink-0 rounded-lg object-cover sm:h-16 sm:w-20"

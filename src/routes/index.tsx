@@ -2,9 +2,11 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { BadgeEuro, EyeOff, Map as MapIcon, ShieldCheck, Store } from "lucide-react";
 
 import heroSky from "@/assets/hero-sky.jpg";
+import heroSkyWebp from "@/assets/hero-sky.webp";
 
 import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
+import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
 import { getDestinationImage } from "@/lib/destination-images";
 import { cheapestDestinations } from "@/lib/flights.functions";
@@ -129,12 +131,12 @@ function HomePage() {
   return (
     <div>
       <section className="relative isolate overflow-hidden border-b border-border bg-sky-soft">
-        <img
+        <ResponsivePicture
           src={heroSky}
+          webp={heroSkyWebp}
           alt="Aile d'avion au-dessus d'une mer de nuages au lever du soleil"
           width={1920}
           height={1080}
-          decoding="async"
           className="absolute inset-0 -z-10 size-full object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/85 via-background/80 to-background/95" aria-hidden />
@@ -234,11 +236,11 @@ function HomePage() {
                   params={{ slug: d.slug }}
                   className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
                 >
-                  <img
+                  <ResponsivePicture
                     src={image.src}
+                    webp={image.webp}
                     alt={image.alt}
                     loading="lazy"
-                    decoding="async"
                     width={128}
                     height={96}
                     className="size-16 shrink-0 rounded-lg object-cover"

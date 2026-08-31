@@ -12,9 +12,13 @@ export const Route = createFileRoute("/sitemap-pages.xml")({
     handlers: {
       GET: ({ request }) => {
         const origin = SITE_URL;
+        // Le prix affiché sur les pages daily change en continu : lastmod = date
+        // du build du sitemap. Pour guides et articles, on a une vraie date
+        // d'édition (`updated`) : on l'utilise plutôt que d'inventer une date.
+        const today = new Date().toISOString().slice(0, 10);
         const entries: SitemapEntry[] = [
-          { loc: "/", priority: "1.0", changefreq: "daily" },
-          { loc: "/mode-budget", priority: "0.9", changefreq: "daily" },
+          { loc: "/", priority: "1.0", changefreq: "daily", lastmod: today },
+          { loc: "/mode-budget", priority: "0.9", changefreq: "daily", lastmod: today },
           { loc: "/conseils", priority: "0.7", changefreq: "weekly" },
           { loc: "/conseils/destinations", priority: "0.7", changefreq: "weekly" },
           { loc: "/faq", priority: "0.6", changefreq: "monthly" },
@@ -27,16 +31,19 @@ export const Route = createFileRoute("/sitemap-pages.xml")({
             loc: `/vols/${d.slug}`,
             priority: "0.9",
             changefreq: "daily",
+            lastmod: today,
           })),
           ...CITY_GUIDES.map((g) => ({
             loc: `/conseils/destinations/${g.slug}`,
             priority: "0.7",
             changefreq: "monthly",
+            lastmod: g.updated,
           })),
           ...POSTS.map((p) => ({
             loc: `/conseils/${p.slug}`,
             priority: "0.7",
             changefreq: "monthly",
+            lastmod: p.updated,
           })),
         ];
 

@@ -27,6 +27,7 @@ export const Route = createFileRoute("/sitemap-vols/$page.xml")({
           (slug) => !curated.has(slug),
         );
         const segment = chunk(generated, SITEMAP_SEGMENT_SIZE)[page - 1] ?? [];
+        const today = new Date().toISOString().slice(0, 10);
 
         return xmlResponse(
           urlsetXml(
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/sitemap-vols/$page.xml")({
               loc: `/vols/${slug}`,
               priority: "0.6",
               changefreq: "weekly",
+              lastmod: today,
             })),
           ),
         );

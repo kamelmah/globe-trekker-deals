@@ -19,7 +19,6 @@ import { Route as HebergementRouteImport } from './routes/hebergement'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapPagesDotxmlRouteImport } from './routes/sitemap-pages[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminJournalRouteImport } from './routes/admin.journal'
@@ -82,11 +81,6 @@ const ModeBudgetRoute = ModeBudgetRouteImport.update({
 const RechercheRoute = RechercheRouteImport.update({
   id: '/recherche',
   path: '/recherche',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapPagesDotxmlRoute = SitemapPagesDotxmlRouteImport.update({
@@ -170,7 +164,6 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
-  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/journal': typeof AdminJournalRoute
@@ -196,7 +189,6 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
-  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/journal': typeof AdminJournalRoute
@@ -223,7 +215,6 @@ export interface FileRoutesById {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
-  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap-pages.xml': typeof SitemapPagesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/journal': typeof AdminJournalRoute
@@ -251,7 +242,6 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
-    | '/robots.txt'
     | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/admin/journal'
@@ -277,7 +267,6 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
-    | '/robots.txt'
     | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/admin/journal'
@@ -303,7 +292,6 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
-    | '/robots.txt'
     | '/sitemap-pages.xml'
     | '/sitemap.xml'
     | '/admin/journal'
@@ -330,7 +318,6 @@ export interface RootRouteChildren {
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
-  RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapPagesDotxmlRoute: typeof SitemapPagesDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminJournalRoute: typeof AdminJournalRoute
@@ -416,13 +403,6 @@ declare module '@tanstack/react-router' {
       path: '/recherche'
       fullPath: '/recherche'
       preLoaderRoute: typeof RechercheRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap-pages.xml': {
@@ -530,7 +510,6 @@ const rootRouteChildren: RootRouteChildren = {
   MentionsLegalesRoute: MentionsLegalesRoute,
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,
-  RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapPagesDotxmlRoute: SitemapPagesDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminJournalRoute: AdminJournalRoute,

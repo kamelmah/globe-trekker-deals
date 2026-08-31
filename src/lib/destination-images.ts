@@ -1,66 +1,100 @@
 import alg from "@/assets/dest/alg.jpg";
+import algWebp from "@/assets/dest/alg.webp";
 import ams from "@/assets/dest/ams.jpg";
+import amsWebp from "@/assets/dest/ams.webp";
 import ath from "@/assets/dest/ath.jpg";
+import athWebp from "@/assets/dest/ath.webp";
 import bcn from "@/assets/dest/bcn.jpg";
+import bcnWebp from "@/assets/dest/bcn.webp";
 import bkk from "@/assets/dest/bkk.jpg";
+import bkkWebp from "@/assets/dest/bkk.webp";
 import ber from "@/assets/dest/ber.jpg";
+import berWebp from "@/assets/dest/ber.webp";
 import bud from "@/assets/dest/bud.jpg";
+import budWebp from "@/assets/dest/bud.webp";
 import cmn from "@/assets/dest/cmn.jpg";
+import cmnWebp from "@/assets/dest/cmn.webp";
 import cph from "@/assets/dest/cph.jpg";
+import cphWebp from "@/assets/dest/cph.webp";
 import defaultImg from "@/assets/dest/default.jpg";
+import defaultImgWebp from "@/assets/dest/default.webp";
 import genericCoast from "@/assets/dest/generic/coast.jpg";
+import genericCoastWebp from "@/assets/dest/generic/coast.webp";
 import genericHarbour from "@/assets/dest/generic/harbour.jpg";
+import genericHarbourWebp from "@/assets/dest/generic/harbour.webp";
 import genericLake from "@/assets/dest/generic/lake.jpg";
+import genericLakeWebp from "@/assets/dest/generic/lake.webp";
 import genericMedina from "@/assets/dest/generic/medina.jpg";
+import genericMedinaWebp from "@/assets/dest/generic/medina.webp";
 import genericMountain from "@/assets/dest/generic/mountain.jpg";
+import genericMountainWebp from "@/assets/dest/generic/mountain.webp";
 import genericNightCity from "@/assets/dest/generic/nightcity.jpg";
+import genericNightCityWebp from "@/assets/dest/generic/nightcity.webp";
 import genericOldTown from "@/assets/dest/generic/oldtown.jpg";
+import genericOldTownWebp from "@/assets/dest/generic/oldtown.webp";
 import genericSkyline from "@/assets/dest/generic/skyline.jpg";
+import genericSkylineWebp from "@/assets/dest/generic/skyline.webp";
 import genericTropical from "@/assets/dest/generic/tropical.jpg";
+import genericTropicalWebp from "@/assets/dest/generic/tropical.webp";
 import dxb from "@/assets/dest/dxb.jpg";
+import dxbWebp from "@/assets/dest/dxb.webp";
 import ist from "@/assets/dest/ist.jpg";
+import istWebp from "@/assets/dest/ist.webp";
 import lis from "@/assets/dest/lis.jpg";
+import lisWebp from "@/assets/dest/lis.webp";
 import lon from "@/assets/dest/lon.jpg";
+import lonWebp from "@/assets/dest/lon.webp";
 import mad from "@/assets/dest/mad.jpg";
+import madWebp from "@/assets/dest/mad.webp";
 import mil from "@/assets/dest/mil.jpg";
+import milWebp from "@/assets/dest/mil.webp";
 import nyc from "@/assets/dest/nyc.jpg";
+import nycWebp from "@/assets/dest/nyc.webp";
 import opo from "@/assets/dest/opo.jpg";
+import opoWebp from "@/assets/dest/opo.webp";
 import prg from "@/assets/dest/prg.jpg";
+import prgWebp from "@/assets/dest/prg.webp";
 import rak from "@/assets/dest/rak.jpg";
+import rakWebp from "@/assets/dest/rak.webp";
 import rom from "@/assets/dest/rom.jpg";
+import romWebp from "@/assets/dest/rom.webp";
 import svq from "@/assets/dest/svq.jpg";
+import svqWebp from "@/assets/dest/svq.webp";
 import tun from "@/assets/dest/tun.jpg";
+import tunWebp from "@/assets/dest/tun.webp";
 import tyo from "@/assets/dest/tyo.jpg";
+import tyoWebp from "@/assets/dest/tyo.webp";
 import vie from "@/assets/dest/vie.jpg";
+import vieWebp from "@/assets/dest/vie.webp";
 
-export type DestinationImage = { src: string; alt: string };
+export type DestinationImage = { src: string; webp: string; alt: string };
 
 /** Visuels curés par code IATA de ville. Fallback générique sinon. */
 const BY_CODE: Record<string, DestinationImage> = {
-  RAK: { src: rak, alt: "Minaret de la Koutoubia et toits ocre de la médina de Marrakech au coucher du soleil" },
-  LIS: { src: lis, alt: "Tramway jaune dans une rue en pente de Lisbonne avec vue sur le Tage" },
-  BCN: { src: bcn, alt: "Sagrada Familia et toits de Barcelone face à la mer Méditerranée" },
-  NYC: { src: nyc, alt: "Skyline de Manhattan à New York au coucher du soleil depuis Brooklyn" },
-  IST: { src: ist, alt: "Mosquées et bateaux sur le Bosphore à Istanbul au crépuscule" },
-  ROM: { src: rom, alt: "Colisée de Rome illuminé par la lumière dorée du soir" },
-  ATH: { src: ath, alt: "Acropole et Parthénon surplombant les maisons blanches d'Athènes" },
-  MAD: { src: mad, alt: "Architecture historique du centre de Madrid sous un ciel bleu" },
-  PRG: { src: prg, alt: "Château de Prague et pont sur la Vltava à l'aube" },
-  BUD: { src: bud, alt: "Parlement de Budapest illuminé au bord du Danube" },
-  OPO: { src: opo, alt: "Maisons colorées du quartier de la Ribeira à Porto au bord du Douro" },
-  CMN: { src: cmn, alt: "Mosquée Hassan II de Casablanca au bord de l'océan Atlantique" },
-  BKK: { src: bkk, alt: "Temple Wat Arun de Bangkok au coucher du soleil sur le fleuve Chao Phraya" },
-  DXB: { src: dxb, alt: "Burj Khalifa et gratte-ciels de Dubaï à l'heure dorée" },
-  TYO: { src: tyo, alt: "Temple japonais, cerisiers en fleurs et mont Fuji au-dessus de Tokyo" },
-  ALG: { src: alg, alt: "Front de mer blanc de la baie d'Alger sur la Méditerranée" },
-  LON: { src: lon, alt: "Tower Bridge enjambant la Tamise à Londres à l'heure dorée" },
-  AMS: { src: ams, alt: "Canal d'Amsterdam bordé de maisons à pignons et vélos sur un pont" },
-  MIL: { src: mil, alt: "Façade de marbre du Duomo de Milan et sa piazza au coucher du soleil" },
-  BER: { src: ber, alt: "Porte de Brandebourg illuminée et tour de télévision de Berlin au crépuscule" },
-  VIE: { src: vie, alt: "Palais de Schönbrunn à Vienne et ses jardins baroques fleuris" },
-  SVQ: { src: svq, alt: "Arcades et ponts de céramique de la Plaza de España à Séville au soleil du soir" },
-  CPH: { src: cph, alt: "Maisons colorées et voiliers en bois du port de Nyhavn à Copenhague" },
-  TUN: { src: tun, alt: "Maisons blanches et bleues de Sidi Bou Saïd près de Tunis face à la mer" },
+  RAK: { src: rak, webp: rakWebp, alt: "Minaret de la Koutoubia et toits ocre de la médina de Marrakech au coucher du soleil" },
+  LIS: { src: lis, webp: lisWebp, alt: "Tramway jaune dans une rue en pente de Lisbonne avec vue sur le Tage" },
+  BCN: { src: bcn, webp: bcnWebp, alt: "Sagrada Familia et toits de Barcelone face à la mer Méditerranée" },
+  NYC: { src: nyc, webp: nycWebp, alt: "Skyline de Manhattan à New York au coucher du soleil depuis Brooklyn" },
+  IST: { src: ist, webp: istWebp, alt: "Mosquées et bateaux sur le Bosphore à Istanbul au crépuscule" },
+  ROM: { src: rom, webp: romWebp, alt: "Colisée de Rome illuminé par la lumière dorée du soir" },
+  ATH: { src: ath, webp: athWebp, alt: "Acropole et Parthénon surplombant les maisons blanches d'Athènes" },
+  MAD: { src: mad, webp: madWebp, alt: "Architecture historique du centre de Madrid sous un ciel bleu" },
+  PRG: { src: prg, webp: prgWebp, alt: "Château de Prague et pont sur la Vltava à l'aube" },
+  BUD: { src: bud, webp: budWebp, alt: "Parlement de Budapest illuminé au bord du Danube" },
+  OPO: { src: opo, webp: opoWebp, alt: "Maisons colorées du quartier de la Ribeira à Porto au bord du Douro" },
+  CMN: { src: cmn, webp: cmnWebp, alt: "Mosquée Hassan II de Casablanca au bord de l'océan Atlantique" },
+  BKK: { src: bkk, webp: bkkWebp, alt: "Temple Wat Arun de Bangkok au coucher du soleil sur le fleuve Chao Phraya" },
+  DXB: { src: dxb, webp: dxbWebp, alt: "Burj Khalifa et gratte-ciels de Dubaï à l'heure dorée" },
+  TYO: { src: tyo, webp: tyoWebp, alt: "Temple japonais, cerisiers en fleurs et mont Fuji au-dessus de Tokyo" },
+  ALG: { src: alg, webp: algWebp, alt: "Front de mer blanc de la baie d'Alger sur la Méditerranée" },
+  LON: { src: lon, webp: lonWebp, alt: "Tower Bridge enjambant la Tamise à Londres à l'heure dorée" },
+  AMS: { src: ams, webp: amsWebp, alt: "Canal d'Amsterdam bordé de maisons à pignons et vélos sur un pont" },
+  MIL: { src: mil, webp: milWebp, alt: "Façade de marbre du Duomo de Milan et sa piazza au coucher du soleil" },
+  BER: { src: ber, webp: berWebp, alt: "Porte de Brandebourg illuminée et tour de télévision de Berlin au crépuscule" },
+  VIE: { src: vie, webp: vieWebp, alt: "Palais de Schönbrunn à Vienne et ses jardins baroques fleuris" },
+  SVQ: { src: svq, webp: svqWebp, alt: "Arcades et ponts de céramique de la Plaza de España à Séville au soleil du soir" },
+  CPH: { src: cph, webp: cphWebp, alt: "Maisons colorées et voiliers en bois du port de Nyhavn à Copenhague" },
+  TUN: { src: tun, webp: tunWebp, alt: "Maisons blanches et bleues de Sidi Bou Saïd près de Tunis face à la mer" },
 };
 
 const BY_CITY: Record<string, DestinationImage> = {
@@ -102,7 +136,7 @@ const BY_CITY: Record<string, DestinationImage> = {
 function normalize(value: string): string {
   return value
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .trim()
     .toLowerCase();
 }
@@ -113,18 +147,18 @@ function normalize(value: string): string {
  * (ou, à défaut, de façon déterministe) au lieu d'afficher la même image
  * pour toutes les villes.
  */
-type Scene = { src: string; description: string };
+type Scene = { src: string; webp: string; description: string };
 
 const SCENES: Record<string, Scene> = {
-  oldtown: { src: genericOldTown, description: "ruelle pavée bordée de façades colorées d'un centre historique européen" },
-  coast: { src: genericCoast, description: "port méditerranéen aux eaux turquoise et aux toits de tuiles" },
-  harbour: { src: genericHarbour, description: "quartier portuaire d'Europe du Nord, canal et bateaux amarrés" },
-  mountain: { src: genericMountain, description: "vallée verdoyante dominée par des sommets enneigés" },
-  lake: { src: genericLake, description: "lac au lever du soleil au milieu de collines" },
-  skyline: { src: genericSkyline, description: "skyline de gratte-ciels au crépuscule au bord de l'eau" },
-  medina: { src: genericMedina, description: "ruelle voûtée aux murs ocre éclairée par des lanternes" },
-  tropical: { src: genericTropical, description: "plage de sable blanc bordée de cocotiers et de lagon turquoise" },
-  nightcity: { src: genericNightCity, description: "avenue animée d'une grande ville asiatique illuminée de néons" },
+  oldtown: { src: genericOldTown, webp: genericOldTownWebp, description: "ruelle pavée bordée de façades colorées d'un centre historique européen" },
+  coast: { src: genericCoast, webp: genericCoastWebp, description: "port méditerranéen aux eaux turquoise et aux toits de tuiles" },
+  harbour: { src: genericHarbour, webp: genericHarbourWebp, description: "quartier portuaire d'Europe du Nord, canal et bateaux amarrés" },
+  mountain: { src: genericMountain, webp: genericMountainWebp, description: "vallée verdoyante dominée par des sommets enneigés" },
+  lake: { src: genericLake, webp: genericLakeWebp, description: "lac au lever du soleil au milieu de collines" },
+  skyline: { src: genericSkyline, webp: genericSkylineWebp, description: "skyline de gratte-ciels au crépuscule au bord de l'eau" },
+  medina: { src: genericMedina, webp: genericMedinaWebp, description: "ruelle voûtée aux murs ocre éclairée par des lanternes" },
+  tropical: { src: genericTropical, webp: genericTropicalWebp, description: "plage de sable blanc bordée de cocotiers et de lagon turquoise" },
+  nightcity: { src: genericNightCity, webp: genericNightCityWebp, description: "avenue animée d'une grande ville asiatique illuminée de néons" },
 };
 
 const SCENE_KEYS = Object.keys(SCENES);
@@ -208,7 +242,7 @@ function genericImage(city?: string | null, country?: string | null): Destinatio
   const key = pool[hash % pool.length]!;
   const scene = SCENES[key] ?? SCENES["oldtown"]!;
   const label = city ? `Ambiance de voyage évoquant ${city}` : "Ambiance de voyage";
-  return { src: scene.src, alt: `${label} : ${scene.description}` };
+  return { src: scene.src, webp: scene.webp, alt: `${label} : ${scene.description}` };
 }
 
 /** Retourne un visuel pour une destination (code IATA, nom de ville, pays). */
@@ -226,5 +260,5 @@ export function getDestinationImage(
     if (hit) return hit;
   }
   if (city || country) return genericImage(city, country);
-  return { src: defaultImg, alt: "Destination de voyage — panorama urbain à l'heure dorée" };
+  return { src: defaultImg, webp: defaultImgWebp, alt: "Destination de voyage — panorama urbain à l'heure dorée" };
 }

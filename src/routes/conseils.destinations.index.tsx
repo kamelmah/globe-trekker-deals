@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { CITY_GUIDES } from "@/data/city-guides";
+import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { getDestinationImage } from "@/lib/destination-images";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
@@ -68,11 +69,11 @@ function CityGuidesIndex() {
                 params={{ city: guide.slug }}
                 className="flex h-full gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
               >
-                <img
+                <ResponsivePicture
                   src={image.src}
+                  webp={image.webp}
                   alt={image.alt}
                   loading="lazy"
-                  decoding="async"
                   width={128}
                   height={96}
                   className="size-20 shrink-0 rounded-lg object-cover"

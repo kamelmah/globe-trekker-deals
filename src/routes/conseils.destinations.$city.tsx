@@ -1,5 +1,6 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
+import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
 import { getCityGuide } from "@/data/city-guides";
@@ -109,12 +110,12 @@ function CityGuidePage() {
       </nav>
 
       <div className="relative mt-4 overflow-hidden rounded-2xl border border-border">
-        <img
+        <ResponsivePicture
           src={image.src}
+          webp={image.webp}
           alt={image.alt}
           width={1200}
           height={630}
-          decoding="async"
           className="h-44 w-full object-cover sm:h-64"
         />
         <div

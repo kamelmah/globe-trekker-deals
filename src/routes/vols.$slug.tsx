@@ -4,6 +4,7 @@ import { AlertForm } from "@/components/alerts/AlertForm";
 import { LivePriceButton } from "@/components/flights/LivePriceButton";
 import { PriceHistoryChart } from "@/components/flights/PriceHistoryChart";
 import { FaqAccordion } from "@/components/site/FaqAccordion";
+import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
 import { getDestination } from "@/data/destinations";
@@ -13,7 +14,7 @@ import { formatPrice } from "@/lib/currency";
 import { getCityGuideForRoute } from "@/data/city-guides";
 import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
-import { SITE_URL, destinationOgImage } from "@/lib/site";
+import { SITE_URL, absoluteUrl, destinationOgImage } from "@/lib/site";
 
 export const Route = createFileRoute("/vols/$slug")({
   loader: async ({ params }) => {
@@ -56,7 +57,12 @@ export const Route = createFileRoute("/vols/$slug")({
     }
     const { route, lowestObserved } = loaderData;
     const pageUrl = `${SITE_URL}/vols/${route.slug}`;
-    const ogImage = destinationOgImage(route.slug);
+    // Visuel dédié /og/<slug>.jpg uniquement pour les destinations éditoriales
+    // (fichier réellement présent) ; sinon on réutilise la bannière déjà
+    // affichée en page pour ne jamais pointer vers une image inexistante.
+    const ogImage = getDestination(route.slug)
+      ? destinationOgImage(route.slug)
+      : absoluteUrl(getDestinationImage(route.destination, route.destinationCity, route.country).src);
     return {
       meta: [
         { title: route.metaTitle },
@@ -175,12 +181,12 @@ function DestinationPage() {
       </nav>
 
       <div className="relative mt-4 overflow-hidden rounded-2xl border border-border">
-        <img
+        <ResponsivePicture
           src={banner.src}
+          webp={banner.webp}
           alt={banner.alt}
           width={1200}
           height={630}
-          decoding="async"
           className="h-44 w-full object-cover sm:h-64 lg:h-80"
         />
         <div
@@ -328,11 +334,11 @@ function DestinationPage() {
                       params={{ slug: item.slug }}
                       className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
                     >
-                      <img
+                      <ResponsivePicture
                         src={thumb.src}
+                        webp={thumb.webp}
                         alt={thumb.alt}
                         loading="lazy"
-                        decoding="async"
                         width={96}
                         height={72}
                         className="size-12 shrink-0 rounded-md object-cover"
