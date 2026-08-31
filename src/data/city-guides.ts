@@ -2001,6 +2001,331 @@ export const CITY_GUIDES: CityGuide[] = [
       },
     ],
   },
+  {
+    slug: "dakar",
+    city: "Dakar",
+    country: "Sénégal",
+    routeSlug: "paris-dakar",
+    origin: "PAR",
+    destination: "DKR",
+    originCity: "Paris",
+    title: "Que faire à Dakar : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Dakar : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Dakar : meilleure période, île de Gorée, budget réel sur place, formalités et accès depuis l'aéroport pour les voyageurs français.",
+    intro:
+      "Dakar mélange front de mer atlantique, marchés animés et un passé historique dense, à moins de six heures de vol de Paris. Voici les repères concrets avant de réserver : climat, incontournables et budget réel.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Franc CFA (XOF), indexé sur l'euro à taux fixe.",
+      langue: "Français (langue officielle) et wolof, très parlé au quotidien.",
+      visa: "Aucun visa pour un séjour touristique, le Sénégal ayant supprimé cette obligation pour toutes les nationalités. Passeport valide requis.",
+      transport: "Pas de métro : taxis (à négocier ou via application) et cars rapides locaux. Le centre se visite en partie à pied.",
+      budgetJour: "40 à 70 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Dakar ?",
+        paragraphs: [
+          "La saison sèche, de novembre à mai, offre le climat le plus agréable, tempéré par l'harmattan, avec un ciel généralement dégagé.",
+          "La saison des pluies (hivernage), de juin à octobre, apporte une chaleur plus humide et des averses parfois intenses, sans empêcher le voyage mais à anticiper dans le programme.",
+          "Les grandes fêtes religieuses (Tabaski notamment) concentrent une forte affluence de la diaspora sénégalaise de France : les prix des vols grimpent alors nettement, à réserver bien à l'avance si vous visez ces dates.",
+        ],
+      },
+      {
+        heading: "Les incontournables à voir en priorité",
+        paragraphs: [
+          "L'île de Gorée, classée à l'UNESCO pour son passé lié à la traite négrière, se visite en vingt minutes de bateau depuis le port de Dakar — comptez une demi-journée pour la Maison des Esclaves et les ruelles colorées.",
+          "Le Plateau, cœur administratif et commerçant de Dakar, et le marché Sandaga offrent l'ambiance urbaine la plus dense de la ville, tissus, artisanat et vie de rue.",
+          "Les Almadies et N'Gor, à la pointe la plus occidentale d'Afrique continentale, rassemblent plages, restaurants en bord de mer et le départ de bateau vers l'île de N'Gor.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement varie largement : 30-60 € la nuit pour un hôtel correct, davantage dans les établissements de bord de mer aux Almadies.",
+          "Un repas dans un restaurant local (thiéboudienne, plat national) revient à 5-10 €, un dîner plus soigné en bord de mer à 15-25 € par personne.",
+          "Les taxis se négocient avant le trajet, hors application : comptez 3-6 € pour un déplacement en ville, davantage pour rejoindre l'aéroport.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : Blaise-Diagne est à une quarantaine de kilomètres de Dakar, sans liaison ferrée — comptez 45 minutes à 1 heure de route selon la circulation.",
+          "Négociation : les prix ne sont pas toujours fixes dans les marchés et pour les taxis non officiels — convenir du tarif avant le trajet ou l'achat reste la règle de base.",
+          "Santé : vérifiez les recommandations vaccinales (fièvre jaune notamment, parfois exigée à l'entrée) et le traitement antipaludique auprès d'un médecin avant le départ.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent Dakar, l'île de Gorée et les Almadies.",
+          "Cinq nuits ou plus permettent une extension vers la Petite Côte (Saly, Toubab Dialaw) ou le lac Rose, à une à deux heures de route de la capitale.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "reykjavik",
+    city: "Reykjavik",
+    country: "Islande",
+    routeSlug: "paris-reykjavik",
+    origin: "PAR",
+    destination: "KEF",
+    originCity: "Paris",
+    title: "Que faire à Reykjavik : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Reykjavik : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Reykjavik : meilleure période, Cercle d'or, aurores boréales, budget réel sur place pour les voyageurs français.",
+    intro:
+      "Reykjavik sert de base idéale pour explorer les paysages islandais, entre geysers, chutes d'eau et côtes volcaniques. Voici les repères concrets avant de réserver : quand partir, que voir et combien prévoir, dans un pays réputé cher.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Couronne islandaise (ISK). Cartes bancaires acceptées presque partout, y compris pour de très petits montants.",
+      langue: "Islandais. L'anglais est parlé couramment par la quasi-totalité de la population.",
+      visa: "Aucun visa pour un séjour touristique, l'Islande faisant partie de l'espace Schengen. Carte d'identité valide suffisante.",
+      transport: "Pas de métro ni de train urbain : bus locaux et location de voiture, quasi indispensable pour sortir de Reykjavik.",
+      budgetJour: "110 à 170 € par personne et par jour, hébergement compris — l'un des pays les plus chers d'Europe.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Reykjavik ?",
+        paragraphs: [
+          "Juin à août offre le soleil de minuit et l'accès le plus large aux routes et sentiers, souvent fermés ou difficiles d'accès le reste de l'année. C'est aussi la période la plus chère et la plus fréquentée.",
+          "De septembre à mars, les nuits longues et un ciel souvent dégagé offrent de bonnes chances d'observer les aurores boréales, sans aucune garantie : l'activité solaire et la météo restent déterminantes.",
+          "L'hiver islandais reste rude et les journées très courtes en décembre-janvier ; le printemps et l'automne (avril-mai, septembre) offrent un compromis intéressant entre lumière, météo et prix.",
+        ],
+      },
+      {
+        heading: "Le Cercle d'or et les incontournables",
+        paragraphs: [
+          "Le Cercle d'or, circuit d'une journée depuis Reykjavik, réunit le parc national de Thingvellir (faille entre deux plaques tectoniques), les geysers de Geysir et Strokkur, et les chutes de Gullfoss.",
+          "Le Blue Lagoon, bassin géothermal à ciel ouvert près de l'aéroport de Keflavik, se réserve à l'avance : c'est une étape appréciée à l'arrivée ou au départ plutôt qu'un détour supplémentaire.",
+          "Reykjavik elle-même se visite en une demi-journée : l'église Hallgrímskirkja, le port et le centre culturel Harpa suffisent à occuper une soirée ou une matinée entre deux excursions.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'Islande reste l'un des pays les plus chers d'Europe : un repas simple revient à 20-25 €, un dîner au restaurant à 35-50 € par personne.",
+          "L'hébergement suit la même logique : 120-180 € la nuit pour un hôtel correct, 40-60 € en auberge — réservez tôt en été, période de forte demande.",
+          "La location de voiture (souvent 60-100 €/jour selon la saison et le véhicule) reste le poste le plus rentable pour explorer au-delà de Reykjavik, comparé au coût des excursions organisées à la journée.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : le Flybus rejoint le centre de Reykjavik en 45 minutes environ, synchronisé avec les horaires de vol, pour environ 25 €.",
+          "Équipement : prévoyez des vêtements chauds et imperméables même en été, la météo islandaise pouvant changer plusieurs fois dans la même journée.",
+          "Conduite : les routes secondaires et pistes (F) peuvent nécessiter un véhicule 4x4, en particulier en dehors de l'été — vérifiez les conditions avant de partir.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois à quatre nuits permettent Reykjavik, le Cercle d'or et le Blue Lagoon.",
+          "Une semaine ou plus laisse le temps d'explorer la côte sud (plages de sable noir, glaciers) ou de faire une partie du tour de l'île par la route 1.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "stockholm",
+    city: "Stockholm",
+    country: "Suède",
+    routeSlug: "paris-stockholm",
+    origin: "PAR",
+    destination: "ARN",
+    originCity: "Paris",
+    title: "Que faire à Stockholm : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Stockholm : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Stockholm : meilleure période, quartiers à voir, budget réel sur place, accès depuis Arlanda pour les voyageurs français.",
+    intro:
+      "Stockholm, bâtie sur quatorze îles reliées par des ponts, se visite dans des conditions radicalement différentes selon la saison. Voici les repères concrets avant de réserver : climat, quartiers, budget réel et accès depuis l'aéroport.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Couronne suédoise (SEK), pas l'euro.",
+      langue: "Suédois. L'anglais est parlé couramment par la quasi-totalité de la population.",
+      visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
+      transport: "Métro, bus et ferries urbains entre les îles ; un pass transport de plusieurs jours est souvent le plus avantageux.",
+      budgetJour: "80 à 130 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Stockholm ?",
+        paragraphs: [
+          "Mai à août profite de journées très longues (le soleil se couche après 22 h en juin) et d'un climat doux, la meilleure période pour profiter des îles et des terrasses en bord d'eau.",
+          "L'hiver est rigoureux et sombre, avec une nuit qui tombe dès le milieu de l'après-midi en décembre-janvier — une ambiance particulière, notamment autour des marchés de Noël, mais qui ne convient pas à tous les voyageurs.",
+          "Fin juin, la fête de la Saint-Jean (Midsommar) voit une partie de la ville se vider, de nombreux Suédois partant à la campagne : certains commerces et restaurants ferment pendant quelques jours.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Gamla Stan, la vieille ville, concentre ruelles pavées, palais royal et façades colorées — le cœur touristique de Stockholm, à visiter tôt le matin pour éviter l'affluence.",
+          "Södermalm offre l'ambiance la plus locale : cafés indépendants, boutiques vintage et point de vue sur la ville depuis Monteliusvägen, particulièrement au coucher du soleil.",
+          "Djurgården, île verte accessible à pied ou en ferry, rassemble plusieurs musées majeurs dont le Vasa (navire du 17e siècle intact) et le parc d'attractions Gröna Lund.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement revient à 100-150 € la nuit pour un hôtel correct en centre-ville, 35-50 € en auberge, avec une hausse en juin-juillet.",
+          "Un repas simple (déjeuner du jour, « dagens lunch ») coûte 12-15 €, un dîner au restaurant 30-45 € par personne — la Suède reste un pays cher pour la restauration.",
+          "Les transports coûtent environ 4 € le trajet unique, ou un pass journée autour de 14 € couvrant bus, métro et plusieurs liaisons en ferry urbain.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : l'Arlanda Express relie la gare centrale en 18 minutes pour environ 30 € ; le bus Flygbussarna, plus lent (45 minutes), coûte nettement moins cher.",
+          "Paiement : la Suède est l'un des pays les plus avancés vers le tout-carte — les espèces sont rarement nécessaires, y compris pour de très petits achats.",
+          "Alcool : la vente d'alcool fort et de vin en magasin est réservée au monopole d'État Systembolaget, aux horaires plus restreints qu'en France.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent Gamla Stan, Södermalm et Djurgården.",
+          "Quatre à cinq nuits permettent d'ajouter une excursion dans l'archipel de Stockholm (plus de 30 000 îles et îlots) en bateau depuis le centre.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "mexico",
+    city: "Mexico",
+    country: "Mexique",
+    routeSlug: "paris-mexico",
+    origin: "PAR",
+    destination: "MEX",
+    originCity: "Paris",
+    title: "Que faire à Mexico : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Mexico : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Mexico : meilleure période, quartiers à voir, budget réel sur place, altitude et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Mexico, perchée à plus de 2 200 mètres d'altitude, profite d'un climat tempéré toute l'année, loin de l'image tropicale qu'on prête souvent au pays. Voici les repères concrets avant de réserver : quartiers, budget réel et organisation sur place.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Peso mexicain (MXN).",
+      langue: "Espagnol. L'anglais est répandu dans les zones touristiques, moins dans le reste de la ville.",
+      visa: "Aucun visa pour un séjour touristique de moins de 180 jours, passeport valide requis.",
+      transport: "Métro étendu et bon marché, mais taxi officiel ou VTC recommandés pour un premier trajet avec bagages.",
+      budgetJour: "45 à 80 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Mexico ?",
+        paragraphs: [
+          "Grâce à l'altitude, Mexico reste tempérée toute l'année, rarement au-dessus de 25 °C en journée. La saison sèche, de novembre à avril, offre un ciel plus dégagé et moins d'averses.",
+          "La saison des pluies, de mai à octobre, apporte des averses généralement brèves et prévisibles en fin d'après-midi, sans empêcher les visites en journée.",
+          "Le Jour des Morts (fin octobre-début novembre) offre une expérience culturelle unique, avec ofrendas et défilés, mais concentre aussi une forte affluence touristique.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Le Centro Histórico, classé à l'UNESCO, rassemble la cathédrale métropolitaine, le Zócalo et les ruines aztèques du Templo Mayor, en plein cœur de la ville moderne.",
+          "Roma et Condesa, quartiers résidentiels aux avenues arborées, concentrent la scène gastronomique et créative la plus dynamique de la ville, particulièrement agréables à pied.",
+          "Coyoacán, ancien village annexé par l'agglomération, garde une ambiance de petite ville avec ses places colorées et la maison-musée de Frida Kahlo (Casa Azul).",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement reste abordable : 40-70 € la nuit pour un hôtel correct à Roma ou Condesa, 15-25 € en auberge.",
+          "La street food (tacos, marchés) permet de manger pour 3-6 € le repas ; un dîner plus soigné dans un restaurant de Roma ou Condesa revient à 15-30 € par personne.",
+          "Les transports sont très bon marché : environ 0,25 € le trajet en métro, quelques euros en taxi ou VTC pour la plupart des trajets en ville.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : la ligne 5 du métro dessert l'aéroport (station Terminal Aérea), mais un taxi officiel réservé dans le terminal ou un VTC restent recommandés pour un premier trajet avec bagages.",
+          "Altitude : les premiers jours, un léger essoufflement à l'effort est normal ; hydratez-vous bien et évitez l'alcool le premier soir.",
+          "Eau : évitez l'eau du robinet, y compris pour se brosser les dents ; l'eau en bouteille est largement disponible et bon marché.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Quatre nuits couvrent le Centro Histórico, Roma-Condesa et Coyoacán.",
+          "Une semaine ou plus permet d'ajouter une excursion aux pyramides de Teotihuacán (moins d'une heure de route) ou à Puebla, ville coloniale à deux heures de route.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "doha",
+    city: "Doha",
+    country: "Qatar",
+    routeSlug: "paris-doha",
+    origin: "PAR",
+    destination: "DOH",
+    originCity: "Paris",
+    title: "Que faire à Doha : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Doha : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Doha : meilleure période, souk Waqif, budget réel sur place, accès depuis l'aéroport pour les voyageurs français.",
+    intro:
+      "Doha combine gratte-ciels futuristes, souk traditionnel et musées de premier plan, à six heures et demie de vol de Paris. Voici les repères concrets avant de réserver, que ce soit pour un séjour dédié ou une escale prolongée.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Riyal qatari (QAR).",
+      langue: "Arabe. L'anglais est très largement parlé, notamment dans le tourisme et les affaires.",
+      visa: "Aucun visa pour un séjour touristique de courte durée, passeport valide requis.",
+      transport: "Métro de Doha (ligne rouge notamment), taxis et VTC ; les distances entre quartiers restent importantes.",
+      budgetJour: "55 à 100 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Doha ?",
+        paragraphs: [
+          "Novembre à mars offre des températures agréables (18-28 °C), idéales pour profiter de la corniche et des activités extérieures sans souffrir de la chaleur.",
+          "L'été (juin-septembre) dépasse régulièrement les 40 °C avec une forte humidité, rendant les sorties diurnes difficiles : la vie se déplace alors vers les espaces climatisés et le soir.",
+          "Les grands événements sportifs ou culturels organisés dans le pays peuvent faire grimper ponctuellement les prix des vols et des hôtels — à vérifier avant de fixer vos dates.",
+        ],
+      },
+      {
+        heading: "Les incontournables à voir en priorité",
+        paragraphs: [
+          "Le souk Waqif, cœur historique reconstitué de Doha, rassemble échoppes d'épices, de textiles et restaurants traditionnels — particulièrement animé en soirée, une fois la chaleur retombée.",
+          "Le Museum of Islamic Art, conçu par I. M. Pei sur une île artificielle, présente une collection majeure d'art islamique dans un cadre architectural remarquable, entrée gratuite.",
+          "La Corniche, promenade de sept kilomètres le long de la baie, offre la meilleure vue sur la skyline de Doha, particulièrement photogénique au coucher du soleil.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Le Qatar peut se visiter avec des budgets très variables : un repas dans le souk Waqif revient à 10-15 €, tandis que la restauration dans les grands hôtels internationaux peut facilement dépasser 40-50 € par personne.",
+          "L'hébergement dans les enseignes internationales reste cher (100-200 € la nuit), avec quelques options plus abordables autour de 60-80 € hors quartiers les plus centraux.",
+          "Les transports sont bon marché : environ 0,50 à 1 € le trajet en métro, davantage en taxi ou VTC selon la distance.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : la ligne rouge du métro de Doha relie l'aéroport Hamad au centre-ville en une trentaine de minutes, alternative pratique et bon marché au taxi.",
+          "Tenue vestimentaire : des épaules et jambes couvertes sont recommandées dans les lieux publics, en particulier pour les femmes, par respect des usages locaux.",
+          "Alcool : sa vente est très restreinte, généralement limitée aux hôtels internationaux disposant d'une licence.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux à trois nuits suffisent pour le souk Waqif, le Museum of Islamic Art et la Corniche.",
+          "Utile aussi en escale longue vers l'Asie ou l'Océanie : une journée complète permet déjà de découvrir l'essentiel de la ville.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getCityGuide(slug: string): CityGuide | undefined {

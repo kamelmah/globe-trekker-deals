@@ -926,6 +926,256 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
       },
     ],
   },
+  {
+    slug: "paris-dakar",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "DKR",
+    destinationCity: "Dakar",
+    country: "Sénégal",
+    heading: "Vols pas chers Paris — Dakar",
+    metaTitle: "Vol pas cher Paris Dakar : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Dakar au prix total taxes incluses, vendeur affiché. Compagnies, saison sèche, formalités et alerte prix gratuite.",
+    intro:
+      "Un vol direct Paris — Dakar dure un peu moins de six heures. La demande suit un rythme saisonnier marqué par la saison sèche, mais aussi par les vacances scolaires et les grandes fêtes, très suivies par une importante diaspora sénégalaise en France.",
+    bestMonths: "Novembre-mai",
+    averageDuration: "5 h 45 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Air France, Air Sénégal, Corsair et Transavia desservent la ligne depuis Charles-de-Gaulle et Orly. Air Sénégal, compagnie nationale, complète bien l'offre historique d'Air France sur cette liaison.",
+          "L'aéroport international Blaise-Diagne se trouve à une quarantaine de kilomètres de Dakar, sans liaison ferrée : comptez 45 minutes à 1 heure de route selon la circulation, en taxi ou navette.",
+          "L'île de Gorée, classée à l'UNESCO pour son passé lié à la traite négrière, se visite en vingt minutes de bateau depuis le port de Dakar — une étape quasi incontournable du séjour.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "La saison sèche, de novembre à mai, offre le climat le plus agréable, avec des températures modérées par l'harmattan. La saison des pluies (hivernage), de juin à octobre, apporte chaleur et humidité plus marquées.",
+          "Les vacances scolaires françaises et les grandes fêtes (Tabaski notamment) concentrent une forte demande de la diaspora : les prix montent alors plus tôt et plus fort qu'en période normale, un mécanisme comparable à ce qu'on observe sur les liaisons vers le Maghreb.",
+          "Le Sénégal utilise le franc CFA, indexé sur l'euro à taux fixe, ce qui simplifie les comparaisons de prix sur place par rapport à une monnaie flottante.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Dakar ?",
+        answer: "Environ 5 h 45 en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller au Sénégal ?",
+        answer:
+          "Non : le Sénégal a supprimé l'obligation de visa touristique pour l'ensemble des nationalités, dont les citoyens français. Un passeport valide reste nécessaire.",
+      },
+      {
+        question: "Quand les vols vers Dakar sont-ils les plus chers ?",
+        answer:
+          "Pendant les vacances scolaires françaises et les grandes fêtes (comme la Tabaski), très suivies par la diaspora sénégalaise — réservez tôt sur ces périodes.",
+      },
+    ],
+  },
+  {
+    slug: "paris-reykjavik",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "KEF",
+    destinationCity: "Reykjavik",
+    country: "Islande",
+    heading: "Vols pas chers Paris — Reykjavik",
+    metaTitle: "Vol pas cher Paris Reykjavik : prix, aurores boréales, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Reykjavik au prix total taxes incluses, vendeur affiché. Compagnies, aurores boréales, meilleure période et alerte prix.",
+    intro:
+      "Un peu moins de quatre heures de vol séparent Paris de Reykjavik. La destination attire toute l'année pour des raisons différentes : soleil de minuit et randonnées en été, aurores boréales et paysages enneigés en hiver.",
+    bestMonths: "Juin-août (nature) ou septembre-mars (aurores boréales)",
+    averageDuration: "3 h 40 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Icelandair et Air France assurent la liaison directe depuis Charles-de-Gaulle. Icelandair, compagnie locale, propose souvent une offre tarifaire plus large sur les créneaux hors saison.",
+          "L'aéroport de Keflavik est à une cinquantaine de kilomètres de Reykjavik : le Flybus rejoint le centre en 45 minutes environ, synchronisé avec les vols, pour environ 25 euros.",
+          "Louer une voiture reste la meilleure option pour explorer au-delà de la capitale : le Cercle d'or (geysers, chutes de Gullfoss, parc national de Thingvellir) se visite en une journée depuis Reykjavik.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Juin à août offre le soleil de minuit et l'accès le plus large aux routes et sentiers de randonnée, souvent fermés le reste de l'année. C'est aussi la période la plus chère et la plus fréquentée.",
+          "De septembre à mars, les nuits longues et le ciel souvent dégagé offrent de bonnes chances d'observer les aurores boréales, avec des tarifs de vol et d'hôtel plus doux qu'en été.",
+          "L'Islande reste un pays cher : un repas simple revient à 20-25 euros, une nuit d'hôtel correcte à 120-180 euros. Le vol représente souvent une part modeste du budget total du voyage.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Reykjavik ?",
+        answer: "Environ 3 h 40 en vol direct.",
+      },
+      {
+        question: "Quand voir les aurores boréales en Islande ?",
+        answer:
+          "De septembre à mars, quand les nuits sont longues et le ciel dégagé. Aucune garantie n'existe, l'activité solaire et la météo restant déterminantes.",
+      },
+      {
+        question: "Faut-il un visa pour aller en Islande ?",
+        answer:
+          "Non, l'Islande fait partie de l'espace Schengen : une carte d'identité valide suffit pour les citoyens français.",
+      },
+    ],
+  },
+  {
+    slug: "paris-stockholm",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "ARN",
+    destinationCity: "Stockholm",
+    country: "Suède",
+    heading: "Vols pas chers Paris — Stockholm",
+    metaTitle: "Vol pas cher Paris Stockholm : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Stockholm au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis Arlanda, meilleure période et alerte prix.",
+    intro:
+      "Stockholm est à moins de trois heures de vol de Paris. La ville, bâtie sur quatorze îles, se visite dans des conditions radicalement différentes selon la saison : journées interminables et douces en été, nuits longues et froides en hiver.",
+    bestMonths: "Mai-août",
+    averageDuration: "2 h 40 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis Arlanda",
+        paragraphs: [
+          "Air France, SAS et Transavia desservent la ligne depuis Charles-de-Gaulle et Orly. SAS, compagnie scandinave historique, propose une bonne fréquence de vols en semaine.",
+          "L'Arlanda Express relie l'aéroport à la gare centrale en dix-huit minutes, mais coûte cher (environ 30 euros l'aller) ; le bus Flygbussarna, plus lent (45 minutes), revient nettement moins cher.",
+          "Stockholm se visite très bien à pied et en ferry entre les îles : un pass transport de plusieurs jours couvre bus, métro et plusieurs liaisons maritimes urbaines.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Mai à août profite de journées très longues (le soleil se couche après 22 h en juin) et d'un climat doux, à l'inverse d'un hiver rigoureux où la nuit tombe dès le milieu de l'après-midi.",
+          "Les tarifs de vol restent globalement modérés toute l'année, avec une hausse sensible en juin-juillet, période de plus forte fréquentation touristique et de la fête de la Saint-Jean (Midsommar).",
+          "La Suède n'utilise pas l'euro : les prix s'affichent en couronnes suédoises (SEK). Le pays reste cher pour la restauration (15-25 euros pour un repas simple) mais les musées d'histoire et d'art sont nombreux et souvent gratuits ou à prix modéré.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Stockholm ?",
+        answer: "Environ 2 h 40 en vol direct.",
+      },
+      {
+        question: "Stockholm utilise-t-elle l'euro ?",
+        answer:
+          "Non, la Suède a sa propre monnaie, la couronne suédoise (SEK). Les cartes bancaires sont acceptées presque partout, y compris pour de petits montants.",
+      },
+      {
+        question: "Comment rejoindre le centre depuis l'aéroport d'Arlanda ?",
+        answer:
+          "L'Arlanda Express relie la gare centrale en 18 minutes pour environ 30 euros ; le bus Flygbussarna est plus lent (45 minutes) mais nettement moins cher.",
+      },
+    ],
+  },
+  {
+    slug: "paris-mexico",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "MEX",
+    destinationCity: "Mexico",
+    country: "Mexique",
+    heading: "Vols pas chers Paris — Mexico",
+    metaTitle: "Vol pas cher Paris Mexico : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Mexico au prix total taxes incluses, vendeur affiché. Compagnies, altitude, meilleure période et alerte prix gratuite.",
+    intro:
+      "Un vol direct Paris — Mexico dure environ onze heures. Perchée à plus de 2 200 mètres d'altitude, la capitale mexicaine profite d'un climat étonnamment tempéré toute l'année, bien loin de l'image de chaleur tropicale qu'on prête souvent au pays.",
+    bestMonths: "Novembre-avril",
+    averageDuration: "11 h en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et organisation sur place",
+        paragraphs: [
+          "Air France assure la liaison directe depuis Charles-de-Gaulle, en partage de code avec Aeroméxico. Les tarifs les plus intéressants se trouvent en réservant deux à trois mois à l'avance.",
+          "L'aéroport Benito-Juárez dispose d'une ligne de métro (ligne 5, station Terminal Aérea), mais un taxi officiel ou un VTC réservé à l'avance reste la solution recommandée pour un premier trajet avec bagages.",
+          "Mexico est une mégapole étendue : le centre historique, Roma-Condesa et Coyoacán se visitent bien à pied chacun, mais nécessitent un trajet en métro, taxi ou VTC pour passer de l'un à l'autre.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Grâce à l'altitude, Mexico reste tempérée toute l'année (rarement au-dessus de 25 °C en journée). La saison sèche, de novembre à avril, offre un ciel plus dégagé ; la saison des pluies (mai-octobre) apporte des averses généralement brèves en fin d'après-midi.",
+          "Les tarifs de vol suivent surtout les vacances scolaires françaises et mexicaines plutôt que la météo locale, la ville se visitant agréablement toute l'année.",
+          "Mexico reste abordable une fois sur place : un repas de rue (tacos, marché) revient à 3-6 euros, un dîner au restaurant à 15-25 euros par personne, une chambre correcte à 40-70 euros la nuit.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Mexico ?",
+        answer: "Environ 11 heures en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller au Mexique ?",
+        answer:
+          "Non pour un séjour touristique de moins de 180 jours, passeport valide requis.",
+      },
+      {
+        question: "Fait-il très chaud à Mexico ?",
+        answer:
+          "Non : la ville est perchée à plus de 2 200 mètres d'altitude et reste tempérée toute l'année, rarement au-dessus de 25 °C en journée.",
+      },
+    ],
+  },
+  {
+    slug: "paris-doha",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "DOH",
+    destinationCity: "Doha",
+    country: "Qatar",
+    heading: "Vols pas chers Paris — Doha",
+    metaTitle: "Vol pas cher Paris Doha : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Doha au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+    intro:
+      "Un vol direct Paris — Doha dure environ six heures et demie. La ville sert aussi de porte d'entrée pratique vers l'Asie et l'Océanie via une escale courte, mais mérite un arrêt à part entière pour ses musées et son front de mer.",
+    bestMonths: "Novembre-mars",
+    averageDuration: "6 h 30 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Qatar Airways opère la ligne en direct depuis Charles-de-Gaulle, avec une flotte récente et une offre de classes tarifaires étendue, y compris sur les billets les moins chers.",
+          "L'aéroport international Hamad se trouve à une quinzaine de kilomètres du centre : le métro de Doha (ligne rouge) rejoint le centre-ville en une trentaine de minutes, alternative pratique et bon marché au taxi.",
+          "Doha se parcourt en taxi, VTC ou métro selon les quartiers : le souk Waqif et la corniche se visitent bien à pied, mais les distances entre quartiers restent importantes comme dans la plupart des villes du Golfe.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Novembre à mars offre des températures agréables (18-28 °C), idéales pour profiter de la corniche et des activités extérieures. L'été (juin-septembre) dépasse régulièrement les 40 °C, rendant les sorties diurnes difficiles.",
+          "Les tarifs de vol restent globalement stables toute l'année sur cette liaison, avec une légère hausse pendant les grands événements sportifs ou culturels organisés dans le pays.",
+          "Doha peut être visitée avec des budgets très variables : le Museum of Islamic Art est gratuit, un repas dans le souk Waqif revient à 10-15 euros, mais l'hébergement dans les grandes enseignes internationales reste cher (100-200 euros la nuit).",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Doha ?",
+        answer: "Environ 6 h 30 en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller au Qatar ?",
+        answer:
+          "Non, le Qatar accorde l'entrée sans visa aux citoyens français pour un séjour touristique de courte durée, passeport valide requis.",
+      },
+      {
+        question: "Comment rejoindre le centre depuis l'aéroport de Doha ?",
+        answer:
+          "La ligne rouge du métro de Doha relie l'aéroport Hamad au centre-ville en une trentaine de minutes.",
+      },
+    ],
+  },
 ];
 
 /** Fiches éditoriales : trajets curés + capitales européennes. */
