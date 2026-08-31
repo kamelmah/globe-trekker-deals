@@ -124,11 +124,13 @@ export const searchFlights = createServerFn({ method: "GET" })
       return {
         offers: [],
         alternatives: [] as { date: string; priceEur: number }[],
+        nearDateOnly: false,
         error: messageOf(error),
         debug: null,
         configured: hasApiCredentials(),
       };
     }
+
 
   });
 
