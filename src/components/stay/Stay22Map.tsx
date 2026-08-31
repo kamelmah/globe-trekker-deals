@@ -63,9 +63,10 @@ export function Stay22Map({
       aid: STAY22_LMA_ID,
       address: city,
       hidefooter: "true",
-      // Le bouton de redirection Allez charge la page partenaire dans le cadre du
-      // widget, ce que Booking.com bloque (X-Frame-Options → ERR_BLOCKED_BY_RESPONSE).
-      // On le masque : les pins et fiches hôtels ouvrent déjà les offres dans un nouvel onglet.
+      // Le bouton de redirection Allez charge systématiquement la page partenaire
+      // dans le cadre du widget, ce que des sites comme Booking.com refusent
+      // (X-Frame-Options → ERR_BLOCKED_BY_RESPONSE). On le masque en plus du
+      // sandbox de l'iframe (voir plus bas) qui couvre les autres clics.
       hideallezbutton: "true",
       currency: "EUR",
       supportedlang: "fr",
@@ -126,7 +127,13 @@ export function Stay22Map({
                 src={src}
                 title={title}
                 loading="lazy"
-                allow="popups; popups-to-escape-sandbox"
+                // Autorise les popups (un clic sur un hôtel doit ouvrir un nouvel
+                // onglet) mais interdit explicitement la navigation du cadre lui-même
+                // vers un site externe. Sans ça, certaines fiches hôtel (ex.
+                // Booking.com) chargent leur page dans le cadre du widget, qui la
+                // refuse par sécurité (X-Frame-Options → ERR_BLOCKED_BY_RESPONSE) :
+                // l'utilisateur voit une page d'erreur au lieu de l'offre.
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
                 referrerPolicy="no-referrer-when-downgrade"
                 onLoad={handleLoad}
                 onError={handleError}
