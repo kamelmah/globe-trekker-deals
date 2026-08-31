@@ -1,3 +1,5 @@
+import { EUROPE_DESTINATIONS } from "@/data/destinations-europe";
+
 export type DestinationFaq = { question: string; answer: string };
 
 export type DestinationRoute = {
@@ -27,7 +29,7 @@ export type DestinationRoute = {
   observedDepartureAt?: string;
 };
 
-export const DESTINATIONS: DestinationRoute[] = [
+const CORE_DESTINATIONS: DestinationRoute[] = [
   {
     slug: "paris-marrakech",
     origin: "PAR",
@@ -674,6 +676,12 @@ export const DESTINATIONS: DestinationRoute[] = [
       },
     ],
   },
+];
+
+/** Fiches éditoriales : trajets curés + capitales européennes. */
+export const DESTINATIONS: DestinationRoute[] = [
+  ...CORE_DESTINATIONS,
+  ...EUROPE_DESTINATIONS,
 ];
 
 export function getDestination(slug: string): DestinationRoute | undefined {

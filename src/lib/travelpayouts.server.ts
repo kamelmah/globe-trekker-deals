@@ -441,7 +441,8 @@ async function recordHistory(
 ): Promise<void> {
   const cheapest = offers[0];
   if (!cheapest) return;
-  const month = cheapest.departureAt.slice(0, 7);
+  // `price_history.month` est une colonne date : toujours le 1er du mois.
+  const month = `${cheapest.departureAt.slice(0, 7)}-01`;
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
@@ -465,6 +466,61 @@ async function recordHistory(
   } catch (error) {
     console.error("Historique de prix non enregistré", error);
   }
+}
+
+/**
+ * Enregistre l'observation des prix par destination (balayage "destinations les
+ * moins chères") dans `price_history`. Le prix conservé reste le plus bas
+ * réellement observé sur le mois ; `updated_at` note la date du dernier relevé,
+ * ce qui alimente la fraîcheur affichée dans les guides destinations.
+ */
+export async function recordDestinationHistory(
+  origin: string,
+  prices: DestinationPrice[],
+): Promise<number> {
+  if (prices.length === 0) return 0;
+  let written = 0;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    for (const price of prices) {
+      const yearMonth = (price.departureAt || "").slice(0, 7);
+      if (yearMonth.length !== 7 || !Number.isFinite(price.priceEur) || price.priceEur <= 0) {
+        continue;
+      }
+      // `price_history.month` est une colonne date : toujours le 1er du mois.
+      const month = `${yearMonth}-01`;
+      const { data } = await supabaseAdmin
+        .from("price_history")
+        .select("id,lowest_price")
+        .eq("origin", origin)
+        .eq("destination", price.destination)
+        .eq("month", month)
+        .maybeSingle();
+      const now = new Date().toISOString();
+      if (data) {
+        const lowest = Math.min(Number(data.lowest_price), price.priceEur);
+        const { error } = await supabaseAdmin
+          .from("price_history")
+          .update({ lowest_price: lowest, updated_at: now })
+          .eq("id", data.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabaseAdmin.from("price_history").insert({
+          origin,
+          destination: price.destination,
+          month,
+          lowest_price: price.priceEur,
+          currency: "eur",
+          updated_at: now,
+        });
+        if (error) throw error;
+      }
+      written += 1;
+    }
+  } catch (error) {
+    console.error("Historique des destinations non enregistré", error);
+  }
+  return written;
 }
 
 /* -------------------------------------------------------------------------- */

@@ -1,7 +1,10 @@
-import { fetchCheapestDestinations } from "@/lib/travelpayouts.server";
+import {
+  fetchCheapestDestinations,
+  recordDestinationHistory,
+} from "@/lib/travelpayouts.server";
 import { logOps } from "@/lib/ops-log.server";
 import {
-  HOME_DESTINATION_CODES,
+  REFRESH_DESTINATION_CODES,
   REFRESH_ORIGINS,
   nextRefreshAt,
   type PriceRefreshState,
@@ -89,10 +92,13 @@ export async function refreshFlightPrices(
     try {
       const { prices } = await fetchCheapestDestinations({
         origin,
-        destinations: HOME_DESTINATION_CODES,
+        destinations: REFRESH_DESTINATION_CODES,
         forceRefresh: true,
       });
       priceCount += prices.length;
+      // Trace les relevés pour les guides destinations (prix + date affichés
+      // dans chaque fiche ville).
+      await recordDestinationHistory(origin, prices);
     } catch (error) {
       const message = error instanceof Error ? error.message : "erreur inconnue";
       failures.push(`${origin}: ${message}`);
@@ -113,7 +119,7 @@ export async function refreshFlightPrices(
     resultCount: priceCount,
     durationMs: Date.now() - startedAt,
     message,
-    context: { origins: REFRESH_ORIGINS, destinations: HOME_DESTINATION_CODES.length, trigger },
+    context: { origins: REFRESH_ORIGINS, destinations: REFRESH_DESTINATION_CODES.length, trigger },
   });
 
   const state: StoredState = { lastAt, priceCount, trigger, ok, message };

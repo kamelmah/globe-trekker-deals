@@ -41,6 +41,57 @@ export type Database = {
         }
         Relationships: []
       }
+      guide_requests: {
+        Row: {
+          city: string
+          country: string
+          created_at: string
+          destination: string
+          draft: Json | null
+          error_message: string | null
+          generated_at: string | null
+          id: string
+          origin: string
+          published_at: string | null
+          route_slug: string
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          city: string
+          country: string
+          created_at?: string
+          destination: string
+          draft?: Json | null
+          error_message?: string | null
+          generated_at?: string | null
+          id?: string
+          origin?: string
+          published_at?: string | null
+          route_slug: string
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string
+          destination?: string
+          draft?: Json | null
+          error_message?: string | null
+          generated_at?: string | null
+          id?: string
+          origin?: string
+          published_at?: string | null
+          route_slug?: string
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           active: boolean
