@@ -240,8 +240,11 @@
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.208 0.042 265.755);
   --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
+  /* Même teinte bleue que le mode clair (H 249), éclaircie pour ressortir sur
+     fond sombre plutôt que le gris neutre par défaut du scaffold shadcn.
+     Contrastes vérifiés (canvas + WCAG) : texte/bouton 7.9:1, anneau/fond 8.2:1. */
+  --primary: oklch(0.72 0.155 249);
+  --primary-foreground: oklch(0.15 0.03 250);
   --secondary: oklch(0.279 0.041 260.031);
   --secondary-foreground: oklch(0.984 0.003 247.858);
   --muted: oklch(0.279 0.041 260.031);
@@ -252,7 +255,7 @@
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
+  --ring: oklch(0.72 0.155 249);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -343,6 +346,26 @@
     }
   }
 
+  /*
+   * Apparition au scroll (sections destinations/guides) : plus discrète que le
+   * hero, déclenchée section par section via Intersection Observer plutôt que
+   * toutes en même temps. opacity/transform uniquement : pas de CLS.
+   */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 550ms cubic-bezier(0.16, 1, 0.3, 1), transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Apparition des cartes de résultats de vol (décalage géré en inline style). */
+  .card-in {
+    animation: hero-fade-up 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hero-in {
       animation: none;
@@ -351,6 +374,14 @@
     }
     .hero-parallax-img {
       animation: none !important;
+    }
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .card-in {
+      animation: none;
     }
   }
 }

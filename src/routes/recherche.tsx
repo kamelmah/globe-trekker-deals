@@ -314,7 +314,11 @@ function SearchResultsPage() {
       )}
 
       {filtered.map((offer, index) => (
-        <div key={offer.id}>
+        <div
+          key={offer.id}
+          className="card-in"
+          style={{ animationDelay: `${Math.min(index, 6) * 40}ms` }}
+        >
           <div className="mb-2 flex flex-wrap items-center gap-2">
             {index === 0 && (
               <Badge className="bg-success text-success-foreground">

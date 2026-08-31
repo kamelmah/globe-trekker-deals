@@ -7,6 +7,7 @@ import logo from "@/assets/logo-64.png";
 import logoWebp from "@/assets/logo-64.webp";
 import { CurrencySelect } from "@/components/site/CurrencySelect";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
 const NAV = [
@@ -99,6 +100,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <CurrencySelect />
           <Button
             variant="outline"

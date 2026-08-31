@@ -4,6 +4,7 @@ import { AlertForm } from "@/components/alerts/AlertForm";
 import { LivePriceButton } from "@/components/flights/LivePriceButton";
 import { PriceHistoryChart } from "@/components/flights/PriceHistoryChart";
 import { FaqAccordion } from "@/components/site/FaqAccordion";
+import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
@@ -282,95 +283,103 @@ function DestinationPage() {
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>
           {route.sections.map((section) => (
-            <section key={section.heading} className="mt-8 first:mt-0">
-              <h2 className="font-display text-xl font-semibold">{section.heading}</h2>
-              {section.paragraphs.map((paragraph) => (
-                <p
-                  key={paragraph.slice(0, 40)}
-                  className="mt-3 text-sm leading-relaxed text-muted-foreground"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </section>
+            <Reveal key={section.heading} className="mt-8 first:mt-0">
+              <section>
+                <h2 className="font-display text-xl font-semibold">{section.heading}</h2>
+                {section.paragraphs.map((paragraph) => (
+                  <p
+                    key={paragraph.slice(0, 40)}
+                    className="mt-3 text-sm leading-relaxed text-muted-foreground"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </section>
+            </Reveal>
           ))}
 
-          <section className="mt-10">
-            <h2 className="font-display text-xl font-semibold">
-              Évolution du prix le plus bas sur 12 mois
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {months.length > 0
-                ? `Historique mesuré : le plancher relevé sur les 12 derniers mois est de ${formatPrice(Math.min(...months.map((m) => m.priceEur)))}.`
-                : "Historique mesuré en cours de constitution sur ce trajet."}
-            </p>
-            <div className="mt-4 rounded-xl border border-border bg-card p-4">
-              <PriceHistoryChart months={months} />
-            </div>
-            {months.length === 0 && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                Aucune observation de prix enregistrée pour l'instant sur ce trajet : l'historique se
-                constitue à partir des prix réellement relevés lors des recherches.
-              </p>
-            )}
-          </section>
-
-          {related.length > 0 && (
-            <section className="mt-10">
+          <Reveal className="mt-10">
+            <section>
               <h2 className="font-display text-xl font-semibold">
-                Autres destinations depuis {route.originCity}
+                Évolution du prix le plus bas sur 12 mois
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Prix les plus bas déjà relevés depuis {route.originCity}, taxes incluses. Chaque
-                lien mène à la fiche complète du trajet.
+                {months.length > 0
+                  ? `Historique mesuré : le plancher relevé sur les 12 derniers mois est de ${formatPrice(Math.min(...months.map((m) => m.priceEur)))}.`
+                  : "Historique mesuré en cours de constitution sur ce trajet."}
               </p>
-              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                {related.map((item) => {
-                  const thumb = getDestinationImage(null, item.city, item.country);
-                  return (
-                  <li key={item.slug}>
-                    <Link
-                      to="/vols/$slug"
-                      params={{ slug: item.slug }}
-                      className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
-                    >
-                      <ResponsivePicture
-                        src={thumb.thumb}
-                        webp={thumb.thumbWebp}
-                        alt={thumb.alt}
-                        loading="lazy"
-                        width={96}
-                        height={72}
-                        className="size-12 shrink-0 rounded-md object-cover"
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">
-                          {route.originCity} — {item.city}
-                        </span>
-                        <span className="block truncate text-xs text-muted-foreground">
-                          {item.country}
-                        </span>
-                      </span>
-                      {item.priceEur !== null && (
-                        <span className="font-semibold text-primary">
-                          dès {formatPrice(item.priceEur)}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                  );
-                })}
-
-              </ul>
+              <div className="mt-4 rounded-xl border border-border bg-card p-4">
+                <PriceHistoryChart months={months} />
+              </div>
+              {months.length === 0 && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Aucune observation de prix enregistrée pour l'instant sur ce trajet : l'historique se
+                  constitue à partir des prix réellement relevés lors des recherches.
+                </p>
+              )}
             </section>
+          </Reveal>
+
+          {related.length > 0 && (
+            <Reveal className="mt-10">
+              <section>
+                <h2 className="font-display text-xl font-semibold">
+                  Autres destinations depuis {route.originCity}
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Prix les plus bas déjà relevés depuis {route.originCity}, taxes incluses. Chaque
+                  lien mène à la fiche complète du trajet.
+                </p>
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {related.map((item) => {
+                    const thumb = getDestinationImage(null, item.city, item.country);
+                    return (
+                    <li key={item.slug}>
+                      <Link
+                        to="/vols/$slug"
+                        params={{ slug: item.slug }}
+                        className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
+                      >
+                        <ResponsivePicture
+                          src={thumb.thumb}
+                          webp={thumb.thumbWebp}
+                          alt={thumb.alt}
+                          loading="lazy"
+                          width={96}
+                          height={72}
+                          className="size-12 shrink-0 rounded-md object-cover"
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-medium">
+                            {route.originCity} — {item.city}
+                          </span>
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {item.country}
+                          </span>
+                        </span>
+                        {item.priceEur !== null && (
+                          <span className="font-semibold text-primary">
+                            dès {formatPrice(item.priceEur)}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                    );
+                  })}
+
+                </ul>
+              </section>
+            </Reveal>
           )}
 
-          <section className="mt-10">
-            <h2 className="font-display text-xl font-semibold">Questions fréquentes</h2>
-            <div className="mt-4">
-              <FaqAccordion items={route.faq} />
-            </div>
-          </section>
+          <Reveal className="mt-10">
+            <section>
+              <h2 className="font-display text-xl font-semibold">Questions fréquentes</h2>
+              <div className="mt-4">
+                <FaqAccordion items={route.faq} />
+              </div>
+            </section>
+          </Reveal>
 
           <Stay22Map
             className="mt-12"

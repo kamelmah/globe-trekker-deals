@@ -14,6 +14,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { CurrencyProvider } from "@/lib/currency-context";
+import { ThemeProvider } from "@/lib/theme-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 import { STAY22_LMA_ID } from "@/components/stay/Stay22Map";
@@ -114,6 +115,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     scripts: [
       {
+        // Bloquant, avant tout rendu : applique le thème mémorisé (ou la
+        // préférence système à défaut) pour éviter un flash clair→sombre.
+        children:
+          "(function(){try{var t=localStorage.getItem('tmv-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();",
+      },
+      {
 
         type: "application/ld+json",
         children: JSON.stringify({
@@ -169,17 +176,19 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CurrencyProvider>
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </main>
-          <Footer />
-        </div>
-        <Toaster />
-      </CurrencyProvider>
+      <ThemeProvider>
+        <CurrencyProvider>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+            </main>
+            <Footer />
+          </div>
+          <Toaster />
+        </CurrencyProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -1,5 +1,6 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
+import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
@@ -135,49 +136,55 @@ function CityGuidePage() {
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_340px]">
         <div className="max-w-3xl">
           {guide.sections.map((section) => (
-            <section key={section.heading} className="mt-8 first:mt-0">
-              <h2 className="font-display text-xl font-semibold">{section.heading}</h2>
-              {section.paragraphs.map((paragraph) => (
-                <p
-                  key={paragraph.slice(0, 40)}
-                  className="mt-3 text-sm leading-relaxed text-muted-foreground"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </section>
+            <Reveal key={section.heading} className="mt-8 first:mt-0">
+              <section>
+                <h2 className="font-display text-xl font-semibold">{section.heading}</h2>
+                {section.paragraphs.map((paragraph) => (
+                  <p
+                    key={paragraph.slice(0, 40)}
+                    className="mt-3 text-sm leading-relaxed text-muted-foreground"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </section>
+            </Reveal>
           ))}
 
-          <section className="mt-10">
-            <h2 className="font-display text-xl font-semibold">
-              Informations pratiques en résumé
-            </h2>
-            <dl className="mt-4 divide-y divide-border rounded-xl border border-border bg-card">
-              {practical.map((item) => (
-                <div key={item.label} className="grid gap-1 p-4 sm:grid-cols-[220px_1fr] sm:gap-4">
-                  <dt className="text-sm font-medium">{item.label}</dt>
-                  <dd className="text-sm text-muted-foreground">{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
+          <Reveal className="mt-10">
+            <section>
+              <h2 className="font-display text-xl font-semibold">
+                Informations pratiques en résumé
+              </h2>
+              <dl className="mt-4 divide-y divide-border rounded-xl border border-border bg-card">
+                {practical.map((item) => (
+                  <div key={item.label} className="grid gap-1 p-4 sm:grid-cols-[220px_1fr] sm:gap-4">
+                    <dt className="text-sm font-medium">{item.label}</dt>
+                    <dd className="text-sm text-muted-foreground">{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          </Reveal>
 
-          <section className="mt-10">
-            <h2 className="font-display text-xl font-semibold">
-              Budget sur place : où dormir à {guide.city}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              L'hébergement est souvent le premier poste de dépense du budget sur place. La carte
-              ci-dessous affiche des hôtels et locations à {guide.city} avec leurs prix, pour vous
-              aider à estimer le coût réel de votre séjour.
-            </p>
-            <Stay22Map
-              className="mt-4"
-              city={guide.city}
-              title={`Hébergements à ${guide.city}`}
-              description={`Carte interactive des hôtels et locations à ${guide.city} (via notre partenaire Stay22).`}
-            />
-          </section>
+          <Reveal className="mt-10">
+            <section>
+              <h2 className="font-display text-xl font-semibold">
+                Budget sur place : où dormir à {guide.city}
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                L'hébergement est souvent le premier poste de dépense du budget sur place. La carte
+                ci-dessous affiche des hôtels et locations à {guide.city} avec leurs prix, pour vous
+                aider à estimer le coût réel de votre séjour.
+              </p>
+              <Stay22Map
+                className="mt-4"
+                city={guide.city}
+                title={`Hébergements à ${guide.city}`}
+                description={`Carte interactive des hôtels et locations à ${guide.city} (via notre partenaire Stay22).`}
+              />
+            </section>
+          </Reveal>
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
