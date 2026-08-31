@@ -441,7 +441,8 @@ async function recordHistory(
 ): Promise<void> {
   const cheapest = offers[0];
   if (!cheapest) return;
-  const month = cheapest.departureAt.slice(0, 7);
+  // `price_history.month` est une colonne date : toujours le 1er du mois.
+  const month = `${cheapest.departureAt.slice(0, 7)}-01`;
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
@@ -482,8 +483,12 @@ export async function recordDestinationHistory(
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     for (const price of prices) {
-      const month = (price.departureAt || "").slice(0, 7);
-      if (month.length !== 7 || !Number.isFinite(price.priceEur) || price.priceEur <= 0) continue;
+      const yearMonth = (price.departureAt || "").slice(0, 7);
+      if (yearMonth.length !== 7 || !Number.isFinite(price.priceEur) || price.priceEur <= 0) {
+        continue;
+      }
+      // `price_history.month` est une colonne date : toujours le 1er du mois.
+      const month = `${yearMonth}-01`;
       const { data } = await supabaseAdmin
         .from("price_history")
         .select("id,lowest_price")
@@ -494,12 +499,13 @@ export async function recordDestinationHistory(
       const now = new Date().toISOString();
       if (data) {
         const lowest = Math.min(Number(data.lowest_price), price.priceEur);
-        await supabaseAdmin
+        const { error } = await supabaseAdmin
           .from("price_history")
           .update({ lowest_price: lowest, updated_at: now })
           .eq("id", data.id);
+        if (error) throw error;
       } else {
-        await supabaseAdmin.from("price_history").insert({
+        const { error } = await supabaseAdmin.from("price_history").insert({
           origin,
           destination: price.destination,
           month,
@@ -507,6 +513,7 @@ export async function recordDestinationHistory(
           currency: "eur",
           updated_at: now,
         });
+        if (error) throw error;
       }
       written += 1;
     }
