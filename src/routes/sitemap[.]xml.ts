@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 
 import {
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const origin = new URL(request.url).origin;
+        const origin = SITE_URL;
         const { listWorldRouteSlugs } = await import("@/lib/route-pages.server");
         const generated = await listWorldRouteSlugs(SITEMAP_MAX_ROUTES);
         const segments = Math.max(1, Math.ceil(generated.length / SITEMAP_SEGMENT_SIZE));

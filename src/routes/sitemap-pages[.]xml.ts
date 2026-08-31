@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DESTINATIONS } from "@/data/destinations";
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/sitemap-pages.xml")({
   server: {
     handlers: {
       GET: ({ request }) => {
-        const origin = new URL(request.url).origin;
+        const origin = SITE_URL;
         const entries: SitemapEntry[] = [
           { loc: "/", priority: "1.0", changefreq: "daily" },
           { loc: "/mode-budget", priority: "0.9", changefreq: "daily" },
