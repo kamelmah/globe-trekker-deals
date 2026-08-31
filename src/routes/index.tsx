@@ -6,6 +6,7 @@ import heroSky from "@/assets/hero-sky.jpg";
 import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { DESTINATIONS } from "@/data/destinations";
+import { getDestinationImage } from "@/lib/destination-images";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -224,22 +225,36 @@ function HomePage() {
           les questions les plus fréquentes sur le trajet.
         </p>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {DESTINATIONS.map((d) => (
-            <li key={d.slug}>
-              <Link
-                to="/vols/$slug"
-                params={{ slug: d.slug }}
-                className="block rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
-              >
-                <span className="text-sm font-semibold">
-                  Vols pas chers {d.originCity} — {d.destinationCity}
-                </span>
-                <span className="mt-1 block text-xs text-muted-foreground">
-                  {d.country} · {d.bestMonths}
-                </span>
-              </Link>
-            </li>
-          ))}
+          {DESTINATIONS.map((d) => {
+            const image = getDestinationImage(d.destination, d.destinationCity, d.country);
+            return (
+              <li key={d.slug}>
+                <Link
+                  to="/vols/$slug"
+                  params={{ slug: d.slug }}
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    loading="lazy"
+                    decoding="async"
+                    width={128}
+                    height={96}
+                    className="size-16 shrink-0 rounded-lg object-cover"
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold">
+                      Vols pas chers {d.originCity} — {d.destinationCity}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      {d.country} · {d.bestMonths}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>
