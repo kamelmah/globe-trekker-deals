@@ -339,9 +339,10 @@ export async function fetchOffers(params: {
     params.currency,
   );
   let list = data?.data ?? [];
+  let exactDate = list.length > 0;
 
-  // Repli : requête fraîche au niveau du mois puis filtrage sur la date exacte.
-  // La recherche ne dépend jamais du cache du calendrier.
+  // Repli : requête fraîche au niveau du mois. On garde d'abord la date exacte,
+  // sinon les meilleures offres réelles des jours proches (± 3 jours) déjà téléchargées.
   if (list.length === 0) {
     const day = params.departureAt.slice(0, 10);
     const monthQuery: Record<string, string> = {
@@ -356,11 +357,36 @@ export async function fetchOffers(params: {
       monthQuery,
       params.currency,
     );
-    list = (monthCall.data?.data ?? []).filter((offer) => {
+    const monthList = monthCall.data?.data ?? [];
+    const exact = monthList.filter((offer) => {
       if (offer?.departure_at?.slice(0, 10) !== day) return false;
       if (!params.returnAt) return true;
       return offer?.return_at?.slice(0, 10) === params.returnAt.slice(0, 10);
     });
+
+    if (exact.length > 0) {
+      list = exact;
+      exactDate = true;
+    } else {
+      const ref = Date.parse(`${day}T00:00:00Z`);
+      const near = monthList.filter((offer) => {
+        const iso = offer?.departure_at?.slice(0, 10);
+        if (!iso) return false;
+        const delta = Math.abs(Date.parse(`${iso}T00:00:00Z`) - ref) / 86_400_000;
+        return delta > 0 && delta <= 3;
+      });
+      // Meilleur prix réel par jour proche, sans jamais estimer ni inventer un prix.
+      const bestPerDay = new Map<string, ApiOffer>();
+      for (const offer of near) {
+        const iso = offer.departure_at!.slice(0, 10);
+        const current = bestPerDay.get(iso);
+        if (!current || (offer.price ?? Infinity) < (current.price ?? Infinity)) {
+          bestPerDay.set(iso, offer);
+        }
+      }
+      list = [...bestPerDay.values()].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+      exactDate = false;
+    }
   }
 
   const offers = offersFromApi(list, creds?.marker ?? "", { adults, children, infants });
@@ -370,8 +396,10 @@ export async function fetchOffers(params: {
     ok: true,
     resultCount: offers.length,
     ...(offers.length === 0
-      ? { message: "aucune offre réelle disponible pour cette date" }
-      : {}),
+      ? { message: "aucune offre enregistrée par la source pour cette date" }
+      : !exactDate
+        ? { message: "offres réelles trouvées sur des dates proches (± 3 jours)" }
+        : {}),
     context: {
       origin: params.origin,
       destination: params.destination,
@@ -384,7 +412,8 @@ export async function fetchOffers(params: {
   if ((params.currency ?? "eur").toLowerCase() === "eur") {
     void recordHistory(params.origin, params.destination, offers);
   }
-  return { offers, raw };
+  return { offers, raw, exactDate };
+
 }
 
 
