@@ -32,7 +32,16 @@ function debugOf(raw: RawApiCall | null): ApiDebugInfo | null {
 }
 
 function messageOf(error: unknown): string {
-  if (error instanceof TravelpayoutsError) return error.message;
+  if (error instanceof TravelpayoutsError) {
+    // Erreur de configuration serveur (clé absente) : jamais montrée telle
+    // quelle à un visiteur, contrairement aux autres messages de cette
+    // classe qui sont déjà rédigés pour être lus directement.
+    if (error.configError) {
+      console.error("Configuration serveur manquante :", error.message);
+      return "Les prix ne sont pas disponibles pour le moment. Réessayez dans quelques instants.";
+    }
+    return error.message;
+  }
   console.error("Erreur inattendue côté prix", error);
   return "Une erreur est survenue lors de la récupération des prix. Aucun résultat n'est affiché.";
 }

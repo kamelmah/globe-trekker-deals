@@ -25,9 +25,18 @@ export function hasApiCredentials(): boolean {
 
 /** Toute donnée affichée provient de l'API : en cas d'échec on remonte l'erreur. */
 export class TravelpayoutsError extends Error {
-  constructor(message: string) {
+  /**
+   * Erreur de configuration serveur (clé API absente) plutôt qu'une panne
+   * ponctuelle du service — jamais un message aussi technique ne doit
+   * atteindre un visiteur, contrairement aux autres erreurs de cette classe
+   * qui sont déjà rédigées pour être lues telles quelles.
+   */
+  configError: boolean;
+
+  constructor(message: string, options?: { configError?: boolean }) {
     super(message);
     this.name = "TravelpayoutsError";
+    this.configError = options?.configError ?? false;
   }
 }
 
@@ -161,6 +170,7 @@ async function callApi<T>(
   if (!creds) {
     throw new TravelpayoutsError(
       "La clé API Travelpayouts n'est pas configurée sur le serveur (TRAVELPAYOUTS_TOKEN).",
+      { configError: true },
     );
   }
   const search = new URLSearchParams({
