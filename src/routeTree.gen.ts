@@ -28,6 +28,7 @@ import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
 import { Route as SitemapVolsPageDotxmlRouteImport } from './routes/sitemap-vols.$page[.]xml'
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
 import { Route as VolsSlugRouteImport } from './routes/vols.$slug'
+import { Route as ApiPublicRafraichirPrixRouteImport } from './routes/api/public/rafraichir-prix'
 import { Route as ApiPublicVerifierAlertesRouteImport } from './routes/api/public/verifier-alertes'
 import { Route as ConseilsDestinationsIndexRouteImport } from './routes/conseils.destinations.index'
 import { Route as ConseilsDestinationsCityRouteImport } from './routes/conseils.destinations.$city'
@@ -128,6 +129,11 @@ const VolsSlugRoute = VolsSlugRouteImport.update({
   path: '/vols/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicRafraichirPrixRoute = ApiPublicRafraichirPrixRouteImport.update({
+  id: '/api/public/rafraichir-prix',
+  path: '/api/public/rafraichir-prix',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicVerifierAlertesRoute =
   ApiPublicVerifierAlertesRouteImport.update({
     id: '/api/public/verifier-alertes',
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/conseils/': typeof ConseilsIndexRoute
+  '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
   '/conseils/destinations/': typeof ConseilsDestinationsIndexRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/conseils': typeof ConseilsIndexRoute
+  '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
   '/conseils/destinations': typeof ConseilsDestinationsIndexRoute
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/conseils/': typeof ConseilsIndexRoute
+  '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
   '/conseils/destinations/': typeof ConseilsDestinationsIndexRoute
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/conseils/'
+    | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
     | '/conseils/destinations/'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/conseils'
+    | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
     | '/conseils/destinations'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/conseils/'
+    | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
     | '/conseils/destinations/'
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
   VolsSlugRoute: typeof VolsSlugRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
+  ApiPublicRafraichirPrixRoute: typeof ApiPublicRafraichirPrixRoute
   ApiPublicVerifierAlertesRoute: typeof ApiPublicVerifierAlertesRoute
   ConseilsDestinationsCityRoute: typeof ConseilsDestinationsCityRoute
   ConseilsDestinationsIndexRoute: typeof ConseilsDestinationsIndexRoute
@@ -468,6 +481,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VolsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/rafraichir-prix': {
+      id: '/api/public/rafraichir-prix'
+      path: '/api/public/rafraichir-prix'
+      fullPath: '/api/public/rafraichir-prix'
+      preLoaderRoute: typeof ApiPublicRafraichirPrixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/verifier-alertes': {
       id: '/api/public/verifier-alertes'
       path: '/api/public/verifier-alertes'
@@ -519,6 +539,7 @@ const rootRouteChildren: RootRouteChildren = {
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
   VolsSlugRoute: VolsSlugRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
+  ApiPublicRafraichirPrixRoute: ApiPublicRafraichirPrixRoute,
   ApiPublicVerifierAlertesRoute: ApiPublicVerifierAlertesRoute,
   ConseilsDestinationsCityRoute: ConseilsDestinationsCityRoute,
   ConseilsDestinationsIndexRoute: ConseilsDestinationsIndexRoute,

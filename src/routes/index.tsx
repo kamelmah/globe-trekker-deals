@@ -17,6 +17,8 @@ const HERO_WEBP_SRCSET = `${heroSky640Webp} 640w, ${heroSky960Webp} 960w, ${hero
 
 import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
+import { PriceRefreshStatus } from "@/components/flights/PriceRefreshStatus";
+import { HOME_DESTINATION_CODES } from "@/lib/price-refresh.shared";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
 import { getDestinationImage } from "@/lib/destination-images";
@@ -24,9 +26,7 @@ import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
-const HOME_CODES = [
-  "RAK", "LIS", "BCN", "IST", "ROM", "ATH", "MAD", "PRG", "BUD", "OPO", "CMN", "NYC",
-];
+const HOME_CODES = HOME_DESTINATION_CODES;
 
 const TITLE = "TrouveMonVol — comparateur de vols transparent, prix total et vendeur affiché";
 const DESCRIPTION =
@@ -212,6 +212,7 @@ function HomePage() {
         </p>
         <div className="mt-6">
           <DestinationPriceGrid prices={prices} origin="PAR" error={error} />
+          <PriceRefreshStatus />
         </div>
       </section>
 
