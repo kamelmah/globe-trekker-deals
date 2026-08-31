@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
-import { CITY_GUIDES } from "@/data/city-guides";
+import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
+import { listPublishedGuides } from "@/lib/published-guides.functions";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { getDestinationImage } from "@/lib/destination-images";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -11,6 +12,14 @@ const DESCRIPTION =
 const PAGE_URL = `${SITE_URL}/conseils/destinations`;
 
 export const Route = createFileRoute("/conseils/destinations/")({
+  loader: async () => {
+    // Guides rédigés en dur + fiches générées puis publiées depuis
+    // /destinations-proposes.
+    const { guides } = await listPublishedGuides();
+    const known = new Set(CITY_GUIDES.map((guide) => guide.slug));
+    const extra = guides.filter((guide) => !known.has(guide.slug));
+    return { guides: [...CITY_GUIDES, ...extra] as CityGuide[] };
+  },
   head: () => ({
     meta: [
       { title: TITLE },
@@ -44,6 +53,7 @@ export const Route = createFileRoute("/conseils/destinations/")({
 });
 
 function CityGuidesIndex() {
+  const { guides } = Route.useLoaderData();
   return (
     <div className="container-page py-10">
       <nav className="text-xs text-muted-foreground" aria-label="Fil d'ariane">
@@ -60,14 +70,17 @@ function CityGuidesIndex() {
       </p>
 
       <ul className="mt-8 grid gap-4 md:grid-cols-2">
-        {CITY_GUIDES.map((guide) => {
+        {guides.map((guide) => {
           const image = getDestinationImage(guide.destination, guide.city);
           return (
-            <li key={guide.slug}>
+            <li
+              key={guide.slug}
+              className="flex h-full flex-col rounded-xl border border-border bg-card p-4"
+            >
               <Link
                 to="/conseils/destinations/$city"
                 params={{ city: guide.slug }}
-                className="flex h-full gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
+                className="flex gap-4 rounded-lg transition-colors hover:bg-secondary"
               >
                 <ResponsivePicture
                   src={image.thumb}
@@ -87,6 +100,13 @@ function CityGuidesIndex() {
                     {guide.description}
                   </span>
                 </span>
+              </Link>
+              <Link
+                to="/vols/$slug"
+                params={{ slug: guide.routeSlug }}
+                className="mt-3 text-sm font-medium text-primary underline-offset-2 hover:underline"
+              >
+                Voir les vols pas chers {guide.originCity} — {guide.city}
               </Link>
             </li>
           );
