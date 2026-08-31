@@ -296,6 +296,52 @@ export const POSTS: Post[] = [
       },
     ],
   },
+  {
+    slug: "vol-pas-cher-famille-maghreb",
+    title: "Vol pas cher pour visiter la famille au Maghreb : comment bien s'organiser",
+    metaTitle: "Vol pas cher Algérie, Maroc, Tunisie : bien s'organiser | TrouveMonVol",
+    description:
+      "Les vols vers l'Algérie, le Maroc et la Tunisie flambent sur des périodes très concentrées (Ramadan, été). Comment anticiper et payer moins cher pour aller voir sa famille.",
+    readingMinutes: 5,
+    updated: "2026-08-31",
+    relatedSlugs: ["paris-alger", "lyon-tunis", "paris-marrakech"],
+    body: [
+      {
+        paragraphs: [
+          "Réserver un vol pour l'Algérie, le Maroc ou la Tunisie n'obéit pas tout à fait aux mêmes règles que le reste du réseau aérien français. Ces trajets concentrent une demande très forte sur des fenêtres courtes — les deux semaines autour du Ramadan et de l'Aïd, les grandes vacances d'été — pendant lesquelles les prix montent plus vite et plus fort qu'ailleurs.",
+          "Cet article rassemble ce qui compte vraiment pour ces trajets précis : pourquoi ils coûtent plus cher à certaines périodes, quand réserver, quelles compagnies les desservent réellement, et comment suivre les prix sans y passer des heures chaque semaine.",
+        ],
+      },
+      {
+        heading: "Pourquoi ces vols coûtent plus cher à certaines périodes",
+        paragraphs: [
+          "Sur un trajet généraliste, la demande se répartit sur toute l'année. Sur Paris–Alger, Lyon–Tunis ou vers le Maroc, elle se concentre sur deux ou trois fenêtres très précises : les deux semaines autour du Ramadan et de l'Aïd, et les grandes vacances d'été. Toute la diaspora cherche à voyager sur les mêmes dates au même moment — mécaniquement, les prix montent plus tôt et plus haut que sur un trajet où la demande est étalée dans le temps.",
+          "Autre différence à garder en tête : le Ramadan avance chaque année d'une dizaine de jours dans le calendrier grégorien. Une période qui tombait en été peut se retrouver au printemps quelques années plus tard — le repère de l'année dernière ne s'applique donc pas forcément à cette année.",
+        ],
+      },
+      {
+        heading: "Quand réserver pour ces trajets précis",
+        paragraphs: [
+          "Dès que les dates de l'Aïd ou des vacances sont connues, réserver tôt fait une différence plus nette que sur un trajet classique : sur ces liaisons, l'écart entre une réservation faite deux mois à l'avance et une réservation faite deux semaines avant peut dépasser 50 %, contre 20 à 30 % en moyenne sur le reste du réseau.",
+          "Si vos dates dépendent de contraintes familiales (rentrée scolaire au pays, obligations professionnelles des deux côtés), l'option dates flexibles ± 3 jours de notre recherche reste utile : décaler un départ de deux ou trois jours suffit souvent à éviter le pic exact du week-end le plus demandé.",
+        ],
+      },
+      {
+        heading: "Quelles compagnies desservent ces trajets",
+        paragraphs: [
+          "Air Algérie, Royal Air Maroc et Tunisair opèrent la majorité des vols directs vers leurs pays respectifs, aux côtés de compagnies françaises et européennes comme Transavia ou Air France selon les liaisons. Comme sur le reste du site, chaque résultat affiche le nom du vendeur réel — la compagnie elle-même ou l'agence précise — pas un intermédiaire anonyme, et le prix total taxes incluses avant de cliquer vers la réservation.",
+          "Un vol direct coûte souvent plus cher qu'une escale, mais l'écart se resserre nettement sur ces trajets en période de forte demande : contrairement à un trajet touristique classique, l'escale n'est alors pas toujours l'option la moins chère une fois le temps de trajet total pris en compte.",
+        ],
+      },
+      {
+        heading: "Suivre les prix sans y passer du temps",
+        paragraphs: [
+          "Créer une alerte prix (gratuite, sans compte) est particulièrement utile sur ces trajets : les tarifs bougent souvent plusieurs semaines avant la période de forte demande, et l'alerte prévient dès qu'un prix baisse sur les dates suivies, sans avoir à relancer une recherche chaque jour.",
+          "Le calendrier des prix du mois, intégré à la recherche, permet aussi de repérer en un coup d'œil si décaler de quelques jours change réellement le tarif — utile quand la date exacte du Ramadan ou de l'Aïd n'est confirmée qu'à quelques semaines de l'événement.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getPost(slug: string): Post | undefined {
