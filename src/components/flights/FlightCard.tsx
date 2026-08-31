@@ -126,7 +126,7 @@ export function FlightCard({
           <p className="font-display text-2xl font-semibold">{format(offer.priceEur)}</p>
           <p className="text-xs text-muted-foreground">Prix total, taxes incluses</p>
           {freshness?.stale ? (
-            <p className="inline-flex items-center gap-1 rounded-md bg-warning/15 px-2 py-1 text-xs font-medium text-warning-foreground">
+            <p className="inline-flex items-center gap-1 rounded-md bg-warning px-2 py-1 text-xs font-medium text-warning-foreground">
               <AlertTriangle className="size-3 shrink-0" aria-hidden />
               Prix à titre indicatif ({freshness.label}) — à confirmer chez le vendeur
             </p>

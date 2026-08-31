@@ -211,8 +211,10 @@
   --destructive-foreground: oklch(0.99 0.005 240);
   --success: oklch(0.6 0.13 155);
   --success-foreground: oklch(0.99 0.005 240);
-  --warning: oklch(0.75 0.14 70);
-  --warning-foreground: oklch(0.26 0.04 60);
+  /* Ambre franc, distinct du bleu primaire, du vert des badges positifs et de
+     l'accent corail des CTA (voir --highlight, hue ~41). */
+  --warning: oklch(0.74 0.16 80);
+  --warning-foreground: oklch(0.22 0.05 70);
   /* Accent chaud "Ciel dégagé" : corail/ambre, réservé aux appels à l'action
      principaux (jamais aux liens ou boutons secondaires, pour rester un signal
      fort et pas une deuxième couleur de marque). */
@@ -240,8 +242,8 @@
 .dark {
   --success: oklch(0.68 0.12 155);
   --success-foreground: oklch(0.16 0.03 250);
-  --warning: oklch(0.8 0.13 70);
-  --warning-foreground: oklch(0.18 0.03 60);
+  --warning: oklch(0.78 0.15 78);
+  --warning-foreground: oklch(0.16 0.03 65);
   --highlight: oklch(0.76 0.18 43);
   --highlight-foreground: oklch(0.16 0.03 40);
   --sky-soft: oklch(0.28 0.04 240);
