@@ -676,6 +676,256 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
       },
     ],
   },
+  {
+    slug: "paris-seoul",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "ICN",
+    destinationCity: "Séoul",
+    country: "Corée du Sud",
+    heading: "Vols pas chers Paris — Séoul",
+    metaTitle: "Vol pas cher Paris Séoul : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Séoul au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis Incheon, meilleure période et alerte prix gratuite.",
+    intro:
+      "Un vol direct Paris — Séoul dure environ onze heures et demie. La demande varie fortement selon la saison : les cerisiers en fleurs au printemps et les couleurs d'automne concentrent l'essentiel de l'affluence touristique française sur cette destination.",
+    bestMonths: "Avril-mai et septembre-novembre",
+    averageDuration: "11 h 30 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis Incheon",
+        paragraphs: [
+          "Air France et Korean Air opèrent la ligne en direct depuis Charles-de-Gaulle, avec un partage de code qui permet de comparer les deux sur les mêmes vols. Les tarifs les plus bas se trouvent généralement en réservant trois à quatre mois à l'avance.",
+          "L'aéroport international d'Incheon est excentré, à une cinquantaine de kilomètres de Séoul. L'AREX (Airport Railroad Express) rejoint la gare de Séoul en train direct en 43 minutes pour environ 9 euros, ou en train omnibus desservant plus d'arrêts en 56 minutes pour moins cher.",
+          "Séoul se parcourt très bien en métro : le réseau est dense, ponctuel et signalé en anglais, avec des tickets à l'unité ou une carte rechargeable T-money largement plus pratique.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Avril-mai (floraison des cerisiers) et septembre-novembre (couleurs d'automne) offrent le meilleur compromis météo, mais concentrent aussi la plus forte demande : réservez tôt pour ces fenêtres. L'été (juillet-août) est chaud et humide, avec une saison des pluies (mangma) à prévoir.",
+          "L'hiver reste froid mais sec, avec des tarifs de vol souvent plus bas hors période du Nouvel An lunaire (fin janvier ou février selon les années), où toute l'Asie de l'Est voyage en même temps.",
+          "Séoul reste une capitale abordable une fois sur place : un repas de rue ou dans un petit restaurant local revient à 5-10 euros, une chambre correcte à 50-90 euros la nuit hors période de forte affluence.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Séoul ?",
+        answer: "Environ 11 h 30 en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller en Corée du Sud ?",
+        answer:
+          "Non pour un séjour touristique de moins de 90 jours, mais une autorisation électronique K-ETA est à demander en ligne avant le départ.",
+      },
+      {
+        question: "Comment rejoindre Séoul depuis l'aéroport d'Incheon ?",
+        answer:
+          "Le train AREX direct rejoint la gare de Séoul en 43 minutes pour environ 9 euros ; une version omnibus, plus lente, coûte moins cher.",
+      },
+    ],
+  },
+  {
+    slug: "paris-hong-kong",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "HKG",
+    destinationCity: "Hong Kong",
+    country: "Hong Kong",
+    heading: "Vols pas chers Paris — Hong Kong",
+    metaTitle: "Vol pas cher Paris Hong Kong : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Hong Kong au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+    intro:
+      "Environ onze heures et demie de vol direct séparent Paris de Hong Kong. La ville reste accessible toute l'année, avec une nette préférence pour l'automne et le début d'hiver, quand l'humidité tombe et que le ciel se dégage.",
+    bestMonths: "Octobre-décembre",
+    averageDuration: "11 h 30 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Air France et Cathay Pacific desservent la ligne en direct depuis Charles-de-Gaulle. Cathay Pacific, compagnie locale, propose souvent une offre plus large de classes tarifaires sur cette destination longue distance.",
+          "L'Airport Express relie Hong Kong International à la gare Central en 24 minutes, l'un des transferts aéroport les plus rapides d'Asie pour une si grande ville, pour environ 12 euros. Un service gratuit de navette hôtel existe aussi pour de nombreux établissements.",
+          "Le réseau MTR (métro) est extrêmement efficace pour se déplacer entre Hong Kong Island, Kowloon et les Nouveaux Territoires ; la carte Octopus rechargeable fonctionne aussi dans les bus, trams et même certains commerces.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Octobre à décembre offre le climat le plus agréable : température modérée, faible humidité et ciel généralement dégagé. Juin à septembre concentre chaleur, humidité extrême et risque de typhons, qui peuvent perturber les vols.",
+          "Le Nouvel An chinois (fin janvier ou février selon les années) fait grimper fortement les prix, avec de nombreux commerces locaux fermés pendant plusieurs jours — à connaître avant de fixer vos dates.",
+          "Hong Kong varie énormément niveau budget : un repas de rue ou en cantine locale (cha chaan teng) revient à 4-8 euros, tandis que l'hébergement reste l'un des plus chers d'Asie, à partir de 80-120 euros la nuit pour un hôtel correct.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Hong Kong ?",
+        answer: "Environ 11 h 30 en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller à Hong Kong ?",
+        answer:
+          "Non, les citoyens français peuvent entrer sans visa pour un séjour touristique de moins de 90 jours, passeport valide requis.",
+      },
+      {
+        question: "Comment rejoindre le centre depuis l'aéroport de Hong Kong ?",
+        answer:
+          "L'Airport Express relie l'aéroport à la gare Central en 24 minutes, pour environ 12 euros.",
+      },
+    ],
+  },
+  {
+    slug: "paris-montreal",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "YUL",
+    destinationCity: "Montréal",
+    country: "Canada",
+    heading: "Vols pas chers Paris — Montréal",
+    metaTitle: "Vol pas cher Paris Montréal : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Montréal au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+    intro:
+      "Un vol direct Paris — Montréal dure environ sept heures et demie. C'est l'une des liaisons transatlantiques les plus fréquentées au départ de Paris, avec une offre dense qui laisse une vraie marge de négociation sur le prix selon la période choisie.",
+    bestMonths: "Mai-juin et septembre-octobre",
+    averageDuration: "7 h 30 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Air France, Air Canada, Air Transat et French Bee desservent la ligne, avec des tarifs souvent plus bas chez Air Transat et French Bee en basse saison. La concurrence dense sur cette liaison joue en faveur du voyageur qui compare ses dates.",
+          "L'aéroport Montréal-Trudeau n'a pas de liaison ferrée directe : le bus 747 rejoint le centre-ville en quarante-cinq à soixante minutes pour environ 7 euros, disponible 24 h/24.",
+          "Montréal se visite bien à pied l'été et via son réseau souterrain (la « ville souterraine ») l'hiver, complété par un métro simple à quatre lignes.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Mai-juin et septembre-octobre (couleurs d'automne) offrent le meilleur compromis météo et prix. L'été (juillet-août) est agréable mais plus cher et plus fréquenté, notamment pendant les nombreux festivals.",
+          "L'hiver descend régulièrement sous -10 °C, ce qui fait baisser nettement les prix des vols hors période des fêtes de fin d'année, très demandée par la diaspora franco-canadienne.",
+          "Le Canada n'utilise pas l'euro : les prix affichés en dollars canadiens (CAD) demandent une conversion, mais le coût de la vie reste globalement comparable à la France sur la restauration, un peu plus élevé sur l'hébergement en centre-ville.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Montréal ?",
+        answer: "Environ 7 h 30 en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller au Canada ?",
+        answer:
+          "Non pour un séjour touristique de moins de 6 mois, mais une autorisation de voyage électronique (AVE / eTA) est obligatoire avant l'embarquement.",
+      },
+      {
+        question: "Comment rejoindre le centre depuis l'aéroport de Montréal ?",
+        answer:
+          "Le bus 747, disponible 24 h/24, relie l'aéroport Trudeau au centre-ville en quarante-cinq à soixante minutes pour environ 7 euros.",
+      },
+    ],
+  },
+  {
+    slug: "paris-los-angeles",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "LAX",
+    destinationCity: "Los Angeles",
+    country: "États-Unis",
+    heading: "Vols pas chers Paris — Los Angeles",
+    metaTitle: "Vol pas cher Paris Los Angeles : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Los Angeles au prix total taxes incluses, vendeur affiché. Compagnies, ESTA, meilleure période et alerte prix gratuite.",
+    intro:
+      "Un vol direct Paris — Los Angeles dure environ onze heures. La Californie du Sud se visite agréablement toute l'année grâce à un climat doux, ce qui rend le choix des dates plus dépendant du prix du billet que de la météo sur place.",
+    bestMonths: "Avril-mai et septembre-novembre",
+    averageDuration: "11 h en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et organisation sur place",
+        paragraphs: [
+          "Air France, Delta, United et French Bee desservent la ligne depuis Charles-de-Gaulle. French Bee, compagnie à bas coût long-courrier, propose des tarifs d'appel nettement inférieurs, avec des options payantes à ajouter (bagage, repas) à comparer au prix total.",
+          "L'aéroport LAX n'a pas de liaison directe par rail vers la plupart des quartiers ; les navettes FlyAway rejoignent Union Station et Van Nuys, et la location de voiture reste la solution la plus pratique tant Los Angeles est étalée et dépendante de la voiture.",
+          "Comptez large sur les distances : Santa Monica, Hollywood et Downtown LA sont chacun à trente à soixante minutes de route les uns des autres selon le trafic, qui peut être dense aux heures de pointe.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Avril-mai et septembre-novembre évitent la foule et la chaleur du cœur de l'été tout en gardant un climat agréable, quasi constant toute l'année sur la côte (moins vrai dans les vallées intérieures, plus chaudes en été).",
+          "Les tarifs de vol suivent surtout les vacances scolaires françaises et américaines plutôt que la météo locale : réserver hors ces périodes fait souvent plus de différence que le choix du mois.",
+          "Los Angeles reste chère sur l'hébergement (100-180 euros la nuit en zone touristique) mais abordable sur la restauration de rue et les food trucks, autour de 10-15 euros le repas.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Los Angeles ?",
+        answer: "Environ 11 heures en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller à Los Angeles ?",
+        answer:
+          "Non pour un séjour touristique de moins de 90 jours, mais une autorisation ESTA est obligatoire, à demander en ligne avant le départ.",
+      },
+      {
+        question: "Comment se déplacer à Los Angeles sans voiture ?",
+        answer:
+          "C'est possible mais contraignant : les navettes FlyAway et quelques lignes de métro existent, mais la location de voiture reste la solution la plus pratique vu l'étalement de la ville.",
+      },
+    ],
+  },
+  {
+    slug: "paris-le-caire",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "CAI",
+    destinationCity: "Le Caire",
+    country: "Égypte",
+    heading: "Vols pas chers Paris — Le Caire",
+    metaTitle: "Vol pas cher Paris Le Caire : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Le Caire au prix total taxes incluses, vendeur affiché. Compagnies, visa, meilleure période et alerte prix gratuite.",
+    intro:
+      "Un vol direct Paris — Le Caire dure environ quatre heures et demie, ce qui en fait l'une des destinations dépaysantes les plus rapides à atteindre depuis Paris. La chaleur estivale, souvent au-dessus de 35 °C, pousse la plupart des voyageurs vers l'automne, l'hiver ou le printemps.",
+    bestMonths: "Octobre-avril",
+    averageDuration: "4 h 30 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et formalités avant de partir",
+        paragraphs: [
+          "Air France et EgyptAir opèrent la ligne en direct depuis Charles-de-Gaulle. EgyptAir propose souvent des tarifs légèrement inférieurs, avec un choix d'horaires plus large sur certaines périodes.",
+          "Un visa est nécessaire pour les citoyens français : il peut s'obtenir en ligne avant le départ (e-visa) ou à l'arrivée à l'aéroport contre paiement, selon la formule choisie. Vérifiez la validité de votre passeport, qui doit dépasser six mois après la date de retour.",
+          "Le Caire n'a pas de liaison ferrée directe entre l'aéroport et le centre-ville : le trajet se fait en taxi ou VTC, à négocier ou réserver à l'avance pour éviter les tarifs gonflés à la sortie du terminal.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Octobre à avril offre des températures nettement plus vivables (18-28 °C en journée) pour visiter les pyramides de Gizeh et le musée égyptien sans la chaleur écrasante de l'été, qui dépasse régulièrement les 35-40 °C de juin à août.",
+          "Les tarifs de vol restent globalement modérés toute l'année, avec une légère hausse autour des fêtes de fin d'année et de Pâques, périodes de forte demande touristique.",
+          "Le Caire reste une destination très abordable sur place : un repas dans un restaurant local revient à 5-10 euros, une chambre correcte en hôtel à 30-60 euros la nuit — le vol représente souvent l'essentiel du budget total du voyage.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Le Caire ?",
+        answer: "Environ 4 h 30 en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller en Égypte ?",
+        answer:
+          "Oui, les citoyens français ont besoin d'un visa, obtenable en ligne avant le départ (e-visa) ou à l'arrivée à l'aéroport.",
+      },
+      {
+        question: "Quelle est la meilleure période pour visiter Le Caire et les pyramides ?",
+        answer:
+          "D'octobre à avril, pour éviter la chaleur estivale qui dépasse souvent 35-40 °C entre juin et août.",
+      },
+    ],
+  },
 ];
 
 /** Fiches éditoriales : trajets curés + capitales européennes. */

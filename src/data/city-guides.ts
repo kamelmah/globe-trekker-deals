@@ -1676,6 +1676,331 @@ export const CITY_GUIDES: CityGuide[] = [
       },
     ],
   },
+  {
+    slug: "seoul",
+    city: "Séoul",
+    country: "Corée du Sud",
+    routeSlug: "paris-seoul",
+    origin: "PAR",
+    destination: "ICN",
+    originCity: "Paris",
+    title: "Que faire à Séoul : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Séoul : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Séoul : meilleure période, quartiers à voir, budget réel sur place, K-ETA et accès depuis l'aéroport d'Incheon pour les voyageurs français.",
+    intro:
+      "Séoul mélange palais historiques et modernité vertigineuse, avec un budget sur place étonnamment raisonnable pour une capitale asiatique. Voici les repères concrets avant de réserver : climat, quartiers, formalités et budget réel.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Won sud-coréen (KRW). Cartes bancaires largement acceptées, y compris dans le métro.",
+      langue: "Coréen. L'anglais est limité hors zones touristiques ; les applications de traduction sont très utiles.",
+      visa: "Aucun visa pour un séjour touristique de moins de 90 jours, mais autorisation électronique K-ETA obligatoire avant le départ.",
+      transport: "Métro dense et ponctuel, signalé en anglais ; carte T-money rechargeable utilisable aussi en bus et taxi.",
+      budgetJour: "50 à 90 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Séoul ?",
+        paragraphs: [
+          "Avril-mai (floraison des cerisiers) et septembre-novembre (couleurs d'automne) offrent le meilleur compromis météo, avec des températures douces et un ciel généralement dégagé — mais aussi la plus forte affluence touristique.",
+          "L'été (juillet-août) est chaud et humide, avec une saison des pluies (mangma) qui peut gâcher plusieurs jours de visite. L'hiver est froid et sec, avec des tarifs de vol et d'hôtel plus intéressants hors Nouvel An lunaire.",
+          "Le Nouvel An lunaire (fin janvier ou février selon les années) voit de nombreux commerces et restaurants fermer plusieurs jours : à vérifier avant de caler un séjour court sur cette période.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Bukchon Hanok Village et Insadong concentrent le Séoul historique : maisons traditionnelles, palais Gyeongbokgung et boutiques d'artisanat, à parcourir tôt le matin pour éviter les groupes.",
+          "Myeongdong et Hongdae offrent le Séoul commerçant et étudiant : cosmétique coréenne, street food et vie nocturne animée, particulièrement le week-end.",
+          "Gangnam, au sud de la rivière Han, montre la face la plus moderne de la ville : gratte-ciels, boutiques de luxe et scène de la K-pop, à quinze minutes de métro du centre historique.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement reste abordable : 50-90 € la nuit pour un hôtel correct, 20-30 € en guesthouse. Les prix grimpent nettement pendant les vacances scolaires coréennes et le Nouvel An lunaire.",
+          "La street food et les petits restaurants locaux permettent de manger pour 5-10 € par repas ; un dîner de barbecue coréen (gogigui) revient à 15-25 € par personne, souvent partagé.",
+          "Les transports coûtent environ 1 à 1,50 € le trajet en métro avec la carte T-money, qui offre aussi des correspondances gratuites entre métro et bus dans un délai donné.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : le train AREX direct rejoint la gare de Séoul en 43 minutes pour environ 9 €, avec une version omnibus plus lente et moins chère desservant plus d'arrêts.",
+          "Connexion : une carte SIM ou un boîtier wifi portable à louer à l'aéroport facilite grandement la navigation, les applications de plan locales (Naver Map, KakaoMap) étant plus fiables que Google Maps sur place.",
+          "Paiement : les cartes bancaires internationales fonctionnent presque partout, y compris pour de très petits montants.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois à quatre nuits couvrent les palais, Bukchon, Myeongdong et Gangnam sans courir.",
+          "Une semaine permet d'ajouter une excursion à la zone démilitarisée (DMZ) ou un aller-retour à Busan en train à grande vitesse (environ 2 h 30).",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "hong-kong",
+    city: "Hong Kong",
+    country: "Hong Kong",
+    routeSlug: "paris-hong-kong",
+    origin: "PAR",
+    destination: "HKG",
+    originCity: "Paris",
+    title: "Que faire à Hong Kong : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Hong Kong : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Hong Kong : meilleure période, quartiers à voir, budget réel sur place, accès depuis l'aéroport et formalités pour les voyageurs français.",
+    intro:
+      "Hong Kong compresse gratte-ciels, marchés traditionnels et nature environnante sur un territoire réduit, avec l'un des réseaux de transport les plus efficaces d'Asie. Voici les repères concrets avant de réserver.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Dollar de Hong Kong (HKD).",
+      langue: "Cantonais et anglais, tous deux langues officielles ; l'anglais est largement compris dans le tourisme et les affaires.",
+      visa: "Aucun visa pour un séjour touristique de moins de 90 jours, passeport valide suffisant.",
+      transport: "Métro MTR très dense, ferries Star Ferry entre Hong Kong Island et Kowloon ; carte Octopus rechargeable pour tous les modes.",
+      budgetJour: "60 à 100 € par personne et par jour, hébergement compris — l'une des villes les plus chères d'Asie côté logement.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Hong Kong ?",
+        paragraphs: [
+          "Octobre à décembre offre le climat le plus agréable : températures modérées, faible humidité et ciel généralement dégagé, la meilleure fenêtre pour marcher en ville et randonner sur les sentiers environnants.",
+          "Juin à septembre concentre chaleur, humidité extrême et risque de typhons, qui peuvent perturber vols et ferries à court préavis.",
+          "Le Nouvel An chinois (fin janvier ou février selon les années) fait grimper les prix et ferme de nombreux commerces locaux plusieurs jours — à connaître avant de fixer un court séjour sur cette période.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Central et Victoria Peak, côté île de Hong Kong, offrent gratte-ciels, marchés nocturnes et la vue panoramique la plus connue de la ville, accessible en tram à crémaillère.",
+          "Tsim Sha Tsui, côté Kowloon, longe la baie avec sa promenade et sa vue sur la skyline de Central, particulièrement spectaculaire au coucher du soleil et lors du spectacle lumineux nocturne.",
+          "Mong Kok et ses marchés (marché de nuit de Temple Street, marché aux oiseaux, marché aux fleurs) offrent l'ambiance la plus locale, loin des zones les plus touristiques.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement est l'un des postes les plus chers d'Asie : comptez 80-130 € la nuit pour un hôtel correct, rarement moins de 50 € même en formule simple.",
+          "En revanche, la restauration de rue et les cha chaan teng (cantines locales) permettent de manger pour 4-8 € le repas, un vrai contraste avec le prix de l'hébergement.",
+          "Les transports sont très abordables : 1 à 2 € le trajet en MTR avec la carte Octopus, qui fonctionne aussi dans les bus, trams et certains commerces.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : l'Airport Express relie Hong Kong International à la gare Central en 24 minutes pour environ 12 €, l'un des transferts les plus rapides d'Asie.",
+          "Le Star Ferry, entre Hong Kong Island et Kowloon, reste l'un des trajets les moins chers et les plus pittoresques de la ville pour moins d'un euro.",
+          "Randonnée : malgré son image urbaine, Hong Kong compte de nombreux sentiers bien balisés (Dragon's Back notamment) accessibles en moins d'une heure de transport depuis le centre.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent Central, Victoria Peak, Tsim Sha Tsui et un marché nocturne.",
+          "Quatre à cinq nuits permettent d'ajouter une randonnée, une île extérieure (Lamma ou Cheung Chau) ou une excursion à Macao, à environ une heure de ferry.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "montreal",
+    city: "Montréal",
+    country: "Canada",
+    routeSlug: "paris-montreal",
+    origin: "PAR",
+    destination: "YUL",
+    originCity: "Paris",
+    title: "Que faire à Montréal : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Montréal : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Montréal : meilleure période, quartiers à voir, budget réel sur place, accès depuis l'aéroport et formalités pour les voyageurs français.",
+    intro:
+      "Montréal offre un dépaysement nord-américain à seulement sept heures et demie de vol, sans barrière de langue. Le climat change radicalement selon la saison : voici les repères concrets avant de réserver.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Dollar canadien (CAD).",
+      langue: "Français (majoritaire) et anglais. La quasi-totalité des Montréalais parlent les deux.",
+      visa: "Aucun visa pour un séjour touristique de moins de 6 mois, mais autorisation de voyage électronique (AVE) obligatoire avant l'embarquement.",
+      transport: "Métro à 4 lignes, bus et réseau piéton souterrain (la « ville souterraine ») utile en hiver.",
+      budgetJour: "60 à 100 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Montréal ?",
+        paragraphs: [
+          "Mai-juin et septembre-octobre (couleurs d'automne, l'un des plus beaux spectacles naturels de la région) offrent le meilleur compromis météo et prix, avec des températures douces et une ville en pleine activité.",
+          "L'été (juillet-août) est agréable, autour de 25 °C, mais concentre la haute saison touristique et de nombreux festivals qui font grimper les prix d'hébergement.",
+          "L'hiver descend régulièrement sous -10 °C, avec de la neige de décembre à mars : une expérience à part entière si elle est anticipée (vêtements adaptés), mais qui n'est pas pour tout le monde.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Le Vieux-Montréal, pavés et architecture du 17e siècle au bord du Saint-Laurent, concentre l'essentiel du patrimoine historique et se visite bien à pied.",
+          "Le Plateau Mont-Royal et le Mile End offrent l'ambiance la plus locale : maisons en rangée avec escaliers extérieurs caractéristiques, cafés indépendants et bagels montréalais.",
+          "Le parc du Mont-Royal, accessible à pied ou en bus depuis le centre, offre la meilleure vue panoramique sur la ville, particulièrement recherchée à l'automne pour les couleurs.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement en centre-ville revient à 90-140 € la nuit pour un hôtel correct, 30-45 € en auberge, avec une forte hausse pendant les festivals d'été.",
+          "Un repas simple (poutine, smoked meat) coûte 10-15 €, un dîner au restaurant 25-40 € par personne. Les taxes ne sont pas incluses dans les prix affichés au Canada — pensez à ajouter environ 15 % à l'addition finale.",
+          "Les transports coûtent environ 2,50 € le trajet unique en métro ou bus, avec des forfaits journée ou plusieurs jours plus avantageux pour un séjour de quelques jours.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : le bus 747, disponible 24 h/24, relie Montréal-Trudeau au centre-ville en quarante-cinq à soixante minutes pour environ 7 €.",
+          "Pourboire : contrairement à la France, le pourboire (15-20 % de l'addition) est attendu au restaurant et dans les bars, en plus des taxes ajoutées à la caisse.",
+          "Hiver : prévoyez des vêtements réellement adaptés au froid (pas seulement une veste parisienne) si vous voyagez de décembre à mars — le réseau souterrain permet néanmoins d'éviter une grande partie du froid en ville.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent le Vieux-Montréal, le Plateau et le Mont-Royal.",
+          "Cinq nuits ou plus permettent une excursion à Québec (environ 3 h de route ou de train) ou dans les Laurentides pour la nature environnante.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "los-angeles",
+    city: "Los Angeles",
+    country: "États-Unis",
+    routeSlug: "paris-los-angeles",
+    origin: "PAR",
+    destination: "LAX",
+    originCity: "Paris",
+    title: "Que faire à Los Angeles : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Los Angeles : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Los Angeles : meilleure période, quartiers à voir, budget réel sur place, ESTA et déplacements pour les voyageurs français.",
+    intro:
+      "Los Angeles s'étend sur une surface immense, ce qui change fondamentalement la façon d'organiser un séjour par rapport à une capitale européenne compacte. Voici les repères concrets avant de réserver : climat, quartiers, déplacements et budget réel.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Dollar américain (USD).",
+      langue: "Anglais. L'espagnol est également très répandu.",
+      visa: "Aucun visa pour un séjour touristique de moins de 90 jours, mais autorisation ESTA obligatoire avant le départ.",
+      transport: "Métro léger et bus limités ; la location de voiture reste la solution la plus pratique vu l'étalement de la ville.",
+      budgetJour: "80 à 130 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Los Angeles ?",
+        paragraphs: [
+          "Le climat reste doux presque toute l'année sur la côte, ce qui rend le choix des dates moins critique que dans la plupart des destinations. Avril-mai et septembre-novembre évitent la foule et la chaleur des vallées intérieures en plein été.",
+          "L'été (juin-août) reste agréable en bord de mer mais peut être étouffant à l'intérieur des terres (Hollywood, Downtown), avec une brume matinale fréquente sur la côte (le « June gloom »).",
+          "L'hiver (décembre-février) est la saison des pluies occasionnelles, rares mais parfois intenses, sans jamais approcher le froid européen.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Santa Monica et Venice Beach offrent l'image balnéaire de Los Angeles : plage, jetée historique et promenade animée, à privilégier pour se loger si vous voulez marcher sans voiture.",
+          "Hollywood et les studios (Universal, Warner Bros) concentrent l'attrait cinéma, à trente minutes de route de la côte selon le trafic.",
+          "Downtown LA, en pleine transformation, mélange gratte-ciels, marché couvert historique (Grand Central Market) et scène artistique émergente, moins touristique que les autres quartiers.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement varie énormément selon le quartier : 100-180 € la nuit en zone touristique côtière, parfois moins en s'éloignant légèrement du bord de mer.",
+          "La restauration de rue et les food trucks, très présents à Los Angeles, permettent de manger pour 10-15 € ; un repas au restaurant classique revient à 25-40 € par personne, taxes et pourboire (15-20 %) non inclus dans le prix affiché.",
+          "La location de voiture est quasiment indispensable : comptez 40-70 € par jour selon la catégorie, en plus du carburant et du stationnement souvent payant en ville.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : les navettes FlyAway rejoignent Union Station (centre) et Van Nuys ; sans voiture de location, prévoyez un VTC pour la plupart des trajets.",
+          "Distances : ne sous-estimez pas les temps de trajet en voiture, qui peuvent doubler aux heures de pointe (7 h-9 h et 16 h-19 h) même sur de courtes distances.",
+          "Pourboire et taxes : comme dans le reste des États-Unis, les prix affichés n'incluent ni taxe ni pourboire, à ajouter mentalement (environ 25-30 % au total) à chaque addition.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Quatre nuits permettent de couvrir Santa Monica, Hollywood et Downtown sans excès de route chaque jour.",
+          "Une semaine ou plus laisse le temps d'ajouter une excursion à San Diego ou dans le désert (Joshua Tree, Palm Springs), à deux à trois heures de route.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "le-caire",
+    city: "Le Caire",
+    country: "Égypte",
+    routeSlug: "paris-le-caire",
+    origin: "PAR",
+    destination: "CAI",
+    originCity: "Paris",
+    title: "Que faire au Caire : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire au Caire : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Le Caire : meilleure période, pyramides de Gizeh, budget réel sur place, visa et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Le Caire est l'une des destinations dépaysantes les plus rapides à atteindre depuis Paris, à quatre heures et demie de vol. La chaleur estivale extrême pousse la plupart des visiteurs vers l'automne, l'hiver ou le printemps. Voici les repères concrets avant de réserver.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Livre égyptienne (EGP).",
+      langue: "Arabe. L'anglais est répandu dans le tourisme.",
+      visa: "Visa obligatoire pour les Français, à obtenir en ligne avant le départ (e-visa) ou à l'arrivée à l'aéroport contre paiement.",
+      transport: "Pas de liaison ferrée directe depuis l'aéroport : taxi ou VTC. Le Caire dispose d'un métro utile pour se déplacer en ville.",
+      budgetJour: "30 à 55 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Le Caire ?",
+        paragraphs: [
+          "Octobre à avril offre des températures nettement plus vivables, entre 18 et 28 °C en journée, idéales pour visiter les pyramides de Gizeh et marcher en ville sans souffrir de la chaleur.",
+          "L'été (juin-août) dépasse régulièrement les 35-40 °C, rendant les visites extérieures difficiles en milieu de journée. Si vous voyagez à cette période, prévoyez les sorties tôt le matin ou en fin d'après-midi.",
+          "Le Ramadan change le rythme de la ville (horaires de restaurants et de commerces modifiés, ambiance particulière le soir à la rupture du jeûne) : une expérience culturelle en soi, mais à anticiper dans l'organisation des repas en journée.",
+        ],
+      },
+      {
+        heading: "Que voir en priorité",
+        paragraphs: [
+          "Les pyramides de Gizeh et le Sphinx, à la périphérie de la ville, restent l'incontournable absolu — prévoyez une matinée entière et un guide ou un chauffeur fiable pour éviter le rabattage insistant fréquent sur le site.",
+          "Le musée égyptien de la place Tahrir (ou le nouveau Grand Egyptian Museum, à proximité des pyramides) rassemble les collections pharaoniques, dont le trésor de Toutânkhamon.",
+          "Le Caire islamique et le quartier de Khan el-Khalili offrent mosquées historiques, ruelles animées et le grand souk traditionnel, à explorer à pied avec de la prudence sur ses effets personnels.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Le Caire est l'une des destinations les plus abordables au départ de Paris : un repas dans un restaurant local revient à 5-10 €, une chambre correcte en hôtel à 30-60 € la nuit.",
+          "Les entrées de sites (pyramides, musées) représentent un poste à part entière : comptez 15-30 € par site majeur, davantage pour les accès spéciaux (intérieur d'une pyramide, par exemple).",
+          "Un guide ou chauffeur privé à la journée, courant et recommandé pour les pyramides et Le Caire islamique, coûte généralement 30-50 € — souvent rentable pour éviter les arnaques touristiques les plus fréquentes.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Visa : demandez l'e-visa en ligne avant le départ plutôt qu'à l'arrivée, pour éviter la file et avoir une trace écrite de votre autorisation d'entrée.",
+          "Négociation : les prix ne sont pas toujours fixes, notamment dans les souks et pour les taxis non officiels — convenir du prix avant de monter dans un taxi reste la règle de base.",
+          "Tenue vestimentaire : des épaules et jambes couvertes sont recommandées, en particulier pour visiter les mosquées, où un foulard peut être demandé aux femmes.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits suffisent pour les pyramides, le musée égyptien et Le Caire islamique.",
+          "Cinq nuits ou plus permettent d'ajouter une extension vers Louxor et la vallée des Rois, généralement en vol intérieur court depuis Le Caire.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getCityGuide(slug: string): CityGuide | undefined {

@@ -4,6 +4,7 @@ import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
 import { listPublishedGuides } from "@/lib/published-guides.functions";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { getDestinationImage } from "@/lib/destination-images";
+import { withPreposition } from "@/lib/french-grammar";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const TITLE = "Guides destinations : que faire dans chaque ville | TrouveMonVol";
@@ -93,7 +94,7 @@ function CityGuidesIndex() {
                 />
                 <span className="min-w-0">
                   <span className="block font-display text-base font-semibold">
-                    Que faire à {guide.city}
+                    Que faire {withPreposition("à", guide.city)}
                   </span>
                   <span className="mt-1 block text-xs text-muted-foreground">{guide.country}</span>
                   <span className="mt-2 block text-sm text-muted-foreground">
