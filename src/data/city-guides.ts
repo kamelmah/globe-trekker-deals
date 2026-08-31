@@ -757,6 +757,600 @@ export const CITY_GUIDES: CityGuide[] = [
       },
     ],
   },
+  {
+    slug: "londres",
+    city: "Londres",
+    country: "Royaume-Uni",
+    routeSlug: "paris-londres",
+    origin: "PAR",
+    destination: "LON",
+    originCity: "Paris",
+    title: "Que faire à Londres : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Londres : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Londres : meilleure période, quartiers où loger, budget réel sur place, métro et Oyster, livre sterling et formalités post-Brexit pour les Français.",
+    intro:
+      "Londres se visite toute l'année, mais le budget change du simple au double selon la saison et le quartier choisi. Voici les repères concrets avant de réserver : climat, quartiers, coût de la vie sur place et formalités depuis le Brexit.",
+    readingMinutes: 7,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Livre sterling (GBP). Environ 1 € = 0,85 £. Paiement par carte accepté quasiment partout, même pour 1 £.",
+      langue: "Anglais. Le français est peu parlé hors des grands hôtels.",
+      visa: "Pas de visa pour les Français en séjour touristique de moins de 6 mois, mais passeport obligatoire (la carte d'identité n'est plus acceptée) et autorisation électronique ETA à demander avant le départ.",
+      transport: "Métro (Tube), bus rouges, Overground et Elizabeth Line : payez sans contact avec votre carte bancaire, le plafond journalier s'applique automatiquement.",
+      budgetJour: "90 à 150 € par personne et par jour, hébergement compris, hors shopping.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Londres ?",
+        paragraphs: [
+          "Mai-juin et septembre offrent le meilleur compromis : 18 à 23 °C, journées longues, parcs en pleine forme et affluence encore raisonnable dans les musées. Les tarifs aériens restent modérés hors week-ends prolongés.",
+          "Juillet et août sont les mois les plus touristiques : files d'attente à la Tour de Londres, hôtels chers et Tube très chaud. En revanche, la ville vit dehors, avec festivals, concerts dans les parcs et le carnaval de Notting Hill fin août.",
+          "De novembre à février, il pleut souvent et la nuit tombe vers 16 h, mais c'est la saison des prix bas — sauf pendant les marchés de Noël et le Nouvel An, où tout remonte fortement.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Westminster et la City rassemblent l'essentiel des symboles : Big Ben, l'abbaye de Westminster, la cathédrale Saint-Paul et la Tour de Londres. Tout se fait à pied le long de la Tamise, en une journée bien remplie.",
+          "South Bank, sur la rive sud, concentre le Tate Modern, le Borough Market et le Shakespeare's Globe : c'est la promenade la plus agréable de la ville en fin de journée.",
+          "Pour l'ambiance locale, visez Shoreditch et Hackney à l'est (street art, marchés, restaurants), Camden au nord pour les disquaires et la Camden Lock, et Notting Hill ou South Kensington pour les façades colorées et les grands musées gratuits.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Londres est chère sur l'hébergement : comptez 110 à 200 € la nuit pour un hôtel correct en zone 1-2, 45 à 80 € en auberge ou dans un hôtel de chaîne en zone 3. Réserver deux mois à l'avance change réellement le prix.",
+          "Côté repas, un déjeuner de pub ou de marché revient à 12-18 €, un dîner au restaurant à 30-45 € par personne, une pinte à 6-8 €. Les grands musées (British Museum, National Gallery, Tate, Natural History Museum) sont gratuits, ce qui allège nettement le budget visites.",
+          "Les transports coûtent environ 8 à 10 € par jour grâce au plafond quotidien du paiement sans contact : passez toujours la même carte bancaire ou le même téléphone à l'entrée et à la sortie.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : depuis le Brexit, la carte nationale d'identité ne suffit plus pour la plupart des voyageurs français — prévoyez un passeport valide et l'autorisation électronique de voyage (ETA), à demander en ligne avant le départ.",
+          "Argent : inutile de changer des espèces, la quasi-totalité des commerces, bus et taxis acceptent la carte sans contact. Vérifiez simplement les frais de change de votre banque.",
+          "Transports depuis les aéroports : l'Elizabeth Line relie Heathrow au centre en 30-40 minutes, le Gatwick Express met 30 minutes depuis Gatwick, et les bus National Express desservent Stansted et Luton à petit prix.",
+          "Sur place : on conduit à gauche, regardez donc à droite avant de traverser ; et gardez la droite dans les escalators du métro, la gauche est réservée à ceux qui marchent.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits permettent de couvrir Westminster, la City, South Bank et deux grands musées sans courir. Quatre à cinq nuits ajoutent les quartiers de l'est, Greenwich et une soirée dans le West End.",
+          "Au-delà d'une semaine, Londres devient une base idéale pour des excursions à la journée en train : Oxford, Cambridge, Brighton ou Windsor sont tous à moins de deux heures.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "amsterdam",
+    city: "Amsterdam",
+    country: "Pays-Bas",
+    routeSlug: "paris-amsterdam",
+    origin: "PAR",
+    destination: "AMS",
+    originCity: "Paris",
+    title: "Que faire à Amsterdam : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Amsterdam : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Amsterdam : quand partir, quartiers où loger, budget quotidien, vélo et transports, musées à réserver et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Amsterdam se parcourt à vélo ou à pied en deux ou trois jours, à condition de réserver les musées à l'avance et de bien choisir son quartier. Voici les informations utiles avant de réserver votre vol.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR). Attention : de nombreux commerces n'acceptent que les cartes de débit, pas les cartes de crédit.",
+      langue: "Néerlandais. L'anglais est parlé partout, y compris dans les petits commerces.",
+      visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport en cours de validité suffisent.",
+      transport: "Vélo, tramways GVB, métro et ferries gratuits vers Amsterdam-Noord. Le train relie Schiphol au centre en 15 minutes.",
+      budgetJour: "90 à 140 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Amsterdam ?",
+        paragraphs: [
+          "Avril et mai sont les mois vedettes : tulipes en fleur, terrasses qui rouvrent et lumière longue en soirée. La Journée du Roi, le 27 avril, transforme la ville entière en fête orange — spectaculaire, mais hôtels complets et prix doublés.",
+          "Juin à août offre les journées les plus longues et les canaux les plus animés, avec une affluence forte autour du Rijksmuseum et de la maison d'Anne Frank.",
+          "De novembre à février, la ville est froide et humide mais très photogénique, notamment pendant l'Amsterdam Light Festival. C'est la période où les vols et les hôtels sont les plus abordables.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Le Grachtengordel, la ceinture de canaux classée à l'UNESCO, est le cœur de la carte postale : maisons étroites, ponts et péniches. Le Jordaan, juste à côté, ajoute des ruelles calmes, des cafés bruns et des marchés de quartier.",
+          "Le Museumkwartier regroupe le Rijksmuseum, le Van Gogh Museum et le Stedelijk autour du Vondelpark : réservez vos créneaux en ligne, les billets sur place partent vite.",
+          "De Pijp est le quartier le plus vivant pour manger, avec le marché Albert Cuyp. Amsterdam-Noord, à cinq minutes de ferry gratuit depuis la gare centrale, offre une ambiance industrielle réhabilitée et des hébergements souvent moins chers.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement est le poste le plus lourd : 130 à 200 € la nuit en hôtel de centre-ville, 60 à 100 € en auberge ou en périphérie desservie par le tram. La taxe de séjour, élevée, s'ajoute souvent au tarif affiché.",
+          "Un déjeuner simple coûte 12-18 €, un dîner 30-45 €, une bière 5-7 €. Les grands musées se situent entre 20 et 25 € l'entrée, et une croisière sur les canaux entre 18 et 30 €.",
+          "La location de vélo revient à 12-15 € par jour et reste le moyen le plus économique et le plus rapide de circuler. Un ticket de tram à l'unité coûte environ 3,40 €, un pass 24 h autour de 9 €.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : aucun visa n'est nécessaire, une carte d'identité valide suffit pour les Français.",
+          "Paiements : beaucoup de cafés, supermarchés et boulangeries refusent les cartes de crédit et n'acceptent que le débit (Maestro ou V Pay). Gardez un peu d'espèces en secours.",
+          "Vélo : les pistes cyclables sont prioritaires et très fréquentées. Ne marchez jamais sur la piste rouge, signalez vos changements de direction et attachez toujours votre vélo à un point fixe.",
+          "Réservations : la maison d'Anne Frank se réserve exclusivement en ligne, plusieurs semaines à l'avance ; le Van Gogh Museum et le Rijksmuseum fonctionnent par créneaux horaires.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux à trois nuits suffisent largement pour les canaux, deux grands musées et un quartier hors centre comme De Pijp ou Noord.",
+          "Avec quatre ou cinq nuits, ajoutez une journée à Haarlem, Utrecht ou Rotterdam, toutes à moins d'une heure de train, ou le parc floral du Keukenhof entre mi-mars et mi-mai.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "milan",
+    city: "Milan",
+    country: "Italie",
+    routeSlug: "paris-milan",
+    origin: "PAR",
+    destination: "MIL",
+    originCity: "Paris",
+    title: "Que faire à Milan : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Milan : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Milan : meilleure période, quartiers à voir, budget sur place, métro et aéroports, réservation de la Cène et conseils pratiques pour les Français.",
+    intro:
+      "Milan se visite très bien en deux ou trois jours et sert de porte d'entrée idéale vers les lacs italiens. Voici ce qu'il faut savoir avant de réserver : saison, quartiers, budget réel et transports depuis les trois aéroports.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR). Carte acceptée partout, même pour les petits montants.",
+      langue: "Italien. L'anglais est courant dans l'hôtellerie et le centre-ville.",
+      visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
+      transport: "Métro ATM (4 lignes), trams historiques, Malpensa Express depuis l'aéroport principal.",
+      budgetJour: "80 à 130 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Milan ?",
+        paragraphs: [
+          "Avril-juin et septembre-octobre sont les meilleures fenêtres : 18 à 26 °C, terrasses ouvertes et lumière idéale pour les toits du Duomo. Attention aux grandes foires (Salone del Mobile en avril, Fashion Weeks en février et septembre), où les hôtels triplent parfois leurs tarifs.",
+          "Juillet et août sont chauds et lourds (30 à 35 °C), et une partie des commerces ferme à la mi-août. En revanche les vols et les hôtels y sont nettement moins chers.",
+          "L'hiver est froid et souvent brumeux, mais c'est la saison de la Scala, des marchés de Noël et des prix les plus bas de l'année.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Le Centro Storico rassemble le Duomo, ses terrasses panoramiques, la galerie Vittorio Emanuele II et la Scala. Comptez une demi-journée, en réservant l'accès aux toits en ligne pour éviter la file.",
+          "Brera est le quartier le plus charmant pour flâner : ruelles pavées, pinacothèque, boutiques d'artisans et restaurants. Juste au nord, le Quadrilatero della Moda concentre la haute couture.",
+          "Navigli, le long des canaux, est le centre de la vie nocturne et de l'aperitivo. Isola et Porta Nuova montrent le Milan contemporain, avec le Bosco Verticale et la piazza Gae Aulenti. Santa Maria delle Grazie, à l'ouest, abrite la Cène de Léonard de Vinci.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Comptez 90 à 160 € la nuit pour un hôtel confortable en centre-ville, 50 à 80 € un peu plus loin sur une ligne de métro. Les prix explosent pendant les semaines de foire, à vérifier avant de fixer vos dates.",
+          "L'aperitivo est la meilleure affaire de la ville : 10 à 15 € pour un verre accompagné d'un buffet, souvent suffisant comme dîner léger. Un repas complet au restaurant revient à 25-40 €, une pizza à 9-14 €.",
+          "Le billet de métro coûte environ 2,20 €, le pass journalier 7,60 €. L'entrée du Duomo avec les terrasses se situe autour de 20-30 €, la Cène autour de 15 € plus frais de réservation.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : rien de particulier, une carte d'identité valide suffit pour les Français.",
+          "Aéroports : Malpensa est relié au centre par le Malpensa Express (50 minutes, environ 13 €), Linate par la ligne de métro M4 (15 minutes), Bergame-Orio al Serio par des bus directs (1 heure). Vérifiez bien l'aéroport indiqué sur votre billet, ils sont très éloignés les uns des autres.",
+          "La Cène de Léonard de Vinci se réserve impérativement en ligne, souvent deux à trois mois à l'avance : les créneaux de 15 minutes partent dès leur mise en vente.",
+          "Milan est la meilleure base pour les lacs : Côme est à 40 minutes de train, le lac Majeur à une heure, Bergame à 50 minutes.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux nuits suffisent pour le Duomo, Brera, les Navigli et un musée. Trois à quatre nuits permettent d'ajouter la Cène, le château des Sforza et une journée sur un lac.",
+          "Pour une semaine, Milan se combine facilement avec Turin, Vérone ou Venise, toutes accessibles en train à grande vitesse en 1 à 2 h 30.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "berlin",
+    city: "Berlin",
+    country: "Allemagne",
+    routeSlug: "paris-berlin",
+    origin: "PAR",
+    destination: "BER",
+    originCity: "Paris",
+    title: "Que faire à Berlin : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Berlin : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Berlin : quand partir, quartiers où loger, budget quotidien, U-Bahn et S-Bahn, musées à réserver et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Berlin est une capitale étendue où tout se joue sur le choix du quartier et la maîtrise du réseau U-Bahn / S-Bahn. Voici les repères concrets avant de réserver : saison, quartiers, budget réel et formalités.",
+    readingMinutes: 7,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR). Beaucoup de bars, snacks et clubs restent uniquement en espèces.",
+      langue: "Allemand. L'anglais est très largement parlé, surtout dans les quartiers centraux.",
+      visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
+      transport: "U-Bahn, S-Bahn, trams et bus (réseau BVG). Un ticket AB couvre l'essentiel de la ville.",
+      budgetJour: "70 à 120 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Berlin ?",
+        paragraphs: [
+          "De mai à septembre, la ville vit dehors : biergartens, lacs de baignade, marchés aux puces et festivals. Les températures oscillent entre 20 et 27 °C et les journées sont très longues en juin.",
+          "Avril et octobre offrent des tarifs plus doux et des musées moins fréquentés, avec un temps changeant : prévoyez une veste imperméable.",
+          "L'hiver est froid (souvent autour de 0 °C) et gris, mais c'est la période la moins chère, animée par les marchés de Noël et une vie culturelle intense en intérieur.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Mitte concentre l'histoire : porte de Brandebourg, Reichstag, mémorial de l'Holocauste, Unter den Linden et l'Île aux Musées. L'accès à la coupole du Reichstag est gratuit mais se réserve en ligne à l'avance.",
+          "Kreuzberg et Neukölln sont les quartiers les plus vivants pour manger, sortir et voir le street art, avec l'East Side Gallery le long de la Spree.",
+          "Prenzlauer Berg, au nord, est calme et familial, avec de belles rues d'immeubles rénovés et le marché du Mauerpark le dimanche. Charlottenburg, à l'ouest, offre le château, le Kurfürstendamm et des hôtels souvent moins chers.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Berlin reste l'une des capitales les plus abordables d'Europe de l'Ouest : 70 à 130 € la nuit en hôtel confortable, 30 à 60 € en auberge ou en studio hors du centre.",
+          "Un currywurst ou un döner coûte 4 à 7 €, un repas au restaurant 15 à 30 €, une bière 4 à 6 €. Beaucoup de mémoriaux et de sites historiques sont gratuits.",
+          "Le pass journalier BVG zone AB coûte environ 10 € ; le billet à l'unité 3,80 €. L'Île aux Musées propose un billet combiné autour de 24 € pour cinq musées.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : aucune démarche particulière, une carte d'identité valide suffit pour les Français.",
+          "Espèces : gardez toujours 30 à 50 € en liquide, de nombreux établissements berlinois refusent encore la carte.",
+          "Aéroport : BER est relié au centre par le S-Bahn S9 et les trains régionaux FEX en 30 à 40 minutes, avec un ticket ABC (environ 4,70 €).",
+          "Transports : validez votre ticket avant de monter, les contrôles sont fréquents et l'amende s'élève à 60 €. Le réseau fonctionne toute la nuit les vendredis et samedis.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits sont un bon minimum pour Mitte, l'Île aux Musées, l'East Side Gallery et un quartier alternatif.",
+          "Quatre à cinq nuits permettent d'ajouter Potsdam et le château de Sanssouci (30 minutes de S-Bahn), le mémorial de Sachsenhausen ou une journée dans les lacs du Wannsee.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "athenes",
+    city: "Athènes",
+    country: "Grèce",
+    routeSlug: "paris-athenes",
+    origin: "PAR",
+    destination: "ATH",
+    originCity: "Paris",
+    title: "Que faire à Athènes : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Athènes : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Athènes : meilleure période, quartiers à voir, budget sur place, métro et ferries vers les îles, billet combiné Acropole et conseils pour les Français.",
+    intro:
+      "Athènes se visite en deux ou trois jours et sert de point de départ vers les îles. Voici les informations concrètes à connaître : quelle saison éviter, où loger, quel budget prévoir et comment enchaîner avec une île.",
+    readingMinutes: 7,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR). Carte largement acceptée ; espèces utiles dans les tavernes de quartier.",
+      langue: "Grec. L'anglais est très répandu dans le tourisme.",
+      visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
+      transport: "Métro (3 lignes), tram vers la côte, bus X95 depuis l'aéroport, ferries au Pirée.",
+      budgetJour: "60 à 100 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Athènes ?",
+        paragraphs: [
+          "Avril-mai et septembre-octobre sont les meilleures périodes : 22 à 28 °C, sites archéologiques praticables toute la journée et affluence encore contenue. C'est aussi la saison où les liaisons vers les îles reprennent sans être saturées.",
+          "En juillet et août, la ville dépasse souvent 35 °C et l'Acropole devient éprouvante après 11 h. Si vous venez en été, visitez à l'ouverture ou en fin d'après-midi et prévoyez de l'eau en abondance.",
+          "L'hiver est doux (12 à 16 °C) et pluvieux par périodes, avec des sites quasiment vides et des tarifs très bas — mais beaucoup de ferries et d'hôtels d'îles sont fermés.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Plaka, au pied de l'Acropole, est le quartier historique le plus agréable pour loger et se promener, prolongé par Anafiotika et ses maisons blanches d'allure cycladique.",
+          "Monastiraki et Psyrri concentrent le marché aux puces, les rooftops avec vue sur le Parthénon et la vie nocturne. Thissio offre la plus belle promenade piétonne au coucher du soleil.",
+          "Koukaki, près du musée de l'Acropole, est résidentiel et bien situé. Pour respirer, montez sur la colline du Lycabette au coucher du soleil ou descendez en tram vers la côte, à Glyfada et Vouliagmeni.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Athènes reste abordable : 60 à 110 € la nuit pour un hôtel bien situé, 30 à 50 € en studio ou en auberge. Les hôtels avec vue sur l'Acropole se paient nettement plus cher.",
+          "Un repas en taverne coûte 12 à 20 €, un souvláki 3 à 5 €, un café freddo 3 à 4 €. Le billet combiné pour l'Acropole et six sites antiques revient à environ 30 € et reste valable cinq jours.",
+          "Le métro coûte 1,20 € le trajet, et le billet aéroport 9 € l'aller. Le bus X95 relie l'aéroport à Syntagma pour environ 5,50 €, jour et nuit.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : aucune démarche pour les Français, une carte d'identité valide suffit.",
+          "Chaussures : les marbres de l'Acropole et les ruelles de Plaka sont glissants, privilégiez des semelles adhérentes plutôt que des sandales lisses.",
+          "Ferries : les départs se font au Pirée (métro ligne 1), parfois à Rafina pour les Cyclades du nord. Prévoyez au moins 3 h 30 entre l'arrivée d'un vol et un départ de ferry.",
+          "Réservations : achetez le billet de l'Acropole en ligne et présentez-vous à l'ouverture (8 h) ou après 17 h pour éviter la chaleur et les groupes de croisiéristes.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux nuits couvrent l'Acropole, son musée, l'Agora antique et Plaka. Trois à quatre nuits ajoutent le cap Sounion, le monastère de Dafni ou une journée de plage sur la riviera athénienne.",
+          "Pour une semaine, combinez Athènes avec une ou deux îles proches accessibles en ferry rapide : Égine, Hydra et Poros sont à moins de deux heures du Pirée.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "vienne",
+    city: "Vienne",
+    country: "Autriche",
+    routeSlug: "paris-vienne",
+    origin: "PAR",
+    destination: "VIE",
+    originCity: "Paris",
+    title: "Que faire à Vienne : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Vienne : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Vienne : meilleure période, quartiers à voir, budget sur place, U-Bahn, cafés historiques, opéra et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Vienne est une capitale compacte, très bien desservie et étonnamment abordable une fois sur place. Voici les repères utiles avant de réserver : saison, quartiers, budget réel et bons réflexes pour l'opéra et les musées.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR). Carte acceptée dans la plupart des commerces ; espèces encore utiles dans les cafés traditionnels.",
+      langue: "Allemand. L'anglais est parlé dans le tourisme et le centre.",
+      visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
+      transport: "U-Bahn, trams (dont le Ring), bus. Le City Airport Train et le S7 relient l'aéroport au centre.",
+      budgetJour: "75 à 120 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Vienne ?",
+        paragraphs: [
+          "Mai-juin et septembre offrent 20 à 26 °C, des parcs impeccables et une saison culturelle encore active. C'est le meilleur compromis entre météo et affluence.",
+          "L'été est chaud mais agréable au bord du Danube, avec les plages urbaines de la Donauinsel ; l'opéra d'État, lui, fait relâche en juillet et août.",
+          "De fin novembre à décembre, les marchés de Noël font partie des plus beaux d'Europe et les hôtels affichent complet les week-ends. Janvier et février sont froids mais très bon marché, et c'est la saison des bals.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "L'Innere Stadt, le centre historique classé, réunit la cathédrale Saint-Étienne, la Hofburg, l'Opéra et les grands cafés viennois. Le tram qui suit le Ring permet d'en faire le tour en 30 minutes pour le prix d'un ticket.",
+          "Le MuseumsQuartier et la Ringstrasse concentrent le Kunsthistorisches Museum, le Leopold et l'Albertina : trois collections majeures à moins de dix minutes à pied les unes des autres.",
+          "Neubau et Mariahilf sont les quartiers les plus vivants pour les boutiques et la restauration. Schönbrunn, à l'ouest, mérite une demi-journée pour le palais et ses jardins ; le Belvédère abrite Le Baiser de Klimt.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Comptez 80 à 140 € la nuit pour un hôtel confortable dans ou près du Ring, 45 à 75 € un peu plus loin sur une ligne d'U-Bahn.",
+          "Un déjeuner au Gasthaus revient à 12-18 €, un dîner à 25-40 €, une Sachertorte avec un café à 10-12 €. Les musées se situent entre 15 et 20 €.",
+          "Le pass transports 24 h coûte environ 8 €, la semaine 17,10 € : c'est l'un des meilleurs rapports qualité-prix d'Europe. Les places debout à l'Opéra d'État partent à 13-18 € le soir même.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : rien de spécifique pour les Français, une carte d'identité valide suffit.",
+          "Aéroport : le S-Bahn S7 rejoint le centre en 25 minutes pour environ 4,30 €, le City Airport Train en 16 minutes pour 14 €. Le train est presque toujours plus rapide qu'un taxi aux heures de pointe.",
+          "Cafés : dans les cafés historiques, on s'installe soi-même, on commande un Melange et l'on peut rester des heures — la note se règle au serveur, souvent en espèces.",
+          "Eau : l'eau du robinet vient des Alpes et se boit sans réserve, des fontaines publiques sont réparties dans toute la ville.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits permettent de voir le centre, deux grands musées, Schönbrunn et le Belvédère sans se presser.",
+          "Quatre à cinq nuits ouvrent la porte à une journée à Bratislava (1 heure de train), dans la vallée de la Wachau ou à Melk et son abbaye baroque.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "prague",
+    city: "Prague",
+    country: "Tchéquie",
+    routeSlug: "paris-prague",
+    origin: "PAR",
+    destination: "PRG",
+    originCity: "Paris",
+    title: "Que faire à Prague : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Prague : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Prague : quand partir, quartiers à voir, budget sur place, couronne tchèque, tramways, pièges à touristes à éviter et conseils pour les Français.",
+    intro:
+      "Prague se parcourt à pied et reste l'une des capitales les moins chères d'Europe, à condition d'éviter quelques pièges classiques sur le change et les restaurants du centre. Voici l'essentiel avant de réserver.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Couronne tchèque (CZK). Environ 1 € = 25 CZK. Refusez le change de rue et les bureaux affichant « 0 % commission ».",
+      langue: "Tchèque. L'anglais est courant dans le centre, l'allemand souvent compris.",
+      visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
+      transport: "Métro (3 lignes), tramways très denses dont le 22 panoramique, bus AE depuis l'aéroport.",
+      budgetJour: "50 à 90 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Prague ?",
+        paragraphs: [
+          "Mai-juin et septembre offrent 20 à 25 °C, des terrasses ouvertes et une lumière parfaite sur les toits de Malá Strana. C'est la meilleure période, mais aussi la plus fréquentée sur le pont Charles.",
+          "Juillet et août sont chauds et très touristiques ; visitez le pont Charles avant 8 h pour l'avoir presque pour vous.",
+          "De novembre à mars, il fait froid (souvent sous 0 °C) mais la ville est magnifique sous la neige, et les prix chutent en dehors de la période des marchés de Noël.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Staré Město, la vieille ville, réunit la place de la Vieille-Ville, l'horloge astronomique et le quartier juif Josefov, avec son cimetière et ses synagogues.",
+          "Malá Strana et Hradčany, sur l'autre rive, mènent au château de Prague, à la cathédrale Saint-Guy et à la ruelle d'Or. Montez par les jardins plutôt que par les escaliers principaux, c'est plus calme et plus joli.",
+          "Vinohrady et Žižkov sont les quartiers où mangent et sortent les Praguois, avec des prix bien plus bas qu'au centre. Le parc de Letná offre la meilleure vue d'ensemble sur les ponts de la Vltava.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Prague reste très abordable : 55 à 100 € la nuit pour un bon hôtel central, 25 à 50 € en auberge ou en appartement à Vinohrady.",
+          "Un plat de brasserie coûte 8 à 14 €, une bière pression 2 à 3,50 € (moins encore hors du centre), un café 3 €. Le circuit du château de Prague se situe autour de 18 €.",
+          "Les transports sont bon marché : billet 30 minutes à environ 1,20 €, pass 24 h à 4,80 €. Le bus AE relie l'aéroport à la gare centrale pour environ 4 €.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : aucune démarche pour les Français, une carte d'identité valide suffit. La Tchéquie n'a pas adopté l'euro.",
+          "Change : retirez des couronnes au distributeur d'une banque et refusez systématiquement la conversion proposée par le terminal (« dynamic currency conversion »), toujours défavorable. Évitez les bureaux de change de la vieille ville.",
+          "Restaurants : dans le centre, vérifiez le prix des amuse-bouches apportés spontanément à table, ils sont facturés. Le pourboire usuel est de 5 à 10 %.",
+          "Transports : validez votre ticket dans la machine jaune en entrant, les contrôles sont fréquents dans le métro et les trams.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits suffisent pour la vieille ville, le château, Josefov et une soirée dans un quartier local.",
+          "Quatre à cinq nuits permettent d'ajouter Kutná Hora et son ossuaire, le château de Karlštejn ou Český Krumlov, à trois heures de bus au sud.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "seville",
+    city: "Séville",
+    country: "Espagne",
+    routeSlug: "paris-seville",
+    origin: "PAR",
+    destination: "SVQ",
+    originCity: "Paris",
+    title: "Que faire à Séville : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Séville : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Séville : meilleure période, quartiers à voir, budget sur place, Alcazar à réserver, tapas, flamenco et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Séville se visite à pied, mais tout dépend de la saison : l'été andalou dépasse régulièrement 40 °C. Voici les informations concrètes avant de réserver votre vol : quand partir, où loger et quel budget prévoir.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR). Carte acceptée partout ; petites espèces utiles dans les bars à tapas.",
+      langue: "Espagnol. L'anglais est inégalement parlé hors des sites touristiques.",
+      visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
+      transport: "Tout à pied dans le centre, tram T1, vélos Sevici, bus EA depuis l'aéroport.",
+      budgetJour: "60 à 100 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Séville ?",
+        paragraphs: [
+          "Mars-mai et octobre-novembre sont les périodes idéales : 20 à 28 °C, orangers en fleur au printemps et soirées douces en terrasse.",
+          "Attention aux deux grandes fêtes : la Semaine sainte et la Feria d'Abril, spectaculaires mais avec des hôtels complets et des tarifs multipliés par deux ou trois. Réservez plusieurs mois à l'avance si vous visez ces dates.",
+          "De juin à septembre, la chaleur dépasse souvent 38-42 °C l'après-midi : les visites se font tôt le matin et en soirée, et une piscine devient un vrai critère de choix d'hôtel. En contrepartie, les prix baissent nettement en août.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Santa Cruz, l'ancien quartier juif, est le cœur touristique : ruelles blanches, patios fleuris, et l'accès direct à la cathédrale, à la Giralda et au Real Alcázar.",
+          "Triana, de l'autre côté du Guadalquivir, est le berceau du flamenco et de la céramique, avec un marché couvert et des bars à tapas nettement moins chers.",
+          "Alameda de Hércules et Macarena sont les quartiers les plus jeunes et les plus animés le soir. Le parc de María Luisa et la Plaza de España, au sud, méritent une fin d'après-midi entière.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Séville est l'une des grandes villes espagnoles les plus abordables : 60 à 110 € la nuit pour un bon hôtel de centre-ville, 35 à 60 € en appartement ou en auberge.",
+          "Une tapa coûte 2,50 à 4 €, un repas complet 15 à 25 €, une caña de bière 1,50 à 2,50 €. Un spectacle de flamenco en tablao revient à 20-40 € selon la formule.",
+          "Le Real Alcázar coûte environ 15 € et se réserve en ligne, la cathédrale et la Giralda 12 €. Le bus EA depuis l'aéroport coûte environ 4 € et met 35 minutes.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : aucune démarche pour les Français, une carte d'identité valide suffit.",
+          "Réservations : le Real Alcázar affiche complet plusieurs jours à l'avance en haute saison ; achetez vos billets horodatés en ligne dès que vos dates sont fixées.",
+          "Rythme : les restaurants servent tard (déjeuner vers 14 h, dîner à partir de 21 h) et beaucoup de commerces ferment l'après-midi en été. Adaptez votre programme à la sieste.",
+          "Chaleur : en été, planifiez les visites extérieures avant 11 h et après 19 h, et gardez les musées et l'Alcázar pour l'après-midi.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent l'Alcázar, la cathédrale, Santa Cruz, Triana et une soirée flamenco.",
+          "Quatre à cinq nuits permettent d'ajouter Cordoue (45 minutes en train à grande vitesse), Cadix ou Jerez. Une semaine autorise une boucle andalouse complète avec Grenade.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "copenhague",
+    city: "Copenhague",
+    country: "Danemark",
+    routeSlug: "paris-copenhague",
+    origin: "PAR",
+    destination: "CPH",
+    originCity: "Paris",
+    title: "Que faire à Copenhague : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Copenhague : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Copenhague : quand partir, quartiers à voir, budget réel sur place, couronne danoise, vélo et métro, et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Copenhague est compacte, entièrement cyclable et l'une des capitales les plus chères d'Europe : bien préparer son budget change tout. Voici les repères concrets avant de réserver votre vol.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Couronne danoise (DKK). Environ 1 € = 7,45 DKK. Paiement par carte accepté partout, espèces quasiment inutiles.",
+      langue: "Danois. L'anglais est parlé couramment par presque tout le monde.",
+      visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
+      transport: "Métro automatique 24 h/24, trains S-tog, bus et surtout vélo : la ville compte plus de pistes cyclables que de voies automobiles.",
+      budgetJour: "110 à 170 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Copenhague ?",
+        paragraphs: [
+          "De mai à août, les journées sont très longues (jusqu'à 17 h de lumière en juin), les terrasses de Nyhavn pleines et les bains de port ouverts. C'est la meilleure saison, avec 18 à 24 °C.",
+          "Avril et septembre restent agréables et moins chers, avec un temps changeant et venteux : prévoyez un coupe-vent même en été.",
+          "De novembre à février, il fait froid, humide et sombre vers 16 h, mais c'est la saison du hygge, des marchés de Noël de Tivoli et des tarifs les plus bas de l'année.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Indre By, le centre, regroupe Nyhavn et ses façades colorées, la rue piétonne Strøget, le château de Rosenborg et les jardins de Tivoli.",
+          "Christianshavn, sur l'eau, mêle canaux, la spirale de l'église de Notre-Sauveur et la ville libre de Christiania. Refshaleøen, juste à côté, accueille le street food market de Reffen dans d'anciens chantiers navals.",
+          "Nørrebro et Vesterbro sont les quartiers les plus créatifs : cafés de spécialité, friperies, le parc Superkilen et le Meatpacking District pour les sorties du soir.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement pèse lourd : 130 à 220 € la nuit pour un hôtel correct en centre-ville, 55 à 95 € en auberge de bon niveau ou en périphérie desservie par le métro.",
+          "Un smørrebrød coûte 8 à 14 €, un repas de street food 12 à 18 €, un dîner au restaurant 40 à 60 €, une bière 7 à 9 €. Les marchés couverts (Torvehallerne, Reffen) sont la meilleure façon de manger bien sans exploser le budget.",
+          "La location de vélo revient à 15-20 € par jour et remplace avantageusement les transports. Un billet de métro coûte environ 3,60 €, un pass 24 h autour de 11 €. Tivoli demande environ 20 € d'entrée, hors attractions.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : aucune démarche pour les Français, une carte d'identité valide suffit. Le Danemark n'utilise pas l'euro.",
+          "Paiements : tout se règle par carte, y compris les toilettes publiques et les food trucks ; inutile de retirer beaucoup d'espèces.",
+          "Aéroport : le métro M2 relie Kastrup au centre en 15 minutes, pour environ 4,50 €. C'est l'un des accès aéroportuaires les plus simples d'Europe.",
+          "Vélo : respectez les feux cyclistes et tendez le bras pour signaler vos intentions ; la circulation à vélo est rapide et strictement codifiée.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux à trois nuits suffisent pour le centre, Christianshavn, un musée et une soirée à Nørrebro ou Vesterbro.",
+          "Quatre nuits permettent d'ajouter le musée d'art moderne Louisiana au bord du Sund, le château de Kronborg à Helsingør, ou une journée à Malmö en Suède, à 35 minutes de train.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getCityGuide(slug: string): CityGuide | undefined {
