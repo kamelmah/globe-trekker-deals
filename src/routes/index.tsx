@@ -210,7 +210,7 @@ function HomePage() {
           destination pour voir les vols et le vendeur de chaque billet.
         </p>
         <div className="mt-6">
-          <DestinationPriceGrid prices={prices} origin="PAR" error={error} debug={debug} />
+          <DestinationPriceGrid prices={prices} origin="PAR" error={error} />
         </div>
       </section>
 

@@ -80,8 +80,6 @@ export function DestinationPriceGrid({
 
         </ul>
       )}
-
-      <ApiDebugPanel debug={debug} label="Destinations les moins chères" />
     </div>
   );
 }
