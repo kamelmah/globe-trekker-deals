@@ -4,11 +4,13 @@ import logo from "@/assets/logo-64.png";
 import logoWebp from "@/assets/logo-64.webp";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
+import { useCookieConsent } from "@/lib/cookie-consent-context";
 
 const linkClass = "transition-colors hover:text-foreground";
 
 export function Footer() {
   const year = new Date().getFullYear();
+  const { openManager } = useCookieConsent();
 
   return (
     <footer className="mt-20 border-t border-border bg-secondary/40">
@@ -98,6 +100,11 @@ export function Footer() {
               <Link to="/cookies" className={linkClass}>
                 Cookies
               </Link>
+            </li>
+            <li>
+              <button type="button" onClick={openManager} className={`${linkClass} cursor-pointer text-left`}>
+                Gérer mes cookies
+              </button>
             </li>
           </ul>
         </div>

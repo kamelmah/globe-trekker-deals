@@ -64,11 +64,15 @@ function PrivacyPage() {
 
       <h2 className="mt-8 font-display text-xl font-semibold">Cookies</h2>
       <p className="mt-2 text-muted-foreground">
-        Le site utilise des cookies techniques nécessaires à son fonctionnement, des cookies de
-        mesure d'audience et des cookies d'affiliation permettant de rattacher une réservation à
-        votre visite. Vous pouvez à tout moment modifier votre choix via le gestionnaire de
-        consentement affiché sur le site, ou supprimer les cookies dans les réglages de votre
-        navigateur.
+        Le site utilise des cookies techniques strictement nécessaires (devise, thème, mémorisation
+        de votre choix de consentement), et un cookie tiers optionnel de notre partenaire Stay22
+        pour les cartes d'hébergement, chargé uniquement après votre accord. Aucun outil de mesure
+        d'audience n'est actuellement intégré au site. Le détail complet, catégorie par catégorie,
+        est sur la page{" "}
+        <a href="/cookies" className="underline underline-offset-2 hover:text-foreground">
+          Gestion des cookies
+        </a>
+        , où vous pouvez aussi modifier votre choix à tout moment.
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Vos droits</h2>

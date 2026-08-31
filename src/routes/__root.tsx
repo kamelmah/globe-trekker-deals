@@ -12,7 +12,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { CookieBanner } from "@/components/site/CookieBanner";
 import { Toaster } from "@/components/ui/sonner";
+import { CookieConsentProvider, useMapsConsent } from "@/lib/cookie-consent-context";
 import { CurrencyProvider } from "@/lib/currency-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -156,11 +158,13 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
+function Stay22AffiliateScript() {
+  // Cookie tiers optionnel (voir /cookies) : ce script ne doit jamais être
+  // injecté avant un accord explicite pour la catégorie "Cartes Stay22".
+  const mapsConsent = useMapsConsent();
 
-  // Script d'affiliation Stay22 (Let Me Allez) : chargé une seule fois, côté client, en asynchrone.
   useEffect(() => {
+    if (!mapsConsent) return;
     const w = window as typeof window & { Stay22?: { params?: Record<string, string> } };
     if (document.getElementById("stay22-letmeallez")) return;
     w.Stay22 = w.Stay22 || {};
@@ -170,23 +174,31 @@ function RootComponent() {
     script.async = true;
     script.src = "https://scripts.stay22.com/letmeallez.js";
     document.head.appendChild(script);
-  }, []);
+  }, [mapsConsent]);
 
+  return null;
+}
 
+function RootComponent() {
+  const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <CurrencyProvider>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">
-              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-              <Outlet />
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
+          <CookieConsentProvider>
+            <Stay22AffiliateScript />
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">
+                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                <Outlet />
+              </main>
+              <Footer />
+            </div>
+            <CookieBanner />
+            <Toaster />
+          </CookieConsentProvider>
         </CurrencyProvider>
       </ThemeProvider>
     </QueryClientProvider>

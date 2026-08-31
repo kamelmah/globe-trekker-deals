@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { Button } from "@/components/ui/button";
+import { useCookieConsent } from "@/lib/cookie-consent-context";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const TITLE = "Gestion des cookies | TrouveMonVol";
@@ -23,39 +25,58 @@ export const Route = createFileRoute("/cookies")({
 });
 
 function CookiesPage() {
+  const { openManager } = useCookieConsent();
   return (
     <article className="container-page max-w-3xl py-12">
       <h1 className="font-display text-3xl font-semibold">Gestion des cookies</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Dernière mise à jour : [date à compléter]. Éditeur : [nom de l'éditeur — à compléter].
+      <p className="mt-2 text-sm text-muted-foreground">Dernière mise à jour : 2026-08-31.</p>
+
+      <p className="mt-4 text-muted-foreground">
+        Cette page liste précisément les cookies et technologies similaires utilisés par
+        TrouveMonVol au moment de la rédaction. Nous ne décrivons ici que ce qui est réellement en
+        place : aucun outil de mesure d'audience (type Google Analytics) n'est actuellement intégré
+        au site.
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Cookies strictement nécessaires</h2>
       <p className="mt-2 text-muted-foreground">
-        Ils assurent le fonctionnement du site : mémorisation de la devise choisie, sécurité et
-        préférences d'affichage. Ils ne nécessitent pas de consentement.
+        Stockés localement dans votre navigateur (localStorage), sans consentement requis :
+      </p>
+      <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
+        <li>Devise d'affichage choisie</li>
+        <li>Thème clair ou sombre choisi</li>
+        <li>Votre choix de consentement aux cookies lui-même (catégories ci-dessous), pendant 13 mois maximum</li>
+      </ul>
+
+      <h2 className="mt-8 font-display text-xl font-semibold">
+        Cartes d'hébergement Stay22 (nécessite votre accord)
+      </h2>
+      <p className="mt-2 text-muted-foreground">
+        Les pages Hébergement et les guides destination intègrent une carte interactive fournie par
+        notre partenaire Stay22, ainsi qu'un script d'affiliation associé. Ce sont des cookies tiers
+        déposés par stay22.com, pas par TrouveMonVol : ils ne se chargent que si vous avez accepté
+        cette catégorie. Refuser n'empêche pas d'utiliser le reste du site — vous pouvez toujours
+        rechercher et comparer des vols normalement.
       </p>
 
-      <h2 className="mt-8 font-display text-xl font-semibold">Mesure d'audience</h2>
+      <h2 className="mt-8 font-display text-xl font-semibold">
+        Cookies déposés par nos partenaires de réservation
+      </h2>
       <p className="mt-2 text-muted-foreground">
-        Ces cookies nous indiquent quelles pages sont consultées, de façon agrégée, pour améliorer le
-        site. Ils sont déposés uniquement après votre accord.
-      </p>
-
-      <h2 className="mt-8 font-display text-xl font-semibold">Cookies d'affiliation</h2>
-      <p className="mt-2 text-muted-foreground">
-        Quand vous cliquez sur un résultat, un cookie du partenaire permet de rattacher une
-        éventuelle réservation à votre visite. C'est ce mécanisme qui finance le site, sans surcoût
-        pour vous : nous n'ajoutons aucun frais au prix du vendeur.
+        Quand vous cliquez sur « Réserver » vers une compagnie ou une agence, vous quittez
+        TrouveMonVol : c'est ce site partenaire qui dépose alors ses propres cookies (permettant
+        notamment de rattacher une éventuelle réservation à votre visite). Nous n'avons pas la main
+        sur ces cookies-là ; c'est ce mécanisme d'affiliation qui finance le site, sans surcoût pour
+        vous ni influence sur l'ordre des résultats.
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Modifier votre choix</h2>
       <p className="mt-2 text-muted-foreground">
-        Vous pouvez rouvrir le gestionnaire de consentement affiché sur le site pour changer d'avis à
-        tout moment, ou supprimer les cookies déjà enregistrés depuis les réglages de votre
-        navigateur (section « Confidentialité et sécurité »). Refuser les cookies non nécessaires
-        n'empêche pas d'utiliser le comparateur.
+        Vous pouvez revenir sur votre choix à tout moment, sans avoir à vider votre cache :
       </p>
+      <Button onClick={openManager} variant="outline" className="mt-3">
+        Gérer mes cookies
+      </Button>
     </article>
   );
 }

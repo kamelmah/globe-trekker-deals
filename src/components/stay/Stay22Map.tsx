@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useCookieConsent } from "@/lib/cookie-consent-context";
 
 /** Identifiant d'affiliation Stay22 (Let Me Allez). */
 export const STAY22_LMA_ID = "6a94b04440e01477bf8d234c";
@@ -37,6 +38,10 @@ export function Stay22Map({
   const [visible, setVisible] = useState(false);
   const [status, setStatus] = useState<LoadStatus>("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Cookie tiers optionnel (voir /cookies) : l'iframe Stay22 ne doit jamais se
+  // charger avant un accord explicite pour cette catégorie.
+  const { consent, savePreferences } = useCookieConsent();
+  const mapsConsent = consent?.maps === true;
 
   useEffect(() => {
     const node = containerRef.current;
@@ -77,13 +82,14 @@ export function Stay22Map({
     return `https://www.stay22.com/embed/gm?${params.toString()}`;
   }, [city, checkin, checkout]);
 
-  // Démarre un timeout de 7 s dès que la section devient visible ou que la ville/dates changent.
+  // Démarre un timeout de 7 s dès que la section devient visible ou que la ville/dates changent
+  // (seulement une fois le consentement "Cartes Stay22" accordé).
   useEffect(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
-    if (!visible) {
+    if (!visible || !mapsConsent) {
       setStatus("idle");
       return;
     }
@@ -97,7 +103,7 @@ export function Stay22Map({
         timeoutRef.current = null;
       }
     };
-  }, [visible, src]);
+  }, [visible, src, mapsConsent]);
 
   const handleLoad = () => {
     if (timeoutRef.current) {
@@ -120,7 +126,17 @@ export function Stay22Map({
       <h2 className="font-display text-xl font-semibold">{title}</h2>
       {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
       <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
-        {visible ? (
+        {!mapsConsent ? (
+          <div className="flex h-[420px] w-full flex-col items-center justify-center gap-4 p-6 text-center sm:h-[520px]">
+            <p className="max-w-sm text-sm text-muted-foreground">
+              Cette carte est fournie par notre partenaire Stay22 et dépose des cookies tiers.
+              Elle ne s'affiche qu'avec votre accord.
+            </p>
+            <Button onClick={() => savePreferences({ maps: true })} size="sm">
+              Autoriser les cartes Stay22
+            </Button>
+          </div>
+        ) : visible ? (
           <div className="relative h-[420px] w-full sm:h-[520px]">
             {status !== "error" && (
               <iframe
