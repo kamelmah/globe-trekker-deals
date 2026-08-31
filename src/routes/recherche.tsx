@@ -236,11 +236,20 @@ function SearchResultsPage() {
           <p className="font-medium text-foreground">
             Aucun vol trouvé pour ces dates, essayez d'élargir votre recherche.
           </p>
-          <p className="mt-2">
-            L'API de recherche a bien été interrogée pour le {search["depart"]} sur {from} — {to} :
-            aucune offre n'existe réellement pour cette date. Essayez les dates flexibles ± 3 jours,
-            une autre date, ou un autre aéroport de départ.
-          </p>
+          {(offersQuery.data?.alternatives?.length ?? 0) > 0 ? (
+            <p className="mt-2">
+              Notre source de prix (mise à jour périodiquement) n'a pas de vol enregistré pour le{" "}
+              {search["depart"]} sur {from} — {to}. Cela ne veut pas dire qu'aucun vol n'existe —
+              voici les dates proches où nous avons trouvé des prix réels.
+            </p>
+          ) : (
+            <p className="mt-2">
+              Notre source de prix n'a aucun vol enregistré sur {from} — {to} pour l'ensemble du
+              mois du {search["depart"]}. Essayez les dates flexibles ± 3 jours, un autre mois, ou
+              un autre aéroport de départ.
+            </p>
+          )}
+
           {(offersQuery.data?.alternatives?.length ?? 0) > 0 && (
             <div className="mt-4">
               <p className="font-medium text-foreground">
@@ -281,6 +290,15 @@ function SearchResultsPage() {
       )}
 
 
+      {!offersQuery.isPending && offersQuery.data?.nearDateOnly && filtered.length > 0 && (
+        <p className="rounded-xl border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
+          Notre source de prix (mise à jour périodiquement) n'a pas de vol enregistré pour le{" "}
+          {search["depart"]}. Cela ne veut pas dire qu'aucun vol n'existe — voici les dates proches
+          (± 3 jours) où nous avons trouvé des prix réels. La date de chaque vol est indiquée sur son
+          résultat.
+        </p>
+      )}
+
       {!offersQuery.isPending && offers.length > 0 && filtered.length === 0 && (
         <p className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
           Aucun vol ne correspond à ces filtres. Essayez d'élargir les dates ou de retirer un
@@ -290,14 +308,22 @@ function SearchResultsPage() {
 
       {filtered.map((offer, index) => (
         <div key={offer.id}>
-          {index === 0 && (
-            <Badge className="mb-2 bg-success text-success-foreground">
-              Prix le plus bas trouvé
-            </Badge>
-          )}
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            {index === 0 && (
+              <Badge className="bg-success text-success-foreground">
+                Prix le plus bas trouvé
+              </Badge>
+            )}
+            {offer.departureAt.slice(0, 10) !== search["depart"] && (
+              <Badge variant="outline">
+                Départ le {offer.departureAt.slice(0, 10).split("-").reverse().join("/")}
+              </Badge>
+            )}
+          </div>
           <FlightCard offer={offer} greenest={offer.id === greenestId} />
         </div>
       ))}
+
     </div>
   );
 

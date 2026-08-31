@@ -80,6 +80,9 @@ export const searchFlights = createServerFn({ method: "GET" })
         .sort((a, b) => a.priceEur - b.priceEur)
         .slice(0, 40);
 
+      // Aucune offre sur la date exacte : les résultats viennent de dates proches réelles.
+      const nearDateOnly = offers.length > 0 && batches.every((batch) => !batch.exactDate);
+
       // Vrai zéro API : on propose les dates réellement disponibles du mois.
       let alternatives: { date: string; priceEur: number }[] = [];
       if (offers.length === 0) {
@@ -111,19 +114,23 @@ export const searchFlights = createServerFn({ method: "GET" })
       return {
         offers,
         alternatives,
+        nearDateOnly,
         error: null as string | null,
         debug: debugOf(batches[0]?.raw ?? null),
         configured: hasApiCredentials(),
       };
+
     } catch (error) {
       return {
         offers: [],
         alternatives: [] as { date: string; priceEur: number }[],
+        nearDateOnly: false,
         error: messageOf(error),
         debug: null,
         configured: hasApiCredentials(),
       };
     }
+
 
   });
 
