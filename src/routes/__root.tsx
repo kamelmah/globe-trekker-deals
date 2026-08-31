@@ -80,6 +80,15 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             Retour à l'accueil
           </a>
         </div>
+        {/* Permet de relayer l'erreur exacte sans outil de débogage distant
+            (utile notamment sur mobile, où la console n'est pas accessible). */}
+        <details className="mt-6 text-left text-xs text-muted-foreground">
+          <summary className="cursor-pointer text-center">Détails techniques</summary>
+          <pre className="mt-2 max-h-[40vh] overflow-auto whitespace-pre-wrap break-words rounded-md bg-secondary p-3">
+            {error.message}
+            {error.stack ? `\n\n${error.stack.slice(0, 1200)}` : ""}
+          </pre>
+        </details>
       </div>
     </div>
   );

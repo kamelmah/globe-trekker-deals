@@ -1,4 +1,22 @@
-export function renderErrorPage(): string {
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/**
+ * `details`, si fourni, s'affiche dans un bloc repliable "Détails techniques" —
+ * utile pour qu'un visiteur (ou nous) puisse copier/photographier l'erreur
+ * exacte sans avoir besoin d'un outil de débogage distant.
+ */
+export function renderErrorPage(details?: string): string {
+  const detailsBlock = details
+    ? `<details class="tech">
+        <summary>Détails techniques</summary>
+        <pre>${escapeHtml(details.slice(0, 1200))}</pre>
+      </details>`
+    : "";
   return `<!doctype html>
 <html lang="fr">
   <head>
@@ -14,6 +32,9 @@ export function renderErrorPage(): string {
       a, button { padding: 0.5rem 1rem; border-radius: 0.375rem; font: inherit; cursor: pointer; text-decoration: none; border: 1px solid transparent; }
       .primary { background: #111; color: #fff; }
       .secondary { background: #fff; color: #111; border-color: #d1d5db; }
+      .tech { margin-top: 1.5rem; text-align: left; font-size: 0.75rem; color: #6b7280; }
+      .tech summary { cursor: pointer; text-align: center; }
+      .tech pre { white-space: pre-wrap; word-break: break-word; background: #f3f4f6; border-radius: 0.375rem; padding: 0.75rem; margin-top: 0.5rem; max-height: 40vh; overflow: auto; }
     </style>
   </head>
   <body>
@@ -24,6 +45,7 @@ export function renderErrorPage(): string {
         <button class="primary" onclick="location.reload()">Réessayer</button>
         <a class="secondary" href="/">Retour à l'accueil</a>
       </div>
+      ${detailsBlock}
     </div>
   </body>
 </html>`;
