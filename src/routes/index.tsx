@@ -18,9 +18,7 @@ const HERO_WEBP_SRCSET = `${heroSky640Webp} 640w, ${heroSky960Webp} 960w, ${hero
 import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
-import { AIRPORTS } from "@/data/airports";
 import { DESTINATIONS } from "@/data/destinations";
-import { useCountUp } from "@/hooks/use-count-up";
 import { getDestinationImage } from "@/lib/destination-images";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
@@ -139,7 +137,6 @@ const REASONS = [
 function HomePage() {
   const { prices, error } = Route.useLoaderData();
   const prefill = Route.useSearch();
-  const airportCount = useCountUp(AIRPORTS.length);
 
   return (
     <div>
@@ -168,14 +165,6 @@ function HomePage() {
                 somme que vous voulez dépenser et découvrez toutes les destinations accessibles depuis
                 votre ville.
               </p>
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="font-display text-4xl font-bold text-primary tabular-nums">
-                  {airportCount}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  villes de départ, vols vers le monde entier
-                </span>
-              </div>
               <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
                 <li>• Dates flexibles ± 3 jours pour repérer le jour le moins cher</li>
                 <li>• Vue calendrier des prix du mois, en un coup d'œil</li>
