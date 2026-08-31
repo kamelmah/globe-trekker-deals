@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DESTINATIONS } from "@/data/destinations";
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/sitemap-vols/$page.xml")({
   server: {
     handlers: {
       GET: async ({ request, params }) => {
-        const origin = new URL(request.url).origin;
+        const origin = SITE_URL;
         const page = Number.parseInt((params as Record<string, string>)["page.xml"] ?? "", 10);
         if (!Number.isFinite(page) || page < 1) {
           return new Response("Segment de sitemap inconnu", { status: 404 });
