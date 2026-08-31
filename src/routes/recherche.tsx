@@ -236,11 +236,20 @@ function SearchResultsPage() {
           <p className="font-medium text-foreground">
             Aucun vol trouvé pour ces dates, essayez d'élargir votre recherche.
           </p>
-          <p className="mt-2">
-            L'API de recherche a bien été interrogée pour le {search["depart"]} sur {from} — {to} :
-            aucune offre n'existe réellement pour cette date. Essayez les dates flexibles ± 3 jours,
-            une autre date, ou un autre aéroport de départ.
-          </p>
+          {(offersQuery.data?.alternatives?.length ?? 0) > 0 ? (
+            <p className="mt-2">
+              Notre source de prix (mise à jour périodiquement) n'a pas de vol enregistré pour le{" "}
+              {search["depart"]} sur {from} — {to}. Cela ne veut pas dire qu'aucun vol n'existe —
+              voici les dates proches où nous avons trouvé des prix réels.
+            </p>
+          ) : (
+            <p className="mt-2">
+              Notre source de prix n'a aucun vol enregistré sur {from} — {to} pour l'ensemble du
+              mois du {search["depart"]}. Essayez les dates flexibles ± 3 jours, un autre mois, ou
+              un autre aéroport de départ.
+            </p>
+          )}
+
           {(offersQuery.data?.alternatives?.length ?? 0) > 0 && (
             <div className="mt-4">
               <p className="font-medium text-foreground">
