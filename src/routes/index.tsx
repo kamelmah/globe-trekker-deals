@@ -18,7 +18,9 @@ const HERO_WEBP_SRCSET = `${heroSky640Webp} 640w, ${heroSky960Webp} 960w, ${hero
 import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { AIRPORTS } from "@/data/airports";
 import { DESTINATIONS } from "@/data/destinations";
+import { useCountUp } from "@/hooks/use-count-up";
 import { getDestinationImage } from "@/lib/destination-images";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
@@ -137,6 +139,7 @@ const REASONS = [
 function HomePage() {
   const { prices, error } = Route.useLoaderData();
   const prefill = Route.useSearch();
+  const airportCount = useCountUp(AIRPORTS.length);
 
   return (
     <div>
@@ -150,38 +153,48 @@ function HomePage() {
           alt="Aile d'avion au-dessus d'une mer de nuages au lever du soleil"
           width={1920}
           height={1080}
-          className="absolute inset-0 -z-10 size-full object-cover"
+          className="hero-parallax-img absolute inset-0 -z-10 size-full object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/35 via-background/15 to-background/45" aria-hidden />
         <div className="container-page grid gap-10 py-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-16">
           <div className="rounded-2xl bg-gradient-to-br from-background/95 via-background/90 to-background/70 p-6 lg:p-8 shadow-sm">
-            <h1 className="font-display text-3xl font-semibold leading-tight sm:text-4xl">
+            <h1 className="hero-in hero-in-1 font-display text-3xl font-semibold leading-tight sm:text-4xl">
               Trouvez un vol pas cher sans mauvaise surprise au moment de payer
             </h1>
-            <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-              TrouveMonVol compare les prix des vols en affichant le montant total taxes incluses et le
-              nom du vendeur réel du billet. Vous pouvez aussi partir de votre budget : indiquez la
-              somme que vous voulez dépenser et découvrez toutes les destinations accessibles depuis
-              votre ville.
-            </p>
-            <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-              <li>• Dates flexibles ± 3 jours pour repérer le jour le moins cher</li>
-              <li>• Vue calendrier des prix du mois, en un coup d'œil</li>
-              <li>• Alerte email gratuite quand le prix baisse, sans créer de compte</li>
-            </ul>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                to="/mode-budget"
-                search={{ origin: "PAR", budget: 400, month: "" }}
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
-              >
-                <MapIcon className="size-4 text-primary" aria-hidden />
-                Explorer la carte du monde par budget
-              </Link>
+            <div className="hero-in hero-in-2">
+              <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+                TrouveMonVol compare les prix des vols en affichant le montant total taxes incluses et le
+                nom du vendeur réel du billet. Vous pouvez aussi partir de votre budget : indiquez la
+                somme que vous voulez dépenser et découvrez toutes les destinations accessibles depuis
+                votre ville.
+              </p>
+              <div className="mt-5 flex items-baseline gap-2">
+                <span className="font-display text-4xl font-bold text-primary tabular-nums">
+                  {airportCount}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  villes de départ, vols vers le monde entier
+                </span>
+              </div>
+              <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
+                <li>• Dates flexibles ± 3 jours pour repérer le jour le moins cher</li>
+                <li>• Vue calendrier des prix du mois, en un coup d'œil</li>
+                <li>• Alerte email gratuite quand le prix baisse, sans créer de compte</li>
+              </ul>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  to="/mode-budget"
+                  search={{ origin: "PAR", budget: 400, month: "" }}
+                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+                >
+                  <MapIcon className="size-4 text-primary" aria-hidden />
+                  Explorer la carte du monde par budget
+                </Link>
+              </div>
             </div>
           </div>
 
-          <div id="recherche" className="scroll-mt-24">
+          <div id="recherche" className="hero-in hero-in-3 scroll-mt-24">
             <SearchForm
               key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
             initialOrigin={prefill.origin || "PAR"}
