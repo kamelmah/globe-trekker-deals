@@ -849,7 +849,8 @@ export const ALL_AIRPORT_CODES = AIRPORTS.map((a) => a.code);
 export function shiftDates(date: string, days: number): string[] {
   const out: string[] = [];
   const today = new Date().toISOString().slice(0, 10);
-  for (let offset = -days; offset <= days; offset += days) {
+  // Chaque jour de la plage est testé (J-days … J+days), pas seulement les bornes.
+  for (let offset = -days; offset <= days; offset += 1) {
     const d = new Date(`${date}T00:00:00Z`);
     d.setUTCDate(d.getUTCDate() + offset);
     const iso = d.toISOString().slice(0, 10);
@@ -857,3 +858,4 @@ export function shiftDates(date: string, days: number): string[] {
   }
   return out.length ? out : [date];
 }
+
