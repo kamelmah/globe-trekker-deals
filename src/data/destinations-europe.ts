@@ -461,4 +461,254 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
       },
     ],
   },
+  {
+    slug: "paris-madrid",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "MAD",
+    destinationCity: "Madrid",
+    country: "Espagne",
+    heading: "Vols pas chers Paris — Madrid",
+    metaTitle: "Vol pas cher Paris Madrid : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Madrid au prix total taxes incluses, vendeur affiché. Compagnies, aéroport, meilleure période et alerte prix gratuite.",
+    intro:
+      "Un peu moins de deux heures de vol séparent Paris de Madrid, sur une des liaisons les plus denses entre la France et l'Espagne. L'offre est fournie toute l'année, avec une nette pointe de chaleur (et de prix touristiques) en juillet-août qui pousse à privilégier les intersaisons.",
+    bestMonths: "Avril-mai et septembre-octobre",
+    averageDuration: "1 h 50 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis Barajas",
+        paragraphs: [
+          "Air France, Iberia, Vueling et Transavia opèrent la ligne depuis Charles-de-Gaulle, Orly ou Beauvais. Iberia et Vueling proposent souvent les tarifs les plus bas hors vacances scolaires françaises et espagnoles.",
+          "L'aéroport Adolfo-Suárez Madrid-Barajas est à une vingtaine de kilomètres du centre. La ligne 8 du métro rejoint Nuevos Ministerios en environ vingt-cinq minutes pour un peu plus de 5 euros ; le bus express Aeropuerto dessert Atocha et Cibeles toute la nuit pour un tarif équivalent.",
+          "Madrid se visite bien à pied dans l'hypercentre, complété par un métro dense et bon marché : un abonnement touristique de plusieurs jours revient souvent moins cher qu'un ticket à l'unité si vous restez plus de deux jours.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Juillet et août sont les mois les plus chauds (souvent au-dessus de 35 °C) et les plus chers en hébergement, alors que les prix des vols eux-mêmes restent modérés grâce à une offre abondante. Avril-mai et septembre-octobre offrent le meilleur compromis météo et budget.",
+          "Décembre et janvier, hors fêtes de fin d'année, comptent parmi les périodes les moins chères : les prix montent nettement pendant la semaine de Noël et le pont de la Constitution (début décembre).",
+          "Madrid reste une capitale abordable pour un séjour court : un menu du jour dans une taverne revient à 12-15 euros, une chambre correcte en centre-ville à 70-110 euros la nuit hors pics saisonniers.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Madrid ?",
+        answer: "Environ 1 h 50 en vol direct.",
+      },
+      {
+        question: "Comment rejoindre le centre de Madrid depuis Barajas ?",
+        answer:
+          "La ligne 8 du métro atteint Nuevos Ministerios en une vingtaine de minutes pour un peu plus de 5 euros ; le bus express Aeropuerto dessert Atocha et Cibeles à un tarif équivalent.",
+      },
+      {
+        question: "Quand les vols vers Madrid sont-ils les moins chers ?",
+        answer:
+          "En dehors de juillet-août (forte chaleur et hébergement cher) et des périodes de fêtes ; avril-mai et septembre-octobre offrent le meilleur compromis météo et prix.",
+      },
+    ],
+  },
+  {
+    slug: "paris-dublin",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "DUB",
+    destinationCity: "Dublin",
+    country: "Irlande",
+    heading: "Vols pas chers Paris — Dublin",
+    metaTitle: "Vol pas cher Paris Dublin : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Dublin au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+    intro:
+      "Un vol direct Paris — Dublin dure un peu moins de deux heures. La liaison est desservie par plusieurs compagnies à bas coût, ce qui en fait l'une des capitales européennes les plus accessibles depuis Paris, mais aussi l'une des plus sensibles aux vacances scolaires irlandaises et françaises simultanées.",
+    bestMonths: "Mai-juin et septembre",
+    averageDuration: "1 h 45 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Aer Lingus, Ryanair, Air France et Transavia desservent la ligne depuis Charles-de-Gaulle, Orly ou Beauvais. Ryanair et Aer Lingus concentrent l'essentiel de l'offre à bas prix hors haute saison.",
+          "L'aéroport de Dublin n'a pas de liaison ferrée directe : les navettes Aircoach et Airlink Express rejoignent le centre en trente à quarante-cinq minutes selon la circulation, pour 7 à 10 euros l'aller.",
+          "Dublin se visite très bien à pied : le centre historique (Temple Bar, Trinity College, la cathédrale Saint-Patrick) tient dans un rayon de quarante-cinq minutes de marche.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Mai, juin et septembre offrent le meilleur compromis météo (Dublin reste pluvieuse toute l'année, mais ces mois limitent le risque) et des tarifs encore raisonnables. Juillet-août et la période de la Saint-Patrick (mi-mars) concentrent la demande et font grimper les prix des billets comme des hôtels.",
+          "Comme sur beaucoup de liaisons low-cost, l'écart entre une réservation faite tôt et une réservation de dernière minute est particulièrement marqué : les compagnies à bas coût ajustent leurs tarifs en continu selon le remplissage.",
+          "L'Irlande n'est pas dans la zone euro... si : elle utilise bien l'euro, ce qui simplifie le budget. En revanche, une pinte ou un repas au restaurant y coûtent sensiblement plus cher qu'à Paris — prévoyez ce delta plutôt que de chercher à le compenser sur le prix du billet.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Dublin ?",
+        answer: "Environ 1 h 45 en vol direct.",
+      },
+      {
+        question: "Faut-il un passeport pour aller à Dublin ?",
+        answer:
+          "L'Irlande n'est pas dans l'espace Schengen, mais en tant que citoyen européen une carte d'identité valide suffit pour l'entrée ; vérifiez toutefois les conditions demandées par votre compagnie aérienne.",
+      },
+      {
+        question: "Comment rejoindre le centre depuis l'aéroport de Dublin ?",
+        answer:
+          "Il n'y a pas de train direct : les navettes Aircoach ou Airlink Express desservent le centre en trente à quarante-cinq minutes pour 7 à 10 euros.",
+      },
+    ],
+  },
+  {
+    slug: "paris-munich",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "MUC",
+    destinationCity: "Munich",
+    country: "Allemagne",
+    heading: "Vols pas chers Paris — Munich",
+    metaTitle: "Vol pas cher Paris Munich : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Munich au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, Oktoberfest et alerte prix gratuite.",
+    intro:
+      "Munich est à moins d'une heure quarante de vol de Paris, sur une liaison bien desservie toute l'année. Un seul événement change vraiment la donne sur les prix : l'Oktoberfest, mi-septembre à début octobre, qui fait grimper vols et hôtels plusieurs mois à l'avance.",
+    bestMonths: "Mai-juin et début septembre (hors Oktoberfest)",
+    averageDuration: "1 h 35 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Lufthansa, Air France et Transavia opèrent la ligne depuis Charles-de-Gaulle et Orly. Lufthansa domine l'offre en fréquences, ce qui laisse une bonne marge pour comparer les horaires sans sacrifier le prix.",
+          "L'aéroport Franz-Josef-Strauss est excentré, à une trentaine de kilomètres du centre : les S-Bahn S1 et S8 rejoignent la gare centrale (Hauptbahnhof) en quarante à quarante-cinq minutes pour environ 13 euros avec le billet de zone adapté.",
+          "Munich se visite bien à pied et à vélo dans l'Altstadt (vieille ville) ; le réseau de S-Bahn et U-Bahn complète efficacement pour les quartiers plus excentrés comme Schwabing ou l'Englischer Garten.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Mai-juin et la première quinzaine de septembre offrent le meilleur compromis météo et prix. Dès la mi-septembre, l'Oktoberfest fait grimper fortement vols et hébergements : si vous ne visez pas spécifiquement la fête, réservez tôt ou évitez cette fenêtre.",
+          "L'hiver reste une option moins chère pour les vols, avec les marchés de Noël (fin novembre à fin décembre) comme seule exception à la baisse des tarifs.",
+          "Munich est une ville chère pour l'Allemagne : comptez 15-20 euros pour un repas simple, davantage dans une brasserie touristique. Le vol reste souvent le poste le plus facile à optimiser du séjour.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Munich ?",
+        answer: "Environ 1 h 35 en vol direct.",
+      },
+      {
+        question: "Pourquoi les vols vers Munich sont-ils chers en septembre ?",
+        answer:
+          "À cause de l'Oktoberfest (mi-septembre à début octobre), qui concentre une forte demande sur vols et hôtels plusieurs mois à l'avance.",
+      },
+      {
+        question: "Comment rejoindre le centre depuis l'aéroport de Munich ?",
+        answer:
+          "Les S-Bahn S1 et S8 relient l'aéroport à la gare centrale en quarante à quarante-cinq minutes, pour environ 13 euros.",
+      },
+    ],
+  },
+  {
+    slug: "paris-porto",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "OPO",
+    destinationCity: "Porto",
+    country: "Portugal",
+    heading: "Vols pas chers Paris — Porto",
+    metaTitle: "Vol pas cher Paris Porto : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Porto au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+    intro:
+      "Un peu plus de deux heures de vol séparent Paris de Porto. Moins fréquentée que Lisbonne sur les mêmes dates, la ville profite de tarifs souvent plus doux tout en restant à distance de vol comparable, ce qui en fait une alternative intéressante à comparer systématiquement.",
+    bestMonths: "Mai-juin et septembre-octobre",
+    averageDuration: "2 h 15 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "TAP Air Portugal, Transavia et Ryanair desservent la ligne depuis Charles-de-Gaulle, Orly et Beauvais. TAP et Transavia offrent en général les meilleures fréquences en semaine.",
+          "L'aéroport Francisco-Sá-Carneiro est directement relié au centre par la ligne violette (E) du métro, en une quarantaine de minutes pour environ 2 euros : c'est l'un des transferts aéroport les moins chers d'Europe.",
+          "Le centre historique (Ribeira, Foz) se visite à pied, avec un fort dénivelé à prévoir — de bonnes chaussures comptent plus qu'un plan de métro pour ce séjour.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Mai-juin et septembre-octobre offrent des températures agréables sans la chaleur ni l'affluence du cœur de l'été. Juillet-août restent plus chers, mais nettement moins que sur Lisbonne à la même période.",
+          "L'hiver est doux comparé au reste de l'Europe et propose les tarifs les plus bas de l'année, avec un risque de pluie plus élevé qu'en saison sèche.",
+          "Porto reste l'une des capitales les plus abordables d'Europe de l'Ouest sur place : un repas complet avec vin de Porto revient souvent à 15-20 euros, une chambre correcte en centre-ville à 50-80 euros la nuit hors haute saison.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Porto ?",
+        answer: "Environ 2 h 15 en vol direct.",
+      },
+      {
+        question: "Comment rejoindre le centre de Porto depuis l'aéroport ?",
+        answer:
+          "La ligne violette (E) du métro relie directement l'aéroport au centre en une quarantaine de minutes, pour environ 2 euros.",
+      },
+      {
+        question: "Porto ou Lisbonne : quelle destination est la moins chère ?",
+        answer:
+          "Sur les mêmes dates, Porto affiche en général des tarifs de vol et d'hébergement légèrement plus doux que Lisbonne — comparez les deux avant de choisir si votre destination n'est pas fixée.",
+      },
+    ],
+  },
+  {
+    slug: "paris-budapest",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "BUD",
+    destinationCity: "Budapest",
+    country: "Hongrie",
+    heading: "Vols pas chers Paris — Budapest",
+    metaTitle: "Vol pas cher Paris Budapest : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Budapest au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+    intro:
+      "Un peu plus de deux heures de vol séparent Paris de Budapest. La ville reste l'une des capitales les moins chères d'Europe une fois sur place, ce qui en fait une destination où le budget hébergement et restauration pèse nettement moins que le prix du billet d'avion.",
+    bestMonths: "Mai-juin et septembre",
+    averageDuration: "2 h 15 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Wizz Air, Air France et Transavia desservent la ligne depuis Charles-de-Gaulle, Orly et Beauvais. Wizz Air, compagnie basée à Budapest, propose souvent les tarifs les plus bas hors vacances scolaires.",
+          "L'aéroport Ferenc-Liszt n'a pas de liaison ferrée directe : le bus express 100E rejoint le centre (Deák Ferenc tér) en trente à quarante minutes pour environ 6 euros. Des navettes partagées existent aussi à un tarif comparable.",
+          "Budapest se parcourt facilement à pied côté Pest (rive plate) et en tramway ou funiculaire côté Buda (rive vallonnée) : un ticket de transport à la journée coûte environ 5 euros.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Mai-juin et septembre offrent le meilleur compromis météo, entre chaleur estivale parfois écrasante (30 °C et plus en juillet-août) et froid marqué en hiver. Les prix des vols restent globalement modérés toute l'année, avec une hausse sensible autour du Nouvel An.",
+          "La Hongrie utilise le forint (HUF), pas l'euro : pensez à vérifier le taux de change avant de comparer les prix sur place, la plupart des cartes bancaires françaises fonctionnant sans souci mais avec des frais de change variables selon les banques.",
+          "Budapest reste l'une des capitales les plus abordables du continent : un repas au restaurant revient souvent à 8-12 euros, une entrée aux bains thermaux (Széchenyi, Gellért) à 15-20 euros — largement en dessous des standards d'Europe de l'Ouest.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Budapest ?",
+        answer: "Environ 2 h 15 en vol direct.",
+      },
+      {
+        question: "Budapest utilise-t-elle l'euro ?",
+        answer:
+          "Non, la Hongrie a sa propre monnaie, le forint (HUF). Vérifiez le taux de change avant de comparer les prix sur place.",
+      },
+      {
+        question: "Comment rejoindre le centre depuis l'aéroport de Budapest ?",
+        answer:
+          "Le bus express 100E relie l'aéroport à Deák Ferenc tér, dans le centre, en trente à quarante minutes pour environ 6 euros.",
+      },
+    ],
+  },
 ];

@@ -1351,6 +1351,331 @@ export const CITY_GUIDES: CityGuide[] = [
       },
     ],
   },
+  {
+    slug: "madrid",
+    city: "Madrid",
+    country: "Espagne",
+    routeSlug: "paris-madrid",
+    origin: "PAR",
+    destination: "MAD",
+    originCity: "Paris",
+    title: "Que faire à Madrid : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Madrid : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Madrid : meilleure période, quartiers où loger, budget réel sur place, musées gratuits et accès depuis l'aéroport pour les voyageurs français.",
+    intro:
+      "Madrid se visite toute l'année, mais la chaleur de juillet-août change radicalement l'expérience. Voici les repères concrets avant de réserver : climat, quartiers, budget réel et accès depuis Barajas.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR).",
+      langue: "Espagnol. L'anglais est répandu dans le centre et les lieux touristiques.",
+      visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
+      transport: "Métro dense (13 lignes) et bus ; un abonnement touristique pluri-jours revient souvent moins cher qu'un ticket à l'unité au-delà de deux jours.",
+      budgetJour: "60 à 100 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Madrid ?",
+        paragraphs: [
+          "Avril-mai et septembre-octobre offrent le meilleur compromis : températures autour de 20-25 °C, ciel dégagé, et une ville qui a retrouvé son rythme après l'exode estival des Madrilènes vers la côte.",
+          "Juillet et août dépassent régulièrement les 35 °C en journée : la ville tourne au ralenti l'après-midi, beaucoup de commerces ferment plus tôt, et la vie se déplace vers le soir. Un vrai choix de voyage, pas seulement une question de tarif.",
+          "Décembre-janvier hors fêtes de fin d'année reste une période abordable, avec des journées fraîches mais rarement froides pour une capitale européenne.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Sol, Austrias et Palacio concentrent l'essentiel du Madrid historique : la Plaza Mayor, le Palais royal et les ruelles pavées du vieux Madrid se couvrent aisément à pied en une journée.",
+          "Le triangle de l'art (Prado, Reina Sofía, Thyssen-Bornemisza) mérite une journée à lui seul ; les trois musées offrent des créneaux gratuits en fin de journée, plusieurs jours par semaine.",
+          "Pour l'ambiance locale, Malasaña et Chueca rassemblent bars et boutiques indépendantes, La Latina est le rendez-vous du tapeo dominical, et Retiro offre le grand parc où les Madrilènes eux-mêmes passent leurs après-midi.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement reste abordable pour une capitale européenne : 60-100 € la nuit pour un hôtel correct en centre-ville, 25-40 € en auberge. Les prix grimpent nettement pendant la Semaine sainte et les grands événements sportifs.",
+          "Un menu du jour dans une taverne de quartier revient à 12-15 € boisson comprise, un dîner de tapas partagées à 20-30 € par personne. Les trois grands musées d'art proposent des horaires d'entrée gratuite plusieurs soirs par semaine.",
+          "Les transports coûtent environ 1,50 à 2 € le trajet en métro, ou 8 € pour un abonnement touristique d'une journée si vous multipliez les déplacements.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Horaires : beaucoup de commerces ferment entre 14 h et 17 h, notamment en été. Les dîners commencent tard, souvent après 21 h — inutile de chercher un restaurant plein à 19 h30.",
+          "Depuis l'aéroport : la ligne 8 du métro rejoint Nuevos Ministerios en une vingtaine de minutes, le bus express Aeropuerto dessert le centre toute la nuit pour un tarif équivalent.",
+          "Sécurité : le vol à la tire existe dans les zones très touristiques (Sol, Plaza Mayor, transports bondés) — rien d'alarmant avec les précautions habituelles.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent le centre historique, le triangle de l'art et un quartier plus local comme Malasaña ou La Latina.",
+          "Cinq nuits laissent le temps d'ajouter une excursion à la journée : Tolède ou Ségovie sont à moins d'une heure en train à grande vitesse.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "dublin",
+    city: "Dublin",
+    country: "Irlande",
+    routeSlug: "paris-dublin",
+    origin: "PAR",
+    destination: "DUB",
+    originCity: "Paris",
+    title: "Que faire à Dublin : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Dublin : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Dublin : meilleure période, quartiers où loger, budget réel sur place, accès depuis l'aéroport et formalités pour les voyageurs français.",
+    intro:
+      "Dublin se visite toute l'année sous un climat changeant, mais le budget sur place varie moins selon la saison que dans la plupart des capitales : c'est une ville chère toute l'année. Voici les repères concrets avant de réserver.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR).",
+      langue: "Anglais (et irlandais, langue officielle mais peu utilisée au quotidien).",
+      visa: "Pas de visa pour un séjour touristique ; carte d'identité valide suffisante malgré l'absence de l'Irlande dans l'espace Schengen.",
+      transport: "Pas de métro : bus, tram Luas et trains DART pour la côte. Le centre se parcourt largement à pied.",
+      budgetJour: "70 à 120 € par personne et par jour, hébergement compris — l'Irlande est plus chère que la moyenne européenne.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Dublin ?",
+        paragraphs: [
+          "Mai à septembre offre les journées les plus longues et les meilleures chances de temps sec, sans que la pluie soit jamais totalement exclue — c'est une réalité du climat irlandais à intégrer plutôt qu'à espérer éviter.",
+          "La mi-mars, autour de la Saint-Patrick, concentre une forte affluence et des prix élevés sur les vols comme sur les hôtels : à réserver bien à l'avance si vous visez spécifiquement cette période, ou à éviter si vous cherchez un tarif bas.",
+          "L'hiver reste doux pour une latitude nordique (rarement sous 0 °C) mais avec des journées très courtes dès décembre — compensé par des tarifs de vol et d'hôtel nettement plus bas.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Temple Bar et le Trinity College concentrent l'image touristique de Dublin — à voir, mais pas à y baser tout son séjour : les pubs y sont plus chers qu'ailleurs en ville.",
+          "Georgian Dublin (autour de Merrion Square et St Stephen's Green) offre l'architecture géorgienne caractéristique et plusieurs musées gratuits, dont la National Gallery.",
+          "Pour l'ambiance locale, le quartier de Stoneybatter et le marché de Smithfield attirent une clientèle plus dublinoise, et une balade côtière vers Howth ou Dún Laoghaire (accessible en DART) change agréablement du centre.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement est le poste qui surprend le plus les visiteurs français : comptez 100-160 € la nuit pour un hôtel correct en centre-ville, 35-50 € en auberge — sensiblement plus qu'à Paris sur des standards équivalents.",
+          "Une pinte de bière revient à 6-7 €, un repas simple au pub à 15-20 €, un dîner au restaurant à 30-40 € par personne. La visite de la Guinness Storehouse ou de la distillerie Jameson coûte 25-30 € mais inclut une dégustation.",
+          "Les transports en bus ou Luas coûtent 2-3 € le trajet ; une carte Leap (rechargeable) réduit sensiblement le tarif par rapport à un ticket papier.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : aucune liaison ferrée directe. Les navettes Aircoach et Airlink Express rejoignent le centre en trente à quarante-cinq minutes pour 7 à 10 € l'aller.",
+          "Argent : la carte bancaire est acceptée quasiment partout, y compris pour de très petits montants ; peu d'intérêt à retirer beaucoup d'espèces.",
+          "Météo : un vêtement de pluie léger et une veste chaude sont utiles toute l'année, même en plein été.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux à trois nuits suffisent pour le centre historique, Temple Bar, Trinity College et un musée.",
+          "Quatre à cinq nuits permettent d'ajouter une excursion à la journée vers les falaises de Howth, le comté de Wicklow, ou une location de voiture vers la côte ouest et la Chaussée des Géants (plus loin, à prévoir sur plusieurs jours).",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "munich",
+    city: "Munich",
+    country: "Allemagne",
+    routeSlug: "paris-munich",
+    origin: "PAR",
+    destination: "MUC",
+    originCity: "Paris",
+    title: "Que faire à Munich : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Munich : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Munich : meilleure période, quartiers où loger, budget réel sur place, Oktoberfest et accès depuis l'aéroport pour les voyageurs français.",
+    intro:
+      "Munich se visite agréablement une bonne partie de l'année, mais un seul événement bouleverse le calendrier des prix : l'Oktoberfest. Voici les repères concrets avant de réserver, que vous visiez la fête ou que vous préfériez l'éviter.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR).",
+      langue: "Allemand. L'anglais est bien maîtrisé, notamment par les jeunes générations.",
+      visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
+      transport: "S-Bahn, U-Bahn, tram et bus formant un réseau dense ; un billet de zone unique est valable sur tous les modes.",
+      budgetJour: "70 à 110 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Munich ?",
+        paragraphs: [
+          "Mai-juin et la première quinzaine de septembre offrent le meilleur compromis météo : journées douces, jardins et biergartens en pleine activité, sans les prix de l'Oktoberfest.",
+          "De la mi-septembre à début octobre, l'Oktoberfest transforme la ville : ambiance unique, mais hôtels complets des mois à l'avance et prix des vols nettement plus élevés. À prévoir tôt si vous visez cette période.",
+          "L'hiver est froid mais les marchés de Noël (fin novembre à fin décembre) offrent une ambiance particulière pour un budget de vol souvent plus bas qu'en saison touristique classique.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "L'Altstadt (vieille ville), autour de Marienplatz et de son hôtel de ville néogothique, concentre l'essentiel des sites historiques et se visite entièrement à pied.",
+          "Schwabing, quartier étudiant et bohème, et l'Englischer Garten (l'un des plus grands parcs urbains d'Europe, plus vaste que Central Park) offrent une respiration verte à quelques minutes du centre.",
+          "Le quartier de Glockenbachviertel, au sud du centre, rassemble une scène de bars et restaurants plus locale, loin des adresses les plus touristiques.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement est cher pour l'Allemagne, surtout à l'approche de l'Oktoberfest où les prix peuvent tripler : hors cette période, comptez 90-140 € la nuit pour un hôtel correct en centre-ville, 30-45 € en auberge.",
+          "Un repas dans une brasserie traditionnelle revient à 15-20 €, une chope de bière à 5-6 €. Les biergartens permettent souvent d'apporter son propre pique-nique tant qu'on y achète une boisson — une habitude locale à connaître.",
+          "Les transports coûtent environ 3,60 € le trajet simple en zone centrale, ou autour de 8,80 € pour un billet journée valable sur tout le réseau.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : les S-Bahn S1 et S8 rejoignent la gare centrale en quarante à quarante-cinq minutes pour environ 13 € avec le billet de zone adapté.",
+          "Horaires : les commerces ferment tôt le dimanche (souvent fermés) et vers 20 h en semaine — les restaurants restent ouverts plus tard.",
+          "Validation des titres de transport : les tickets s'oblitèrent soi-même avant le trajet ; un contrôle sans titre valide entraîne une amende, même par mégarde.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux à trois nuits couvrent l'Altstadt, l'Englischer Garten et un musée (la Pinacothèque ou le Deutsches Museum).",
+          "Quatre nuits ou plus permettent une excursion à la journée vers le château de Neuschwanstein ou les Alpes bavaroises, à environ deux heures de train.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "porto",
+    city: "Porto",
+    country: "Portugal",
+    routeSlug: "paris-porto",
+    origin: "PAR",
+    destination: "OPO",
+    originCity: "Paris",
+    title: "Que faire à Porto : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Porto : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Porto : meilleure période, quartiers où loger, budget réel sur place, caves de vin de Porto et accès depuis l'aéroport pour les voyageurs français.",
+    intro:
+      "Porto reste l'une des capitales les plus abordables d'Europe de l'Ouest, avec un climat plus doux que Lisbonne l'été et un accès aéroport particulièrement simple. Voici les repères concrets avant de réserver.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Euro (EUR).",
+      langue: "Portugais. L'anglais est courant dans les zones touristiques.",
+      visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
+      transport: "Métro léger, bus et le tram historique (ligne 1) le long du Douro ; centre historique vallonné, à parcourir à pied avec de bonnes chaussures.",
+      budgetJour: "45 à 75 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Porto ?",
+        paragraphs: [
+          "Mai-juin et septembre-octobre offrent des températures agréables (20-25 °C) sans la chaleur ni l'affluence du cœur de l'été, avec des tarifs de vol et d'hôtel encore raisonnables.",
+          "Juillet-août restent plus chauds et plus chers, mais nettement moins que Lisbonne à la même période — une bonne alternative si vos dates sont fixées sur l'été.",
+          "L'hiver est doux comparé au reste de l'Europe (rarement sous 8-10 °C en journée) et propose les tarifs les plus bas de l'année, avec un risque de pluie plus élevé qu'en saison sèche.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "La Ribeira, classée à l'UNESCO, longe le Douro avec ses maisons colorées superposées : c'est le cœur touristique, à voir tôt le matin ou en fin de journée pour éviter l'affluence.",
+          "Vila Nova de Gaia, sur l'autre rive, rassemble les grandes caves de vin de Porto (Sandeman, Graham's, Taylor's) qui proposent des visites avec dégustation.",
+          "Le quartier de Bonfim et la rue de Cedofeita offrent une scène plus locale, boutiques indépendantes et cafés, à dix minutes à pied du centre historique.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement reste très abordable pour l'Europe de l'Ouest : 50-80 € la nuit pour un hôtel correct en centre-ville, 20-30 € en auberge, avec une hausse sensible en juillet-août.",
+          "Un repas complet avec vin de Porto revient à 15-20 € dans une taverne de quartier, un menu de fruits de mer plus soigné à 25-35 €. Les visites de caves avec dégustation coûtent généralement 15-20 €.",
+          "Les transports coûtent environ 2 € le trajet en métro ou tram, ou 7 € pour un abonnement touristique d'une journée.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : la ligne violette (E) du métro relie directement l'aéroport Francisco-Sá-Carneiro au centre en une quarantaine de minutes pour environ 2 € — l'un des transferts aéroport les moins chers d'Europe.",
+          "Terrain : le centre historique est très vallonné, avec des pavés parfois glissants par temps humide — prévoyez des chaussures adaptées plutôt qu'un plan de métro.",
+          "Vin de Porto : les caves de Vila Nova de Gaia offrent souvent une vue sur la Ribeira aussi belle que le vin lui-même — réservez la visite en fin d'après-midi pour le coucher de soleil sur le fleuve.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux à trois nuits couvrent la Ribeira, Vila Nova de Gaia et une visite de cave.",
+          "Quatre à cinq nuits permettent une excursion à la journée vers la vallée du Douro (vignobles en terrasses) ou vers Braga et Guimarães, toutes deux à moins d'une heure de train.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "budapest",
+    city: "Budapest",
+    country: "Hongrie",
+    routeSlug: "paris-budapest",
+    origin: "PAR",
+    destination: "BUD",
+    originCity: "Paris",
+    title: "Que faire à Budapest : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Budapest : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Budapest : meilleure période, quartiers où loger, budget réel sur place, bains thermaux et accès depuis l'aéroport pour les voyageurs français.",
+    intro:
+      "Budapest reste l'une des capitales les moins chères d'Europe, avec un patrimoine architectural dense des deux côtés du Danube. Voici les repères concrets avant de réserver : climat, quartiers, budget réel et devise locale.",
+    readingMinutes: 6,
+    updated: "2026-08-31",
+    practical: {
+      monnaie: "Forint hongrois (HUF), pas l'euro. Environ 1 € = 400 HUF. Cartes bancaires largement acceptées.",
+      langue: "Hongrois. L'anglais et l'allemand sont répandus dans le centre et les lieux touristiques.",
+      visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
+      transport: "Métro (4 lignes, dont la ligne 1 historique classée UNESCO), tram et bus ; ticket à la journée très abordable.",
+      budgetJour: "35 à 60 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Budapest ?",
+        paragraphs: [
+          "Mai-juin et septembre offrent le meilleur compromis météo, entre chaleur estivale parfois écrasante (30 °C et plus en juillet-août) et froid marqué en hiver (souvent sous 0 °C en janvier).",
+          "Les bains thermaux extérieurs comme Széchenyi se visitent toute l'année, y compris en hiver où l'eau chaude sous la neige offre une expérience particulière.",
+          "Les prix des vols restent globalement modérés toute l'année, avec une hausse sensible autour du Nouvel An et pendant les grands marchés de Noël (décembre).",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Buda, côté colline, concentre le château, le quartier du Château et Fisherman's Bastion avec vue panoramique sur le Danube et le Parlement.",
+          "Pest, côté plat, rassemble le Parlement néogothique, la grande synagogue et le quartier juif (Jewish Quarter), devenu le cœur de la vie nocturne avec ses fameux « ruin bars » installés dans des bâtiments à l'abandon réaménagés.",
+          "Le pont des Chaînes (Széchenyi Lánchíd), illuminé le soir, relie les deux rives et offre l'une des plus belles vues de la ville, à traverser à pied au coucher du soleil.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement est l'un des moins chers des grandes capitales européennes : 40-70 € la nuit pour un hôtel correct en centre-ville, 15-25 € en auberge.",
+          "Un repas au restaurant revient à 8-12 €, une entrée aux bains thermaux (Széchenyi, Gellért, Rudas) à 15-20 € avec accès à la journée. Un « ruin bar » propose des boissons à des tarifs nettement inférieurs à l'Europe de l'Ouest.",
+          "Les transports coûtent environ 1,50 € le trajet unique, ou 5-6 € pour un billet journée valable sur tout le réseau.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : le bus express 100E relie l'aéroport Ferenc-Liszt au centre (Deák Ferenc tér) en trente à quarante minutes pour environ 6 € ; il n'y a pas de liaison ferrée directe.",
+          "Monnaie : pensez à vérifier le taux de change du forint avant de comparer les prix affichés sur place — les cartes bancaires françaises fonctionnent sans souci, avec des frais variables selon les banques.",
+          "Bains thermaux : prévoyez maillot de bain et bonnet de bain (parfois obligatoire ou en location sur place) pour les grands bains historiques.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Trois nuits couvrent Buda, Pest, une session de bains thermaux et le quartier juif.",
+          "Quatre à cinq nuits permettent d'ajouter une croisière sur le Danube au coucher du soleil ou une excursion à la journée vers le lac Balaton ou la ville de Szentendre.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getCityGuide(slug: string): CityGuide | undefined {
