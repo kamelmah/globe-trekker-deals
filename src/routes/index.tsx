@@ -64,15 +64,14 @@ export const Route = createFileRoute("/")({
   },
   loader: async () => {
     try {
-      const { prices, error, debug } = await cheapestDestinations({
+      const { prices, error } = await cheapestDestinations({
         data: { origin: "PAR", destinations: HOME_CODES },
       });
-      return { prices, error, debug };
+      return { prices, error };
     } catch {
       return {
         prices: [],
         error: "Les prix ne sont pas disponibles pour le moment. Réessayez dans quelques instants.",
-        debug: null,
       };
     }
   },
