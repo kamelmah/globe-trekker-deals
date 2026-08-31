@@ -65,43 +65,52 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
         "Aucun prix n'est disponible pour ce trajet en ce moment : impossible de fixer un point de comparaison. Réessayez avec une date de départ.",
     };
   }
-  const db = await admin();
+  try {
+    const db = await admin();
 
-  const { error } = await db.from("price_alerts").upsert(
-    {
-      email: input.email.toLowerCase(),
-      origin: input.origin.toUpperCase(),
-      destination: input.destination.toUpperCase(),
-      depart_date: input.departDate ?? null,
-      return_date: input.returnDate ?? null,
-      initial_price: referencePrice,
-      last_price: referencePrice,
-      active: true,
-    },
-    { onConflict: "email,origin,destination,depart_date" },
-  );
+    const { error } = await db.from("price_alerts").upsert(
+      {
+        email: input.email.toLowerCase(),
+        origin: input.origin.toUpperCase(),
+        destination: input.destination.toUpperCase(),
+        depart_date: input.departDate ?? null,
+        return_date: input.returnDate ?? null,
+        initial_price: referencePrice,
+        last_price: referencePrice,
+        active: true,
+      },
+      { onConflict: "email,origin,destination,depart_date" },
+    );
 
-  if (error) {
-    // Le conflit d'unicité partiel peut échouer selon l'index : on retente en insert simple.
-    const retry = await db.from("price_alerts").insert({
-      email: input.email.toLowerCase(),
-      origin: input.origin.toUpperCase(),
-      destination: input.destination.toUpperCase(),
-      depart_date: input.departDate ?? null,
-      return_date: input.returnDate ?? null,
-      initial_price: referencePrice,
-      last_price: referencePrice,
-    });
-    if (retry.error && !retry.error.message.includes("duplicate")) {
-      logOps({
-        kind: "alerte",
-        label: "création en échec",
-        ok: false,
-        message: retry.error.message,
-        context: logContext,
+    if (error) {
+      // Le conflit d'unicité partiel peut échouer selon l'index : on retente en insert simple.
+      const retry = await db.from("price_alerts").insert({
+        email: input.email.toLowerCase(),
+        origin: input.origin.toUpperCase(),
+        destination: input.destination.toUpperCase(),
+        depart_date: input.departDate ?? null,
+        return_date: input.returnDate ?? null,
+        initial_price: referencePrice,
+        last_price: referencePrice,
       });
-      return { ok: false, message: "Impossible d'enregistrer l'alerte pour le moment." };
+      if (retry.error && !retry.error.message.includes("duplicate")) {
+        logOps({
+          kind: "alerte",
+          label: "création en échec",
+          ok: false,
+          message: retry.error.message,
+          context: logContext,
+        });
+        return { ok: false, message: "Impossible d'enregistrer l'alerte pour le moment." };
+      }
     }
+  } catch (error) {
+    // Config manquante (ex. Supabase non connecté côté Lovable Cloud) : on ne
+    // laisse jamais planter la page, juste un message clair pour l'utilisateur.
+    const message = error instanceof Error ? error.message : "erreur inconnue";
+    console.error("Base de données indisponible (création alerte)", error);
+    logOps({ kind: "alerte", label: "création en échec", ok: false, message, context: logContext });
+    return { ok: false, message: "Impossible d'enregistrer l'alerte pour le moment." };
   }
 
   logOps({
@@ -119,12 +128,17 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
 }
 
 export async function deactivateAlert(token: string): Promise<boolean> {
-  const db = await admin();
-  const { error } = await db
-    .from("price_alerts")
-    .update({ active: false })
-    .eq("unsubscribe_token", token);
-  return !error;
+  try {
+    const db = await admin();
+    const { error } = await db
+      .from("price_alerts")
+      .update({ active: false })
+      .eq("unsubscribe_token", token);
+    return !error;
+  } catch (error) {
+    console.error("Base de données indisponible (désinscription alerte)", error);
+    return false;
+  }
 }
 
 async function sendDropEmail(params: {
@@ -177,7 +191,13 @@ export async function runAlertCheck(siteUrl: string): Promise<{
   checked: number;
   notified: number;
 }> {
-  const db = await admin();
+  let db;
+  try {
+    db = await admin();
+  } catch (error) {
+    console.error("Base de données indisponible (vérification alertes)", error);
+    return { checked: 0, notified: 0 };
+  }
   const { data: alerts, error } = await db
     .from("price_alerts")
     .select("*")

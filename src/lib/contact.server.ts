@@ -67,36 +67,42 @@ async function notifyContactTeam(input: ContactInput, messageId: string): Promis
   }
 }
 
+const UNAVAILABLE_MESSAGE =
+  "Votre message n'a pas pu être enregistré. Réessayez dans quelques instants ou écrivez-nous directement à contact@trouvemonvol.fr.";
+
 export async function saveContactMessage(
   input: ContactInput,
 ): Promise<{ ok: boolean; message: string }> {
-  const db = await admin();
-  const { data, error } = await db
-    .from("contact_messages")
-    .insert({
-      name: input.name,
-      email: input.email,
-      subject: input.subject,
-      message: input.message,
-    })
-    .select("id")
-    .single();
-  if (error) {
-    console.error("Erreur enregistrement message contact", error);
-    logOps({
-      kind: "contact",
-      label: "message",
-      ok: false,
-      message: error.message,
-    });
-    return {
-      ok: false,
-      message: "Votre message n'a pas pu être enregistré. Réessayez dans quelques instants ou écrivez-nous directement à contact@trouvemonvol.fr.",
-    };
+  let insertedId: string | undefined;
+  try {
+    const db = await admin();
+    const { data, error } = await db
+      .from("contact_messages")
+      .insert({
+        name: input.name,
+        email: input.email,
+        subject: input.subject,
+        message: input.message,
+      })
+      .select("id")
+      .single();
+    if (error) {
+      console.error("Erreur enregistrement message contact", error);
+      logOps({ kind: "contact", label: "message", ok: false, message: error.message });
+      return { ok: false, message: UNAVAILABLE_MESSAGE };
+    }
+    insertedId = data?.id;
+  } catch (error) {
+    // Config manquante (ex. Supabase non connecté côté Lovable Cloud) : on ne
+    // laisse jamais planter la page, juste un message clair pour l'utilisateur.
+    const message = error instanceof Error ? error.message : "erreur inconnue";
+    console.error("Base de données indisponible (message de contact)", error);
+    logOps({ kind: "contact", label: "message", ok: false, message });
+    return { ok: false, message: UNAVAILABLE_MESSAGE };
   }
   logOps({ kind: "contact", label: "message", ok: true, message: `sujet: ${input.subject}` });
 
-  const emailSent = await notifyContactTeam(input, data?.id ?? crypto.randomUUID());
+  const emailSent = await notifyContactTeam(input, insertedId ?? crypto.randomUUID());
   if (!emailSent) {
     return {
       ok: false,
@@ -115,22 +121,27 @@ export async function saveContactMessage(
 export async function saveNewsletterSubscriber(
   input: NewsletterInput,
 ): Promise<{ ok: boolean; message: string }> {
-  const db = await admin();
-  const { error } = await db.from("newsletter_subscribers").upsert(
-    {
-      email: input.email,
-      source: input.source ?? null,
-      active: true,
-    },
-    { onConflict: "email" },
-  );
-  if (error) {
-    console.error("Erreur inscription newsletter", error);
-    logOps({ kind: "newsletter", label: "inscription", ok: false, message: error.message });
-    return {
-      ok: false,
-      message: "L'inscription n'a pas pu être enregistrée. Réessayez dans quelques instants.",
-    };
+  const failMessage = "L'inscription n'a pas pu être enregistrée. Réessayez dans quelques instants.";
+  try {
+    const db = await admin();
+    const { error } = await db.from("newsletter_subscribers").upsert(
+      {
+        email: input.email,
+        source: input.source ?? null,
+        active: true,
+      },
+      { onConflict: "email" },
+    );
+    if (error) {
+      console.error("Erreur inscription newsletter", error);
+      logOps({ kind: "newsletter", label: "inscription", ok: false, message: error.message });
+      return { ok: false, message: failMessage };
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "erreur inconnue";
+    console.error("Base de données indisponible (inscription newsletter)", error);
+    logOps({ kind: "newsletter", label: "inscription", ok: false, message });
+    return { ok: false, message: failMessage };
   }
   logOps({ kind: "newsletter", label: "inscription", ok: true });
   return {
