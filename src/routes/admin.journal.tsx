@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 
 import { fetchOpsLogs } from "@/lib/ops-log.functions";
+import { formatParisDateTime } from "@/lib/price-refresh.shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 type LogsResult = Awaited<ReturnType<typeof fetchOpsLogs>>;
 type Row = Extract<LogsResult, { ok: true }>["rows"][number];
 type Stat = Extract<LogsResult, { ok: true }>["stats"][number];
+type Refresh = Extract<LogsResult, { ok: true }>["refresh"];
 
 export const Route = createFileRoute("/admin/journal")({
   head: () => ({
@@ -40,6 +42,7 @@ function AdminJournal() {
   const [onlyProblems, setOnlyProblems] = useState(false);
   const [rows, setRows] = useState<Row[] | null>(null);
   const [stats, setStats] = useState<Stat[]>([]);
+  const [refresh, setRefresh] = useState<Refresh | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -52,9 +55,11 @@ function AdminJournal() {
       if (result.ok) {
         setRows(result.rows);
         setStats(result.stats);
+        setRefresh(result.refresh);
       } else {
         setRows(null);
         setStats([]);
+        setRefresh(null);
         setError(result.message);
       }
     } catch {
@@ -114,6 +119,23 @@ function AdminJournal() {
         <p role="alert" className="mt-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
           {error}
         </p>
+      )}
+
+      {refresh && (
+        <div className="mt-6 rounded-lg border border-border bg-card p-4 text-sm">
+          <p className="font-semibold">Mise à jour automatique des prix Travelpayouts</p>
+          <p className="mt-1 text-muted-foreground">
+            Dernière mise à jour : {formatParisDateTime(refresh.lastAt)} (heure de Paris)
+            {refresh.trigger ? ` · déclenchement ${refresh.trigger}` : ""} ·{" "}
+            {refresh.priceCount} tarifs relevés
+          </p>
+          <p className="mt-1 text-muted-foreground">
+            Prochaine mise à jour prévue : {formatParisDateTime(refresh.nextAt)} (cadence horaire)
+          </p>
+          {refresh.message && (
+            <p className="mt-1 text-destructive">Dernier incident : {refresh.message}</p>
+          )}
+        </div>
       )}
 
       {stats.length > 0 && (
