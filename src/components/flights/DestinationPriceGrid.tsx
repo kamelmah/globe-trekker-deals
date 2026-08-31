@@ -10,12 +10,10 @@ export function DestinationPriceGrid({
   prices,
   origin,
   error,
-  debug,
 }: {
   prices: DestinationPrice[];
   origin: string;
   error?: string | null;
-  debug?: ApiDebugInfo | null;
 }) {
   const { format } = useCurrency();
   const sorted = [...prices].sort((a, b) => a.priceEur - b.priceEur);
