@@ -467,6 +467,55 @@ async function recordHistory(
   }
 }
 
+/**
+ * Enregistre l'observation des prix par destination (balayage "destinations les
+ * moins chères") dans `price_history`. Le prix conservé reste le plus bas
+ * réellement observé sur le mois ; `updated_at` note la date du dernier relevé,
+ * ce qui alimente la fraîcheur affichée dans les guides destinations.
+ */
+export async function recordDestinationHistory(
+  origin: string,
+  prices: DestinationPrice[],
+): Promise<number> {
+  if (prices.length === 0) return 0;
+  let written = 0;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    for (const price of prices) {
+      const month = (price.departureAt || "").slice(0, 7);
+      if (month.length !== 7 || !Number.isFinite(price.priceEur) || price.priceEur <= 0) continue;
+      const { data } = await supabaseAdmin
+        .from("price_history")
+        .select("id,lowest_price")
+        .eq("origin", origin)
+        .eq("destination", price.destination)
+        .eq("month", month)
+        .maybeSingle();
+      const now = new Date().toISOString();
+      if (data) {
+        const lowest = Math.min(Number(data.lowest_price), price.priceEur);
+        await supabaseAdmin
+          .from("price_history")
+          .update({ lowest_price: lowest, updated_at: now })
+          .eq("id", data.id);
+      } else {
+        await supabaseAdmin.from("price_history").insert({
+          origin,
+          destination: price.destination,
+          month,
+          lowest_price: price.priceEur,
+          currency: "eur",
+          updated_at: now,
+        });
+      }
+      written += 1;
+    }
+  } catch (error) {
+    console.error("Historique des destinations non enregistré", error);
+  }
+  return written;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Destinations les moins chères                                               */
 /* -------------------------------------------------------------------------- */

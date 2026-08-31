@@ -1,4 +1,7 @@
-import { fetchCheapestDestinations } from "@/lib/travelpayouts.server";
+import {
+  fetchCheapestDestinations,
+  recordDestinationHistory,
+} from "@/lib/travelpayouts.server";
 import { logOps } from "@/lib/ops-log.server";
 import {
   REFRESH_DESTINATION_CODES,
@@ -93,6 +96,9 @@ export async function refreshFlightPrices(
         forceRefresh: true,
       });
       priceCount += prices.length;
+      // Trace les relevés pour les guides destinations (prix + date affichés
+      // dans chaque fiche ville).
+      await recordDestinationHistory(origin, prices);
     } catch (error) {
       const message = error instanceof Error ? error.message : "erreur inconnue";
       failures.push(`${origin}: ${message}`);
