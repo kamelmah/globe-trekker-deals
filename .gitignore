@@ -20,6 +20,14 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Secrets locaux (clés API, etc.) — jamais dans le repo
+.env
+.env.*
+!.env.example
+
+# Le projet utilise bun (bun.lock) ; pas de lockfile npm
+package-lock.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
