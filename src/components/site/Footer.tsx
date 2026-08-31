@@ -22,7 +22,7 @@ export function Footer() {
               width={32}
               height={32}
               loading="lazy"
-              className="size-8"
+              className="size-8 shrink-0"
             />
             <p className="font-display text-lg font-semibold">TrouveMonVol</p>
           </div>

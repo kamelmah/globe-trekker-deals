@@ -14,7 +14,7 @@ export function CurrencySelect() {
   return (
     <Select value={currency} onValueChange={(value) => setCurrency(value as CurrencyCode)}>
       <SelectTrigger
-        className="h-9 w-[104px] border-border bg-card text-sm"
+        className="h-9 w-[88px] border-border bg-card text-sm sm:w-[104px]"
         aria-label="Choisir la devise d'affichage"
       >
         <SelectValue />

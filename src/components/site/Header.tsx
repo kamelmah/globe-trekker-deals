@@ -63,15 +63,18 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
-      <div className="container-page flex h-16 items-center justify-between gap-3">
-        <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold">
+      <div className="container-page flex h-16 items-center justify-between gap-2 sm:gap-3">
+        <Link
+          to="/"
+          className="flex shrink-0 items-center gap-1.5 whitespace-nowrap font-display text-base font-semibold sm:gap-2 sm:text-lg"
+        >
           <ResponsivePicture
             src={logo}
             webp={logoWebp}
             alt="TrouveMonVol"
-            width={32}
-            height={32}
-            className="size-8 rounded-lg object-contain"
+            width={40}
+            height={40}
+            className="size-9 shrink-0 rounded-lg object-contain dark:drop-shadow-[0_0_8px_rgba(59,130,246,0.45)] sm:size-10"
           />
           TrouveMonVol
         </Link>
@@ -99,7 +102,7 @@ export function Header() {
 
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <ThemeToggle />
           <CurrencySelect />
           <Button

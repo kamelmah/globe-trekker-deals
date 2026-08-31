@@ -28,7 +28,10 @@ export function ResponsivePicture({
   sizes?: string;
 }) {
   return (
-    <picture>
+    // shrink-0 : dans un conteneur flex, <picture> (et non l'<img> qu'il
+    // contient) est l'enfant flex réel. Sans ça, un flex row à l'étroit (ex.
+    // header sur mobile) peut le réduire à 0px de large silencieusement.
+    <picture className="shrink-0">
       <source srcSet={webpSrcSet ?? webp} sizes={sizes} type="image/webp" />
       <img
         src={src}
