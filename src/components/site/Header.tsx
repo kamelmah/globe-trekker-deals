@@ -3,8 +3,10 @@ import { BedDouble, Menu, Plane } from "lucide-react";
 import { useCallback, useState } from "react";
 
 
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-64.png";
+import logoWebp from "@/assets/logo-64.webp";
 import { CurrencySelect } from "@/components/site/CurrencySelect";
+import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Button } from "@/components/ui/button";
 
 const NAV = [
@@ -62,8 +64,9 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-3">
         <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold">
-          <img
+          <ResponsivePicture
             src={logo}
+            webp={logoWebp}
             alt="TrouveMonVol"
             width={32}
             height={32}

@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-64.png";
+import logoWebp from "@/assets/logo-64.webp";
+import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
 
 const linkClass = "transition-colors hover:text-foreground";
@@ -13,7 +15,15 @@ export function Footer() {
       <div className="container-page grid gap-10 py-12 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
-            <img src={logo} alt="TrouveMonVol" className="size-8" loading="lazy" />
+            <ResponsivePicture
+              src={logo}
+              webp={logoWebp}
+              alt="TrouveMonVol"
+              width={32}
+              height={32}
+              loading="lazy"
+              className="size-8"
+            />
             <p className="font-display text-lg font-semibold">TrouveMonVol</p>
           </div>
           <p className="mt-2 text-sm font-medium">Le comparateur de vols transparent</p>

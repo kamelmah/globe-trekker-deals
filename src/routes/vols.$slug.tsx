@@ -335,8 +335,8 @@ function DestinationPage() {
                       className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
                     >
                       <ResponsivePicture
-                        src={thumb.src}
-                        webp={thumb.webp}
+                        src={thumb.thumb}
+                        webp={thumb.thumbWebp}
                         alt={thumb.alt}
                         loading="lazy"
                         width={96}

@@ -56,8 +56,8 @@ export function DestinationPriceGrid({
                 className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-secondary"
               >
                 <ResponsivePicture
-                  src={image.src}
-                  webp={image.webp}
+                  src={image.thumb}
+                  webp={image.thumbWebp}
                   alt={image.alt}
                   loading="lazy"
                   width={112}
