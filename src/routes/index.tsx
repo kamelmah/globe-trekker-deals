@@ -17,6 +17,8 @@ const HERO_WEBP_SRCSET = `${heroSky640Webp} 640w, ${heroSky960Webp} 960w, ${hero
 
 import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
+import { PriceRefreshStatus } from "@/components/flights/PriceRefreshStatus";
+import { HOME_DESTINATION_CODES } from "@/lib/price-refresh.shared";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
 import { getDestinationImage } from "@/lib/destination-images";
