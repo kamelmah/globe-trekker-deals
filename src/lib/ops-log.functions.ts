@@ -25,13 +25,17 @@ export const fetchOpsLogs = createServerFn({ method: "POST" })
     }
 
     const { readOpsLogs } = await import("@/lib/ops-log.server");
+    const { readPriceRefreshState } = await import("@/lib/price-refresh.server");
     try {
-      const { rows, stats } = await readOpsLogs({
-        kind: data.kind ?? "tous",
-        onlyProblems: data.onlyProblems ?? false,
-        limit: 200,
-      });
-      return { ok: true as const, rows, stats };
+      const [{ rows, stats }, refresh] = await Promise.all([
+        readOpsLogs({
+          kind: data.kind ?? "tous",
+          onlyProblems: data.onlyProblems ?? false,
+          limit: 200,
+        }),
+        readPriceRefreshState(),
+      ]);
+      return { ok: true as const, rows, stats, refresh };
     } catch (error) {
       console.error("Lecture du journal impossible", error);
       return { ok: false as const, message: "Lecture du journal impossible pour le moment." };
