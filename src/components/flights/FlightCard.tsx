@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Luggage, Leaf, Plane, Store, Clock } from "lucide-react";
+import { AlertTriangle, Luggage, Leaf, Plane, Store, Clock } from "lucide-react";
 
 import { co2Label } from "@/lib/co2";
 import { useCurrency } from "@/lib/currency-context";
@@ -25,26 +25,47 @@ function formatTime(iso: string): string {
   });
 }
 
+/**
+ * Au-delà de ce seuil (cohérent avec le reste du cache du site, 6 h), on ne
+ * présente plus le prix comme ferme : en pratique, un tarif de plusieurs
+ * jours peut avoir dérivé de 30 % ou plus chez le vendeur final au moment
+ * du clic (vérifié en conditions réelles sur plusieurs trajets).
+ */
+const STALE_THRESHOLD_MS = 6 * 60 * 60 * 1000;
+
+type Freshness = { label: string; stale: boolean };
+
 /** Fraîcheur du relevé de prix, calculée côté client pour éviter tout écart SSR. */
-function freshnessLabel(iso: string): string | null {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  const minutes = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
-  if (minutes < 1) return "prix relevé à l'instant";
-  if (minutes < 60) return `prix relevé il y a ${minutes} min`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `prix relevé il y a ${hours} h`;
-  return `prix relevé le ${d.toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}`;
+function computeFreshness(iso: string | null): Freshness {
+  const d = iso ? new Date(iso) : null;
+  if (!d || Number.isNaN(d.getTime())) {
+    return { label: "fraîcheur inconnue", stale: true };
+  }
+  const ageMs = Date.now() - d.getTime();
+  const minutes = Math.max(0, Math.round(ageMs / 60000));
+  let label: string;
+  if (minutes < 1) label = "relevé à l'instant";
+  else if (minutes < 60) label = `relevé il y a ${minutes} min`;
+  else {
+    const hours = Math.round(minutes / 60);
+    label =
+      hours < 24
+        ? `relevé il y a ${hours} h`
+        : `relevé le ${d.toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}`;
+  }
+  return { label, stale: ageMs > STALE_THRESHOLD_MS };
 }
 
-function useFreshness(iso: string): string | null {
-  const [label, setLabel] = useState<string | null>(null);
+function useFreshness(iso: string | null): Freshness | null {
+  // null tant que non monté côté client : évite un écart de rendu SSR, la
+  // fraîcheur dépend de l'instant présent (Date.now()) donc jamais fiable côté serveur.
+  const [freshness, setFreshness] = useState<Freshness | null>(null);
   useEffect(() => {
-    setLabel(freshnessLabel(iso));
-    const timer = setInterval(() => setLabel(freshnessLabel(iso)), 60000);
+    setFreshness(computeFreshness(iso));
+    const timer = setInterval(() => setFreshness(computeFreshness(iso)), 60000);
     return () => clearInterval(timer);
   }, [iso]);
-  return label;
+  return freshness;
 }
 
 function stopsLabel(stops: number): string {
@@ -107,12 +128,17 @@ export function FlightCard({
         <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
           <p className="font-display text-2xl font-semibold">{format(offer.priceEur)}</p>
           <p className="text-xs text-muted-foreground">Prix total, taxes incluses</p>
-          {freshness && (
+          {freshness?.stale ? (
+            <p className="inline-flex items-center gap-1 rounded-md bg-warning/15 px-2 py-1 text-xs font-medium text-warning-foreground">
+              <AlertTriangle className="size-3 shrink-0" aria-hidden />
+              Prix à titre indicatif ({freshness.label}) — à confirmer chez le vendeur
+            </p>
+          ) : freshness ? (
             <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="size-3" aria-hidden />
-              {freshness}
+              Prix {freshness.label}
             </p>
-          )}
+          ) : null}
           <Button asChild>
             <a href={offer.bookingUrl} target="_blank" rel="noopener noreferrer nofollow sponsored">
               Réserver chez {offer.seller}

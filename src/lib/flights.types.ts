@@ -16,8 +16,14 @@ export type FlightOffer = {
   cabinBag: boolean;
   checkedBag: boolean;
   co2Kg: number;
-  /** Date ISO à laquelle ce prix a été relevé par le fournisseur. */
-  observedAt: string;
+  /**
+   * Date ISO à laquelle ce prix a été relevé, si connue. L'API ne fournit
+   * aucun champ de fraîcheur exploitable directement (`found_at` n'existe
+   * pas dans les réponses réelles) : cette date vient du paramètre
+   * `search_date` caché dans le lien de réservation, seule donnée fiable.
+   * `null` = fraîcheur inconnue — ne jamais l'interpréter comme "à l'instant".
+   */
+  observedAt: string | null;
   /** Lien de réservation exact renvoyé par l'API, avec le marker d'affiliation. */
   bookingUrl: string;
 };

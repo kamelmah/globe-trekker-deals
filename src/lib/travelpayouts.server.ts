@@ -254,13 +254,29 @@ type ApiOffer = {
   found_at?: string;
 };
 
-/** Date de relevé du prix renvoyée par l'API, sinon l'instant de l'appel. */
-function normalizeFoundAt(foundAt?: string): string {
+/**
+ * Date réelle d'observation du prix. Malgré la documentation, l'API ne
+ * renvoie jamais de champ `found_at` exploitable dans les réponses réelles
+ * (vérifié en direct) — la seule donnée de fraîcheur fiable est le paramètre
+ * `search_date` (format DDMMYYYY) caché dans le lien de réservation, posé
+ * par Travelpayouts au moment où CE tarif précis a été mis en cache. Sans
+ * cette donnée, on renvoie `null` plutôt que l'instant présent : un prix
+ * dont on ignore l'âge ne doit jamais être présenté comme "à l'instant".
+ */
+function extractObservedAt(link?: string, foundAt?: string): string | null {
   if (foundAt) {
     const d = new Date(foundAt);
     if (!Number.isNaN(d.getTime())) return d.toISOString();
   }
-  return new Date().toISOString();
+  const match = link?.match(/[?&]search_date=(\d{2})(\d{2})(\d{4})/);
+  if (match) {
+    const [, dd, mm, yyyy] = match;
+    // L'heure exacte n'est pas fournie, seulement le jour : on prend midi UTC
+    // pour rester dans la bonne journée quel que soit le fuseau de lecture.
+    const d = new Date(`${yyyy}-${mm}-${dd}T12:00:00Z`);
+    if (!Number.isNaN(d.getTime())) return d.toISOString();
+  }
+  return null;
 }
 
 function offersFromApi(
@@ -289,7 +305,7 @@ function offersFromApi(
         cabinBag: true,
         checkedBag: false,
         co2Kg: estimateCo2Kg(offer.origin, offer.destination, stops),
-        observedAt: normalizeFoundAt(offer.found_at),
+        observedAt: extractObservedAt(offer.link, offer.found_at),
         bookingUrl: bookingUrlFromApiLink(offer.link as string, marker, passengers),
       } satisfies FlightOffer;
     })
