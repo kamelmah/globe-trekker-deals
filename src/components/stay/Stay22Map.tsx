@@ -1,12 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import { Button } from "@/components/ui/button";
 
 /** Identifiant d'affiliation Stay22 (Let Me Allez). */
 export const STAY22_LMA_ID = "6a94b04440e01477bf8d234c";
 
+/** Délai maximum d'attente du chargement de l'iframe Stay22 (ms). */
+const LOAD_TIMEOUT_MS = 7000;
+
+type LoadStatus = "idle" | "loading" | "loaded" | "error";
+
 /**
  * Carte d'hébergement Stay22, pré-configurée sur une ville (et des dates si connues).
  * Le chargement de l'iframe est différé jusqu'à ce que la section entre dans le viewport,
- * afin de ne pas ralentir l'affichage initial de la page.
+ * afin de ne pas ralentir l'affichage initial de la page. Si le widget ne charge pas
+ * dans un délai raisonnable, un état de repli propose d'ouvrir la carte dans un nouvel onglet.
  */
 export function Stay22Map({
   city,
@@ -27,6 +35,8 @@ export function Stay22Map({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
+  const [status, setStatus] = useState<LoadStatus>("idle");
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const node = containerRef.current;
@@ -48,44 +58,101 @@ export function Stay22Map({
     return () => observer.disconnect();
   }, [visible]);
 
-  const params = new URLSearchParams({
-    aid: STAY22_LMA_ID,
-    address: city,
-    hidefooter: "true",
-    // Le bouton de redirection Allez charge la page partenaire dans le cadre du
-    // widget, ce que Booking.com bloque (X-Frame-Options → ERR_BLOCKED_BY_RESPONSE).
-    // On le masque : les pins et fiches hôtels ouvrent déjà les offres dans un nouvel onglet.
-    hideallezbutton: "true",
-    currency: "EUR",
-    supportedlang: "fr",
-    unitsystem: "metric",
-  });
-  if (checkin) params.set("checkin", checkin);
-  if (checkout) params.set("checkout", checkout);
-  const src = `https://www.stay22.com/embed/gm?${params.toString()}`;
+  const src = useMemo(() => {
+    const params = new URLSearchParams({
+      aid: STAY22_LMA_ID,
+      address: city,
+      hidefooter: "true",
+      // Le bouton de redirection Allez charge la page partenaire dans le cadre du
+      // widget, ce que Booking.com bloque (X-Frame-Options → ERR_BLOCKED_BY_RESPONSE).
+      // On le masque : les pins et fiches hôtels ouvrent déjà les offres dans un nouvel onglet.
+      hideallezbutton: "true",
+      currency: "EUR",
+      supportedlang: "fr",
+      unitsystem: "metric",
+    });
+    if (checkin) params.set("checkin", checkin);
+    if (checkout) params.set("checkout", checkout);
+    return `https://www.stay22.com/embed/gm?${params.toString()}`;
+  }, [city, checkin, checkout]);
+
+  // Démarre un timeout de 7 s dès que la section devient visible ou que la ville/dates changent.
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (!visible) {
+      setStatus("idle");
+      return;
+    }
+    setStatus("loading");
+    timeoutRef.current = setTimeout(() => {
+      setStatus("error");
+    }, LOAD_TIMEOUT_MS);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, [visible, src]);
+
+  const handleLoad = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setStatus("loaded");
+  };
+
+  const handleError = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setStatus("error");
+  };
 
   return (
     <section ref={containerRef} id={id} className={`scroll-mt-24 ${className ?? ""}`}>
       <h2 className="font-display text-xl font-semibold">{title}</h2>
       {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
       <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
-        {visible ? (
+        {!visible || status === "loading" ? (
+          <div
+            className="h-[420px] w-full animate-pulse bg-secondary sm:h-[520px]"
+            role="status"
+            aria-label="Chargement de la carte des hébergements"
+          />
+        ) : status === "error" ? (
+          <div className="flex h-[420px] w-full flex-col items-center justify-center gap-4 p-6 text-center sm:h-[520px]">
+            <p className="text-sm text-muted-foreground">La carte met du temps à charger</p>
+            <Button asChild variant="outline">
+              <a
+                href={src}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Voir les hébergements à ${city} dans un nouvel onglet`}
+              >
+                Voir les hébergements à {city}
+              </a>
+            </Button>
+          </div>
+        ) : (
           <iframe
             src={src}
             title={title}
             loading="lazy"
             allow="popups; popups-to-escape-sandbox"
             referrerPolicy="no-referrer-when-downgrade"
+            onLoad={handleLoad}
+            onError={handleError}
             className="h-[420px] w-full border-0 sm:h-[520px]"
-          />
-        ) : (
-          <div
-            className="h-[420px] w-full animate-pulse bg-secondary sm:h-[520px]"
-            role="status"
-            aria-label="Chargement de la carte des hébergements"
           />
         )}
       </div>
     </section>
   );
 }
+
