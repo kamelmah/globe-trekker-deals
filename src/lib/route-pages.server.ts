@@ -128,7 +128,16 @@ export async function resolveRouteSlug(slug: string): Promise<{
 } | null> {
   const clean = slugify(slug);
   if (!clean.includes("-")) return null;
-  const index = await getSlugIndex();
+  let index: SlugIndex;
+  try {
+    index = await getSlugIndex();
+  } catch (error) {
+    // Le référentiel de villes vient d'une API externe (pas de nos propres
+    // serveurs) : une panne ou une lenteur là-bas ne doit jamais faire planter
+    // une page destination, seulement empêcher de résoudre celle-ci.
+    console.error("Référentiel de villes indisponible, page destination non résolue", error);
+    return null;
+  }
   const parts = clean.split("-");
   for (let cut = 1; cut < parts.length; cut += 1) {
     const origin = index.get(parts.slice(0, cut).join("-"));

@@ -20,7 +20,12 @@ const DATA_BASE = "https://api.travelpayouts.com/data/fr";
 let citiesPromise: Promise<Map<string, CityRecord>> | null = null;
 
 async function loadJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, { headers: { Accept: "application/json" } });
+  // Sans timeout, une requête qui traîne peut bloquer le rendu SSR de toute
+  // page destination jusqu'à ce que la plateforme d'hébergement la tue elle-même.
+  const res = await fetch(url, {
+    headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(8000),
+  });
   if (!res.ok) throw new Error(`Référentiel indisponible (${res.status}) : ${url}`);
   return (await res.json()) as T;
 }
