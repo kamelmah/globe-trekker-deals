@@ -96,6 +96,17 @@ export const Route = createFileRoute("/conseils/destinations/$city")({
   component: CityGuidePage,
 });
 
+/** "2026-12" → "décembre 2026" (aucune donnée inventée, simple libellé). */
+function formatMonthLabel(month: string): string {
+  const date = new Date(`${month}-01T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return month;
+  return new Intl.DateTimeFormat("fr-FR", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
 function CityGuidePage() {
   const { guide, price } = Route.useLoaderData();
   const image = getDestinationImage(guide.destination, guide.city);
@@ -208,7 +219,7 @@ function CityGuidePage() {
               <p className="mt-2 text-sm text-muted-foreground">
                 Prix le plus bas relevé par notre source de prix :{" "}
                 <strong className="text-foreground">{price.lowestEur} €</strong>
-                {price.month ? ` (départ ${price.month})` : ""}
+                {price.month ? ` (départ en ${formatMonthLabel(price.month)})` : ""}
                 {price.updatedAt ? `, relevé le ${formatParisDateTime(price.updatedAt)}` : ""}.
               </p>
             ) : (
