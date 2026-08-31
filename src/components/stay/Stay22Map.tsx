@@ -119,40 +119,53 @@ export function Stay22Map({
       <h2 className="font-display text-xl font-semibold">{title}</h2>
       {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
       <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
-        {!visible || status === "loading" ? (
+        {visible ? (
+          <div className="relative h-[420px] w-full sm:h-[520px]">
+            {status !== "error" && (
+              <iframe
+                src={src}
+                title={title}
+                loading="lazy"
+                allow="popups; popups-to-escape-sandbox"
+                referrerPolicy="no-referrer-when-downgrade"
+                onLoad={handleLoad}
+                onError={handleError}
+                className={`absolute inset-0 h-full w-full border-0 transition-opacity duration-300 ${status === "loaded" ? "opacity-100" : "opacity-0"}`}
+              />
+            )}
+            {status === "loading" && (
+              <div
+                className="absolute inset-0 animate-pulse bg-secondary"
+                role="status"
+                aria-label="Chargement de la carte des hébergements"
+              />
+            )}
+            {status === "error" && (
+              <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
+                <p className="text-sm text-muted-foreground">La carte met du temps à charger</p>
+                <Button asChild variant="outline">
+                  <a
+                    href={src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Voir les hébergements à ${city} dans un nouvel onglet`}
+                  >
+                    Voir les hébergements à {city}
+                  </a>
+                </Button>
+              </div>
+            )}
+          </div>
+        ) : (
           <div
             className="h-[420px] w-full animate-pulse bg-secondary sm:h-[520px]"
             role="status"
             aria-label="Chargement de la carte des hébergements"
-          />
-        ) : status === "error" ? (
-          <div className="flex h-[420px] w-full flex-col items-center justify-center gap-4 p-6 text-center sm:h-[520px]">
-            <p className="text-sm text-muted-foreground">La carte met du temps à charger</p>
-            <Button asChild variant="outline">
-              <a
-                href={src}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Voir les hébergements à ${city} dans un nouvel onglet`}
-              >
-                Voir les hébergements à {city}
-              </a>
-            </Button>
-          </div>
-        ) : (
-          <iframe
-            src={src}
-            title={title}
-            loading="lazy"
-            allow="popups; popups-to-escape-sandbox"
-            referrerPolicy="no-referrer-when-downgrade"
-            onLoad={handleLoad}
-            onError={handleError}
-            className="h-[420px] w-full border-0 sm:h-[520px]"
           />
         )}
       </div>
     </section>
   );
 }
+
 
