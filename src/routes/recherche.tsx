@@ -27,7 +27,7 @@ import { cityLabel } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { searchFlights } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr, todayPlus } from "@/lib/search-params";
-import { addDaysIso, tripDurationLabel } from "@/lib/trip-duration";
+import { addDaysIso, nightsBetween, tripDurationLabel } from "@/lib/trip-duration";
 
 type SearchParams = {
   origin: string;
@@ -262,15 +262,22 @@ function SearchResultsPage() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() =>
+                    onClick={() => {
+                      // Décale le retour de la vraie durée du séjour (raccourci ou
+                      // dates précises), sinon un aller-retour de plus de 30 jours
+                      // écarte l'écart max accepté par l'API et provoque une erreur.
+                      const nights =
+                        search["duree"] > 0
+                          ? search["duree"]
+                          : nightsBetween(search["depart"], search["retour"]);
                       navigate({
                         search: (prev) => ({
                           ...prev,
                           depart: alt.date,
-                          retour: search["duree"] > 0 ? addDaysIso(alt.date, search["duree"]) : prev["retour"],
+                          retour: nights > 0 ? addDaysIso(alt.date, nights) : prev["retour"],
                         }),
-                      })
-                    }
+                      });
+                    }}
                   >
                     {alt.date} · {alt.priceEur} €
                   </Button>

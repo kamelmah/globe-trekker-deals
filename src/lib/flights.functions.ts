@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { createAlert, deactivateAlert } from "@/lib/alerts.server";
 import type { ApiDebugInfo } from "@/lib/flights.types";
-import { addDaysIso as addDays } from "@/lib/trip-duration";
+import { addDaysIso as addDays, nightsBetween } from "@/lib/trip-duration";
 import {
   TravelpayoutsError,
   fetchCalendarPrices,
@@ -84,6 +84,11 @@ export const searchFlights = createServerFn({ method: "GET" })
       const nearDateOnly = offers.length > 0 && batches.every((batch) => !batch.exactDate);
 
       // Vrai zéro API : on propose les dates réellement disponibles du mois.
+      // Aller-retour avec dates précises (pas de raccourci de durée) : la durée
+      // réelle du séjour vient de l'écart départ/retour, sinon les suggestions
+      // seraient calculées en aller simple et un clic dessus produirait un
+      // aller-retour arbitraire (l'API refuse un écart de plus de 30 jours).
+      const actualNights = nights > 0 ? nights : nightsBetween(data.departureAt, data.returnAt ?? "");
       let alternatives: { date: string; priceEur: number }[] = [];
       if (offers.length === 0) {
         try {
@@ -92,7 +97,7 @@ export const searchFlights = createServerFn({ method: "GET" })
             origin: data.origin,
             destination: data.destination,
             month,
-            tripDuration: nights,
+            tripDuration: actualNights,
             currency: data.currency ?? "EUR",
             mode: "departure",
           });
