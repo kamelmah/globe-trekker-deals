@@ -20,6 +20,31 @@ export const HOME_DESTINATION_CODES = [
   "NYC",
 ];
 
+/**
+ * Destinations couvertes par les guides conseils (/conseils/destinations/…).
+ * Elles sont rafraîchies avec les mêmes appels Travelpayouts que l'accueil,
+ * pour que le prix affiché dans chaque fiche ville soit un relevé réel récent.
+ */
+export const GUIDE_DESTINATION_CODES = [
+  "LON",
+  "AMS",
+  "MIL",
+  "BER",
+  "VIE",
+  "SVQ",
+  "CPH",
+  "TUN",
+  "ALG",
+  "DXB",
+  "BKK",
+  "TYO",
+];
+
+/** Ensemble des destinations rafraîchies à chaque passage (sans doublon). */
+export const REFRESH_DESTINATION_CODES = Array.from(
+  new Set([...HOME_DESTINATION_CODES, ...GUIDE_DESTINATION_CODES]),
+);
+
 /** Villes de départ rafraîchies automatiquement chaque heure. */
 export const REFRESH_ORIGINS = ["PAR", "LYS", "MRS", "NCE", "TLS"];
 
