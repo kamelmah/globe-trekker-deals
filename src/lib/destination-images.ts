@@ -1,9 +1,12 @@
 import alg from "@/assets/dest/alg.jpg";
+import ams from "@/assets/dest/ams.jpg";
 import ath from "@/assets/dest/ath.jpg";
 import bcn from "@/assets/dest/bcn.jpg";
 import bkk from "@/assets/dest/bkk.jpg";
+import ber from "@/assets/dest/ber.jpg";
 import bud from "@/assets/dest/bud.jpg";
 import cmn from "@/assets/dest/cmn.jpg";
+import cph from "@/assets/dest/cph.jpg";
 import defaultImg from "@/assets/dest/default.jpg";
 import genericCoast from "@/assets/dest/generic/coast.jpg";
 import genericHarbour from "@/assets/dest/generic/harbour.jpg";
@@ -17,14 +20,18 @@ import genericTropical from "@/assets/dest/generic/tropical.jpg";
 import dxb from "@/assets/dest/dxb.jpg";
 import ist from "@/assets/dest/ist.jpg";
 import lis from "@/assets/dest/lis.jpg";
+import lon from "@/assets/dest/lon.jpg";
 import mad from "@/assets/dest/mad.jpg";
+import mil from "@/assets/dest/mil.jpg";
 import nyc from "@/assets/dest/nyc.jpg";
 import opo from "@/assets/dest/opo.jpg";
 import prg from "@/assets/dest/prg.jpg";
 import rak from "@/assets/dest/rak.jpg";
 import rom from "@/assets/dest/rom.jpg";
+import svq from "@/assets/dest/svq.jpg";
 import tun from "@/assets/dest/tun.jpg";
 import tyo from "@/assets/dest/tyo.jpg";
+import vie from "@/assets/dest/vie.jpg";
 
 export type DestinationImage = { src: string; alt: string };
 
@@ -46,6 +53,13 @@ const BY_CODE: Record<string, DestinationImage> = {
   DXB: { src: dxb, alt: "Burj Khalifa et gratte-ciels de Dubaï à l'heure dorée" },
   TYO: { src: tyo, alt: "Temple japonais, cerisiers en fleurs et mont Fuji au-dessus de Tokyo" },
   ALG: { src: alg, alt: "Front de mer blanc de la baie d'Alger sur la Méditerranée" },
+  LON: { src: lon, alt: "Tower Bridge enjambant la Tamise à Londres à l'heure dorée" },
+  AMS: { src: ams, alt: "Canal d'Amsterdam bordé de maisons à pignons et vélos sur un pont" },
+  MIL: { src: mil, alt: "Façade de marbre du Duomo de Milan et sa piazza au coucher du soleil" },
+  BER: { src: ber, alt: "Porte de Brandebourg illuminée et tour de télévision de Berlin au crépuscule" },
+  VIE: { src: vie, alt: "Palais de Schönbrunn à Vienne et ses jardins baroques fleuris" },
+  SVQ: { src: svq, alt: "Arcades et ponts de céramique de la Plaza de España à Séville au soleil du soir" },
+  CPH: { src: cph, alt: "Maisons colorées et voiliers en bois du port de Nyhavn à Copenhague" },
   TUN: { src: tun, alt: "Maisons blanches et bleues de Sidi Bou Saïd près de Tunis face à la mer" },
 };
 
@@ -70,6 +84,19 @@ const BY_CITY: Record<string, DestinationImage> = {
   alger: BY_CODE["ALG"]!,
   algiers: BY_CODE["ALG"]!,
   tunis: BY_CODE["TUN"]!,
+  londres: BY_CODE["LON"]!,
+  london: BY_CODE["LON"]!,
+  amsterdam: BY_CODE["AMS"]!,
+  milan: BY_CODE["MIL"]!,
+  milano: BY_CODE["MIL"]!,
+  berlin: BY_CODE["BER"]!,
+  vienne: BY_CODE["VIE"]!,
+  vienna: BY_CODE["VIE"]!,
+  wien: BY_CODE["VIE"]!,
+  seville: BY_CODE["SVQ"]!,
+  sevilla: BY_CODE["SVQ"]!,
+  copenhague: BY_CODE["CPH"]!,
+  copenhagen: BY_CODE["CPH"]!,
 };
 
 function normalize(value: string): string {
