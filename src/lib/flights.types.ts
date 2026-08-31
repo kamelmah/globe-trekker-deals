@@ -13,8 +13,13 @@ export type FlightOffer = {
   returnAt: string | null;
   durationMinutes: number;
   stops: number;
-  cabinBag: boolean;
-  checkedBag: boolean;
+  /**
+   * Volontairement absent : l'API ne renvoie aucun champ bagage exploitable
+   * (vérifié en direct). Un ancien code affichait "bagage cabine inclus" en
+   * dur, ce qui s'est avéré faux (objet personnel seul, pas de vraie valise
+   * cabine). L'affichage renvoie désormais vers le vendeur plutôt que
+   * d'affirmer un niveau d'inclusion qu'on ne peut pas garantir.
+   */
   co2Kg: number;
   /**
    * Date ISO à laquelle ce prix a été relevé, si connue. L'API ne fournit

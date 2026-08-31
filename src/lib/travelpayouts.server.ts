@@ -302,8 +302,6 @@ function offersFromApi(
         returnAt: offer.return_at ?? null,
         durationMinutes: offer.duration ?? offer.duration_to ?? 0,
         stops,
-        cabinBag: true,
-        checkedBag: false,
         co2Kg: estimateCo2Kg(offer.origin, offer.destination, stops),
         observedAt: extractObservedAt(offer.link, offer.found_at),
         bookingUrl: bookingUrlFromApiLink(offer.link as string, marker, passengers),

@@ -275,7 +275,7 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     {
       heading: `Réserver ${origin.city} — ${destination.city} en toute transparence`,
       paragraphs: [
-        `TrouveMonVol ne diffuse aucune publicité tierce, aucun faux compte à rebours et ne met en avant aucune offre payée. Le classement se fait par prix total réel. Chaque résultat précise ce qui est inclus (bagage cabine, bagage en soute) et l'empreinte carbone estimée du vol, pour comparer à budget égal l'option la plus sobre.`,
+        `TrouveMonVol ne diffuse aucune publicité tierce, aucun faux compte à rebours et ne met en avant aucune offre payée. Le classement se fait par prix total réel. Chaque résultat affiche l'empreinte carbone estimée du vol ; pour les bagages, nous vous renvoyons vers la page du vendeur plutôt que d'afficher une inclusion que notre source de prix ne garantit pas.`,
         `Notre rémunération vient d'une commission versée par le vendeur lorsque vous réservez, sans surcoût pour vous et sans influence sur l'ordre des résultats. Le trajet ${origin.city} — ${destination.city} est comparé avec exactement les mêmes règles que tous les autres.`,
       ],
     },

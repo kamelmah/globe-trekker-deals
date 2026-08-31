@@ -116,10 +116,7 @@ export function FlightCard({
           <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <li className="inline-flex items-center gap-1">
               <Luggage className="size-3.5" aria-hidden />
-              Bagage cabine {offer.cabinBag ? "inclus" : "en option"}
-            </li>
-            <li>
-              Bagage en soute {offer.checkedBag ? "inclus" : "en option payante"}
+              Bagages : à vérifier chez le vendeur avant de réserver
             </li>
             <li>Empreinte estimée : {co2Label(offer.co2Kg)}</li>
           </ul>

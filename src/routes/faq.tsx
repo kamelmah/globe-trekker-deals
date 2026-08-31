@@ -41,7 +41,7 @@ const FAQ = [
   {
     question: "Les prix incluent-ils les bagages ?",
     answer:
-      "Le prix affiché est le prix total taxes et frais obligatoires inclus. Le bagage cabine et le bagage en soute sont indiqués séparément sur chaque résultat, car ils ne sont pas toujours compris. Sur les compagnies à bas coût, une valise en soute peut ajouter plusieurs dizaines d'euros et changer le classement des offres.",
+      "Le prix affiché est le prix total taxes et frais obligatoires inclus, hors bagages. Notre source de prix ne précise pas de façon fiable ce qui est inclus en cabine ou en soute pour chaque résultat : plutôt que d'afficher une estimation qui pourrait être fausse, nous vous renvoyons vers la page du vendeur pour vérifier les conditions exactes avant de réserver. Sur les compagnies à bas coût, une valise en soute peut ajouter plusieurs dizaines d'euros et changer le classement des offres.",
   },
   {
     question: "Comment est calculée l'estimation CO₂ ?",
