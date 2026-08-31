@@ -5,15 +5,26 @@ import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
 import { getCityGuide } from "@/data/city-guides";
+import { guidePriceSnapshot } from "@/lib/guide-prices.functions";
+import { publishedGuide } from "@/lib/published-guides.functions";
+import { formatParisDateTime } from "@/lib/price-refresh.shared";
 import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/conseils/destinations/$city")({
-  loader: ({ params }) => {
-    const guide = getCityGuide(params.city);
+  loader: async ({ params }) => {
+    // Guide écrit en dur, sinon fiche générée puis publiée depuis
+    // /destinations-proposes.
+    const guide =
+      getCityGuide(params.city) ??
+      (await publishedGuide({ data: { slug: params.city } })).guide;
     if (!guide) throw notFound();
-    return { guide };
+    // Prix réellement relevé par Travelpayouts (aucune estimation) + date du relevé.
+    const price = await guidePriceSnapshot({
+      data: { origin: guide.origin, destination: guide.destination },
+    });
+    return { guide, price };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -86,7 +97,7 @@ export const Route = createFileRoute("/conseils/destinations/$city")({
 });
 
 function CityGuidePage() {
-  const { guide } = Route.useLoaderData();
+  const { guide, price } = Route.useLoaderData();
   const image = getDestinationImage(guide.destination, guide.city);
 
   const practical: { label: string; value: string }[] = [
@@ -129,7 +140,8 @@ function CityGuidePage() {
       </div>
 
       <p className="mt-2 text-xs text-muted-foreground">
-        {guide.readingMinutes} min de lecture · mis à jour le {guide.updated}
+        {guide.readingMinutes} min de lecture · guide mis à jour le {guide.updated}
+        {price.updatedAt ? ` · prix des vols relevés le ${formatParisDateTime(price.updatedAt)}` : ""}
       </p>
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{guide.intro}</p>
 
@@ -192,6 +204,19 @@ function CityGuidePage() {
             <h2 className="font-display text-base font-semibold">
               Comparer les vols {guide.originCity} — {guide.city}
             </h2>
+            {price.lowestEur ? (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Prix le plus bas relevé par notre source de prix :{" "}
+                <strong className="text-foreground">{price.lowestEur} €</strong>
+                {price.month ? ` (départ ${price.month})` : ""}
+                {price.updatedAt ? `, relevé le ${formatParisDateTime(price.updatedAt)}` : ""}.
+              </p>
+            ) : (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Aucun prix n'a encore été relevé sur ce trajet : lancez une recherche pour obtenir
+                les tarifs du moment.
+              </p>
+            )}
             <p className="mt-2 text-sm text-muted-foreground">
               Prix total taxes incluses, vendeur réel affiché sur chaque résultat, lien direct vers
               ce vendeur.

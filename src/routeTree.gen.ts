@@ -14,6 +14,7 @@ import { Route as CguRouteImport } from './routes/cgu'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as DestinationsProposesRouteImport } from './routes/destinations-proposes'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as HebergementRouteImport } from './routes/hebergement'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
@@ -57,6 +58,11 @@ const ContactRoute = ContactRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DestinationsProposesRoute = DestinationsProposesRouteImport.update({
+  id: '/destinations-proposes',
+  path: '/destinations-proposes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
+  '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
   '/hebergement': typeof HebergementRoute
   '/mentions-legales': typeof MentionsLegalesRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
+  '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
   '/hebergement': typeof HebergementRoute
   '/mentions-legales': typeof MentionsLegalesRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
+  '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
   '/hebergement': typeof HebergementRoute
   '/mentions-legales': typeof MentionsLegalesRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/contact'
     | '/cookies'
+    | '/destinations-proposes'
     | '/faq'
     | '/hebergement'
     | '/mentions-legales'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/contact'
     | '/cookies'
+    | '/destinations-proposes'
     | '/faq'
     | '/hebergement'
     | '/mentions-legales'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/contact'
     | '/cookies'
+    | '/destinations-proposes'
     | '/faq'
     | '/hebergement'
     | '/mentions-legales'
@@ -325,6 +337,7 @@ export interface RootRouteChildren {
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ContactRoute: typeof ContactRoute
   CookiesRoute: typeof CookiesRoute
+  DestinationsProposesRoute: typeof DestinationsProposesRoute
   FaqRoute: typeof FaqRoute
   HebergementRoute: typeof HebergementRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
@@ -381,6 +394,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/destinations-proposes': {
+      id: '/destinations-proposes'
+      path: '/destinations-proposes'
+      fullPath: '/destinations-proposes'
+      preLoaderRoute: typeof DestinationsProposesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -525,6 +545,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfidentialiteRoute: ConfidentialiteRoute,
   ContactRoute: ContactRoute,
   CookiesRoute: CookiesRoute,
+  DestinationsProposesRoute: DestinationsProposesRoute,
   FaqRoute: FaqRoute,
   HebergementRoute: HebergementRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
