@@ -69,6 +69,11 @@ export const Route = createFileRoute("/conseils/$slug")({
 
 function PostPage() {
   const { post } = Route.useLoaderData();
+  const related = post.relatedSlugs
+    ? post.relatedSlugs
+        .map((slug) => DESTINATIONS.find((d) => d.slug === slug))
+        .filter((d): d is (typeof DESTINATIONS)[number] => d !== undefined)
+    : DESTINATIONS.slice(0, 4);
 
   return (
     <article className="container-page py-10">
@@ -114,7 +119,7 @@ function PostPage() {
               Voir où partir avec mon budget
             </Link>
           </li>
-          {DESTINATIONS.slice(0, 4).map((d) => (
+          {related.map((d) => (
             <li key={d.slug}>
               <Link
                 to="/vols/$slug"

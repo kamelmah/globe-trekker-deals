@@ -46,6 +46,9 @@ export const Route = createFileRoute("/conseils/")({
 });
 
 function BlogIndex() {
+  const seasonalPosts = POSTS.filter((post) => post.seasonal);
+  const generalPosts = POSTS.filter((post) => !post.seasonal);
+
   return (
     <div className="container-page py-10">
       <h1 className="font-display text-3xl font-semibold">Conseils voyage</h1>
@@ -54,6 +57,33 @@ function BlogIndex() {
         billets d'avion et payer le vôtre moins cher.
       </p>
 
+      {seasonalPosts.length > 0 && (
+        <section className="mt-10">
+          <h2 className="font-display text-2xl font-semibold">Bons plans saisonniers</h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Vacances scolaires, périodes de forte demande : ce qui change sur ces dates précises et
+            comment s'y prendre.
+          </p>
+          <ul className="mt-6 grid gap-4 md:grid-cols-2">
+            {seasonalPosts.map((post) => (
+              <li key={post.slug}>
+                <Link
+                  to="/conseils/$slug"
+                  params={{ slug: post.slug }}
+                  className="block h-full rounded-xl border border-border bg-card p-5 transition-colors hover:bg-secondary"
+                >
+                  <h3 className="font-display text-lg font-semibold">{post.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{post.description}</p>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    {post.readingMinutes} min de lecture · mis à jour le {post.updated}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section className="mt-10">
         <h2 className="font-display text-2xl font-semibold">Conseils généraux</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
@@ -61,7 +91,7 @@ function BlogIndex() {
           cachés : nos articles pratiques pour bien préparer votre voyage.
         </p>
         <ul className="mt-6 grid gap-4 md:grid-cols-2">
-          {POSTS.map((post) => (
+          {generalPosts.map((post) => (
             <li key={post.slug}>
               <Link
                 to="/conseils/$slug"

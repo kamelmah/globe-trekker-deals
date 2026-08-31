@@ -7,6 +7,14 @@ export type Post = {
   updated: string;
   /** Paragraphes et sous-titres du corps de l'article. */
   body: { heading?: string; paragraphs: string[] }[];
+  /** Contenu lié à une période précise (à distinguer des articles évergreens). */
+  seasonal?: boolean;
+  /**
+   * Slugs de destinations (src/data/destinations.ts) réellement pertinentes
+   * pour cet article, affichées en fin de page. Sans cette liste, on retombe
+   * sur les 4 premières destinations du catalogue — moins pertinent.
+   */
+  relatedSlugs?: string[];
 };
 
 export const POSTS: Post[] = [
@@ -239,6 +247,51 @@ export const POSTS: Post[] = [
         heading: "Notre règle",
         paragraphs: [
           "Un prix comparable est un prix complet. Nous affichons le total taxes incluses et signalons ce qui est inclus côté bagages quand la donnée est disponible. Quand elle ne l'est pas, nous le disons plutôt que de laisser croire à une inclusion.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "vol-pas-cher-vacances-toussaint",
+    title: "Vol pas cher pour la Toussaint : comment ne pas payer le prix fort",
+    metaTitle: "Vol pas cher Toussaint : quand réserver et où partir | TrouveMonVol",
+    description:
+      "Les vacances de la Toussaint concentrent la demande sur une semaine précise, ce qui fait grimper les prix plus tôt que d'habitude. Comment s'y prendre, et vers quelles destinations partir sans se ruiner.",
+    readingMinutes: 5,
+    updated: "2026-08-31",
+    seasonal: true,
+    relatedSlugs: ["paris-marrakech", "paris-lisbonne", "paris-rome", "paris-barcelone"],
+    body: [
+      {
+        paragraphs: [
+          "La Toussaint est la première vraie coupure après l'été : une semaine de vacances scolaires, souvent le seul moment de l'automne où toute la famille est disponible en même temps. Cette concentration de la demande sur des dates fixes change la donne par rapport à un voyage aux dates libres.",
+        ],
+      },
+      {
+        heading: "Pourquoi cette semaine coûte plus cher qu'une semaine normale",
+        paragraphs: [
+          "Sur un trajet aux dates flexibles, les prix restent stables puis grimpent nettement dans les trois dernières semaines avant le départ. Sur une semaine de vacances scolaires comme la Toussaint, cette hausse démarre beaucoup plus tôt, parce que la demande se concentre sur les mêmes deux ou trois jours de départ et de retour, sans possibilité de décaler pour la plupart des familles.",
+          "Ce n'est pas une manipulation du prix : c'est un mécanisme d'offre et de demande classique, mais qui joue contre vous si vous attendez le dernier moment sur ces dates précises.",
+        ],
+      },
+      {
+        heading: "Quand réserver pour la Toussaint",
+        paragraphs: [
+          "Contrairement à un trajet à dates libres, où attendre peut parfois payer, une semaine de vacances scolaires se traite comme une date imposée : réservez dès que vos dates sont arrêtées, sans attendre une hypothétique baisse qui a peu de chances d'arriver sur ce type de période.",
+          "Le jour de retour est souvent le point le plus cher de tout le séjour, car c'est là que la demande est la plus concentrée. Si votre emploi du temps le permet, revenir un jour avant ou après la fin officielle des vacances peut faire une vraie différence.",
+        ],
+      },
+      {
+        heading: "Où partir une semaine sans finir sa journée dans les avions",
+        paragraphs: [
+          "Fin octobre, l'Europe du Sud et le Maghreb offrent encore des températures agréables pour un vol de deux à trois heures : Marrakech reste douce et ensoleillée, Lisbonne et Barcelone gardent des journées clémentes pour visiter à pied, Rome se visite bien plus confortablement qu'en plein été.",
+          "L'avantage de ces trajets courts : même avec une semaine, vous ne perdez pas une journée entière de vacances dans les transports, et les allers-retours en dates flexibles ± 3 jours laissent une vraie marge pour comparer les jours de départ et de retour entre eux.",
+        ],
+      },
+      {
+        heading: "Ce qu'on peut faire pour vous sur ces dates",
+        paragraphs: [
+          "Si vos dates de vacances sont déjà fixées, activez l'option dates flexibles ± 3 jours sur votre recherche : elle compare automatiquement les jours autour de votre départ et de votre retour prévus, ce qui est justement là où se jouent les plus gros écarts sur une semaine scolaire. Vous pouvez aussi créer une alerte prix gratuite dès maintenant : si un tarif baisse avant que vous réserviez, vous le saurez sans avoir à vérifier chaque jour.",
         ],
       },
     ],
