@@ -3,6 +3,17 @@ import { BadgeEuro, EyeOff, Map as MapIcon, ShieldCheck, Store } from "lucide-re
 
 import heroSky from "@/assets/hero-sky.jpg";
 import heroSkyWebp from "@/assets/hero-sky.webp";
+import heroSky640 from "@/assets/hero-sky-640.jpg";
+import heroSky640Webp from "@/assets/hero-sky-640.webp";
+import heroSky960 from "@/assets/hero-sky-960.jpg";
+import heroSky960Webp from "@/assets/hero-sky-960.webp";
+import heroSky1280 from "@/assets/hero-sky-1280.jpg";
+import heroSky1280Webp from "@/assets/hero-sky-1280.webp";
+
+// Le hero occupe toujours 100 % de la largeur d'écran : un mobile ne doit
+// jamais télécharger la version 1920px destinée au grand écran.
+const HERO_SRCSET = `${heroSky640} 640w, ${heroSky960} 960w, ${heroSky1280} 1280w, ${heroSky} 1920w`;
+const HERO_WEBP_SRCSET = `${heroSky640Webp} 640w, ${heroSky960Webp} 960w, ${heroSky1280Webp} 1280w, ${heroSkyWebp} 1920w`;
 
 import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
@@ -134,6 +145,9 @@ function HomePage() {
         <ResponsivePicture
           src={heroSky}
           webp={heroSkyWebp}
+          srcSet={HERO_SRCSET}
+          webpSrcSet={HERO_WEBP_SRCSET}
+          sizes="100vw"
           alt="Aile d'avion au-dessus d'une mer de nuages au lever du soleil"
           width={1920}
           height={1080}
