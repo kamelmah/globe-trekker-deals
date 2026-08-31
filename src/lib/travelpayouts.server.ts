@@ -309,7 +309,8 @@ export async function fetchOffers(params: {
   adults?: number;
   children?: number;
   infants?: number;
-}): Promise<{ offers: FlightOffer[]; raw: RawApiCall }> {
+}): Promise<{ offers: FlightOffer[]; raw: RawApiCall; exactDate: boolean }> {
+
   const creds = getCredentials();
   const query: Record<string, string> = {
     origin: params.origin,
