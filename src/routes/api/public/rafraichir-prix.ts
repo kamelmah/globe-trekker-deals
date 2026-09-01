@@ -18,9 +18,14 @@ export const Route = createFileRoute("/api/public/rafraichir-prix")({
     handlers: {
       POST: async ({ request }) => {
         const { refuseJobRequest } = await import("@/lib/job-auth.server");
-        const refus = refuseJobRequest(request, [
-          { header: "x-refresh-secret", env: "PRICE_REFRESH_SECRET" },
-        ]);
+        // Troisième argument : repli temporaire sur la clé publiable, le temps
+        // de la migration. Il ne concerne que cet endpoint — le relevé de
+        // saisonnalité, lui, reste fermé.
+        const refus = refuseJobRequest(
+          request,
+          [{ header: "x-refresh-secret", env: "PRICE_REFRESH_SECRET" }],
+          true,
+        );
         if (refus) return refus;
 
         const { refreshFlightPrices } = await import("@/lib/price-refresh.server");

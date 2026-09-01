@@ -85,6 +85,7 @@ const json = (corps: unknown, status: number) =>
 export function refuseJobRequest(
   request: Request,
   secretsHerites: { header: string; env: string }[] = [],
+  repliPublicTemporaire = false,
 ): Response | null {
   const valeursAcceptees = [
     process.env[CRON_SECRET_ENV],
@@ -96,7 +97,7 @@ export function refuseJobRequest(
     .map((couple) => ({ header: couple.header, valeur: process.env[couple.env] }))
     .filter((couple): couple is { header: string; valeur: string } => Boolean(couple.valeur));
 
-  if (valeursAcceptees.length === 0 && attendus.length === 0) {
+  if (valeursAcceptees.length === 0 && attendus.length === 0 && !repliPublicTemporaire) {
     console.error(
       `[tâche planifiée] ${CRON_SECRET_ENV} n'est pas définie : tout appel est refusé.`,
     );
@@ -120,12 +121,40 @@ export function refuseJobRequest(
     (v): v is string => typeof v === "string" && v.length > 0,
   );
 
+  /**
+   * REPLI TEMPORAIRE — À SUPPRIMER À LA BASCULE NETLIFY.
+   *
+   * Le durcissement de l'authentification a mis le rafraîchissement horaire des
+   * prix à l'arrêt : aucun des secrets attendus n'est présent à l'exécution sur
+   * la plateforme, et l'endpoint refusait donc tout en 503. Le planificateur, lui,
+   * n'est pas modifiable depuis le code.
+   *
+   * On réaccepte donc la clé publiable, en connaissance de cause et pour ce seul
+   * endpoint : elle est lisible dans le bundle client, ce n'est pas une
+   * protection. C'est une dette assumée le temps de la migration, pas une
+   * solution. Sur Netlify, les tâches deviennent des fonctions planifiées non
+   * appelables par URL et tout ce mécanisme disparaît.
+   */
+  const clePubliable =
+    process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["SUPABASE_ANON_KEY"] ?? "";
+  const repliAccepte =
+    repliPublicTemporaire &&
+    clePubliable.length > 0 &&
+    memeSecret(request.headers.get("apikey") ?? "", clePubliable);
+
   const autorise =
     fournis.some((fourni) => valeursAcceptees.some((valeur) => memeSecret(fourni, valeur))) ||
     attendus.some((couple) => {
       const fourni = request.headers.get(couple.header);
       return typeof fourni === "string" && memeSecret(fourni, couple.valeur);
-    });
+    }) ||
+    repliAccepte;
+
+  if (repliAccepte) {
+    console.warn(
+      "[tâche planifiée] autorisée par le repli sur la clé publiable — dette temporaire, à retirer à la bascule Netlify.",
+    );
+  }
 
   if (!autorise) {
     console.error(`[tâche planifiée] secret invalide depuis ${ip}`);
