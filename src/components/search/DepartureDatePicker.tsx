@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { formatDateLong, formatMonthLong } from "@/lib/dates";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -29,13 +30,7 @@ function daysInMonth(month: string): string[] {
   return Array.from({ length: total }, (_, i) => `${month}-${String(i + 1).padStart(2, "0")}`);
 }
 
-function monthLabel(month: string): string {
-  return new Date(`${month}-01T00:00:00Z`).toLocaleDateString("fr-FR", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
+const monthLabel = formatMonthLong;
 
 function level(price: number, min: number, max: number): "low" | "mid" | "high" {
   if (max === min) return "mid";
@@ -123,10 +118,11 @@ export function PriceDatePicker({
             id={id}
             type="button"
             variant="outline"
-            className={cn("w-full justify-start text-left font-normal")}
+            className={cn("w-full justify-start overflow-hidden text-left font-normal")}
           >
             <CalendarIcon className="size-4" aria-hidden />
-            {value || "Choisir une date"}
+            {/* Le champ porte une valeur ISO, mais on n'affiche jamais l'ISO. */}
+            <span className="truncate">{formatDateLong(value) || "Choisir une date"}</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="z-50 w-[320px] p-3 pointer-events-auto">
@@ -157,7 +153,7 @@ export function PriceDatePicker({
               ? "Indiquez une destination pour voir les prix par jour."
               : mode === "return"
                 ? departureAt
-                  ? `Prix aller-retour le plus bas pour un retour ce jour-là (départ le ${departureAt}).`
+                  ? `Prix aller-retour le plus bas pour un retour ce jour-là (départ le ${formatDateLong(departureAt)}).`
                   : "Choisissez d'abord une date de départ pour voir les prix de retour."
                 : tripDuration > 0
                   ? `Prix aller-retour le plus bas (séjour de ${tripDuration} nuits).`
@@ -190,13 +186,18 @@ export function PriceDatePicker({
                       onChange(date);
                       setOpen(false);
                     }}
-                    aria-label={price === undefined ? date : `${date} : ${format(price)}`}
+                    aria-label={
+                      price === undefined
+                        ? formatDateLong(date)
+                        : `${formatDateLong(date)} : ${format(price)}`
+                    }
                     className={cn(
                       "flex min-h-11 flex-col items-center justify-center rounded-md border p-0.5 text-center transition-colors",
                       l === null && "border-border hover:bg-muted",
                       l === "low" && "border-success/40 bg-success/10 hover:bg-success/20",
                       l === "mid" && "border-warning/40 bg-warning/10 hover:bg-warning/20",
-                      l === "high" && "border-destructive/30 bg-destructive/10 hover:bg-destructive/20",
+                      l === "high" &&
+                        "border-destructive/30 bg-destructive/10 hover:bg-destructive/20",
                       value === date && "ring-2 ring-ring",
                       disabled && "cursor-not-allowed opacity-40",
                     )}
@@ -226,7 +227,6 @@ export function PriceDatePicker({
                 Aucun prix disponible pour ce mois sur ce trajet. Essayez un autre mois.
               </p>
             )}
-
 
           <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">

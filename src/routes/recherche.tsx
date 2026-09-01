@@ -23,6 +23,7 @@ import { KIWI_FALLBACK_URL } from "@/lib/affiliate-partners";
 import { useCurrency } from "@/lib/currency-context";
 import { searchFlights } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr, todayPlus } from "@/lib/search-params";
+import { formatDateCompact, formatDateLong, formatMonthLong } from "@/lib/dates";
 import { addDaysIso, nightsBetween, tripDurationLabel } from "@/lib/trip-duration";
 
 type SearchParams = {
@@ -272,14 +273,14 @@ function SearchResultsPage() {
           {(offersQuery.data?.alternatives?.length ?? 0) > 0 ? (
             <p className="mt-2">
               Notre source de prix (mise à jour périodiquement) n'a pas de vol enregistré pour le{" "}
-              {search["depart"]} sur {from} — {to}. Cela ne veut pas dire qu'aucun vol n'existe —
-              voici les dates proches où nous avons trouvé des prix réels.
+              {formatDateLong(search["depart"])} sur {from} — {to}. Cela ne veut pas dire qu'aucun
+              vol n'existe — voici les dates proches où nous avons trouvé des prix réels.
             </p>
           ) : (
             <p className="mt-2">
               Notre source de prix n'a aucun vol enregistré sur {from} — {to} pour l'ensemble du
-              mois du {search["depart"]}. Essayez les dates flexibles ± 3 jours, un autre mois, ou
-              un autre aéroport de départ.
+              mois de {formatMonthLong(search["depart"].slice(0, 7))}. Essayez les dates flexibles ±
+              3 jours, un autre mois, ou un autre aéroport de départ.
             </p>
           )}
 
@@ -311,7 +312,7 @@ function SearchResultsPage() {
                       });
                     }}
                   >
-                    {alt.date} · {alt.priceEur} €
+                    {formatDateCompact(alt.date)} · {alt.priceEur} €
                   </Button>
                 ))}
               </div>
@@ -338,9 +339,9 @@ function SearchResultsPage() {
         <div className="rounded-xl border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
           <p>
             Notre source de prix (mise à jour périodiquement) n'a pas de vol enregistré pour le{" "}
-            {search["depart"]}. Cela ne veut pas dire qu'aucun vol n'existe — voici les dates
-            proches (± 3 jours) où nous avons trouvé des prix réels. La date de chaque vol est
-            indiquée sur son résultat.
+            {formatDateLong(search["depart"])}. Cela ne veut pas dire qu'aucun vol n'existe — voici
+            les dates proches (± 3 jours) où nous avons trouvé des prix réels. La date de chaque vol
+            est indiquée sur son résultat.
           </p>
           <Button asChild variant="outline" size="sm" className="mt-3">
             <a
@@ -389,8 +390,8 @@ function SearchResultsPage() {
         Vols {from} — {to}
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Départ le {search.depart}
-        {search["retour"] ? `, retour le ${search.retour}` : " (aller simple)"}
+        Départ le {formatDateLong(search.depart)}
+        {search["retour"] ? `, retour le ${formatDateLong(search.retour)}` : " (aller simple)"}
         {search["duree"] > 0 ? ` · ${tripDurationLabel(search.duree)} (${search.duree} nuits)` : ""}
         {search["flexible"] === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des
         prix totaux, taxes incluses pour{" "}
@@ -402,9 +403,18 @@ function SearchResultsPage() {
         .
       </p>
 
+      {/*
+        Ce bandeau annonçait « Prix garanti sans frais cachés — vous payez ce
+        qui est affiché ici » : c'est la garantie de prix retirée du H1 de
+        l'accueil, sous une forme encore plus ferme, et elle contredisait
+        frontalement les cartes juste en dessous, qui présentent la plupart des
+        tarifs comme des estimations à confirmer chez le vendeur. Ce que nous
+        pouvons affirmer, c'est la composition du montant, pas sa stabilité.
+      */}
       <p className="mt-4 inline-flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-        Prix garanti sans frais cachés — vous payez ce qui est affiché ici.
+        Montants taxes et frais obligatoires compris, avec le vendeur et la date de relevé de chaque
+        prix.
       </p>
 
       <p className="mt-2 text-xs text-muted-foreground">
@@ -555,7 +565,7 @@ function SearchResultsPage() {
         {...(search.depart ? { checkin: search.depart } : {})}
         {...(search.retour ? { checkout: search.retour } : {})}
         title="Et pour dormir sur place ?"
-        description={`Hébergements disponibles à ${to}${search.depart ? ` pour votre séjour du ${search.depart}${search.retour ? ` au ${search.retour}` : ""}` : ""}, affichés sur une carte.`}
+        description={`Hébergements disponibles à ${to}${search.depart ? ` pour votre séjour du ${formatDateLong(search.depart)}${search.retour ? ` au ${formatDateLong(search.retour)}` : ""}` : ""}, affichés sur une carte.`}
       />
     </div>
   );

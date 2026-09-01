@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { formatDateMedium } from "@/lib/dates";
 
 import { POSTS } from "@/data/posts";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -75,7 +76,8 @@ function BlogIndex() {
                   <h3 className="font-display text-lg font-semibold">{post.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{post.description}</p>
                   <p className="mt-3 text-xs text-muted-foreground">
-                    {post.readingMinutes} min de lecture · mis à jour le {post.updated}
+                    {post.readingMinutes} min de lecture · mis à jour le{" "}
+                    {formatDateMedium(post.updated)}
                   </p>
                 </Link>
               </li>
@@ -101,7 +103,8 @@ function BlogIndex() {
                 <h3 className="font-display text-lg font-semibold">{post.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{post.description}</p>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  {post.readingMinutes} min de lecture · mis à jour le {post.updated}
+                  {post.readingMinutes} min de lecture · mis à jour le{" "}
+                  {formatDateMedium(post.updated)}
                 </p>
               </Link>
             </li>

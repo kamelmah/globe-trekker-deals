@@ -1,11 +1,20 @@
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { formatMonthCompact } from "@/lib/dates";
 
 import { useCurrency } from "@/lib/currency-context";
 import type { MonthlyPrice } from "@/lib/flights.types";
 
 function monthLabel(month: string): string {
   const d = new Date(`${month}-01T00:00:00Z`);
-  return d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
+  return formatMonthCompact(month);
 }
 
 export function PriceHistoryChart({ months }: { months: MonthlyPrice[] }) {

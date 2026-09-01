@@ -14,7 +14,7 @@ import {
   setGuidePublication,
   type GuideRequestRow,
 } from "@/lib/guides-admin.functions";
-import { formatParisDateTime } from "@/lib/price-refresh.shared";
+import { formatDateTimeShort } from "@/lib/dates";
 
 export const Route = createFileRoute("/destinations-proposes")({
   head: () => ({
@@ -100,7 +100,11 @@ function ProposedDestinations() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          void run("load", () => load({ data: { token } }), (result) => apply(result));
+          void run(
+            "load",
+            () => load({ data: { token } }),
+            (result) => apply(result),
+          );
         }}
         className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end"
       >
@@ -224,13 +228,13 @@ function ProposedDestinations() {
                     </p>
                     {row.generatedAt && (
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Brouillon généré le {formatParisDateTime(row.generatedAt)}
-                        {row.publishedAt ? ` · publié le ${formatParisDateTime(row.publishedAt)}` : ""}
+                        Brouillon généré le {formatDateTimeShort(row.generatedAt)}
+                        {row.publishedAt
+                          ? ` · publié le ${formatDateTimeShort(row.publishedAt)}`
+                          : ""}
                       </p>
                     )}
-                    {row.draftTitle && (
-                      <p className="mt-3 text-sm font-medium">{row.draftTitle}</p>
-                    )}
+                    {row.draftTitle && <p className="mt-3 text-sm font-medium">{row.draftTitle}</p>}
                     {row.draftIntro && (
                       <p className="mt-1 line-clamp-4 text-sm text-muted-foreground">
                         {row.draftIntro}

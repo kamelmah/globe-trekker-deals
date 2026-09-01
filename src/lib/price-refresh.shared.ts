@@ -74,13 +74,5 @@ export function nextRefreshAt(lastAt: string | null): string | null {
   return new Date(time + REFRESH_INTERVAL_MS).toISOString();
 }
 
-export function formatParisDateTime(iso: string | null): string {
-  if (!iso) return "—";
-  const time = Date.parse(iso);
-  if (Number.isNaN(time)) return "—";
-  return new Intl.DateTimeFormat("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Europe/Paris",
-  }).format(new Date(time));
-}
+// Le formatage des dates vit désormais dans src/lib/dates.ts : un seul module
+// pour toute l app. Utiliser `formatDateTimeShort` à la place.

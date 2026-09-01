@@ -8,6 +8,7 @@
  */
 
 import { AIRPORTS } from "@/data/airports";
+import { formatDateMedium, formatMonthLong } from "@/lib/dates";
 import { DESTINATIONS, type DestinationRoute } from "@/data/destinations";
 import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import {
@@ -284,26 +285,11 @@ function durationLabel(km: number): string {
 
 /** Date complète en toutes lettres, ex. « 28 août 2026 ». */
 function frenchDay(iso: string | null): string | null {
-  if (!iso) return null;
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(date);
+  return iso ? formatDateMedium(iso.slice(0, 10)) || null : null;
 }
 
 function frenchMonth(iso: string | null): string | null {
-  if (!iso) return null;
-  const date = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("fr-FR", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(date);
+  return iso ? formatMonthLong(iso.slice(0, 7)) || null : null;
 }
 
 /**

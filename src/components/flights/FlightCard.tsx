@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatDateTimeCompact, formatDateTimeShort } from "@/lib/dates";
 import { AlertTriangle, Luggage, Leaf, Plane, Store, Clock } from "lucide-react";
 
 import { co2Label } from "@/lib/co2";
@@ -14,16 +15,7 @@ function formatDuration(minutes: number): string {
   return m ? `${h} h ${String(m).padStart(2, "0")}` : `${h} h`;
 }
 
-function formatTime(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+const formatTime = formatDateTimeCompact;
 
 /**
  * Seuil de fermeté du prix.
@@ -61,9 +53,7 @@ function computeFreshness(iso: string | null): Freshness {
   else {
     const hours = Math.round(minutes / 60);
     label =
-      hours < 24
-        ? `relevé il y a ${hours} h`
-        : `relevé le ${d.toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}`;
+      hours < 24 ? `relevé il y a ${hours} h` : `relevé le ${formatDateTimeShort(d.toISOString())}`;
   }
   const tone: FreshnessTone =
     ageMs < FRESH_THRESHOLD_MS ? "frais" : ageMs <= ESTIMATE_THRESHOLD_MS ? "neutre" : "ancien";

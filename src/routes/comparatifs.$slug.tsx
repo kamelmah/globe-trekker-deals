@@ -10,7 +10,7 @@ import { getComparison, type Comparison, type ComparisonSide } from "@/data/comp
 import { getCityGuide, type CityGuide } from "@/data/city-guides";
 import { getDestination, type DestinationRoute } from "@/data/destinations";
 import { guidePriceSnapshot, type GuidePriceSnapshot } from "@/lib/guide-prices.functions";
-import { formatParisDateTime } from "@/lib/price-refresh.shared";
+import { formatDateMedium, formatDateTimeShort } from "@/lib/dates";
 import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -149,7 +149,7 @@ function CitySidePanel({
         <p className="mt-2 text-sm text-muted-foreground">
           Dès <strong className="text-foreground">{price.lowestEur} €</strong> l'aller-retour depuis{" "}
           {destination.originCity}
-          {price.updatedAt ? ` (relevé le ${formatParisDateTime(price.updatedAt)})` : ""}.
+          {price.updatedAt ? ` (relevé le ${formatDateTimeShort(price.updatedAt)})` : ""}.
         </p>
       ) : (
         <p className="mt-2 text-sm text-muted-foreground">
@@ -201,7 +201,9 @@ function ComparisonPage() {
       </nav>
 
       <h1 className="mt-3 max-w-3xl font-display">{comparison.title}</h1>
-      <p className="mt-2 text-xs text-muted-foreground">Mis à jour le {comparison.updated}</p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Mis à jour le {formatDateMedium(comparison.updated)}
+      </p>
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{comparison.intro}</p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">

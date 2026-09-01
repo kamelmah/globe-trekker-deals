@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
+import { formatDateLong } from "@/lib/dates";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
@@ -11,8 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resolvePlace } from "@/lib/places.functions";
 import { addDaysIso, nightsBetween, TRIP_DURATIONS } from "@/lib/trip-duration";
-
-
 
 function defaultDate(offsetDays: number): string {
   const d = new Date();
@@ -133,8 +132,6 @@ export function SearchForm({
     });
   }
 
-
-
   return (
     <form
       onSubmit={(event) => void submit(event)}
@@ -167,7 +164,6 @@ export function SearchForm({
           allowEmpty
         />
 
-
         <DepartureDatePicker
           value={depart}
           onChange={setDepart}
@@ -180,9 +176,11 @@ export function SearchForm({
         {duree > 0 ? (
           <div className="space-y-1.5">
             <Label>Date de retour (calculée)</Label>
-            <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm">
+            {/* min-h plutôt que h-9 : une date en toutes lettres est bien plus
+                longue qu'une date ISO et débordait de la boîte à hauteur fixe. */}
+            <div className="flex min-h-9 items-center rounded-md border border-input bg-muted/40 px-3 py-1.5 text-sm">
               {effectiveRetour
-                ? `Retour le ${effectiveRetour} · ${duree} nuits`
+                ? `Retour le ${formatDateLong(effectiveRetour)} · ${duree} nuits`
                 : "Choisissez une date de départ"}
             </div>
           </div>
@@ -201,9 +199,7 @@ export function SearchForm({
           />
         )}
 
-
         <PassengerSelector value={passengers} onChange={setPassengers} />
-
 
         {!compact && (
           <div className="space-y-1.5">
@@ -257,8 +253,13 @@ export function SearchForm({
         </p>
       </fieldset>
 
-
-      <Button type="submit" variant="cta" size="lg" className="mt-5 w-full sm:w-auto" disabled={resolving}>
+      <Button
+        type="submit"
+        variant="cta"
+        size="lg"
+        className="mt-5 w-full sm:w-auto"
+        disabled={resolving}
+      >
         <Search className="size-4" aria-hidden />
         {resolving
           ? "Vérification de la destination…"
@@ -267,8 +268,8 @@ export function SearchForm({
             : "Voir où partir avec mon budget"}
       </Button>
       <p className="mt-3 text-xs text-muted-foreground">
-        Prix total taxes incluses, vendeur affiché sur chaque résultat. Aucun compte
-        à rebours artificiel.
+        Prix total taxes incluses, vendeur affiché sur chaque résultat. Aucun compte à rebours
+        artificiel.
       </p>
     </form>
   );

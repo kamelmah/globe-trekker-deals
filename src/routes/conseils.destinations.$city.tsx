@@ -10,7 +10,7 @@ import { getCityGuide } from "@/data/city-guides";
 import { getTravelDocumentForGuide } from "@/data/travel-documents";
 import { guidePriceSnapshot } from "@/lib/guide-prices.functions";
 import { publishedGuide } from "@/lib/published-guides.functions";
-import { formatParisDateTime } from "@/lib/price-refresh.shared";
+import { formatDateMedium, formatDateTimeShort, formatMonthLong } from "@/lib/dates";
 import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -103,13 +103,7 @@ export const Route = createFileRoute("/conseils/destinations/$city")({
 
 /** "2026-12" → "décembre 2026" (aucune donnée inventée, simple libellé). */
 function formatMonthLabel(month: string): string {
-  const date = new Date(`${month}-01T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return month;
-  return new Intl.DateTimeFormat("fr-FR", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(date);
+  return formatMonthLong(month) || month;
 }
 
 function CityGuidePage() {
@@ -157,9 +151,10 @@ function CityGuidePage() {
       </div>
 
       <p className="mt-2 text-xs text-muted-foreground">
-        {guide.readingMinutes} min de lecture · guide mis à jour le {guide.updated}
+        {guide.readingMinutes} min de lecture · guide mis à jour le{" "}
+        {formatDateMedium(guide.updated)}
         {price.updatedAt
-          ? ` · prix des vols relevés le ${formatParisDateTime(price.updatedAt)}`
+          ? ` · prix des vols relevés le ${formatDateTimeShort(price.updatedAt)}`
           : ""}
       </p>
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{guide.intro}</p>
@@ -249,7 +244,7 @@ function CityGuidePage() {
                 Prix le plus bas relevé par notre source de prix :{" "}
                 <strong className="text-foreground">{price.lowestEur} €</strong>
                 {price.month ? ` (départ en ${formatMonthLabel(price.month)})` : ""}
-                {price.updatedAt ? `, relevé le ${formatParisDateTime(price.updatedAt)}` : ""}.
+                {price.updatedAt ? `, relevé le ${formatDateTimeShort(price.updatedAt)}` : ""}.
               </p>
             ) : (
               <p className="mt-2 text-sm text-muted-foreground">

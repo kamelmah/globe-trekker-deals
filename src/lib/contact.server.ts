@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { formatDateTimeLong } from "@/lib/dates";
 
 import { sendTemplateEmail } from "@/lib/email-templates/send-email";
 import { logOps } from "@/lib/ops-log.server";
@@ -39,11 +40,7 @@ async function notifyContactTeam(input: ContactInput, messageId: string): Promis
         email: input.email,
         subject: input.subject,
         message: input.message,
-        receivedAt: new Date().toLocaleString("fr-FR", {
-          dateStyle: "long",
-          timeStyle: "short",
-          timeZone: "Europe/Paris",
-        }),
+        receivedAt: formatDateTimeLong(new Date().toISOString()),
       },
       idempotencyKey: `contact-notification-${messageId}`,
       replyTo: input.email,
@@ -121,7 +118,8 @@ export async function saveContactMessage(
 export async function saveNewsletterSubscriber(
   input: NewsletterInput,
 ): Promise<{ ok: boolean; message: string }> {
-  const failMessage = "L'inscription n'a pas pu être enregistrée. Réessayez dans quelques instants.";
+  const failMessage =
+    "L'inscription n'a pas pu être enregistrée. Réessayez dans quelques instants.";
   try {
     const db = await admin();
     const { error } = await db.from("newsletter_subscribers").upsert(

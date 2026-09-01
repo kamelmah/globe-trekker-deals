@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 
 import { fetchOpsLogs } from "@/lib/ops-log.functions";
-import { formatParisDateTime } from "@/lib/price-refresh.shared";
+import { formatDateTimeShort } from "@/lib/dates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,7 +116,10 @@ function AdminJournal() {
       </form>
 
       {error && (
-        <p role="alert" className="mt-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+        <p
+          role="alert"
+          className="mt-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+        >
           {error}
         </p>
       )}
@@ -125,12 +128,12 @@ function AdminJournal() {
         <div className="mt-6 rounded-lg border border-border bg-card p-4 text-sm">
           <p className="font-semibold">Mise à jour automatique des prix Travelpayouts</p>
           <p className="mt-1 text-muted-foreground">
-            Dernière mise à jour : {formatParisDateTime(refresh.lastAt)} (heure de Paris)
-            {refresh.trigger ? ` · déclenchement ${refresh.trigger}` : ""} ·{" "}
-            {refresh.priceCount} tarifs relevés
+            Dernière mise à jour : {formatDateTimeShort(refresh.lastAt)} (heure de Paris)
+            {refresh.trigger ? ` · déclenchement ${refresh.trigger}` : ""} · {refresh.priceCount}{" "}
+            tarifs relevés
           </p>
           <p className="mt-1 text-muted-foreground">
-            Prochaine mise à jour prévue : {formatParisDateTime(refresh.nextAt)} (cadence horaire)
+            Prochaine mise à jour prévue : {formatDateTimeShort(refresh.nextAt)} (cadence horaire)
           </p>
           {refresh.message && (
             <p className="mt-1 text-destructive">Dernier incident : {refresh.message}</p>
@@ -180,7 +183,9 @@ function AdminJournal() {
                   </td>
                   <td className="p-2">{row.kind}</td>
                   <td className="p-2 font-mono">{row.label}</td>
-                  <td className="p-2">{row.ok ? (row.status ?? "ok") : `échec ${row.status ?? ""}`}</td>
+                  <td className="p-2">
+                    {row.ok ? (row.status ?? "ok") : `échec ${row.status ?? ""}`}
+                  </td>
                   <td className="p-2">{row.result_count ?? "—"}</td>
                   <td className="p-2">{row.duration_ms ? `${row.duration_ms} ms` : "—"}</td>
                   <td className="max-w-[420px] p-2 font-mono break-words text-muted-foreground">

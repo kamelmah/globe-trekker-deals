@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { formatDateMedium } from "@/lib/dates";
 
 import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { DESTINATIONS } from "@/data/destinations";
@@ -93,7 +94,7 @@ function PostPage() {
 
       <h1 className="mt-3 max-w-3xl font-display">{post.title}</h1>
       <p className="mt-2 text-xs text-muted-foreground">
-        {post.readingMinutes} min de lecture · mis à jour le {post.updated}
+        {post.readingMinutes} min de lecture · mis à jour le {formatDateMedium(post.updated)}
       </p>
 
       <div className="mt-8 max-w-3xl">

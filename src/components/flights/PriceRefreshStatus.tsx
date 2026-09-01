@@ -6,7 +6,8 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { priceRefreshState, refreshPricesNow } from "@/lib/price-refresh.functions";
-import { formatParisDateTime, type PriceRefreshState } from "@/lib/price-refresh.shared";
+import { type PriceRefreshState } from "@/lib/price-refresh.shared";
+import { formatDateTimeShort } from "@/lib/dates";
 
 /**
  * Bandeau de transparence : quand les prix ont été relevés auprès de
@@ -63,8 +64,8 @@ export function PriceRefreshStatus() {
         <p className="mt-1 text-muted-foreground">
           {state?.lastAt ? (
             <>
-              Dernier relevé : {formatParisDateTime(state.lastAt)} (heure de Paris) · prochain
-              passage attendu vers {formatParisDateTime(state.nextAt)}
+              Dernier relevé : {formatDateTimeShort(state.lastAt)} (heure de Paris) · prochain
+              passage attendu vers {formatDateTimeShort(state.nextAt)}
             </>
           ) : query.isPending ? (
             "Chargement de l'état de mise à jour…"

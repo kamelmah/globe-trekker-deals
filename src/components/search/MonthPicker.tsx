@@ -1,4 +1,5 @@
 import { CalendarIcon } from "lucide-react";
+import { formatMonthLong } from "@/lib/dates";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -16,11 +17,7 @@ function monthKey(offset: number): string {
 }
 
 function monthLabel(month: string): string {
-  const label = new Date(`${month}-01T00:00:00Z`).toLocaleDateString("fr-FR", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  const label = formatMonthLong(month);
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 

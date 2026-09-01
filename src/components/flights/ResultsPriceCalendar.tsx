@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { formatDateLong, formatMonthLong } from "@/lib/dates";
 import { useServerFn } from "@tanstack/react-start";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -26,13 +27,7 @@ function daysInMonth(month: string): string[] {
   return Array.from({ length: total }, (_, i) => `${month}-${String(i + 1).padStart(2, "0")}`);
 }
 
-function monthLabel(month: string): string {
-  return new Date(`${month}-01T00:00:00Z`).toLocaleDateString("fr-FR", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
+const monthLabel = formatMonthLong;
 
 function level(price: number, min: number, max: number): "low" | "mid" | "high" {
   if (max === min) return "mid";
@@ -153,7 +148,11 @@ export function ResultsPriceCalendar({
                 type="button"
                 disabled={disabled}
                 onClick={() => onSelectDate(date)}
-                aria-label={price === undefined ? date : `${date} : ${format(price)}`}
+                aria-label={
+                  price === undefined
+                    ? formatDateLong(date)
+                    : `${formatDateLong(date)} : ${format(price)}`
+                }
                 className={cn(
                   "flex min-h-12 flex-col items-center justify-center rounded-md border p-0.5 text-center transition-colors",
                   l === null && "border-border hover:bg-muted",

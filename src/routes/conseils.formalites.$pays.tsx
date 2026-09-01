@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { formatDateMedium } from "@/lib/dates";
 
 import { Reveal } from "@/components/site/Reveal";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
@@ -108,7 +109,9 @@ function TravelDocumentPage() {
       <h1 className="mt-3 font-display">
         Formalités pour voyager {countryPreposition(doc.country)} {doc.country}
       </h1>
-      <p className="mt-2 text-xs text-muted-foreground">Mis à jour le {doc.updated}</p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Mis à jour le {formatDateMedium(doc.updated)}
+      </p>
       <p className="mt-4 text-base text-muted-foreground">{doc.intro}</p>
       <p className="mt-3 text-xs text-muted-foreground">
         Ces informations sont données à titre indicatif pour les ressortissants français : les

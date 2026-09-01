@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { formatDateTimeLong } from "@/lib/dates";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
 import { LivePriceButton } from "@/components/flights/LivePriceButton";
@@ -205,15 +206,7 @@ export const Route = createFileRoute("/vols/$slug")({
 });
 
 /** Date de relevé en toutes lettres, ex. « 28 août 2026 ». */
-function formatObservedDate(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
+const formatObservedDate = formatDateTimeLong;
 
 function DestinationPage() {
   const { route, months, lowestObserved, lowestObservedAt, related } = Route.useLoaderData();
