@@ -66,6 +66,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/comparatifs" className={linkClass}>
+                Comparatifs de destinations
+              </Link>
+            </li>
+            <li>
               <Link to="/faq" className={linkClass}>
                 Questions fréquentes (FAQ)
               </Link>

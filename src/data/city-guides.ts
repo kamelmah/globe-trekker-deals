@@ -2326,6 +2326,73 @@ export const CITY_GUIDES: CityGuide[] = [
       },
     ],
   },
+  {
+    slug: "bali",
+    city: "Bali",
+    country: "Indonésie",
+    routeSlug: "paris-bali",
+    origin: "PAR",
+    destination: "DPS",
+    originCity: "Paris",
+    title: "Que faire à Bali : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Bali : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Bali : meilleure saison, quartiers Ubud, Seminyak et Canggu, budget sur place, transports, visa et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Bali ne se limite pas à une plage : l'île concentre rizières en terrasses, temples, spots de surf et scène de travailleurs à distance, à condition de bien choisir sa base tant les ambiances diffèrent d'un quartier à l'autre. Voici les repères concrets avant de réserver.",
+    readingMinutes: 8,
+    updated: "2026-09-01",
+    practical: {
+      monnaie: "Roupie indonésienne (IDR). Environ 1 € = 17 000 IDR. Distributeurs largement disponibles, prévoyez du liquide pour les warungs.",
+      langue: "Indonésien (bahasa Indonesia) et balinais. L'anglais est très répandu dans les zones touristiques du sud de l'île.",
+      visa: "Visa à l'arrivée (VOA) payant pour les Français, environ 30 € pour 30 jours, prolongeable une fois sur place. Passeport valide au moins 6 mois.",
+      transport: "Pas de transport public structuré : scooter de location (permis international requis), chauffeur à la journée, ou applications Gojek/Grab pour de courts trajets.",
+      budgetJour: "35 à 65 € par personne et par jour, davantage dans les villas avec piscine du sud de l'île.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Bali ?",
+        paragraphs: [
+          "La saison sèche, de mai à septembre, offre le climat le plus fiable : peu de pluie, chaleur stable autour de 27-31 °C, mer calme sur la côte sud. C'est aussi la période la plus fréquentée et la plus chère, en particulier juillet-août.",
+          "La saison des pluies, de novembre à mars, n'empêche pas de voyager : les averses sont généralement intenses mais brèves, souvent en fin d'après-midi, et la végétation est alors la plus verte de l'année. Décembre et début janvier restent chers malgré la pluie, portés par la demande des fêtes.",
+          "Le Nyepi, jour du silence balinais qui marque le nouvel an du calendrier saka (en mars, date variable), immobilise complètement l'île pendant 24 heures : aéroport fermé, rues désertes, lumières éteintes. Un moment culturel unique à vivre sur place, mais à anticiper si vos dates de vol tombent ce jour précis — aucun avion ne décolle ni n'atterrit.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "Seminyak concentre restaurants soignés, boutiques et beach clubs au coucher du soleil — le choix le plus confortable pour un premier séjour, mais aussi l'un des plus embouteillés du sud de l'île.",
+          "Canggu, plus au nord, est devenu la base des surfeurs et des travailleurs à distance : cafés avec wifi, rizières encore visibles entre les constructions récentes, et une circulation qui sature un peu plus chaque année sur l'axe principal.",
+          "Ubud, à l'intérieur des terres, reste le cœur culturel et spirituel de l'île : rizières en terrasses de Tegalalang, forêt des singes, cours de yoga et marché artisanal. Les nuits y sont plus fraîches qu'au bord de mer, sans plage à proximité immédiate.",
+          "Uluwatu, à la pointe sud, offre les plus belles falaises et les meilleurs spots de surf, avec son temple perché et sa danse Kecak au coucher du soleil. Nusa Dua, plus au calme, concentre les grands complexes hôteliers familiaux.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "Un repas dans un warung local coûte 2 à 5 €, un dîner soigné à Seminyak ou Canggu 12 à 25 € par personne. Le café de spécialité, très présent à Canggu, revient à 2 à 4 €.",
+          "L'hébergement va de 15 à 25 € pour une guesthouse correcte à 40-80 € pour une villa privée avec piscine, un standard courant dans le sud de l'île. Les hôtels de Nusa Dua ou Seminyak en bord de mer dépassent facilement 100 € en haute saison.",
+          "Un scooter de location revient à 5 à 7 € par jour, un chauffeur privé à la journée 25 à 35 €. Les entrées de temples et rizières coûtent en général 2 à 4 € par site.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Formalités : visa à l'arrivée payant pour les Français (environ 30 €, 30 jours, prolongeable une fois), passeport valide au moins 6 mois après la date d'entrée.",
+          "Depuis l'aéroport Ngurah Rai (DPS), comptez 20 à 40 minutes de route vers Seminyak ou Kuta, 1 h à 1 h 30 vers Ubud selon le trafic — souvent plus long en fin d'après-midi sur l'axe du sud de l'île.",
+          "Un scooter demande un permis international : les contrôles de police ciblant les touristes sans ce document sont fréquents autour de Canggu et Seminyak. Le casque est obligatoire même sur de courts trajets.",
+          "Sur place : tenue couvrant épaules et genoux (souvent un sarong fourni sur place) pour visiter les temples, eau du robinet non potable, et négociation attendue avec les chauffeurs non affiliés à une application.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Une semaine permet de combiner deux bases — par exemple Ubud pour la culture et les rizières, puis Uluwatu ou Seminyak pour la plage — plutôt que de tout faire depuis un seul point de chute vu les distances et le trafic.",
+          "Compte tenu du trajet (17 à 20 heures avec escale), un séjour de moins de dix jours rentabilise mal le temps de vol : la plupart des voyageurs venus d'Europe restent deux à trois semaines, parfois en combinant Bali avec les îles voisines de Nusa Penida ou Gili.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getCityGuide(slug: string): CityGuide | undefined {

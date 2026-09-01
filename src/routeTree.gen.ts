@@ -25,6 +25,8 @@ import { Route as SitemapPagesDotxmlRouteImport } from './routes/sitemap-pages[.
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminJournalRouteImport } from './routes/admin.journal'
 import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
+import { Route as ComparatifsIndexRouteImport } from './routes/comparatifs.index'
+import { Route as ComparatifsSlugRouteImport } from './routes/comparatifs.$slug'
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
 import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
 import { Route as SitemapVolsPageDotxmlRouteImport } from './routes/sitemap-vols.$page[.]xml'
@@ -116,6 +118,16 @@ const AlertesDesinscriptionRoute = AlertesDesinscriptionRouteImport.update({
   path: '/alertes/desinscription',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComparatifsIndexRoute = ComparatifsIndexRouteImport.update({
+  id: '/comparatifs/',
+  path: '/comparatifs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComparatifsSlugRoute = ComparatifsSlugRouteImport.update({
+  id: '/comparatifs/$slug',
+  path: '/comparatifs/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConseilsIndexRoute = ConseilsIndexRouteImport.update({
   id: '/conseils/',
   path: '/conseils/',
@@ -188,10 +200,12 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
+  '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
@@ -216,10 +230,12 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
+  '/comparatifs': typeof ComparatifsIndexRoute
   '/conseils': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
@@ -245,10 +261,12 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/sitemap-vols/$page.xml': typeof SitemapVolsPageDotxmlRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
+  '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
@@ -275,10 +293,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/sitemap-vols/$page.xml'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
+    | '/comparatifs/'
     | '/conseils/'
     | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
@@ -303,10 +323,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/sitemap-vols/$page.xml'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
+    | '/comparatifs'
     | '/conseils'
     | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
@@ -331,10 +353,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/sitemap-vols/$page.xml'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
+    | '/comparatifs/'
     | '/conseils/'
     | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
@@ -360,10 +384,12 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminJournalRoute: typeof AdminJournalRoute
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
+  ComparatifsSlugRoute: typeof ComparatifsSlugRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
   SitemapVolsPageDotxmlRoute: typeof SitemapVolsPageDotxmlRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
   VolsSlugRoute: typeof VolsSlugRoute
+  ComparatifsIndexRoute: typeof ComparatifsIndexRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
   ApiPublicRafraichirPrixRoute: typeof ApiPublicRafraichirPrixRoute
   ApiPublicVerifierAlertesRoute: typeof ApiPublicVerifierAlertesRoute
@@ -486,6 +512,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlertesDesinscriptionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/comparatifs/': {
+      id: '/comparatifs/'
+      path: '/comparatifs'
+      fullPath: '/comparatifs/'
+      preLoaderRoute: typeof ComparatifsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comparatifs/$slug': {
+      id: '/comparatifs/$slug'
+      path: '/comparatifs/$slug'
+      fullPath: '/comparatifs/$slug'
+      preLoaderRoute: typeof ComparatifsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/conseils/': {
       id: '/conseils/'
       path: '/conseils'
@@ -576,10 +616,12 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminJournalRoute: AdminJournalRoute,
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
+  ComparatifsSlugRoute: ComparatifsSlugRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
   SitemapVolsPageDotxmlRoute: SitemapVolsPageDotxmlRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
   VolsSlugRoute: VolsSlugRoute,
+  ComparatifsIndexRoute: ComparatifsIndexRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
   ApiPublicRafraichirPrixRoute: ApiPublicRafraichirPrixRoute,
   ApiPublicVerifierAlertesRoute: ApiPublicVerifierAlertesRoute,

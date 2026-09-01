@@ -118,7 +118,14 @@ function BlogIndex() {
         >
           mode budget
         </Link>{" "}
-        pour voir où partir avec la somme que vous avez en tête.
+        pour voir où partir avec la somme que vous avez en tête, ou consultez nos{" "}
+        <Link
+          to="/comparatifs"
+          className="font-medium text-primary underline-offset-2 hover:underline"
+        >
+          comparatifs de destinations
+        </Link>{" "}
+        si vous hésitez encore entre deux villes.
       </div>
     </div>
   );

@@ -1196,6 +1196,68 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
       },
     ],
   },
+  {
+    slug: "paris-bali",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "DPS",
+    destinationCity: "Bali",
+    country: "Indonésie",
+    heading: "Vols pas chers Paris — Bali",
+    metaTitle: "Paris — Bali pas cher : escale, saison sèche et bon prix | TrouveMonVol",
+    metaDescription:
+      "Vols Paris-Bali au prix total, taxes incluses, vendeur affiché. Aucun direct : comparez les escales, meilleure saison pour partir, alerte prix gratuite.",
+    intro:
+      "Aucune compagnie n'opère de vol direct entre Paris et Bali : le trajet passe systématiquement par une escale, le plus souvent à Doha, Singapour ou Dubaï, pour un total de 17 à 20 heures de voyage.",
+    bestMonths: "Mai à septembre, hors juillet-août",
+    averageDuration: "17 à 20 h avec une escale (aucun vol direct)",
+    sections: [
+      {
+        heading: "Quand partir à Bali au meilleur prix",
+        paragraphs: [
+          "La saison sèche, de mai à septembre, concentre la demande européenne : ciel dégagé, mer calme côté Uluwatu et Nusa Dua, mais tarifs aériens et hôteliers au plus haut, surtout en juillet-août pendant les vacances scolaires occidentales.",
+          "La saison des pluies, de novembre à mars, fait baisser sensiblement les prix : les averses sont généralement courtes et concentrées en fin de journée, sans empêcher les visites. Décembre et la première quinzaine de janvier restent chers malgré la pluie, portés par la demande des fêtes de fin d'année.",
+          "Avril et octobre, mois de transition entre les deux saisons, offrent souvent le meilleur rapport prix-climat : la mousson s'est calmée ou n'a pas encore commencé, et la demande touristique est plus faible qu'en plein été.",
+        ],
+      },
+      {
+        heading: "Escale à Doha, Singapour ou Dubaï",
+        paragraphs: [
+          "Qatar Airways (via Doha), Singapore Airlines (via Singapour) et Emirates (via Dubaï) proposent les correspondances les plus directes, avec un temps d'escale généralement inférieur à trois heures. D'autres compagnies imposent deux escales ou des correspondances de nuit plus longues, souvent moins chères mais avec sept à dix heures de trajet supplémentaires.",
+          "Sur un trajet aussi long, la qualité de l'escale compte autant que le prix du billet : une correspondance de moins de deux heures dans un aéroport aussi vaste que Dubaï ou Singapour laisse peu de marge en cas de retard du premier vol.",
+        ],
+      },
+      {
+        heading: "Budget et durée du voyage",
+        paragraphs: [
+          "Un aller-retour se trouve fréquemment entre 650 et 900 euros hors haute saison, et dépasse souvent 1 100 euros en juillet-août et à Noël. Réserver quatre à six mois à l'avance reste la meilleure stratégie sur cette destination longue et demandée.",
+          "Avec le décalage horaire de 5 à 6 heures et un vol total proche de 24 heures porte-à-porte une fois les correspondances comptées, mieux vaut prévoir une nuit de récupération à l'arrivée avant d'enchaîner les visites.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Existe-t-il un vol direct Paris — Bali ?",
+        answer:
+          "Non, aucune compagnie n'opère de liaison directe : tous les vols passent par une escale, le plus souvent à Doha, Singapour ou Dubaï.",
+      },
+      {
+        question: "Quel est le meilleur mois pour aller à Bali pas cher ?",
+        answer:
+          "Avril et octobre offrent le meilleur compromis entre climat sec et tarifs raisonnables. Juillet, août et les fêtes de fin d'année sont les périodes les plus chères.",
+      },
+      {
+        question: "Combien de temps dure le trajet jusqu'à Bali ?",
+        answer:
+          "Comptez 17 à 20 heures de vol avec une escale, et une journée complète de voyage porte-à-porte une fois les correspondances incluses.",
+      },
+      {
+        question: "Faut-il un visa pour l'Indonésie ?",
+        answer:
+          "Les Français obtiennent un visa à l'arrivée (VOA) payant, valable 30 jours et prolongeable une fois. Un passeport valide au moins 6 mois est requis.",
+      },
+    ],
+  },
 ];
 
 /** Fiches éditoriales : trajets curés + capitales européennes. */
