@@ -69,14 +69,28 @@ export function TravelPartnersSection({
         {partners.map((id) => {
           const partner = PARTNERS[id];
           const Icon = partner.icon;
+          // Un nom de partenaire trop long ("GetRentacar.com") fait déborder le
+          // bouton en une ligne : on raccourcit le libellé et on garde le nom
+          // visible via le badge à côté de l'icône plutôt que de le répéter.
+          const hasLongPartnerName = partner.partnerName.length > 10;
           return (
             <div key={id} className="rounded-xl border border-border bg-card p-4">
-              <Icon className="size-5 text-primary" aria-hidden />
+              <div className="flex items-center justify-between gap-2">
+                <Icon className="size-5 text-primary" aria-hidden />
+                <span className="truncate text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  {partner.partnerName}
+                </span>
+              </div>
               <h3 className="mt-3 text-sm font-semibold">{partner.title}</h3>
               <p className="mt-1.5 text-xs text-muted-foreground">{partner.description}</p>
-              <Button asChild variant="outline" size="sm" className="mt-3 w-full">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="mt-3 h-auto min-h-8 w-full whitespace-normal px-3 py-1.5 text-center leading-snug"
+              >
                 <a href={partner.href} target="_blank" rel="noopener noreferrer nofollow sponsored">
-                  Voir les offres {partner.partnerName}
+                  {hasLongPartnerName ? "Voir les offres" : `Voir les offres ${partner.partnerName}`}
                 </a>
               </Button>
             </div>
