@@ -30,6 +30,11 @@ export const Route = createFileRoute("/sitemap.xml")({
         const origin = SITE_URL;
 
         // Pages fixes : pas de date d'édition suivie, donc pas de lastmod.
+        //
+        // Les pages de service (mentions légales, CGU, confidentialité, cookies)
+        // n'y figurent PAS : elles sont en `noindex`. Un sitemap ne doit
+        // déclarer que des pages qu'on demande à Google d'indexer — y laisser
+        // une page en noindex envoie deux consignes contradictoires.
         const staticPages = [
           "/",
           "/mode-budget",
@@ -39,10 +44,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/conseils/formalites",
           "/faq",
           "/contact",
-          "/mentions-legales",
-          "/cgu",
-          "/confidentialite",
-          "/cookies",
+          "/indemnisation",
+          "/hebergement",
         ];
 
         const entries: SitemapEntry[] = [

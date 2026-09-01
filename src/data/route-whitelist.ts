@@ -7,11 +7,18 @@
  * Ce fichier pilote à lui seul la génération des pages /vols, le sitemap et la
  * navigation. Aucune page de route ne doit exister en dehors de lui.
  *
- * Chaque route a été vérifiée contre l'API Travelpayouts le 2026-09-01 : seules
- * sont retenues les liaisons renvoyant de vraies offres en VOL DIRECT sur les
- * mois 2026-09, 2026-10, 2026-11. Une liaison qui n'existe que via une correspondance
- * construite par l'agrégateur n'est pas une route commerciale : elle n'a pas de
- * trafic de recherche, elle ne figure pas ici.
+ * Chaque route a été vérifiée contre l'API Travelpayouts le 2026-09-01, sur les
+ * mois 2026-09, 2026-10, 2026-11.
+ *
+ * La découverte automatique ne retient que les liaisons renvoyant de vraies
+ * offres en VOL DIRECT : une liaison qui n'existe que via une correspondance
+ * construite par l'agrégateur n'est pas une route commerciale et n'a pas de
+ * trafic de recherche.
+ *
+ * S'y ajoute une courte liste de routes AVEC ESCALE ajoutées à la main, pour des
+ * destinations très demandées sans vol direct depuis Marseille. Elles portent
+ * `nonstop: false` et sont vérifiées elles aussi — jamais découvertes
+ * automatiquement.
  */
 
 export type RouteFamily =
@@ -25,6 +32,12 @@ export type WhitelistedRoute = {
   destinationCity: string;
   country: string;
   family: RouteFamily;
+  /**
+   * La liaison est-elle desservie en vol direct ? `false` pour les quelques
+   * routes ajoutées à la main qui n'existent qu'avec escale : les pages ne
+   * doivent pas annoncer une durée de vol direct sur ces trajets.
+   */
+  nonstop: boolean;
   /** Preuve de validation : ce que l'API a réellement renvoyé sur la fenêtre. */
   validation: { offers: number; minPriceEur: number | null; airlines: string[] };
 };
@@ -78,6 +91,7 @@ export const AIRPORT_NAMES_FR: Record<string, string> = {
   IBZ: "Ibiza",
   IST: "Istanbul",
   IZM: "Izmir",
+  JED: "Djeddah",
   KRK: "Cracovie",
   LIL: "Lille",
   LIS: "Lisbonne",
@@ -161,6 +175,7 @@ export const COUNTRY_NAMES_FR: Record<string, string> = {
   IBZ: "Espagne",
   IST: "Turquie",
   IZM: "Turquie",
+  JED: "Arabie saoudite",
   KRK: "Pologne",
   LIL: "France",
   LIS: "Portugal",
@@ -209,7 +224,7 @@ export function frenchName(code: string): string | null {
 }
 
 /**
- * Les 85 routes retenues. Marseille est le départ de référence du site et
+ * Les 89 routes retenues. Marseille est le départ de référence du site et
  * concentre l'essentiel de la couverture ; Nice, Toulouse et Montpellier sont
  * resserrés sur le Maghreb et quelques têtes de pont. Paris et Lyon ne figurent
  * pas ici : leurs pages relèvent de l'éditorial rédigé à la main ou de
@@ -224,7 +239,8 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Alger",
     country: "Algérie",
     family: "maghreb",
-    validation: { offers: 8, minPriceEur: 46, airlines: ["TO", "V7"] },
+    nonstop: true,
+    validation: { offers: 10, minPriceEur: 40, airlines: ["TO", "V7"] },
   },
   {
     slug: "marseille-oran",
@@ -234,6 +250,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Oran",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 8, minPriceEur: 52, airlines: ["TO", "V7"] },
   },
   {
@@ -244,6 +261,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Constantine",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 6, minPriceEur: 45, airlines: ["AH", "V7"] },
   },
   {
@@ -254,7 +272,8 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Annaba",
     country: "Algérie",
     family: "maghreb",
-    validation: { offers: 8, minPriceEur: 52, airlines: ["AH", "TO"] },
+    nonstop: true,
+    validation: { offers: 9, minPriceEur: 52, airlines: ["AH", "TO"] },
   },
   {
     slug: "marseille-setif",
@@ -264,6 +283,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Sétif",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 125, airlines: ["AH"] },
   },
   {
@@ -274,6 +294,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Béjaïa",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 52, airlines: ["V7"] },
   },
   {
@@ -284,6 +305,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Tlemcen",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 57, airlines: ["V7"] },
   },
   {
@@ -294,6 +316,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Tunis",
     country: "Tunisie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 19, minPriceEur: 70, airlines: ["BJ", "TO", "TU"] },
   },
   {
@@ -304,6 +327,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Djerba",
     country: "Tunisie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 3, minPriceEur: 90, airlines: ["BJ"] },
   },
   {
@@ -314,6 +338,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Casablanca",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 5, minPriceEur: 92, airlines: ["AT"] },
   },
   {
@@ -324,6 +349,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Marrakech",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 4, minPriceEur: 32, airlines: ["FR", "MW"] },
   },
   {
@@ -334,6 +360,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Tanger",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 33, airlines: ["FR"] },
   },
   {
@@ -344,6 +371,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Fès",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 4, minPriceEur: 27, airlines: ["FR"] },
   },
   {
@@ -354,6 +382,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Agadir",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 31, airlines: ["FR"] },
   },
   {
@@ -364,6 +393,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Istanbul",
     country: "Turquie",
     family: "turquie-orient",
+    nonstop: true,
     validation: { offers: 67, minPriceEur: 73, airlines: ["PC", "TK"] },
   },
   {
@@ -374,6 +404,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Antalya",
     country: "Turquie",
     family: "turquie-orient",
+    nonstop: true,
     validation: { offers: 6, minPriceEur: 121, airlines: ["TO"] },
   },
   {
@@ -384,6 +415,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Le Caire",
     country: "Égypte",
     family: "turquie-orient",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 189, airlines: ["TO"] },
   },
   {
@@ -394,6 +426,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Hurghada",
     country: "Égypte",
     family: "turquie-orient",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 212, airlines: ["TO"] },
   },
   {
@@ -404,6 +437,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Barcelone",
     country: "Espagne",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 27, minPriceEur: 27, airlines: ["V7", "VY"] },
   },
   {
@@ -414,6 +448,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Madrid",
     country: "Espagne",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 17, minPriceEur: 21, airlines: ["FR", "IB", "YW"] },
   },
   {
@@ -424,6 +459,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Séville",
     country: "Espagne",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 4, minPriceEur: 45, airlines: ["FR", "MW"] },
   },
   {
@@ -434,6 +470,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Malaga",
     country: "Espagne",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 9, minPriceEur: 22, airlines: ["FR", "MW"] },
   },
   {
@@ -444,6 +481,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Alicante",
     country: "Espagne",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 13, minPriceEur: 16, airlines: ["FR"] },
   },
   {
@@ -454,6 +492,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Palma",
     country: "Espagne",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 15, minPriceEur: 16, airlines: ["FR", "V7"] },
   },
   {
@@ -464,6 +503,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Ibiza",
     country: "Espagne",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 9, minPriceEur: 23, airlines: ["FR", "MW"] },
   },
   {
@@ -474,6 +514,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Lisbonne",
     country: "Portugal",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 22, minPriceEur: 27, airlines: ["FR", "MW", "NI"] },
   },
   {
@@ -484,6 +525,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Porto",
     country: "Portugal",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 19, minPriceEur: 32, airlines: ["FR", "MW"] },
   },
   {
@@ -494,6 +536,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Faro",
     country: "Portugal",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 8, minPriceEur: 28, airlines: ["FR"] },
   },
   {
@@ -504,6 +547,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Rome",
     country: "Italie",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 30, minPriceEur: 18, airlines: ["AZ", "FR", "MW"] },
   },
   {
@@ -514,7 +558,8 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Milan",
     country: "Italie",
     family: "europe-sud",
-    validation: { offers: 17, minPriceEur: 15, airlines: ["FR", "MW", "T7"] },
+    nonstop: true,
+    validation: { offers: 16, minPriceEur: 16, airlines: ["FR", "MW", "T7"] },
   },
   {
     slug: "marseille-naples",
@@ -524,6 +569,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Naples",
     country: "Italie",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 8, minPriceEur: 36, airlines: ["FR", "MW"] },
   },
   {
@@ -534,6 +580,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Venise",
     country: "Italie",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 14, minPriceEur: 22, airlines: ["FR", "MW", "V7"] },
   },
   {
@@ -544,6 +591,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Palerme",
     country: "Italie",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 3, minPriceEur: 24, airlines: ["FR", "MW"] },
   },
   {
@@ -554,6 +602,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Catane",
     country: "Italie",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 2, minPriceEur: 25, airlines: ["MW"] },
   },
   {
@@ -564,6 +613,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Olbia",
     country: "Italie",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 63, airlines: ["V7"] },
   },
   {
@@ -574,6 +624,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Athènes",
     country: "Grèce",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 14, minPriceEur: 46, airlines: ["A3", "V7"] },
   },
   {
@@ -584,6 +635,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Corfou",
     country: "Grèce",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 3, minPriceEur: 16, airlines: ["FR", "MW"] },
   },
   {
@@ -594,6 +646,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Malte",
     country: "Malte",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 7, minPriceEur: 22, airlines: ["FR", "MW"] },
   },
   {
@@ -604,6 +657,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Split",
     country: "Croatie",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 53, airlines: ["V7"] },
   },
   {
@@ -614,6 +668,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Dubrovnik",
     country: "Croatie",
     family: "europe-sud",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 29, airlines: ["V7"] },
   },
   {
@@ -624,6 +679,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Londres",
     country: "Royaume-Uni",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 15, minPriceEur: 23, airlines: ["FR", "MW", "U2"] },
   },
   {
@@ -634,6 +690,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Bruxelles",
     country: "Belgique",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 8, minPriceEur: 27, airlines: ["FR"] },
   },
   {
@@ -644,6 +701,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Amsterdam",
     country: "Pays-Bas",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 16, minPriceEur: 134, airlines: ["AF", "KL"] },
   },
   {
@@ -654,7 +712,8 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Francfort",
     country: "Allemagne",
     family: "europe-nord-est",
-    validation: { offers: 6, minPriceEur: 242, airlines: ["VL"] },
+    nonstop: true,
+    validation: { offers: 7, minPriceEur: 242, airlines: ["LH", "VL"] },
   },
   {
     slug: "marseille-munich",
@@ -664,6 +723,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Munich",
     country: "Allemagne",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 16, minPriceEur: 175, airlines: ["LH"] },
   },
   {
@@ -674,6 +734,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Berlin",
     country: "Allemagne",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 4, minPriceEur: 81, airlines: ["MW"] },
   },
   {
@@ -684,6 +745,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Zurich",
     country: "Suisse",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 11, minPriceEur: 187, airlines: ["2L"] },
   },
   {
@@ -694,6 +756,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Vienne",
     country: "Autriche",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 11, minPriceEur: 23, airlines: ["FR", "MW", "OS"] },
   },
   {
@@ -704,6 +767,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Prague",
     country: "République tchèque",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 42, airlines: ["FR"] },
   },
   {
@@ -714,6 +778,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Cracovie",
     country: "Pologne",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 7, minPriceEur: 18, airlines: ["FR", "MW"] },
   },
   {
@@ -724,6 +789,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Budapest",
     country: "Hongrie",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 4, minPriceEur: 41, airlines: ["FR", "MW"] },
   },
   {
@@ -734,6 +800,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Bucarest",
     country: "Roumanie",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 5, minPriceEur: 34, airlines: ["FR", "MW"] },
   },
   {
@@ -744,6 +811,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Paris",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 44, minPriceEur: 48, airlines: ["AF", "TO"] },
   },
   {
@@ -754,6 +822,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Lille",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 2, minPriceEur: 54, airlines: ["FR"] },
   },
   {
@@ -764,6 +833,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Nantes",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 7, minPriceEur: 21, airlines: ["FR", "MW", "TO"] },
   },
   {
@@ -774,6 +844,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Strasbourg",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 10, minPriceEur: 33, airlines: ["V7"] },
   },
   {
@@ -784,6 +855,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Brest",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 6, minPriceEur: 54, airlines: ["TO", "V7"] },
   },
   {
@@ -794,6 +866,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Ajaccio",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 3, minPriceEur: 145, airlines: ["XK"] },
   },
   {
@@ -804,6 +877,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Bastia",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 3, minPriceEur: 122, airlines: ["XK"] },
   },
   {
@@ -814,6 +888,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Figari",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 9, minPriceEur: 71, airlines: ["XK"] },
   },
   {
@@ -824,6 +899,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Calvi",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 5, minPriceEur: 74, airlines: ["XK"] },
   },
   {
@@ -834,6 +910,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Alger",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 8, minPriceEur: 121, airlines: ["AH"] },
   },
   {
@@ -844,6 +921,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Constantine",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 118, airlines: ["AH"] },
   },
   {
@@ -854,6 +932,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Tunis",
     country: "Tunisie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 8, minPriceEur: 86, airlines: ["BJ", "TO", "TU"] },
   },
   {
@@ -864,6 +943,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Djerba",
     country: "Tunisie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 146, airlines: ["TU"] },
   },
   {
@@ -874,6 +954,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Monastir",
     country: "Tunisie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 8, minPriceEur: 77, airlines: ["TO", "TU"] },
   },
   {
@@ -884,6 +965,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Casablanca",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 7, minPriceEur: 117, airlines: ["AT"] },
   },
   {
@@ -894,6 +976,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Marrakech",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 10, minPriceEur: 53, airlines: ["U2"] },
   },
   {
@@ -904,7 +987,8 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Istanbul",
     country: "Turquie",
     family: "turquie-orient",
-    validation: { offers: 78, minPriceEur: 76, airlines: ["PC", "TK"] },
+    nonstop: true,
+    validation: { offers: 77, minPriceEur: 76, airlines: ["PC", "TK"] },
   },
   {
     slug: "nice-londres",
@@ -914,6 +998,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Londres",
     country: "Royaume-Uni",
     family: "europe-nord-est",
+    nonstop: true,
     validation: { offers: 22, minPriceEur: 17, airlines: ["FR", "U2"] },
   },
   {
@@ -924,6 +1009,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Paris",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 64, minPriceEur: 29, airlines: ["TO", "U2"] },
   },
   {
@@ -934,6 +1020,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Alger",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 5, minPriceEur: 62, airlines: ["AH", "TO"] },
   },
   {
@@ -944,6 +1031,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Oran",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 2, minPriceEur: 114, airlines: ["AH"] },
   },
   {
@@ -954,7 +1042,8 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Tunis",
     country: "Tunisie",
     family: "maghreb",
-    validation: { offers: 5, minPriceEur: 78, airlines: ["BJ", "TU"] },
+    nonstop: true,
+    validation: { offers: 6, minPriceEur: 76, airlines: ["BJ", "TU"] },
   },
   {
     slug: "toulouse-djerba",
@@ -964,6 +1053,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Djerba",
     country: "Tunisie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 105, airlines: ["BJ"] },
   },
   {
@@ -974,6 +1064,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Casablanca",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 164, airlines: ["AT"] },
   },
   {
@@ -984,6 +1075,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Marrakech",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 7, minPriceEur: 30, airlines: ["EC", "FR", "MW", "U2"] },
   },
   {
@@ -994,6 +1086,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Tanger",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 18, airlines: ["FR"] },
   },
   {
@@ -1004,6 +1097,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Fès",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 34, airlines: ["FR"] },
   },
   {
@@ -1014,6 +1108,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Paris",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 26, minPriceEur: 36, airlines: ["EC", "TO", "U2"] },
   },
   {
@@ -1024,6 +1119,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Alger",
     country: "Algérie",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 2, minPriceEur: 105, airlines: ["AH"] },
   },
   {
@@ -1034,6 +1130,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Casablanca",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 2, minPriceEur: 78, airlines: ["3O", "AT"] },
   },
   {
@@ -1044,6 +1141,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Marrakech",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 2, minPriceEur: 80, airlines: ["TO"] },
   },
   {
@@ -1054,6 +1152,7 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Fès",
     country: "Maroc",
     family: "maghreb",
+    nonstop: true,
     validation: { offers: 1, minPriceEur: 68, airlines: ["3O"] },
   },
   {
@@ -1064,7 +1163,52 @@ export const ROUTE_WHITELIST: WhitelistedRoute[] = [
     destinationCity: "Paris",
     country: "France",
     family: "france-corse",
+    nonstop: true,
     validation: { offers: 22, minPriceEur: 50, airlines: ["AF", "TO"] },
+  },
+  {
+    slug: "paris-marseille",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "MRS",
+    destinationCity: "Marseille",
+    country: "France",
+    family: "france-corse",
+    nonstop: true,
+    validation: { offers: 41, minPriceEur: 46, airlines: ["AF", "TO"] },
+  },
+  {
+    slug: "marseille-charm-el-cheikh",
+    origin: "MRS",
+    originCity: "Marseille",
+    destination: "SSH",
+    destinationCity: "Charm el-Cheikh",
+    country: "Égypte",
+    family: "turquie-orient",
+    nonstop: false,
+    validation: { offers: 1, minPriceEur: 97, airlines: ["AL"] },
+  },
+  {
+    slug: "marseille-dubai",
+    origin: "MRS",
+    originCity: "Marseille",
+    destination: "DXB",
+    destinationCity: "Dubaï",
+    country: "Émirats arabes unis",
+    family: "turquie-orient",
+    nonstop: false,
+    validation: { offers: 8, minPriceEur: 125, airlines: ["FR", "PC", "U2", "V7", "VY"] },
+  },
+  {
+    slug: "marseille-djeddah",
+    origin: "MRS",
+    originCity: "Marseille",
+    destination: "JED",
+    destinationCity: "Djeddah",
+    country: "Arabie saoudite",
+    family: "turquie-orient",
+    nonstop: false,
+    validation: { offers: 2, minPriceEur: 158, airlines: ["AL", "PC"] },
   },
 ];
 

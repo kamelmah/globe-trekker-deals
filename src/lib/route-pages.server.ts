@@ -9,7 +9,13 @@
 
 import { AIRPORTS } from "@/data/airports";
 import { DESTINATIONS, type DestinationRoute } from "@/data/destinations";
-import { AIRPORT_NAMES_FR, COUNTRY_NAMES_FR, frenchName, routesFrom } from "@/data/route-whitelist";
+import {
+  AIRPORT_NAMES_FR,
+  COUNTRY_NAMES_FR,
+  findWhitelistedRoute,
+  frenchName,
+  routesFrom,
+} from "@/data/route-whitelist";
 import { getCityIndex, type CityRecord } from "@/lib/geo.server";
 import { routeSlug, slugify } from "@/lib/slug";
 
@@ -296,6 +302,14 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
   const priceLabel = observed ? `${observed.priceEur} €` : null;
   const observedMonth = frenchMonth(observed?.departureAt ?? null);
 
+  // Quelques liaisons de la liste blanche n'existent qu'avec escale : la page ne
+  // doit pas leur annoncer une durée de vol direct.
+  const whitelisted = findWhitelistedRoute(routeSlug(origin.city, destination.city));
+  const nonstop = whitelisted?.nonstop ?? true;
+  const distanceSentence = nonstop
+    ? `La distance entre ${origin.city} et ${destination.city} (${destination.country}) est d'environ ${km.toLocaleString("fr-FR")} km, soit ${durationLabel(km)} pour un vol direct. Les itinéraires avec une ou deux escales sont souvent moins chers mais rallongent sensiblement le trajet : nos filtres vous permettent d'exclure les escales trop longues en un clic.`
+    : `Aucune compagnie n'assure ${origin.city} — ${destination.city} sans escale : tous les itinéraires passent par une correspondance. La distance à vol d'oiseau est d'environ ${km.toLocaleString("fr-FR")} km, mais comptez sensiblement plus que les ${durationLabel(km)} théoriques, selon la durée de l'escale. Nos filtres permettent d'écarter les correspondances les plus longues.`;
+
   const heading = priceLabel
     ? `Vol ${origin.city} — ${destination.city} : relevé dès ${priceLabel}`
     : `Vol ${origin.city} — ${destination.city} pas cher`;
@@ -319,7 +333,7 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
         priceLabel
           ? `Sur ce trajet, notre plancher observé est de ${priceLabel} taxes comprises. Les prix affichés sur TrouveMonVol sont ceux réellement renvoyés par les vendeurs : vous voyez le montant total dès la liste de résultats, sans supplément découvert au moment du paiement. Chaque offre indique qui vend le billet — la compagnie elle-même ou l'agence précise — et le bouton de réservation ouvre en un clic le lien de réservation de ce vendeur, sans comparateur intermédiaire caché.`
           : `Les tarifs de cette liaison varient fortement selon la saison, le jour de la semaine et l'anticipation. Nous n'affichons aucun prix estimé : tant qu'aucun relevé n'existe sur ${origin.city} — ${destination.city}, seule une recherche en direct vous donnera un montant, toujours taxes incluses et avec le vendeur réel identifié.`,
-        `La distance entre ${origin.city} et ${destination.city} (${destination.country}) est d'environ ${km.toLocaleString("fr-FR")} km, soit ${durationLabel(km)} pour un vol direct. Les itinéraires avec une ou deux escales sont souvent moins chers mais rallongent sensiblement le trajet : nos filtres vous permettent d'exclure les escales trop longues en un clic.`,
+        distanceSentence,
       ],
     },
     {
@@ -347,7 +361,9 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     },
     {
       question: `Combien de temps dure le vol ${origin.city} — ${destination.city} ?`,
-      answer: `La distance est d'environ ${km.toLocaleString("fr-FR")} km, ce qui représente ${durationLabel(km)} sur un vol direct. Avec escale, comptez plusieurs heures supplémentaires selon la correspondance.`,
+      answer: nonstop
+        ? `La distance est d'environ ${km.toLocaleString("fr-FR")} km, ce qui représente ${durationLabel(km)} sur un vol direct. Avec escale, comptez plusieurs heures supplémentaires selon la correspondance.`
+        : `Cette liaison n'est pas desservie sans escale. La distance est d'environ ${km.toLocaleString("fr-FR")} km, soit ${durationLabel(km)} de vol pur, auxquelles s'ajoute la correspondance — souvent plusieurs heures selon l'itinéraire retenu.`,
     },
     {
       question: "Chez qui vais-je réserver mon billet ?",

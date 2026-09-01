@@ -64,6 +64,7 @@ const DESTINATIONS = [
   ["HRG", "Hurghada", "turquie-orient"],
   ["SSH", "Charm el-Cheikh", "turquie-orient"],
   ["DXB", "Dubaï", "turquie-orient"],
+  ["JED", "Djeddah", "turquie-orient"],
 
   ["BCN", "Barcelone", "europe-sud"],
   ["MAD", "Madrid", "europe-sud"],
@@ -117,6 +118,7 @@ const DESTINATIONS = [
   ["BIA", "Bastia", "france-corse"],
   ["FSC", "Figari", "france-corse"],
   ["CLY", "Calvi", "france-corse"],
+  ["MRS", "Marseille", "france-corse"],
 ].map(([code, fr, family]) => ({ code, fr, family }));
 
 /**
@@ -164,6 +166,7 @@ const COUNTRIES = {
   IBZ: "Espagne",
   IST: "Turquie",
   IZM: "Turquie",
+  JED: "Arabie saoudite",
   KRK: "Pologne",
   LIL: "France",
   LIS: "Portugal",
@@ -212,15 +215,44 @@ const COUNTRIES = {
  * Marseille est le départ de référence : on garde tout ce que l'API valide.
  * Nice, Toulouse et Montpellier sont resserrés sur le Maghreb et quelques têtes
  * de pont, pour rester dans une taille de site que Google évalue sérieusement.
- * Paris et Lyon sont absents : leurs pages relèvent de l'éditorial rédigé à la
- * main ou de l'exception « déjà indexée ».
+ * Lyon est absent : ses pages relèvent de l'éditorial rédigé à la main ou de
+ * l'exception « déjà indexée ».
  */
 const POLICY = {
   MRS: "*",
   NCE: ["ALG", "CZL", "TUN", "DJE", "MIR", "CMN", "RAK", "IST", "LON", "PAR"],
   TLS: ["ALG", "ORN", "TUN", "DJE", "CMN", "RAK", "TNG", "FEZ", "PAR"],
   MPL: ["ALG", "CMN", "RAK", "FEZ", "PAR"],
+  // Paris ne figure ici que pour Marseille : les deux sens Paris–Marseille ont
+  // un volume de recherche réel, ce n'est pas un doublon miroir.
+  PAR: ["MRS"],
 };
+
+/**
+ * Paires A→B / B→A acceptées en connaissance de cause. Tout autre miroir est
+ * signalé à la régénération : deux pages qui se répondent se cannibalisent,
+ * sauf quand les deux sens sont réellement cherchés.
+ */
+const ACCEPTED_MIRRORS = ["MRS>PAR"];
+
+/**
+ * Routes AVEC ESCALE ajoutées à la main, jamais découvertes automatiquement.
+ *
+ * L'étape 1 n'a retenu que les vols directs, à raison : une correspondance
+ * construite par l'agrégateur ne prouve pas qu'une liaison existe. Mais
+ * quelques destinations sans vol direct depuis Marseille sont malgré tout très
+ * demandées, et méritent leur page. La liste reste explicite et courte.
+ *
+ * Le Caire et Hurghada n'y figurent pas : ils sont déjà retenus en vol direct.
+ *
+ * Ces routes sont quand même vérifiées contre l'API — on ne publie pas une page
+ * pour une liaison sans aucune offre — mais avec les correspondances autorisées.
+ */
+const MANUAL_CONNECTING_ROUTES = [
+  { origin: "MRS", destination: "SSH" },
+  { origin: "MRS", destination: "DXB" },
+  { origin: "MRS", destination: "JED" },
+];
 
 /* -------------------------------------------------------------------------- */
 /* Sonde API                                                                   */
@@ -253,15 +285,18 @@ const MONTHS = nextMonths();
 
 let apiCalls = 0;
 
-/** Offres en vol direct pour un couple sur un mois, ou [] si l'API échoue. */
-async function directOffers(origin, destination, month) {
+/**
+ * Offres pour un couple sur un mois, ou [] si l'API échoue.
+ * `direct` à false autorise les correspondances (routes manuelles uniquement).
+ */
+async function offersFor(origin, destination, month, direct = true) {
   const url = new URL("https://api.travelpayouts.com/aviasales/v3/prices_for_dates");
   const params = {
     origin,
     destination,
     departure_at: month,
     one_way: "true",
-    direct: "true",
+    direct: String(direct),
     sorting: "price",
     limit: "30",
     currency: "eur",
@@ -358,7 +393,7 @@ const probed = await pool(pairs, 6, async ({ origin, destination }) => {
   let minPrice = null;
   const airlines = new Set();
   for (const month of MONTHS) {
-    for (const offer of await directOffers(origin.code, destination.code, month)) {
+    for (const offer of await offersFor(origin.code, destination.code, month, true)) {
       offers += 1;
       const price = Number(offer.price);
       if (Number.isFinite(price) && (minPrice === null || price < minPrice)) minPrice = price;
@@ -367,7 +402,7 @@ const probed = await pool(pairs, 6, async ({ origin, destination }) => {
   }
   done += 1;
   if (done % 50 === 0) console.error(`  ${done}/${pairs.length}`);
-  return { origin, destination, offers, minPrice, airlines: [...airlines].sort() };
+  return { origin, destination, offers, minPrice, airlines: [...airlines].sort(), nonstop: true };
 });
 
 const validated = probed.filter((row) => row.offers > 0);
@@ -375,6 +410,40 @@ const rows = validated.filter((row) => {
   const allowed = POLICY[row.origin.code];
   return allowed === "*" || (Array.isArray(allowed) && allowed.includes(row.destination.code));
 });
+
+// Routes manuelles avec escale : vérifiées elles aussi, mais correspondances
+// autorisées. Celles déjà retenues en vol direct ne sont pas dupliquées.
+const findPlace = (list, code) => list.find((p) => p.code === code);
+console.error(`\nRoutes manuelles avec escale : ${MANUAL_CONNECTING_ROUTES.length}…`);
+for (const manual of MANUAL_CONNECTING_ROUTES) {
+  const origin = findPlace(ORIGINS, manual.origin);
+  const destination = findPlace(DESTINATIONS, manual.destination);
+  if (!origin || !destination) {
+    console.error(`  ⚠ ${manual.origin}-${manual.destination} : code inconnu — ignoré.`);
+    continue;
+  }
+  if (rows.some((r) => r.origin.code === origin.code && r.destination.code === destination.code)) {
+    console.error(`  · ${origin.code}-${destination.code} déjà retenu en vol direct — ignoré.`);
+    continue;
+  }
+  let offers = 0;
+  let minPrice = null;
+  const airlines = new Set();
+  for (const month of MONTHS) {
+    for (const offer of await offersFor(origin.code, destination.code, month, false)) {
+      offers += 1;
+      const price = Number(offer.price);
+      if (Number.isFinite(price) && (minPrice === null || price < minPrice)) minPrice = price;
+      if (offer.airline) airlines.add(offer.airline);
+    }
+  }
+  if (offers === 0) {
+    console.error(`  ⚠ ${origin.code}-${destination.code} : aucune offre, même avec escale — écarté.`);
+    continue;
+  }
+  console.error(`  ✓ ${origin.code}-${destination.code} : ${offers} offres, dès ${minPrice} €`);
+  rows.push({ origin, destination, offers, minPrice, airlines: [...airlines].sort(), nonstop: false });
+}
 
 for (const [origin, allowed] of Object.entries(POLICY)) {
   if (allowed === "*") continue;
@@ -387,17 +456,18 @@ for (const [origin, allowed] of Object.entries(POLICY)) {
 }
 
 /**
- * Doublons de sens : deux pages A→B et B→A se cannibalisent sauf si les deux
- * sens ont un vrai volume de recherche. Aujourd'hui la POLICY l'exclut par
- * construction (les départs ne sont jamais des destinations), mais élargir la
- * liste peut le réintroduire sans qu'on le remarque.
+ * Doublons de sens : deux pages A→B et B→A se cannibalisent, sauf quand les
+ * deux sens sont réellement cherchés — c'est le cas de Paris–Marseille, déclaré
+ * dans ACCEPTED_MIRRORS. Tout autre miroir est signalé.
  */
 const selected = new Set(rows.map((r) => `${r.origin.code}>${r.destination.code}`));
 for (const key of selected) {
   const [from, to] = key.split(">");
-  if (selected.has(`${to}>${from}`) && from < to) {
-    console.error(`  ⚠ paire miroir ${from}-${to} / ${to}-${from} — n'en garder qu'un sens.`);
+  if (!selected.has(`${to}>${from}`) || from >= to) continue;
+  if (ACCEPTED_MIRRORS.includes(`${from}>${to}`) || ACCEPTED_MIRRORS.includes(`${to}>${from}`)) {
+    continue;
   }
+  console.error(`  ⚠ paire miroir ${from}-${to} / ${to}-${from} — n'en garder qu'un sens.`);
 }
 
 const names = {};
@@ -409,7 +479,7 @@ const today = new Date().toISOString().slice(0, 10);
 const routeLines = rows.map((row) => {
   const slug = `${slugify(row.origin.fr)}-${slugify(row.destination.fr)}`;
   const validation = `{ offers: ${row.offers}, minPriceEur: ${row.minPrice ?? "null"}, airlines: [${row.airlines.map(q).join(", ")}] }`;
-  return `  { slug: ${q(slug)}, origin: ${q(row.origin.code)}, originCity: ${q(row.origin.fr)}, destination: ${q(row.destination.code)}, destinationCity: ${q(row.destination.fr)}, country: ${q(COUNTRIES[row.destination.code] ?? "")}, family: ${q(row.destination.family)}, validation: ${validation} },`;
+  return `  { slug: ${q(slug)}, origin: ${q(row.origin.code)}, originCity: ${q(row.origin.fr)}, destination: ${q(row.destination.code)}, destinationCity: ${q(row.destination.fr)}, country: ${q(COUNTRIES[row.destination.code] ?? "")}, family: ${q(row.destination.family)}, nonstop: ${row.nonstop}, validation: ${validation} },`;
 });
 
 const countryLines = Object.entries(COUNTRIES)
@@ -436,11 +506,18 @@ const file = `/**
  * Ce fichier pilote à lui seul la génération des pages /vols, le sitemap et la
  * navigation. Aucune page de route ne doit exister en dehors de lui.
  *
- * Chaque route a été vérifiée contre l'API Travelpayouts le ${today} : seules
- * sont retenues les liaisons renvoyant de vraies offres en VOL DIRECT sur les
- * mois ${MONTHS.join(", ")}. Une liaison qui n'existe que via une correspondance
- * construite par l'agrégateur n'est pas une route commerciale : elle n'a pas de
- * trafic de recherche, elle ne figure pas ici.
+ * Chaque route a été vérifiée contre l'API Travelpayouts le ${today}, sur les
+ * mois ${MONTHS.join(", ")}.
+ *
+ * La découverte automatique ne retient que les liaisons renvoyant de vraies
+ * offres en VOL DIRECT : une liaison qui n'existe que via une correspondance
+ * construite par l'agrégateur n'est pas une route commerciale et n'a pas de
+ * trafic de recherche.
+ *
+ * S'y ajoute une courte liste de routes AVEC ESCALE ajoutées à la main, pour des
+ * destinations très demandées sans vol direct depuis Marseille. Elles portent
+ * \`nonstop: false\` et sont vérifiées elles aussi — jamais découvertes
+ * automatiquement.
  */
 
 export type RouteFamily =
@@ -458,6 +535,12 @@ export type WhitelistedRoute = {
   destinationCity: string;
   country: string;
   family: RouteFamily;
+  /**
+   * La liaison est-elle desservie en vol direct ? \`false\` pour les quelques
+   * routes ajoutées à la main qui n'existent qu'avec escale : les pages ne
+   * doivent pas annoncer une durée de vol direct sur ces trajets.
+   */
+  nonstop: boolean;
   /** Preuve de validation : ce que l'API a réellement renvoyé sur la fenêtre. */
   validation: { offers: number; minPriceEur: number | null; airlines: string[] };
 };

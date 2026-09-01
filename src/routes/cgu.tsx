@@ -11,6 +11,9 @@ export const Route = createFileRoute("/cgu")({
     meta: [
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
+      // Page de service, sans valeur pour la recherche : `noindex, follow`
+      // pour ne pas la faire évaluer, sans couper la circulation du crawl.
+      { name: "robots", content: "noindex, follow" },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:url", content: `${SITE_URL}/cgu` },
@@ -71,7 +74,9 @@ function TermsPage() {
         temporaire du service, ou d'une erreur de données transmises par un partenaire.
       </p>
 
-      <h2 className="mt-8 font-display text-xl font-semibold">7. Modification et droit applicable</h2>
+      <h2 className="mt-8 font-display text-xl font-semibold">
+        7. Modification et droit applicable
+      </h2>
       <p className="mt-2 text-muted-foreground">
         Ces conditions peuvent être modifiées à tout moment ; la version en ligne est celle
         applicable. Le droit français s'applique, sous réserve des règles protectrices des

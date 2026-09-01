@@ -11,6 +11,9 @@ export const Route = createFileRoute("/confidentialite")({
     meta: [
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
+      // Page de service, sans valeur pour la recherche : `noindex, follow`
+      // pour ne pas la faire évaluer, sans couper la circulation du crawl.
+      { name: "robots", content: "noindex, follow" },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:url", content: `${SITE_URL}/confidentialite` },
@@ -27,8 +30,8 @@ function PrivacyPage() {
     <article className="container-page max-w-3xl py-12">
       <h1 className="font-display text-3xl font-semibold">Politique de confidentialité</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Dernière mise à jour : [date à compléter]. Responsable du traitement :
-        [nom de l'éditeur — à compléter], [adresse — à compléter], SIRET [à compléter].
+        Dernière mise à jour : [date à compléter]. Responsable du traitement : [nom de l'éditeur — à
+        compléter], [adresse — à compléter], SIRET [à compléter].
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Données collectées</h2>
@@ -58,8 +61,8 @@ function PrivacyPage() {
       <h2 className="mt-8 font-display text-xl font-semibold">Destinataires</h2>
       <p className="mt-2 text-muted-foreground">
         Vos données ne sont ni vendues ni louées. Elles sont traitées par nos prestataires
-        techniques : hébergement ([à compléter]), base de données et envoi d'e-mails ([à compléter]),
-        et partenaires de distribution de prix aériens.
+        techniques : hébergement ([à compléter]), base de données et envoi d'e-mails ([à
+        compléter]), et partenaires de distribution de prix aériens.
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Cookies</h2>

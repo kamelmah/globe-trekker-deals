@@ -268,8 +268,8 @@ function HomePage() {
           <h2 className="font-display">Vols au départ de Marseille</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             {MARSEILLE_ROUTES.length} liaisons au départ de Marseille Provence, toutes vérifiées
-            comme réellement desservies en vol direct. Prix total taxes incluses et vendeur affiché,
-            comme partout sur le site.
+            comme réellement desservies — en vol direct, sauf mention d'escale. Prix total taxes
+            incluses et vendeur affiché, comme partout sur le site.
           </p>
           {MARSEILLE_FAMILIES.map(([family, label]) => {
             const routes = MARSEILLE_ROUTES.filter((route) => route.family === family);
@@ -286,6 +286,9 @@ function HomePage() {
                         className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-secondary"
                       >
                         <span className="font-medium">{route.destinationCity}</span>
+                        {!route.nonstop && (
+                          <span className="text-xs text-muted-foreground">avec escale</span>
+                        )}
                         {route.validation.minPriceEur !== null && (
                           <span className="text-xs text-primary">
                             dès {route.validation.minPriceEur} €
