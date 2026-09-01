@@ -24,8 +24,14 @@ const MOIS_COUVERTS = 12;
 /** Routes traitées par invocation, pour que le travail soit étalé. */
 const ROUTES_PAR_PASSAGE = 8;
 
-/** Requêtes simultanées vers la source tarifaire. */
-const PARALLELISME = 4;
+/**
+ * Requêtes simultanées vers la source tarifaire.
+ *
+ * Était à 4 pour tenir sous le plafond de sous-requêtes de Cloudflare, que
+ * Netlify n'a pas. Mesuré sur trois routes réelles : 12 fait tomber le coût
+ * d'une route de 874 ms à 288 ms.
+ */
+const PARALLELISME = 12;
 
 type Route = { origin: string; destination: string };
 

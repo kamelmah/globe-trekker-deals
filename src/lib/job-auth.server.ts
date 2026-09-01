@@ -48,6 +48,9 @@ function memeSecret(a: string, b: string): boolean {
 
 function clientIp(request: Request): string {
   return (
+    // Netlify en premier ; Cloudflare reste accepté tant que les deux
+    // plateformes coexistent pendant la bascule.
+    request.headers.get("x-nf-client-connection-ip") ??
     request.headers.get("cf-connecting-ip") ??
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "inconnue"

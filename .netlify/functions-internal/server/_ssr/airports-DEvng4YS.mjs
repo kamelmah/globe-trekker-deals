@@ -1,0 +1,508 @@
+//#region node_modules/.nitro/vite/services/ssr/assets/airports-DEvng4YS.js
+/** Aéroports / villes couverts par la recherche et la carte du mode budget. */
+var AIRPORTS = [
+	{
+		code: "PAR",
+		city: "Paris",
+		country: "France",
+		name: "Paris (tous aéroports)",
+		lat: 48.8566,
+		lng: 2.3522
+	},
+	{
+		code: "LYS",
+		city: "Lyon",
+		country: "France",
+		name: "Lyon Saint-Exupéry",
+		lat: 45.7256,
+		lng: 5.0811
+	},
+	{
+		code: "MRS",
+		city: "Marseille",
+		country: "France",
+		name: "Marseille Provence",
+		lat: 43.4393,
+		lng: 5.2214
+	},
+	{
+		code: "BOD",
+		city: "Bordeaux",
+		country: "France",
+		name: "Bordeaux-Mérignac",
+		lat: 44.8283,
+		lng: -.7156
+	},
+	{
+		code: "NCE",
+		city: "Nice",
+		country: "France",
+		name: "Nice Côte d'Azur",
+		lat: 43.6584,
+		lng: 7.2159
+	},
+	{
+		code: "TLS",
+		city: "Toulouse",
+		country: "France",
+		name: "Toulouse-Blagnac",
+		lat: 43.6293,
+		lng: 1.3638
+	},
+	{
+		code: "NTE",
+		city: "Nantes",
+		country: "France",
+		name: "Nantes Atlantique",
+		lat: 47.1532,
+		lng: -1.6107
+	},
+	{
+		code: "BRU",
+		city: "Bruxelles",
+		country: "Belgique",
+		name: "Bruxelles",
+		lat: 50.9014,
+		lng: 4.4844
+	},
+	{
+		code: "GVA",
+		city: "Genève",
+		country: "Suisse",
+		name: "Genève Cointrin",
+		lat: 46.2381,
+		lng: 6.1089
+	},
+	{
+		code: "RAK",
+		city: "Marrakech",
+		country: "Maroc",
+		name: "Marrakech Ménara",
+		lat: 31.6069,
+		lng: -8.0363
+	},
+	{
+		code: "BKK",
+		city: "Bangkok",
+		country: "Thaïlande",
+		name: "Bangkok Suvarnabhumi",
+		lat: 13.6899,
+		lng: 100.7501
+	},
+	{
+		code: "NYC",
+		city: "New York",
+		country: "États-Unis",
+		name: "New York (tous aéroports)",
+		lat: 40.7128,
+		lng: -74.006
+	},
+	{
+		code: "LIS",
+		city: "Lisbonne",
+		country: "Portugal",
+		name: "Lisbonne Humberto Delgado",
+		lat: 38.7742,
+		lng: -9.1342
+	},
+	{
+		code: "BCN",
+		city: "Barcelone",
+		country: "Espagne",
+		name: "Barcelone El Prat",
+		lat: 41.2971,
+		lng: 2.0785
+	},
+	{
+		code: "IST",
+		city: "Istanbul",
+		country: "Turquie",
+		name: "Istanbul Airport",
+		lat: 41.2753,
+		lng: 28.7519
+	},
+	{
+		code: "DXB",
+		city: "Dubaï",
+		country: "Émirats arabes unis",
+		name: "Dubaï International",
+		lat: 25.2532,
+		lng: 55.3657
+	},
+	{
+		code: "TYO",
+		city: "Tokyo",
+		country: "Japon",
+		name: "Tokyo (Narita / Haneda)",
+		lat: 35.6762,
+		lng: 139.6503
+	},
+	{
+		code: "ALG",
+		city: "Alger",
+		country: "Algérie",
+		name: "Alger Houari Boumédiène",
+		lat: 36.691,
+		lng: 3.2154
+	},
+	{
+		code: "ROM",
+		city: "Rome",
+		country: "Italie",
+		name: "Rome (Fiumicino / Ciampino)",
+		lat: 41.9028,
+		lng: 12.4964
+	},
+	{
+		code: "ATH",
+		city: "Athènes",
+		country: "Grèce",
+		name: "Athènes Elefthérios-Venizélos",
+		lat: 37.9838,
+		lng: 23.7275
+	},
+	{
+		code: "MAD",
+		city: "Madrid",
+		country: "Espagne",
+		name: "Madrid Barajas",
+		lat: 40.4168,
+		lng: -3.7038
+	},
+	{
+		code: "LON",
+		city: "Londres",
+		country: "Royaume-Uni",
+		name: "Londres (tous aéroports)",
+		lat: 51.5072,
+		lng: -.1276
+	},
+	{
+		code: "BER",
+		city: "Berlin",
+		country: "Allemagne",
+		name: "Berlin Brandebourg",
+		lat: 52.52,
+		lng: 13.405
+	},
+	{
+		code: "PRG",
+		city: "Prague",
+		country: "Tchéquie",
+		name: "Prague Václav-Havel",
+		lat: 50.0755,
+		lng: 14.4378
+	},
+	{
+		code: "BUD",
+		city: "Budapest",
+		country: "Hongrie",
+		name: "Budapest Ferenc-Liszt",
+		lat: 47.4979,
+		lng: 19.0402
+	},
+	{
+		code: "OPO",
+		city: "Porto",
+		country: "Portugal",
+		name: "Porto Francisco-Sá-Carneiro",
+		lat: 41.1579,
+		lng: -8.6291
+	},
+	{
+		code: "AGP",
+		city: "Malaga",
+		country: "Espagne",
+		name: "Malaga Costa del Sol",
+		lat: 36.7213,
+		lng: -4.4213
+	},
+	{
+		code: "PMI",
+		city: "Palma",
+		country: "Espagne",
+		name: "Palma de Majorque",
+		lat: 39.5696,
+		lng: 2.6502
+	},
+	{
+		code: "CMN",
+		city: "Casablanca",
+		country: "Maroc",
+		name: "Casablanca Mohammed-V",
+		lat: 33.5731,
+		lng: -7.5898
+	},
+	{
+		code: "TUN",
+		city: "Tunis",
+		country: "Tunisie",
+		name: "Tunis-Carthage",
+		lat: 36.8065,
+		lng: 10.1815
+	},
+	{
+		code: "CAI",
+		city: "Le Caire",
+		country: "Égypte",
+		name: "Le Caire International",
+		lat: 30.0444,
+		lng: 31.2357
+	},
+	{
+		code: "DSS",
+		city: "Dakar",
+		country: "Sénégal",
+		name: "Dakar Blaise-Diagne",
+		lat: 14.6708,
+		lng: -17.0731
+	},
+	{
+		code: "DEL",
+		city: "Delhi",
+		country: "Inde",
+		name: "Delhi Indira-Gandhi",
+		lat: 28.6139,
+		lng: 77.209
+	},
+	{
+		code: "DPS",
+		city: "Bali",
+		country: "Indonésie",
+		name: "Denpasar Ngurah-Rai",
+		lat: -8.7467,
+		lng: 115.1668
+	},
+	{
+		code: "SGN",
+		city: "Hô Chi Minh-Ville",
+		country: "Vietnam",
+		name: "Tân Sơn Nhất",
+		lat: 10.8231,
+		lng: 106.6297
+	},
+	{
+		code: "MEX",
+		city: "Mexico",
+		country: "Mexique",
+		name: "Mexico Benito-Juárez",
+		lat: 19.4326,
+		lng: -99.1332
+	},
+	{
+		code: "YUL",
+		city: "Montréal",
+		country: "Canada",
+		name: "Montréal-Trudeau",
+		lat: 45.5019,
+		lng: -73.5674
+	},
+	{
+		code: "GRU",
+		city: "São Paulo",
+		country: "Brésil",
+		name: "São Paulo Guarulhos",
+		lat: -23.5505,
+		lng: -46.6333
+	},
+	{
+		code: "EZE",
+		city: "Buenos Aires",
+		country: "Argentine",
+		name: "Buenos Aires Ezeiza",
+		lat: -34.6037,
+		lng: -58.3816
+	},
+	{
+		code: "JNB",
+		city: "Johannesburg",
+		country: "Afrique du Sud",
+		name: "Johannesburg OR-Tambo",
+		lat: -26.2041,
+		lng: 28.0473
+	},
+	{
+		code: "RUN",
+		city: "Saint-Denis",
+		country: "La Réunion",
+		name: "La Réunion Roland-Garros",
+		lat: -20.8823,
+		lng: 55.4504
+	},
+	{
+		code: "PTP",
+		city: "Pointe-à-Pitre",
+		country: "Guadeloupe",
+		name: "Pointe-à-Pitre Le Raizet",
+		lat: 16.2415,
+		lng: -61.5331
+	},
+	{
+		code: "FDF",
+		city: "Fort-de-France",
+		country: "Martinique",
+		name: "Martinique Aimé-Césaire",
+		lat: 14.6042,
+		lng: -61.0672
+	},
+	{
+		code: "SIN",
+		city: "Singapour",
+		country: "Singapour",
+		name: "Singapour Changi",
+		lat: 1.3521,
+		lng: 103.8198
+	},
+	{
+		code: "REK",
+		city: "Reykjavik",
+		country: "Islande",
+		name: "Reykjavik Keflavik",
+		lat: 64.1466,
+		lng: -21.9426
+	},
+	{
+		code: "OSL",
+		city: "Oslo",
+		country: "Norvège",
+		name: "Oslo Gardermoen",
+		lat: 59.9139,
+		lng: 10.7522
+	},
+	{
+		code: "CPH",
+		city: "Copenhague",
+		country: "Danemark",
+		name: "Copenhague Kastrup",
+		lat: 55.6761,
+		lng: 12.5683
+	},
+	{
+		code: "DUB",
+		city: "Dublin",
+		country: "Irlande",
+		name: "Dublin Airport",
+		lat: 53.3498,
+		lng: -6.2603
+	},
+	{
+		code: "VIE",
+		city: "Vienne",
+		country: "Autriche",
+		name: "Vienne Schwechat",
+		lat: 48.2082,
+		lng: 16.3738
+	},
+	{
+		code: "AMS",
+		city: "Amsterdam",
+		country: "Pays-Bas",
+		name: "Amsterdam Schiphol",
+		lat: 52.3676,
+		lng: 4.9041
+	}
+];
+var BY_CODE = new Map(AIRPORTS.map((a) => [a.code, a]));
+function getAirport(code) {
+	return BY_CODE.get(code.toUpperCase());
+}
+function cityLabel(code) {
+	return getAirport(code)?.city ?? code;
+}
+var SECONDARY_BY_CODE = new Map([
+	{
+		code: "BVA",
+		name: "Paris Beauvais",
+		city: "Paris",
+		distanceKm: 85,
+		access: "navette payante"
+	},
+	{
+		code: "BGY",
+		name: "Milan Bergame",
+		city: "Milan",
+		distanceKm: 50,
+		access: "navette payante"
+	},
+	{
+		code: "CRL",
+		name: "Bruxelles Charleroi",
+		city: "Bruxelles",
+		distanceKm: 55,
+		access: "navette payante"
+	},
+	{
+		code: "HHN",
+		name: "Francfort-Hahn",
+		city: "Francfort",
+		distanceKm: 120,
+		access: "navette payante"
+	},
+	{
+		code: "GRO",
+		name: "Gérone",
+		city: "Barcelone",
+		distanceKm: 100,
+		access: "navette payante"
+	},
+	{
+		code: "REU",
+		name: "Reus",
+		city: "Barcelone",
+		distanceKm: 100,
+		access: "navette payante"
+	},
+	{
+		code: "NYO",
+		name: "Stockholm Skavsta",
+		city: "Stockholm",
+		distanceKm: 100,
+		access: "navette payante"
+	},
+	{
+		code: "TRF",
+		name: "Oslo Torp",
+		city: "Oslo",
+		distanceKm: 110,
+		access: "train ou navette"
+	},
+	{
+		code: "NRN",
+		name: "Weeze",
+		city: "Düsseldorf",
+		distanceKm: 80,
+		access: "navette payante"
+	}
+].map((a) => [a.code, a]));
+/** L'aéroport est-il un secondaire éloigné de la ville qu'il annonce ? */
+function secondaryAirport(code) {
+	return code ? SECONDARY_BY_CODE.get(code.toUpperCase()) : void 0;
+}
+/**
+* Libellé d'un aéroport pour l'affichage : « Paris Beauvais (BVA) ».
+*
+* `cityFallback` sert quand l'aéroport n'est ni dans la liste principale ni
+* dans celle des secondaires : on affiche alors la ville connue et le code,
+* plutôt que d'inventer un nom.
+*/
+function airportLabel(code, cityFallback) {
+	const upper = code.toUpperCase();
+	return `${secondaryAirport(upper)?.name ?? getAirport(upper)?.name ?? cityFallback ?? upper} (${upper})`;
+}
+/** Aéroports parisiens considérés comme principaux, au sens du filtre. */
+var PARIS_MAIN_AIRPORTS = ["CDG", "ORY"];
+/** Distance en km entre deux aéroports (formule de haversine). */
+function distanceKm(originCode, destinationCode) {
+	const a = getAirport(originCode);
+	const b = getAirport(destinationCode);
+	if (!a || !b) return 1e3;
+	const R = 6371;
+	const dLat = (b.lat - a.lat) * Math.PI / 180;
+	const dLng = (b.lng - a.lng) * Math.PI / 180;
+	const lat1 = a.lat * Math.PI / 180;
+	const lat2 = b.lat * Math.PI / 180;
+	const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+	return Math.round(2 * R * Math.asin(Math.sqrt(h)));
+}
+//#endregion
+export { distanceKm as a, cityLabel as i, PARIS_MAIN_AIRPORTS as n, getAirport as o, airportLabel as r, secondaryAirport as s, AIRPORTS as t };

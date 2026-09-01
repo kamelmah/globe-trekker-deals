@@ -1,0 +1,51 @@
+# Déploiement Netlify de TrouveMonVol.
+#
+# Le build passe par Nitro avec le preset `netlify` (voir vite.config.ts) :
+# Nitro écrit lui-même la fonction serveur et les fichiers statiques dans
+# `dist/`, il n'y a donc pas de `publish` ni de redirection SSR à déclarer ici.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Le preset est déjà fixé dans vite.config.ts ; on le répète ici pour que la
+  # cible soit lisible depuis l'interface Netlify sans ouvrir le code.
+  NITRO_PRESET = "netlify"
+
+[functions]
+  # esbuild résout les alias `@/…` depuis les `paths` du tsconfig racine.
+  node_bundler = "esbuild"
+  # Les données de routes et de guides sont lues par les tâches planifiées.
+  included_files = ["src/data/**"]
+
+# ---------------------------------------------------------------------------
+# Tâches planifiées
+#
+# Elles remplacent les endpoints HTTP protégés par un secret : une fonction
+# planifiée n'est pas appelable par URL, elle s'exécute dans le projet et lit
+# les variables d'environnement directement. Plus de secret à faire transiter,
+# donc plus de surface d'attaque — c'est le trou de sécurité qui disparaît avec
+# la plateforme.
+#
+# La planification est déclarée dans chaque fonction (`export const config`),
+# ce qui garde l'horaire à côté du code qu'il déclenche. Elle est répétée ici
+# pour rester lisible d'un coup d'œil.
+#
+#   rafraichir-prix       "7 * * * *"     toutes les heures
+#   relever-saisonnalite  "0 0-6 1 * *"   7 passages le 1er du mois, 0 h → 6 h
+#
+# ATTENTION : les fonctions planifiées ne s'exécutent QUE sur le déploiement
+# publié en production. Elles ne tournent pas sur une préversion.
+# ---------------------------------------------------------------------------
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    cache-control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/og/*"
+  [headers.values]
+    cache-control = "public, max-age=604800"
