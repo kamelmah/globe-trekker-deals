@@ -318,8 +318,11 @@ const TRANSLITERATE = {
   đ: "d",
   Đ: "d",
   ð: "d",
+  Ð: "d",
   þ: "th",
+  Þ: "th",
   ı: "i",
+  İ: "i",
   ß: "ss",
   æ: "ae",
   Æ: "ae",
@@ -332,7 +335,7 @@ const TRANSLITERATE = {
 /** Doit rester identique à slugify() dans src/lib/slug.ts. */
 function slugify(value) {
   return value
-    .replace(/[łŁøØđĐðþıßæÆœŒåÅ]/g, (c) => TRANSLITERATE[c] ?? c)
+    .replace(/[łŁøØđĐðÐþÞıİßæÆœŒåÅ]/g, (c) => TRANSLITERATE[c] ?? c)
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
@@ -380,6 +383,20 @@ for (const [origin, allowed] of Object.entries(POLICY)) {
     if (!kept) {
       console.error(`  ⚠ ${origin}-${code} demandé par POLICY mais non validé par l'API — écarté.`);
     }
+  }
+}
+
+/**
+ * Doublons de sens : deux pages A→B et B→A se cannibalisent sauf si les deux
+ * sens ont un vrai volume de recherche. Aujourd'hui la POLICY l'exclut par
+ * construction (les départs ne sont jamais des destinations), mais élargir la
+ * liste peut le réintroduire sans qu'on le remarque.
+ */
+const selected = new Set(rows.map((r) => `${r.origin.code}>${r.destination.code}`));
+for (const key of selected) {
+  const [from, to] = key.split(">");
+  if (selected.has(`${to}>${from}`) && from < to) {
+    console.error(`  ⚠ paire miroir ${from}-${to} / ${to}-${from} — n'en garder qu'un sens.`);
   }
 }
 
