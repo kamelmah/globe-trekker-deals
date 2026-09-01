@@ -19,12 +19,14 @@ import { SearchForm } from "@/components/search/SearchForm";
 import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
 import { PriceRefreshStatus } from "@/components/flights/PriceRefreshStatus";
 import { HOME_DESTINATION_CODES } from "@/lib/price-refresh.shared";
+import { FaqAccordion, type FaqItem } from "@/components/site/FaqAccordion";
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
 import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { routesFrom, type RouteFamily } from "@/data/route-whitelist";
 import { getDestinationImage } from "@/lib/destination-images";
+import { hreflangLinks } from "@/lib/hreflang";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -47,6 +49,72 @@ const MARSEILLE_FAMILIES: [RouteFamily, string][] = [
 const TITLE = "TrouveMonVol — comparateur de vols transparent, prix total et vendeur affiché";
 const DESCRIPTION =
   "Comparez les vols au prix total taxes incluses, avec le nom du vendeur réel sur chaque résultat. Recherche par budget, dates flexibles ± 3 jours, alertes prix gratuites.";
+
+/** Le parcours réel, écrit en clair : ce que fait le site, dans l'ordre. */
+const HOME_STEPS = [
+  {
+    title: "Vous dites ce que vous cherchez",
+    text: "Une destination précise, ou seulement un budget et une période. Les dates flexibles à ± 3 jours suffisent souvent à faire varier le prix du simple au double sur un même trajet.",
+  },
+  {
+    title: "Nous interrogeons les vendeurs",
+    text: "Compagnies et agences en ligne remontent leurs tarifs. Chaque offre arrive avec son prix total, taxes et frais obligatoires compris, et le nom du vendeur qui la propose.",
+  },
+  {
+    title: "Chaque prix arrive daté",
+    text: "Un tarif relevé il y a moins d'une heure est signalé comme tel. Au-delà de 24 h, il est présenté comme une estimation et non comme un prix ferme : c'est le vendeur qui l'a daté, pas nous.",
+  },
+  {
+    title: "Vous réservez chez le vendeur",
+    text: "Le bouton ouvre la page du vendeur nommé sur l'offre. Nous ne vendons pas de billets et n'encaissons aucun paiement : notre commission vient du vendeur, sans surcoût pour vous ni effet sur le classement.",
+  },
+];
+
+/**
+ * FAQ de l'accueil.
+ *
+ * Elle porte sur le fonctionnement du service, là où celle des pages
+ * destinations porte sur un trajet : aucune question n'est dupliquée d'une
+ * page à l'autre. Le même tableau alimente l'affichage et le balisage JSON-LD,
+ * pour qu'ils ne puissent pas diverger.
+ */
+const HOME_FAQ: FaqItem[] = [
+  {
+    question: "TrouveMonVol est-il gratuit ?",
+    answer:
+      "Oui. Nous ne prenons aucun frais de service et n'ajoutons rien au tarif du vendeur. Notre rémunération est une commission d'affiliation versée par le vendeur lorsqu'une réservation aboutit, sans surcoût pour vous. Elle ne modifie jamais l'ordre des résultats, classés par prix.",
+  },
+  {
+    question: "Le prix affiché est-il vraiment le prix final ?",
+    answer:
+      "C'est le prix total : taxes et frais obligatoires sont déjà inclus, sans tarif d'appel qui gonfle au paiement. Deux réserves que nous préférons écrire plutôt que taire — certains revendeurs ajoutent des frais de service au moment de payer, et le bagage en soute n'est presque jamais compris dans les tarifs les plus bas.",
+  },
+  {
+    question: "À quelle fréquence les prix sont-ils mis à jour ?",
+    answer:
+      "Environ une fois par heure en journée, avec des intervalles plus longs la nuit ; la cadence réellement mesurée est affichée en bas de la page de résultats. Mais la date qui compte est celle du vendeur : c'est lui qui a daté son tarif, et aucune actualisation de notre côté ne peut la rajeunir. C'est cette date-là que porte chaque prix.",
+  },
+  {
+    question: "Les bagages sont-ils inclus dans le prix ?",
+    answer:
+      "Rarement sur les tarifs les plus bas. Quand la compagnie publie son barème, nous affichons deux prix : le tarif de base et le tarif avec bagage en soute. Quand elle ne le publie pas, nous le disons au lieu de deviner. Un filtre en tête des résultats permet de ne garder que les offres dont le bagage est documenté.",
+  },
+  {
+    question: "Chez qui est-ce que je réserve ?",
+    answer:
+      "Jamais chez nous : nous ne vendons pas de billets. Chaque offre porte le nom du vendeur et sa nature — vente directe par la compagnie, ou agence en ligne — avec un lien pour consulter les avis le concernant avant de réserver. Dans les faits, la grande majorité des tarifs les plus bas passent par des agences.",
+  },
+  {
+    question: "Pourquoi certains vols « Paris » partent-ils de Beauvais ?",
+    answer:
+      "Parce que les compagnies à bas coût vendent Beauvais sous le libellé Paris, alors que l'aéroport est à 85 km du centre et impose une navette, en temps comme en budget. Nous affichons l'aéroport réel sur chaque offre et signalons ces aéroports secondaires, à Paris comme à Milan, Bruxelles ou Barcelone. Un filtre permet de s'en tenir à Roissy et Orly.",
+  },
+  {
+    question: "Puis-je être prévenu quand le prix baisse ?",
+    answer:
+      "Oui, gratuitement. Vous créez une alerte sur un trajet et une date, et vous recevez un e-mail dès qu'un tarif passe sous celui relevé au moment de la création. Chaque message contient un lien de désinscription en un clic.",
+  },
+];
 
 type HomeSearch = {
   origin?: string;
@@ -121,7 +189,7 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: DEFAULT_OG_IMAGE },
       { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
-    links: [{ rel: "canonical", href: `${SITE_URL}/` }],
+    links: [{ rel: "canonical", href: `${SITE_URL}/` }, ...hreflangLinks(`${SITE_URL}/`)],
     scripts: [
       {
         type: "application/ld+json",
@@ -140,6 +208,20 @@ export const Route = createFileRoute("/")({
             },
             "query-input": "required name=search_term_string",
           },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          url: `${SITE_URL}/`,
+          inLanguage: "fr",
+          mainEntity: HOME_FAQ.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: { "@type": "Answer", text: item.answer },
+          })),
         }),
       },
     ],
@@ -298,6 +380,26 @@ function HomePage() {
       {/* Marseille est l'aéroport de référence du site : il passe avant le reste. */}
       <Reveal>
         <section className="container-page py-14">
+          <h2 className="font-display">Comment ça marche</h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Quatre étapes, sans compte à créer et sans paiement chez nous.
+          </p>
+          <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {HOME_STEPS.map((step, index) => (
+              <li key={step.title} className="rounded-xl border border-border bg-card p-5">
+                <span className="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                  {index + 1}
+                </span>
+                <h3 className="mt-3 text-sm font-semibold">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className="container-page py-14">
           <h2 className="font-display">Vols au départ de Marseille</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             {MARSEILLE_ROUTES.length} liaisons au départ de Marseille Provence, toutes vérifiées
@@ -376,6 +478,18 @@ function HomePage() {
               );
             })}
           </ul>
+        </section>
+      </Reveal>
+      <Reveal>
+        <section className="container-page pb-14">
+          <h2 className="font-display">Questions fréquentes</h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Ce qu'on nous demande le plus souvent sur le fonctionnement du comparateur. Les
+            questions propres à un trajet sont traitées sur chaque page destination.
+          </p>
+          <div className="mt-6 max-w-3xl">
+            <FaqAccordion items={HOME_FAQ} />
+          </div>
         </section>
       </Reveal>
     </div>

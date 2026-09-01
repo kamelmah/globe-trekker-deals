@@ -15,6 +15,7 @@ import { legacyRedirectTarget } from "@/data/route-redirects";
 import { secondaryAirport } from "@/data/airports";
 import { isRoutePruned } from "@/data/pruned-pages";
 import { routeHeading, routeMetaTitle } from "@/lib/route-title";
+import { hreflangLinks } from "@/lib/hreflang";
 import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
@@ -116,11 +117,7 @@ export const Route = createFileRoute("/vols/$slug")({
         },
         { name: "twitter:image", content: ogImage },
       ],
-      links: [
-        { rel: "canonical", href: pageUrl },
-        { rel: "alternate", hreflang: "fr-FR", href: pageUrl },
-        { rel: "alternate", hreflang: "x-default", href: pageUrl },
-      ],
+      links: [{ rel: "canonical", href: pageUrl }, ...hreflangLinks(pageUrl)],
       scripts: [
         {
           type: "application/ld+json",
