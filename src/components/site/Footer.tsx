@@ -93,6 +93,13 @@ export function Footer() {
                 Mode budget
               </Link>
             </li>
+            {/* Le bouton du header n'apparaît qu'à partir de xl : sans ce lien,
+                l'hébergement n'aurait plus de point d'entrée entre lg et xl. */}
+            <li>
+              <Link to="/hebergement" className={linkClass}>
+                Trouver un hébergement
+              </Link>
+            </li>
             <li>
               <Link to="/conseils" className={linkClass}>
                 Blog conseils voyage

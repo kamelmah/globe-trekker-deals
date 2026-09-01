@@ -2,7 +2,6 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { BedDouble, Menu, Plane } from "lucide-react";
 import { useCallback, useState } from "react";
 
-
 import logo from "@/assets/logo-64.png";
 import logoWebp from "@/assets/logo-64.webp";
 import { CurrencySelect } from "@/components/site/CurrencySelect";
@@ -60,7 +59,6 @@ export function Header() {
     void navigate({ to: "/hebergement" });
   }, [navigate]);
 
-
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-2 sm:gap-3">
@@ -79,27 +77,40 @@ export function Header() {
           TrouveMonVol
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Navigation principale">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               search={"search" in item ? item.search : {}}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              // px-2 sous xl : à 1024px il manque une quinzaine de pixels pour
+              // que la barre tienne sur une ligne. Padding plein dès xl.
+              className="whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground xl:px-3"
               activeProps={{ className: "bg-secondary text-foreground" }}
             >
               {item.label}
             </Link>
           ))}
-          <Button variant="outline" onClick={onStayClick} className="ml-2 gap-1.5">
+          {/*
+            « Trouver un hébergement » pesait 218px à lui seul : c'est ce bouton
+            qui empêchait la barre de tenir. Il n'apparaît qu'à partir de xl, et
+            sous son libellé court — en entier, même à 1280px, la barre repasse
+            en débordement. Le libellé complet reste dans le menu burger sous lg,
+            et dans le pied de page entre les deux.
+          */}
+          <Button
+            variant="outline"
+            onClick={onStayClick}
+            aria-label="Trouver un hébergement"
+            className="ml-2 hidden gap-1.5 whitespace-nowrap xl:flex"
+          >
             <BedDouble className="size-4" aria-hidden />
-            Trouver un hébergement
+            Hébergement
           </Button>
-          <Button onClick={onCtaClick} className="ml-1 gap-1.5 shadow-sm">
+          <Button onClick={onCtaClick} className="ml-1 gap-1.5 whitespace-nowrap shadow-sm">
             <Plane className="size-4" aria-hidden />
             Trouve mon vol
           </Button>
-
         </nav>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -108,7 +119,7 @@ export function Header() {
           <Button
             variant="outline"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             aria-label="Ouvrir le menu"
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
@@ -119,7 +130,7 @@ export function Header() {
       </div>
 
       {open && (
-        <nav className="border-t border-border bg-card md:hidden" aria-label="Navigation mobile">
+        <nav className="border-t border-border bg-card lg:hidden" aria-label="Navigation mobile">
           <div className="container-page flex flex-col py-2">
             {NAV.map((item) => (
               <Link
@@ -140,7 +151,6 @@ export function Header() {
               <Plane className="size-4" aria-hidden />
               Trouve mon vol
             </Button>
-
           </div>
         </nav>
       )}
