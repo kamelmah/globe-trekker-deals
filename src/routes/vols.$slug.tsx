@@ -16,6 +16,8 @@ import { secondaryAirport } from "@/data/airports";
 import { isRoutePruned } from "@/data/pruned-pages";
 import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { hreflangLinks } from "@/lib/hreflang";
+import { computeSeasonality } from "@/lib/seasonality";
+import { routeSeasonality } from "@/lib/seasonality.functions";
 import { routeOgImage } from "@/lib/og-image";
 import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
@@ -73,7 +75,30 @@ export const Route = createFileRoute("/vols/$slug")({
     // `isRoutePruned` couvre la deuxième vague : des pages ÉDITORIALES
     // long-courrier au départ de Paris, hors liste blanche et jamais indexées.
     const indexable = !isRoutePruned(route.slug) && isIndexableRoute(route.slug, DESTINATIONS);
-    return { route, months: history.months, lowestObserved, lowestObservedAt, related, indexable };
+    // Saisonnalité : lue en base uniquement, jamais appelée à la source
+    // tarifaire au chargement d'une page. Les relevés viennent de la tâche
+    // planifiée. Une lecture qui échoue rend la section absente, pas fausse.
+    let saison = null;
+    try {
+      const { points } = await routeSeasonality({
+        data: { origin: route.origin, destination: route.destination },
+      });
+      saison = computeSeasonality(points, {
+        originCity: route.originCity,
+        destinationCity: route.destinationCity,
+      });
+    } catch (error) {
+      console.error("Saisonnalité indisponible", error);
+    }
+    return {
+      route,
+      months: history.months,
+      lowestObserved,
+      lowestObservedAt,
+      related,
+      indexable,
+      saison,
+    };
   },
 
   head: ({ loaderData }) => {
@@ -215,39 +240,20 @@ export const Route = createFileRoute("/vols/$slug")({
 });
 
 /** Date de relevé en toutes lettres, ex. « 28 août 2026 ». */
-/**
- * Seuils d'affichage de l'historique de prix.
- *
- * La section s'intitulait « Évolution du prix le plus bas sur 12 mois » et
- * s'affichait quel que soit le nombre de points — y compris zéro ou un. Deux
- * choses y étaient fausses.
- *
- * Le volume d'abord : sur la quasi-totalité des trajets, elle annonçait douze
- * mois d'observation là où il y en avait un seul. En dessous de trois points,
- * une courbe ne dit rien, la section disparaît donc.
- *
- * La nature ensuite, et c'est le plus grave : `price_history.month` est le
- * mois de DÉPART du vol, pas la date du relevé. Les valeurs stockées sont
- * toutes dans le futur. Cette courbe n'a jamais été une évolution dans le
- * temps — c'est le prix le plus bas par mois de départ, c'est-à-dire une
- * saisonnalité. Le titre le dit désormais.
- */
-const RELEVES_MINIMUM = 3;
-const RELEVES_SERIE_COMPLETE = 6;
-
 const formatObservedDate = formatDateTimeLong;
 
 function DestinationPage() {
-  const { route, months, lowestObserved, lowestObservedAt, related } = Route.useLoaderData();
+  const { route, lowestObserved, lowestObservedAt, related, saison } = Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity);
   const guide = guideForRoutePage(route.slug, route.destination);
-  // Date du plus ancien relevé, pour dire depuis quand la série se constitue.
-  // Jamais déduite du mois affiché : seule la date de relevé réelle compte.
-  const premierReleve = months
-    .map((m) => m.updatedAt)
-    .filter((v): v is string => Boolean(v))
-    .sort()[0];
-  const serieComplete = months.length > RELEVES_SERIE_COMPLETE;
+  // Le graphique et la phrase de saisonnalité partagent la même donnée : ce
+  // sont deux vues d'un seul relevé, pas deux fonctionnalités.
+  const moisDeDepart =
+    saison?.points.map((p) => ({
+      month: p.month,
+      priceEur: p.priceEur,
+      ...(p.observedAt ? { updatedAt: p.observedAt } : {}),
+    })) ?? [];
   // Même gabarit que la balise title, sans prix : le prix vit dans le corps de
   // la page, daté, pas dans le H1.
   const heading = routeHeading(route.originCity, route.destinationCity);
@@ -286,7 +292,7 @@ function DestinationPage() {
 
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Prix de référence</p>
           <p className="mt-1 font-display text-2xl font-semibold text-primary">
@@ -309,10 +315,6 @@ function DestinationPage() {
               </span>
             </p>
           )}
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">Meilleure période</p>
-          <p className="mt-1 text-base font-semibold">{route.bestMonths}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Durée de vol</p>
@@ -391,20 +393,26 @@ function DestinationPage() {
             </Reveal>
           ))}
 
-          {months.length >= RELEVES_MINIMUM && (
+          {saison && (
             <Reveal className="mt-10">
               <section>
                 <h2 className="font-display text-xl font-semibold">
-                  Prix le plus bas par mois de départ
+                  Quand partir {withPreposition("de", route.originCity)}{" "}
+                  {withPreposition("à", route.destinationCity)}
                 </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {serieComplete
-                    ? `Prix le plus bas relevé pour chacun des ${months.length} mois de départ couverts. Le plancher est de ${formatPrice(Math.min(...months.map((m) => m.priceEur)))}.`
-                    : `Relevé partiel — ${months.length} mois de départ couverts${premierReleve ? `, mesurés depuis le ${formatDateMedium(premierReleve.slice(0, 10))}` : ""}. Le plancher est de ${formatPrice(Math.min(...months.map((m) => m.priceEur)))}.`}
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {saison.sentence}
                 </p>
                 <div className="mt-4 rounded-xl border border-border bg-card p-4">
-                  <PriceHistoryChart months={months} />
+                  <PriceHistoryChart months={moisDeDepart} />
                 </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Prix le plus bas relevé pour chaque mois de départ
+                  {saison.latestObservedAt
+                    ? `, dernier relevé le ${formatDateMedium(saison.latestObservedAt.slice(0, 10))}`
+                    : ""}
+                  . Les mois sans relevé restent absents plutôt que comblés par une estimation.
+                </p>
               </section>
             </Reveal>
           )}

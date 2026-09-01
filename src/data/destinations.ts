@@ -13,7 +13,9 @@ export type DestinationRoute = {
   /** Résumé court affiché en tête de page. */
   intro: string;
   sections: { heading: string; paragraphs: string[] }[];
-  bestMonths: string;
+  /** Ecrit a la main sur les pages editoriales. Absent des pages generees :
+   * la saisonnalite y est calculee a partir des releves, pas affirmee. */
+  bestMonths?: string;
   averageDuration: string;
   faq: DestinationFaq[];
   /** Prix d'appel forcé à des fins de démonstration (€). */

@@ -31,6 +31,7 @@ import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
 import { Route as VolsSlugRouteImport } from './routes/vols.$slug'
 import { Route as ApiPublicRafraichirPrixRouteImport } from './routes/api/public/rafraichir-prix'
+import { Route as ApiPublicReleverSaisonnaliteRouteImport } from './routes/api/public/relever-saisonnalite'
 import { Route as ApiPublicVerifierAlertesRouteImport } from './routes/api/public/verifier-alertes'
 import { Route as ConseilsDestinationsIndexRouteImport } from './routes/conseils.destinations.index'
 import { Route as ConseilsDestinationsCityRouteImport } from './routes/conseils.destinations.$city'
@@ -148,6 +149,12 @@ const ApiPublicRafraichirPrixRoute = ApiPublicRafraichirPrixRouteImport.update({
   path: '/api/public/rafraichir-prix',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicReleverSaisonnaliteRoute =
+  ApiPublicReleverSaisonnaliteRouteImport.update({
+    id: '/api/public/relever-saisonnalite',
+    path: '/api/public/relever-saisonnalite',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicVerifierAlertesRoute =
   ApiPublicVerifierAlertesRouteImport.update({
     id: '/api/public/verifier-alertes',
@@ -206,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
+  '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
   '/conseils/formalites/$pays': typeof ConseilsFormalitesPaysRoute
@@ -236,6 +244,7 @@ export interface FileRoutesByTo {
   '/comparatifs': typeof ComparatifsIndexRoute
   '/conseils': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
+  '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
   '/conseils/formalites/$pays': typeof ConseilsFormalitesPaysRoute
@@ -267,6 +276,7 @@ export interface FileRoutesById {
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
+  '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
   '/conseils/formalites/$pays': typeof ConseilsFormalitesPaysRoute
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
     | '/comparatifs/'
     | '/conseils/'
     | '/api/public/rafraichir-prix'
+    | '/api/public/relever-saisonnalite'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
     | '/conseils/formalites/$pays'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/comparatifs'
     | '/conseils'
     | '/api/public/rafraichir-prix'
+    | '/api/public/relever-saisonnalite'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
     | '/conseils/formalites/$pays'
@@ -359,6 +371,7 @@ export interface FileRouteTypes {
     | '/comparatifs/'
     | '/conseils/'
     | '/api/public/rafraichir-prix'
+    | '/api/public/relever-saisonnalite'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
     | '/conseils/formalites/$pays'
@@ -390,6 +403,7 @@ export interface RootRouteChildren {
   ComparatifsIndexRoute: typeof ComparatifsIndexRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
   ApiPublicRafraichirPrixRoute: typeof ApiPublicRafraichirPrixRoute
+  ApiPublicReleverSaisonnaliteRoute: typeof ApiPublicReleverSaisonnaliteRoute
   ApiPublicVerifierAlertesRoute: typeof ApiPublicVerifierAlertesRoute
   ConseilsDestinationsCityRoute: typeof ConseilsDestinationsCityRoute
   ConseilsFormalitesPaysRoute: typeof ConseilsFormalitesPaysRoute
@@ -554,6 +568,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicRafraichirPrixRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/relever-saisonnalite': {
+      id: '/api/public/relever-saisonnalite'
+      path: '/api/public/relever-saisonnalite'
+      fullPath: '/api/public/relever-saisonnalite'
+      preLoaderRoute: typeof ApiPublicReleverSaisonnaliteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/verifier-alertes': {
       id: '/api/public/verifier-alertes'
       path: '/api/public/verifier-alertes'
@@ -622,6 +643,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComparatifsIndexRoute: ComparatifsIndexRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
   ApiPublicRafraichirPrixRoute: ApiPublicRafraichirPrixRoute,
+  ApiPublicReleverSaisonnaliteRoute: ApiPublicReleverSaisonnaliteRoute,
   ApiPublicVerifierAlertesRoute: ApiPublicVerifierAlertesRoute,
   ConseilsDestinationsCityRoute: ConseilsDestinationsCityRoute,
   ConseilsFormalitesPaysRoute: ConseilsFormalitesPaysRoute,
