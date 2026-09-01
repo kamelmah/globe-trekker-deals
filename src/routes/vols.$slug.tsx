@@ -1,4 +1,4 @@
-import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute, notFound, redirect } from "@tanstack/react-router";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
 import { LivePriceButton } from "@/components/flights/LivePriceButton";
@@ -10,6 +10,7 @@ import { Stay22Map } from "@/components/stay/Stay22Map";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
 import { DESTINATIONS, getDestination } from "@/data/destinations";
+import { legacyRedirectTarget } from "@/data/route-redirects";
 import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
@@ -22,6 +23,12 @@ import { SITE_URL, absoluteUrl, destinationOgImage } from "@/lib/site";
 
 export const Route = createFileRoute("/vols/$slug")({
   loader: async ({ params }) => {
+    // Les routes conservées qui ont changé de slug (« Ville de Madrid » devenu
+    // « Madrid ») redirigent en 301 vers leur URL actuelle.
+    const renamed = legacyRedirectTarget(params.slug);
+    if (renamed) {
+      throw redirect({ to: "/vols/$slug", params: { slug: renamed }, statusCode: 301 });
+    }
     // Page éditoriale si le trajet est curé, sinon page générée côté serveur
     // pour n'importe quelle destination trouvée en mode budget.
     const route =

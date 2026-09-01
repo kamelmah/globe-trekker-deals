@@ -9,7 +9,7 @@
 
 import { AIRPORTS } from "@/data/airports";
 import { DESTINATIONS, type DestinationRoute } from "@/data/destinations";
-import { routesFrom } from "@/data/route-whitelist";
+import { AIRPORT_NAMES_FR, COUNTRY_NAMES_FR, frenchName, routesFrom } from "@/data/route-whitelist";
 import { getCityIndex, type CityRecord } from "@/lib/geo.server";
 import { routeSlug, slugify } from "@/lib/slug";
 
@@ -17,10 +17,31 @@ type SlugIndex = Map<string, CityRecord>;
 
 let slugIndexPromise: Promise<SlugIndex> | null = null;
 
+/**
+ * Nom d'affichage d'une ville : le nom français d'usage quand nous le
+ * connaissons, sinon celui du référentiel. C'est ce dernier qui produisait
+ * « Ville de Madrid », « Buda » ou « dème de Thera » dans les URL et les titres.
+ */
+function displayCity(record: CityRecord): string {
+  return frenchName(record.code) ?? record.city;
+}
+
+function displayCountry(record: CityRecord): string {
+  return COUNTRY_NAMES_FR[record.code.toUpperCase()] ?? record.country;
+}
+
 async function buildSlugIndex(): Promise<SlugIndex> {
   const cities = await getCityIndex();
   const index: SlugIndex = new Map();
-  // Les aéroports curés passent d'abord : ils tranchent les homonymes
+  // Les noms français d'usage priment sur tout : sans eux, /vols/marseille-palma
+  // ne résoudrait pas (le référentiel dit « Palma de Mallorca »).
+  for (const [code, french] of Object.entries(AIRPORT_NAMES_FR)) {
+    const slug = slugify(french);
+    const city = cities.get(code.toUpperCase());
+    if (!slug || !city) continue;
+    index.set(slug, { ...city, city: french, country: displayCountry(city) });
+  }
+  // Puis les aéroports curés : ils tranchent les homonymes
   // (Paris, France plutôt que Paris, Texas).
   for (const airport of AIRPORTS) {
     const city = cities.get(airport.code.toUpperCase());
@@ -154,9 +175,13 @@ export async function resolveRouteSlug(slug: string): Promise<{
     const destSlug = parts.slice(cut).join("-");
 
     // Priorité au balayage budget déjà en cache : c'est lui qui donne le bon
-    // code IATA (homonymes de villes) et le prix réellement observé.
+    // code IATA (homonymes de villes) et le prix réellement observé. Le cache
+    // porte les noms du référentiel, on teste donc aussi le nom français —
+    // sinon /vols/marseille-palma raterait l'entrée « Palma de Mallorca ».
+    const matchesDestination = (entry: CachedEntry) =>
+      slugify(entry.city) === destSlug || slugify(frenchName(entry.destination) ?? "") === destSlug;
     const cached = (await readWorldCache(origin.code))
-      .filter((e) => slugify(e.city) === destSlug && e.destination !== origin.code)
+      .filter((e) => matchesDestination(e) && e.destination !== origin.code)
       .sort((a, b) => Number(a.priceEur) - Number(b.priceEur))[0];
     if (cached) {
       return {
@@ -251,7 +276,20 @@ function frenchMonth(iso: string | null): string | null {
 export async function buildDynamicRoutePage(slug: string): Promise<DestinationRoute | null> {
   const pair = await resolveRouteSlug(slug);
   if (!pair) return null;
-  const { origin, destination, cached } = pair;
+  const { cached } = pair;
+
+  // Tout ce qui suit — H1, titre, texte, slug canonique — part du nom français
+  // d'usage. Le référentiel n'est plus qu'une source de coordonnées.
+  const origin: CityRecord = {
+    ...pair.origin,
+    city: displayCity(pair.origin),
+    country: displayCountry(pair.origin),
+  };
+  const destination: CityRecord = {
+    ...pair.destination,
+    city: displayCity(pair.destination),
+    country: displayCountry(pair.destination),
+  };
 
   const observed = await readObservedPrice(origin.code, destination.code, cached);
   const km = distanceKm(origin, destination);
