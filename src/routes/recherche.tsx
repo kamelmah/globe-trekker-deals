@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cityLabel } from "@/data/airports";
+import { KIWI_FALLBACK_URL } from "@/lib/affiliate-partners";
 import { useCurrency } from "@/lib/currency-context";
 import { searchFlights } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr, todayPlus } from "@/lib/search-params";
@@ -292,25 +293,34 @@ function SearchResultsPage() {
               </div>
             </div>
           )}
-          <Button
-            type="button"
-            variant="outline"
-            className="mt-3"
-            onClick={() => setView("calendar")}
-          >
-            Voir le calendrier des prix
-          </Button>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button type="button" variant="outline" onClick={() => setView("calendar")}>
+              Voir le calendrier des prix
+            </Button>
+            <Button asChild variant="outline">
+              <a href={KIWI_FALLBACK_URL} target="_blank" rel="noopener noreferrer nofollow sponsored">
+                Vérifier en temps réel sur Kiwi.com
+              </a>
+            </Button>
+          </div>
         </div>
       )}
 
 
       {!offersQuery.isPending && offersQuery.data?.nearDateOnly && filtered.length > 0 && (
-        <p className="rounded-xl border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
-          Notre source de prix (mise à jour périodiquement) n'a pas de vol enregistré pour le{" "}
-          {search["depart"]}. Cela ne veut pas dire qu'aucun vol n'existe — voici les dates proches
-          (± 3 jours) où nous avons trouvé des prix réels. La date de chaque vol est indiquée sur son
-          résultat.
-        </p>
+        <div className="rounded-xl border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
+          <p>
+            Notre source de prix (mise à jour périodiquement) n'a pas de vol enregistré pour le{" "}
+            {search["depart"]}. Cela ne veut pas dire qu'aucun vol n'existe — voici les dates proches
+            (± 3 jours) où nous avons trouvé des prix réels. La date de chaque vol est indiquée sur
+            son résultat.
+          </p>
+          <Button asChild variant="outline" size="sm" className="mt-3">
+            <a href={KIWI_FALLBACK_URL} target="_blank" rel="noopener noreferrer nofollow sponsored">
+              Vérifier en temps réel sur Kiwi.com
+            </a>
+          </Button>
+        </div>
       )}
 
       {!offersQuery.isPending && offers.length > 0 && filtered.length === 0 && (

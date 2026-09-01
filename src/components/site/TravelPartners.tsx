@@ -1,10 +1,10 @@
-import { Car, ShieldCheck, Wifi } from "lucide-react";
+import { Car, MapPinned, ShieldCheck, Wifi } from "lucide-react";
 import type { ComponentType } from "react";
 
 import { Button } from "@/components/ui/button";
-import { EKTA_URL, GETRENTACAR_URL, YESIM_URL } from "@/lib/affiliate-partners";
+import { EKTA_URL, GETRENTACAR_URL, KLOOK_URL, YESIM_URL } from "@/lib/affiliate-partners";
 
-export type TravelPartnerId = "esim" | "assurance" | "voiture";
+export type TravelPartnerId = "esim" | "assurance" | "voiture" | "activites";
 
 type PartnerContent = {
   icon: ComponentType<{ className?: string }>;
@@ -43,6 +43,13 @@ const PARTNERS: Record<TravelPartnerId, PartnerContent> = {
     description: "Comparez les loueurs disponibles à destination pour la durée de votre séjour.",
     href: GETRENTACAR_URL,
   },
+  activites: {
+    icon: MapPinned,
+    partnerName: "Klook",
+    title: "Activités et visites à faire sur place",
+    description: "Excursions, musées et activités à réserver à l'avance, souvent moins chers qu'en les achetant sur place.",
+    href: KLOOK_URL,
+  },
 };
 
 /** Rangée compacte de compléments de voyage (eSIM, assurance, location de voiture). */
@@ -56,7 +63,9 @@ export function TravelPartnersSection({
   return (
     <section className={className}>
       <h2 className="font-display text-xl font-semibold">Pour compléter votre voyage</h2>
-      <div className={`mt-4 grid gap-4 ${partners.length >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+      <div
+        className={`mt-4 grid gap-4 sm:grid-cols-2 ${partners.length >= 4 ? "lg:grid-cols-4" : partners.length === 3 ? "lg:grid-cols-3" : ""}`}
+      >
         {partners.map((id) => {
           const partner = PARTNERS[id];
           const Icon = partner.icon;

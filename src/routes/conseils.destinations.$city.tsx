@@ -211,7 +211,7 @@ function CityGuidePage() {
           </Reveal>
 
           <Reveal className="mt-10">
-            <TravelPartnersSection partners={["esim", "assurance", "voiture"]} />
+            <TravelPartnersSection partners={["esim", "assurance", "voiture", "activites"]} />
           </Reveal>
         </div>
 
