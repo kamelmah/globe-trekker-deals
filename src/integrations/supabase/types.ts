@@ -259,7 +259,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      configurer_taches_planifiees: {
+        Args: { p_base_url: string; p_secret: string }
+        Returns: {
+          jobid: number
+          jobname: string
+          schedule: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
