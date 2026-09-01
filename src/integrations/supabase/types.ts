@@ -92,6 +92,24 @@ export type Database = {
         }
         Relationships: []
       }
+      job_secrets: {
+        Row: {
+          name: string
+          secret: string
+          updated_at: string
+        }
+        Insert: {
+          name: string
+          secret: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          secret?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           active: boolean
@@ -295,14 +313,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      configurer_taches_planifiees: {
-        Args: { p_base_url: string; p_secret: string }
-        Returns: {
-          jobid: number
-          jobname: string
-          schedule: string
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
