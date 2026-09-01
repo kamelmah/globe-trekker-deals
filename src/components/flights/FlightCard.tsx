@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { formatDateTimeCompact, formatDateTimeShort } from "@/lib/dates";
+import { formatDateTimeCompact, formatDateTimeShort, formatDateMedium } from "@/lib/dates";
+import {
+  BAGGAGE_LEVELS,
+  baggagePolicy,
+  baggageSupplement,
+  priceWithBaggage,
+  type BaggageLevel,
+  type BaggageSupplement,
+} from "@/data/baggage-fees";
 import { AlertTriangle, Luggage, Leaf, Plane, Store, Clock } from "lucide-react";
 
 import { co2Label } from "@/lib/co2";
@@ -89,15 +97,61 @@ function stopsLabel(stops: number): string {
   return stops === 1 ? "1 escale" : `${stops} escales`;
 }
 
+/** Libellé d'un supplément bagage, tel qu'il apparaît dans la carte. */
+function allowanceLabel(supplement: BaggageSupplement): string {
+  if (supplement.kind === "inconnu") return "non documenté";
+  if (supplement.kind === "inclus") {
+    return supplement.weightKg ? `compris (${supplement.weightKg} kg)` : "compris";
+  }
+  const poids = supplement.weightKg ? ` (${supplement.weightKg} kg)` : "";
+  const fourchette =
+    supplement.minEur === supplement.maxEur
+      ? `${supplement.minEur} €`
+      : `${supplement.minEur} à ${supplement.maxEur} €`;
+  return `+${fourchette}${poids}`;
+}
+
+function allowanceClass(supplement: BaggageSupplement): string {
+  if (supplement.kind === "inclus") return "font-medium text-success";
+  if (supplement.kind === "inconnu") return "italic";
+  return "font-medium text-foreground";
+}
+
 export function FlightCard({
   offer,
   greenest = false,
+  baggageLevel = "personnel",
 }: {
   offer: FlightOffer;
   greenest?: boolean;
+  /** Niveau de bagage choisi par le voyageur : il pilote le prix mis en avant. */
+  baggageLevel?: BaggageLevel;
 }) {
   const { formatApi: format } = useCurrency();
   const freshness = useFreshness(offer.observedAt);
+  const policy = baggagePolicy(offer.airlineCode);
+
+  // Le prix mis en avant est celui du niveau demandé ; à défaut de barème, on
+  // ne majore rien plutôt que d'inventer un supplément.
+  const prixAffiche =
+    priceWithBaggage(offer.priceEur, offer.airlineCode, baggageLevel) ?? offer.priceEur;
+  const prixSoute = priceWithBaggage(offer.priceEur, offer.airlineCode, "soute");
+  const soute = baggageSupplement(offer.airlineCode, "soute");
+
+  // Par défaut on montre « sans bagage » puis « avec soute » ; dès qu'un niveau
+  // payant est demandé, le repère utile devient le prix nu.
+  const secondPrix =
+    baggageLevel === "personnel"
+      ? prixSoute !== null && prixSoute !== offer.priceEur
+        ? {
+            prefixe: "· ",
+            montant: prixSoute,
+            suffixe: `avec ${soute.kind === "payant" && soute.weightKg ? `${soute.weightKg} kg en soute` : "bagage en soute"}`,
+          }
+        : null
+      : prixAffiche !== offer.priceEur
+        ? { prefixe: "· ", montant: offer.priceEur, suffixe: "sans bagage" }
+        : null;
 
   return (
     <article className="rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
@@ -129,11 +183,47 @@ export function FlightCard({
             Vendu par {offer.seller}
           </p>
 
+          {/*
+            Le bagage est le premier coût caché d'un billet low-cost : un Ryanair
+            à 20 € en vaut 65 avec une valise. Il a donc sa place dans le corps
+            de la carte, pas dans une note de bas de page.
+          */}
+          <div className="mt-3 rounded-md border border-border/70 bg-secondary/40 p-2.5">
+            {policy ? (
+              <>
+                <p className="inline-flex items-center gap-1.5 text-xs font-medium">
+                  <Luggage className="size-3.5 shrink-0 text-primary" aria-hidden />
+                  Bagages chez {policy.name}
+                </p>
+                <ul className="mt-1.5 space-y-0.5 text-xs text-muted-foreground">
+                  {BAGGAGE_LEVELS.map((niveau) => (
+                    <li key={niveau.value} className="flex flex-wrap gap-x-1.5">
+                      <span>{niveau.short} :</span>
+                      <span
+                        className={allowanceClass(
+                          baggageSupplement(offer.airlineCode, niveau.value),
+                        )}
+                      >
+                        {allowanceLabel(baggageSupplement(offer.airlineCode, niveau.value))}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-1.5 text-[11px] text-muted-foreground/80">
+                  Tarifs publiés par la compagnie, relevés le {formatDateMedium(policy.verifiedAt)}.
+                  Ils varient selon la ligne, la saison et le moment de l'achat.
+                </p>
+              </>
+            ) : (
+              <p className="inline-flex items-start gap-1.5 text-xs text-muted-foreground">
+                <Luggage className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+                Information bagage non fournie par ce vendeur — à vérifier chez lui avant de
+                réserver.
+              </p>
+            )}
+          </div>
+
           <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            <li className="inline-flex items-center gap-1">
-              <Luggage className="size-3.5" aria-hidden />
-              Bagages : à vérifier chez le vendeur avant de réserver
-            </li>
             <li>Empreinte estimée : {co2Label(offer.co2Kg)}</li>
           </ul>
         </div>
@@ -146,10 +236,23 @@ export function FlightCard({
           */}
           {freshness?.estimate ? (
             <p className="font-display text-2xl font-medium text-muted-foreground">
-              ~{format(offer.priceEur)} <span className="text-sm font-normal">(estimation)</span>
+              ~{format(prixAffiche)} <span className="text-sm font-normal">(estimation)</span>
             </p>
           ) : (
-            <p className="font-display text-2xl font-semibold">{format(offer.priceEur)}</p>
+            <p className="font-display text-2xl font-semibold">{format(prixAffiche)}</p>
+          )}
+
+          {/*
+            Le second prix : c'est là que se joue le différenciateur. Un billet à
+            45 € qui en coûte 79 avec une valise, la comparaison n'a plus rien à
+            voir — autant que ce soit lisible avant le clic, pas après.
+          */}
+          {secondPrix && (
+            <p className="text-sm text-muted-foreground">
+              {secondPrix.prefixe}
+              <span className="font-medium text-foreground">{format(secondPrix.montant)}</span>{" "}
+              {secondPrix.suffixe}
+            </p>
           )}
 
           {/* La fraîcheur est portée par le prix lui-même, pas reléguée à côté. */}

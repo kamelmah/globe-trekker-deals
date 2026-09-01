@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarDays, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import { CalendarDays, Luggage, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
@@ -24,6 +24,7 @@ import { useCurrency } from "@/lib/currency-context";
 import { searchFlights } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr, todayPlus } from "@/lib/search-params";
 import { formatDateCompact, formatDateLong, formatMonthLong } from "@/lib/dates";
+import { BAGGAGE_LEVELS, priceWithBaggage, type BaggageLevel } from "@/data/baggage-fees";
 import { addDaysIso, nightsBetween, tripDurationLabel } from "@/lib/trip-duration";
 
 type SearchParams = {
@@ -123,6 +124,7 @@ function SearchResultsPage() {
   const [maxDuration, setMaxDuration] = useState(0);
   const [view, setView] = useState<"list" | "calendar">("list");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [baggageLevel, setBaggageLevel] = useState<BaggageLevel>("personnel");
 
   const from = cityLabel(search["origin"]);
   const to = cityLabel(search["destination"]);
@@ -171,17 +173,29 @@ function SearchResultsPage() {
     [offers],
   );
 
-  const filtered = offers.filter((offer) => {
-    if (directOnly && offer.stops > 0) return false;
-    if (airline && offer.airline !== airline) return false;
-    if (search["budget"] && offer.priceEur > search["budget"]) return false;
-    if (maxDuration && offer.durationMinutes > maxDuration * 60) return false;
-    if (morningOnly) {
-      const hour = new Date(offer.departureAt).getHours();
-      if (hour >= 12) return false;
-    }
-    return true;
-  });
+  /**
+   * Prix de comparaison : celui du niveau de bagage demandé. Sans barème pour
+   * la compagnie, on retombe sur le prix nu — jamais sur un supplément inventé.
+   */
+  const prixComparaison = (offer: (typeof offers)[number]) =>
+    priceWithBaggage(offer.priceEur, offer.airlineCode, baggageLevel) ?? offer.priceEur;
+
+  const filtered = offers
+    .filter((offer) => {
+      if (directOnly && offer.stops > 0) return false;
+      if (airline && offer.airline !== airline) return false;
+      // Le budget s'applique au prix du niveau choisi : filtrer sur le prix nu
+      // laisserait passer des offres hors budget une fois la valise ajoutée.
+      if (search["budget"] && prixComparaison(offer) > search["budget"]) return false;
+      if (maxDuration && offer.durationMinutes > maxDuration * 60) return false;
+      if (morningOnly) {
+        const hour = new Date(offer.departureAt).getHours();
+        if (hour >= 12) return false;
+      }
+      return true;
+    })
+    // Retri complet : avec la soute, le moins cher n'est plus le même vol.
+    .sort((a, b) => prixComparaison(a) - prixComparaison(b));
 
   const cheapest = filtered[0] ?? offers[0];
   const greenestId = filtered.length
@@ -378,7 +392,11 @@ function SearchResultsPage() {
               </Badge>
             )}
           </div>
-          <FlightCard offer={offer} greenest={offer.id === greenestId} />
+          <FlightCard
+            offer={offer}
+            greenest={offer.id === greenestId}
+            baggageLevel={baggageLevel}
+          />
         </div>
       ))}
     </div>
@@ -448,6 +466,40 @@ function SearchResultsPage() {
         </aside>
 
         <section>
+          {/*
+            Le bagage n'est pas un filtre secondaire : c'est le premier coût
+            caché d'un billet low-cost, et il change l'ordre des résultats. Il
+            est donc au-dessus de la liste, pas rangé dans le panneau
+            « Filtres » avec la durée et les compagnies.
+          */}
+          <fieldset className="mb-4 rounded-xl border border-border bg-card p-3">
+            <legend className="px-1 text-sm font-medium">
+              <span className="inline-flex items-center gap-1.5">
+                <Luggage className="size-4 text-primary" aria-hidden />
+                Je voyage avec
+              </span>
+            </legend>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {BAGGAGE_LEVELS.map((niveau) => (
+                <Button
+                  key={niveau.value}
+                  type="button"
+                  size="sm"
+                  variant={baggageLevel === niveau.value ? "default" : "outline"}
+                  aria-pressed={baggageLevel === niveau.value}
+                  onClick={() => setBaggageLevel(niveau.value)}
+                >
+                  {niveau.label}
+                </Button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {baggageLevel === "personnel"
+                ? "Prix du billet nu. Le prix avec bagage en soute est indiqué sous chaque montant quand nous connaissons le tarif de la compagnie."
+                : "Les prix affichés incluent le supplément publié par la compagnie, et les résultats sont retriés en conséquence. Les compagnies dont nous n'avons pas le barème gardent leur prix nu, signalé sur leur carte."}
+            </p>
+          </fieldset>
+
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground" aria-live="polite">
               {offersQuery.isPending
