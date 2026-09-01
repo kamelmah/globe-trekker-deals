@@ -92,6 +92,24 @@ export type Database = {
         }
         Relationships: []
       }
+      job_secrets: {
+        Row: {
+          name: string
+          secret: string
+          updated_at: string
+        }
+        Insert: {
+          name: string
+          secret: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          secret?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           active: boolean
@@ -231,6 +249,7 @@ export type Database = {
           id: string
           lowest_price: number
           month: string
+          observed_at: string | null
           origin: string
           updated_at: string
         }
@@ -240,6 +259,7 @@ export type Database = {
           id?: string
           lowest_price: number
           month: string
+          observed_at?: string | null
           origin: string
           updated_at?: string
         }
@@ -249,8 +269,42 @@ export type Database = {
           id?: string
           lowest_price?: number
           month?: string
+          observed_at?: string | null
           origin?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      price_observations: {
+        Row: {
+          currency: string
+          departure_month: string
+          destination: string
+          id: string
+          lowest_price: number
+          observed_at: string
+          observed_on: string
+          origin: string
+        }
+        Insert: {
+          currency?: string
+          departure_month: string
+          destination: string
+          id?: string
+          lowest_price: number
+          observed_at?: string
+          observed_on?: string
+          origin: string
+        }
+        Update: {
+          currency?: string
+          departure_month?: string
+          destination?: string
+          id?: string
+          lowest_price?: number
+          observed_at?: string
+          observed_on?: string
+          origin?: string
         }
         Relationships: []
       }
