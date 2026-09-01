@@ -38,25 +38,35 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Marrakech",
     country: "Maroc",
     heading: "Billet d'avion Paris - Marrakech pas cher",
-    metaTitle: "Vol pas cher Paris Marrakech : prix, meilleure période | TrouveMonVol",
+    metaTitle: "Vol Paris — Marrakech pas cher : prix, saison idéale, astuces | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Marrakech au prix total, taxes incluses, avec le vendeur affiché. Meilleure période, évolution des prix sur 12 mois et alertes gratuites.",
+      "Le vrai prix des vols Paris-Marrakech, taxes incluses et vendeur affiché en clair. Meilleure saison pour partir, historique des tarifs sur un an et alerte gratuite.",
     intro:
-      "Vous planifiez un séjour au Maroc ? Trouver un vol Paris Marrakech pas cher est le meilleur moyen de débuter votre voyage vers la ville ocre sans vous ruiner. Cette liaison aérienne est l'une des plus fréquentées au départ de la France, offrant une flexibilité totale aux voyageurs, qu'ils partent pour un week-end prolongé ou pour des vacances prolongées. La durée moyenne d'un vol direct entre Paris et Marrakech est de 3 heures et 15 minutes.",
+      "Marrakech est la destination marocaine la plus desservie depuis Paris, avec plusieurs vols directs par jour toute l'année. Sur ce trajet de 3 h 15, la concurrence entre low-cost et compagnies régulières fait que le prix peut aller du simple au triple selon la date choisie.",
     bestMonths: "Mars-mai et septembre-novembre",
     averageDuration: "3 h 15 en vol direct",
     simulatedLowestPrice: 39,
     sections: [
       {
-        heading: "Compagnies et aéroports pour un vol Paris — Marrakech",
+        heading: "Quand partir à Marrakech au meilleur prix",
         paragraphs: [
-          "De nombreuses compagnies aériennes opèrent sur ce trajet pour répondre à la forte demande. Si vous cherchez un billet d'avion low-cost, les compagnies Transavia, Ryanair (au départ de Paris Beauvais) et EasyJet proposent des tarifs très compétitifs tout au long de l'année. Pour plus de confort et des services inclus comme le bagage en cabine, Air France et Royal Air Maroc proposent également plusieurs fréquences quotidiennes au départ de Paris Charles de Gaulle (CDG) ou Paris Orly (ORY). L'arrivée s'effectue à l'aéroport de Marrakech-Ménara, situé à seulement quelques minutes du centre-ville et de la célèbre place Jemaa el-Fna.",
+          "Mars-mai et septembre-novembre concentrent la demande la plus forte : le climat y est le plus agréable pour visiter la médina et les jardins, avec 22 à 28 °C en journée, et les tarifs suivent cette popularité à la hausse.",
+          "Juillet et août affichent des billets moins chers qu'au printemps, car la chaleur — souvent au-delà de 40 °C l'après-midi — décourage une partie des voyageurs de loisir. C'est une bonne fenêtre budget si votre hébergement a une piscine.",
+          "Les vacances scolaires de fin d'année et les jours autour du Nouvel An restent les dates les plus chères, malgré des nuits fraîches à Marrakech en cette saison : la demande familiale y reste toujours plus forte que l'offre.",
         ],
       },
       {
-        heading: "Quand partir à Marrakech au meilleur prix",
+        heading: "Compagnies et aéroports pour un vol Paris — Marrakech",
         paragraphs: [
-          "Pour obtenir le meilleur prix pour votre vol Paris-Marrakech, la saisonnalité joue un rôle majeur. Les mois d'été (juillet et août) ainsi que les périodes de fêtes de fin d'année affichent les tarifs les plus élevés. Pour réaliser de vraies économies, privilégiez un départ au printemps (mars à mai) ou à l'automne (septembre à novembre), où le climat est idéal et les billets d'avion beaucoup moins chers. Utiliser notre comparateur de vols en temps réel vous permet d'analyser les tendances tarifaires et de bloquer votre billet dès que le prix baisse.",
+          "Transavia, Ryanair (au départ de Beauvais) et EasyJet se disputent ce trajet toute l'année, ce qui maintient des tarifs d'appel bas hors vacances scolaires. Air France et Royal Air Maroc assurent plusieurs fréquences quotidiennes depuis Roissy et Orly, avec bagage en soute inclus dans la plupart des tarifs.",
+          "L'arrivée se fait à l'aéroport de Marrakech-Ménara, à moins de 15 minutes de la médina et de la place Jemaa el-Fna — l'un des trajets aéroport-centre les plus courts parmi les destinations long-courriers de ce comparateur.",
+        ],
+      },
+      {
+        heading: "Budget à prévoir",
+        paragraphs: [
+          "Hors vacances scolaires, un aller-retour se trouve régulièrement entre 90 et 150 euros. Pendant les fêtes de fin d'année et les vacances de février, comptez plutôt 220 à 320 euros pour les mêmes compagnies.",
+          "Réserver deux à trois mois à l'avance suffit sur cette ligne à forte fréquence : contrairement aux long-courriers, l'ouverture des vols très en avance n'apporte pas ici d'avantage tarifaire net.",
         ],
       },
     ],
@@ -86,9 +96,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Bangkok",
     country: "Thaïlande",
     heading: "Vols pas chers Paris — Bangkok",
-    metaTitle: "Vol pas cher Paris Bangkok : prix et meilleure période | TrouveMonVol",
+    metaTitle: "Paris — Bangkok pas cher : direct ou escale, quand réserver | TrouveMonVol",
     metaDescription:
-      "Vols Paris — Bangkok comparés au prix total taxes incluses, vendeur affiché. Meilleure saison, courbe des prix sur 12 mois et alerte prix gratuite.",
+      "Vols directs et avec escale vers Bangkok comparés au prix total, sans frais cachés. Bons mois pour partir, courbe tarifaire sur 12 mois, alerte prix gratuite.",
     intro:
       "Bangkok est la porte d'entrée de l'Asie du Sud-Est et l'un des long-courriers les plus disputés au départ de Paris. Entre vols directs et escales au Moyen-Orient, l'écart de prix sur un même mois dépasse souvent 300 euros.",
     bestMonths: "Mai, juin et septembre",
@@ -148,9 +158,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "New York",
     country: "États-Unis",
     heading: "Vols pas chers Paris — New York",
-    metaTitle: "Vol pas cher Paris New York : prix et bonne période | TrouveMonVol",
+    metaTitle: "Vol Paris New York pas cher : JFK, Newark et bon moment | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — New York au prix total taxes incluses avec le vendeur affiché. Meilleure période, historique de prix sur 12 mois, alertes gratuites.",
+      "Cinq compagnies en concurrence sur Paris-New York : le prix total taxes incluses, vendeur affiché. Historique 12 mois, meilleure fenêtre tarifaire, alerte gratuite.",
     intro:
       "Paris — New York est la liaison transatlantique la plus fréquentée d'Europe, avec plus de vingt vols directs par jour en été. Cette concurrence tire les prix vers le bas dès que l'on sort des périodes de vacances.",
     bestMonths: "Janvier à mars, et novembre",
@@ -210,25 +220,35 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Lisbonne",
     country: "Portugal",
     heading: "Vol Paris - Lisbonne au meilleur prix",
-    metaTitle: "Vol pas cher Paris Lisbonne : prix et meilleure saison | TrouveMonVol",
+    metaTitle: "Paris — Lisbonne pas cher : vols dès 29 €, meilleure saison | TrouveMonVol",
     metaDescription:
-      "Vols Paris — Lisbonne comparés au prix total, vendeur affiché, sans frais cachés. Meilleure période, courbe de prix 12 mois et alerte prix gratuite.",
+      "Comparateur de vols Paris-Lisbonne, prix total sans surprise et vendeur affiché. Saison la moins chère, courbe de prix sur un an, alerte gratuite.",
     intro:
-      "Envie de découvrir les charmes de la capitale portugaise, ses tramways historiques et ses célèbres pastéis de nata ? Trouver un vol Paris Lisbonne pas cher n'a jamais été aussi simple grâce à l'importante offre aérienne reliant ces deux capitales européennes. Un vol direct dure environ 2 heures et 30 minutes, ce qui en fait la destination parfaite pour un city-break ou des vacances ensoleillées au bord de l'Atlantique.",
+      "Lisbonne est l'une des capitales européennes les mieux desservies depuis Paris, avec une quinzaine de rotations quotidiennes sur un vol direct de 2 h 30. Cette forte concurrence en fait l'un des city-breaks les moins chers d'Europe au départ de la France, à condition d'éviter les dates les plus demandées.",
     bestMonths: "Janvier, février et novembre",
     averageDuration: "2 h 30 en vol direct",
     simulatedLowestPrice: 29,
     sections: [
       {
-        heading: "Compagnies et aéroports pour un vol Paris — Lisbonne",
+        heading: "Quand partir à Lisbonne au meilleur prix",
         paragraphs: [
-          "Le marché des billets d'avion entre Paris et Lisbonne est ultra-concurrentiel, ce qui profite directement à votre budget. Les géants du low-cost comme EasyJet, Ryanair (depuis Beauvais) et Transavia (depuis Orly) se livrent une bataille de prix féroce, permettant de trouver des billets aller-simple à moins de 30€ en période creuse. Si vous voyagez pour les affaires ou préférez une compagnie régulière, TAP Air Portugal et Air France assurent de nombreuses liaisons quotidiennes depuis Paris Charles de Gaulle, incluant souvent un meilleur confort de cabine et des options de flexibilité. Tous les vols atterrissent à l'aéroport Humberto Delgado de Lisbonne, idéalement connecté au centre-ville par le métro.",
+          "Janvier, février et novembre restent les mois les moins chers : la ville profite d'un climat doux pour un hiver européen (13 à 16 °C en journée) qui n'a rien à voir avec le nord du continent, alors que la demande touristique reste basse.",
+          "Le printemps et le début de l'automne concentrent l'essentiel des visites — journées longues, chaleur modérée — et les tarifs grimpent en conséquence, en particulier autour des Festas de Lisboa mi-juin, quand la ville entière fête Saint-Antoine dans les rues de l'Alfama.",
+          "L'été, de juillet à septembre, cumule la haute saison touristique européenne et les retours de la diaspora portugaise de France pour les vacances : c'est la période la plus chère de l'année sur cette ligne, malgré son extrême fréquence.",
         ],
       },
       {
-        heading: "Quand partir à Lisbonne au meilleur prix",
+        heading: "Compagnies et aéroports pour un vol Paris — Lisbonne",
         paragraphs: [
-          "Notre comparateur analyse des centaines de combinaisons pour vous aider à dénicher le vol idéal. Pour économiser au maximum, évitez les week-ends de grands départs et essayez de voyager un mardi ou un mercredi. Les mois de janvier, février et novembre sont statistiquement les moins chers pour s'envoler vers le Portugal, tout en profitant d'une météo souvent plus douce que dans le reste de l'Europe.",
+          "EasyJet, Ryanair (depuis Beauvais) et Transavia (depuis Orly) se livrent une concurrence continue sur cette ligne, avec des allers simples sous les 30 € en période creuse. TAP Air Portugal et Air France opèrent plusieurs vols quotidiens depuis Roissy, avec bagage en soute généralement inclus.",
+          "L'arrivée se fait à l'aéroport Humberto Delgado, relié au centre-ville en une vingtaine de minutes par la ligne rouge du métro — l'une des liaisons aéroport-centre les plus simples parmi les destinations européennes de ce comparateur.",
+        ],
+      },
+      {
+        heading: "Budget à prévoir",
+        paragraphs: [
+          "Hors haute saison, un aller-retour se négocie fréquemment entre 60 et 100 euros. En juillet-août et à Noël, les mêmes billets dépassent souvent 180 à 250 euros sur les compagnies régulières comme low-cost.",
+          "Voyager un mardi ou un mercredi plutôt qu'un vendredi ou un dimanche fait souvent une vraie différence sur cette ligne à haute fréquence, où le prix varie plus selon le jour de la semaine que sur la plupart des autres destinations.",
         ],
       },
     ],
@@ -258,9 +278,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Barcelone",
     country: "Espagne",
     heading: "Vols pas chers Paris — Barcelone",
-    metaTitle: "Vol pas cher Paris Barcelone : prix et bonne période | TrouveMonVol",
+    metaTitle: "Vol Paris Barcelone pas cher : prix selon le jour de départ | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Barcelone au prix total taxes incluses, vendeur affiché. Meilleure période, historique de prix et alerte prix gratuite.",
+      "Sur cette ligne, le prix dépend surtout de la date : comparez au prix total, taxes incluses, vendeur affiché. Meilleure période, historique tarifaire, alerte gratuite.",
     intro:
       "Barcelone est à une heure quarante de vol de Paris, avec une quinzaine de rotations quotidiennes. C'est une ligne où le prix dépend presque uniquement du jour choisi.",
     bestMonths: "Janvier, février et novembre",
@@ -319,9 +339,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Istanbul",
     country: "Turquie",
     heading: "Vols pas chers Paris — Istanbul",
-    metaTitle: "Vol pas cher Paris Istanbul : prix et meilleure saison | TrouveMonVol",
+    metaTitle: "Paris — Istanbul pas cher : Istanbul Airport ou Sabiha Gökçen | TrouveMonVol",
     metaDescription:
-      "Vols Paris — Istanbul au prix total taxes incluses, vendeur clairement affiché. Meilleure période, courbe de prix sur 12 mois, alerte prix gratuite.",
+      "Vols Paris-Istanbul au prix total, vendeur clairement affiché, deux aéroports comparés. Bonne saison pour partir, courbe de prix 12 mois, alerte gratuite.",
     intro:
       "Istanbul combine city-break et hub international. La ligne est desservie plusieurs fois par jour, ce qui laisse une vraie marge de négociation sur les dates.",
     bestMonths: "Novembre à mars, hors fêtes",
@@ -380,9 +400,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Dubaï",
     country: "Émirats arabes unis",
     heading: "Vols pas chers Paris — Dubaï",
-    metaTitle: "Vol pas cher Paris Dubaï : prix et meilleure période | TrouveMonVol",
+    metaTitle: "Vol Paris Dubaï pas cher : direct, escale et bonne saison | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Dubaï au prix total, taxes incluses, avec le vendeur affiché. Meilleure saison, évolution des prix et alerte prix gratuite.",
+      "Comparez vols directs et stopovers vers Dubaï au prix total, taxes incluses, vendeur affiché. Meilleure saison pour partir, évolution des prix, alerte gratuite.",
     intro:
       "Dubaï est à la fois une destination de séjour et l'un des plus grands hubs mondiaux. Résultat : une offre abondante toute l'année et de fortes variations selon la saison.",
     bestMonths: "Mai, juin et septembre",
@@ -441,9 +461,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Tokyo",
     country: "Japon",
     heading: "Vols pas chers Paris — Tokyo",
-    metaTitle: "Vol pas cher Paris Tokyo : prix et meilleure saison | TrouveMonVol",
+    metaTitle: "Paris — Tokyo pas cher : Narita, Haneda et bon moment | TrouveMonVol",
     metaDescription:
-      "Vols Paris — Tokyo comparés au prix total taxes incluses, vendeur affiché. Meilleure période, courbe des prix sur 12 mois et alertes gratuites.",
+      "Vols Paris-Tokyo au prix total taxes incluses, vendeur affiché. Bons mois hors saison des cerisiers, courbe de prix sur 12 mois, alertes gratuites.",
     intro:
       "Tokyo est l'un des long-courriers les plus recherchés au départ de Paris. Les prix y sont très saisonniers, avec un rapport du simple au double entre les meilleures et les pires dates.",
     bestMonths: "Janvier, février et juin",
@@ -503,9 +523,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Alger",
     country: "Algérie",
     heading: "Vols pas chers Paris — Alger",
-    metaTitle: "Vol pas cher Paris Alger : prix et meilleure période | TrouveMonVol",
+    metaTitle: "Vol Paris Alger pas cher : bagages, saison et vrai prix | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Alger au prix total taxes incluses, avec le vendeur affiché. Meilleures périodes, historique de prix et alerte prix gratuite.",
+      "Vols Paris-Alger comparés au prix total, franchises bagages incluses dans le calcul, vendeur affiché. Meilleures périodes, historique de prix, alerte gratuite.",
     intro:
       "Paris — Alger est une ligne à forte demande familiale, avec une saisonnalité très marquée par les congés d'été et les fêtes. Anticiper y compte davantage que sur la plupart des autres destinations.",
     bestMonths: "Février, mars et octobre",
@@ -564,9 +584,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Rome",
     country: "Italie",
     heading: "Vols pas chers Paris — Rome",
-    metaTitle: "Vol pas cher Paris Rome : prix et meilleure période | TrouveMonVol",
+    metaTitle: "Paris — Rome pas cher : prix, saison et réservation Vatican | TrouveMonVol",
     metaDescription:
-      "Vols Paris — Rome au prix total taxes incluses, vendeur affiché, sans frais cachés. Meilleure saison, courbe de prix 12 mois et alerte prix gratuite.",
+      "Vols Paris-Rome au prix total, sans frais cachés, vendeur affiché. Meilleure saison pour visiter, courbe de prix sur 12 mois, alerte prix gratuite.",
     intro:
       "Rome est desservie une dizaine de fois par jour depuis Paris, en deux heures de vol. La ligne est très concurrentielle, ce qui laisse de belles opportunités hors vacances scolaires.",
     bestMonths: "Janvier, février et novembre",
@@ -625,9 +645,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Tunis",
     country: "Tunisie",
     heading: "Vols pas chers Lyon — Tunis",
-    metaTitle: "Vol pas cher Lyon Tunis : prix, compagnies, meilleure période | TrouveMonVol",
+    metaTitle: "Vol Lyon Tunis pas cher : compagnies et meilleure période | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Lyon — Tunis au prix total taxes incluses, avec le vendeur affiché. Compagnies, durée du vol, meilleure période et alerte prix gratuite.",
+      "Vols Lyon-Tunis comparés au prix total, taxes incluses, vendeur affiché en clair. Compagnies sur la ligne, durée du trajet, meilleure période, alerte gratuite.",
     intro:
       "Environ deux heures de vol séparent Lyon-Saint-Exupéry de Tunis-Carthage. La liaison est desservie toute l'année, avec une offre qui s'étoffe nettement au printemps et en été, période où les écarts de prix d'un jour à l'autre deviennent les plus marqués.",
     bestMonths: "Mars-avril et octobre-novembre",
@@ -684,9 +704,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Séoul",
     country: "Corée du Sud",
     heading: "Vols pas chers Paris — Séoul",
-    metaTitle: "Vol pas cher Paris Séoul : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Paris — Séoul pas cher : compagnies et accès depuis Incheon | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Séoul au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis Incheon, meilleure période et alerte prix gratuite.",
+      "Vols Paris-Séoul comparés au prix total, vendeur affiché. Liaison depuis l'aéroport d'Incheon, meilleure période pour réserver, alerte prix gratuite.",
     intro:
       "Un vol direct Paris — Séoul dure environ onze heures et demie. La demande varie fortement selon la saison : les cerisiers en fleurs au printemps et les couleurs d'automne concentrent l'essentiel de l'affluence touristique française sur cette destination.",
     bestMonths: "Avril-mai et septembre-novembre",
@@ -734,9 +754,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Hong Kong",
     country: "Hong Kong",
     heading: "Vols pas chers Paris — Hong Kong",
-    metaTitle: "Vol pas cher Paris Hong Kong : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Vol Paris Hong Kong pas cher : compagnies et bon moment | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Hong Kong au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+      "Vols Paris-Hong Kong au prix total, taxes incluses, vendeur affiché. Trajet depuis Chek Lap Kok, meilleure saison pour réserver, alerte prix gratuite.",
     intro:
       "Environ onze heures et demie de vol direct séparent Paris de Hong Kong. La ville reste accessible toute l'année, avec une nette préférence pour l'automne et le début d'hiver, quand l'humidité tombe et que le ciel se dégage.",
     bestMonths: "Octobre-décembre",
@@ -784,9 +804,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Montréal",
     country: "Canada",
     heading: "Vols pas chers Paris — Montréal",
-    metaTitle: "Vol pas cher Paris Montréal : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Paris — Montréal pas cher : compagnies et bonne saison | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Montréal au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+      "Vols Paris-Montréal au prix total, taxes incluses, vendeur affiché. Accès depuis Trudeau, meilleure période pour réserver, alerte prix gratuite.",
     intro:
       "Un vol direct Paris — Montréal dure environ sept heures et demie. C'est l'une des liaisons transatlantiques les plus fréquentées au départ de Paris, avec une offre dense qui laisse une vraie marge de négociation sur le prix selon la période choisie.",
     bestMonths: "Mai-juin et septembre-octobre",
@@ -834,9 +854,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Los Angeles",
     country: "États-Unis",
     heading: "Vols pas chers Paris — Los Angeles",
-    metaTitle: "Vol pas cher Paris Los Angeles : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Vol Paris Los Angeles pas cher : ESTA et bonne période | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Los Angeles au prix total taxes incluses, vendeur affiché. Compagnies, ESTA, meilleure période et alerte prix gratuite.",
+      "Vols Paris-Los Angeles au prix total, taxes incluses, vendeur affiché. Formalités ESTA à prévoir, meilleure saison pour réserver, alerte gratuite.",
     intro:
       "Un vol direct Paris — Los Angeles dure environ onze heures. La Californie du Sud se visite agréablement toute l'année grâce à un climat doux, ce qui rend le choix des dates plus dépendant du prix du billet que de la météo sur place.",
     bestMonths: "Avril-mai et septembre-novembre",
@@ -884,9 +904,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Le Caire",
     country: "Égypte",
     heading: "Vols pas chers Paris — Le Caire",
-    metaTitle: "Vol pas cher Paris Le Caire : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Paris — Le Caire pas cher : visa et meilleure saison | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Le Caire au prix total taxes incluses, vendeur affiché. Compagnies, visa, meilleure période et alerte prix gratuite.",
+      "Vols Paris-Le Caire au prix total, taxes incluses, vendeur affiché. Formalités visa à connaître, meilleure période pour visiter, alerte prix gratuite.",
     intro:
       "Un vol direct Paris — Le Caire dure environ quatre heures et demie, ce qui en fait l'une des destinations dépaysantes les plus rapides à atteindre depuis Paris. La chaleur estivale, souvent au-dessus de 35 °C, pousse la plupart des voyageurs vers l'automne, l'hiver ou le printemps.",
     bestMonths: "Octobre-avril",
@@ -934,9 +954,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Dakar",
     country: "Sénégal",
     heading: "Vols pas chers Paris — Dakar",
-    metaTitle: "Vol pas cher Paris Dakar : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Vol Paris Dakar pas cher : saison sèche et formalités | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Dakar au prix total taxes incluses, vendeur affiché. Compagnies, saison sèche, formalités et alerte prix gratuite.",
+      "Vols Paris-Dakar au prix total, taxes incluses, vendeur affiché. Repères sur la saison sèche, formalités d'entrée, alerte prix gratuite.",
     intro:
       "Un vol direct Paris — Dakar dure un peu moins de six heures. La demande suit un rythme saisonnier marqué par la saison sèche, mais aussi par les vacances scolaires et les grandes fêtes, très suivies par une importante diaspora sénégalaise en France.",
     bestMonths: "Novembre-mai",
@@ -984,9 +1004,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Reykjavik",
     country: "Islande",
     heading: "Vols pas chers Paris — Reykjavik",
-    metaTitle: "Vol pas cher Paris Reykjavik : prix, aurores boréales, quand partir | TrouveMonVol",
+    metaTitle: "Paris — Reykjavik pas cher : aurores boréales et bon prix | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Reykjavik au prix total taxes incluses, vendeur affiché. Compagnies, aurores boréales, meilleure période et alerte prix.",
+      "Vols Paris-Reykjavik au prix total, taxes incluses, vendeur affiché. Saison des aurores boréales, meilleure période pour réserver, alerte gratuite.",
     intro:
       "Un peu moins de quatre heures de vol séparent Paris de Reykjavik. La destination attire toute l'année pour des raisons différentes : soleil de minuit et randonnées en été, aurores boréales et paysages enneigés en hiver.",
     bestMonths: "Juin-août (nature) ou septembre-mars (aurores boréales)",
@@ -1034,9 +1054,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Stockholm",
     country: "Suède",
     heading: "Vols pas chers Paris — Stockholm",
-    metaTitle: "Vol pas cher Paris Stockholm : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Vol Paris Stockholm pas cher : accès depuis Arlanda | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Stockholm au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis Arlanda, meilleure période et alerte prix.",
+      "Vols Paris-Stockholm au prix total, taxes incluses, vendeur affiché. Liaison depuis Arlanda, meilleure saison pour partir, alerte prix gratuite.",
     intro:
       "Stockholm est à moins de trois heures de vol de Paris. La ville, bâtie sur quatorze îles, se visite dans des conditions radicalement différentes selon la saison : journées interminables et douces en été, nuits longues et froides en hiver.",
     bestMonths: "Mai-août",
@@ -1084,9 +1104,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Mexico",
     country: "Mexique",
     heading: "Vols pas chers Paris — Mexico",
-    metaTitle: "Vol pas cher Paris Mexico : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Paris — Mexico pas cher : altitude et meilleure saison | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Mexico au prix total taxes incluses, vendeur affiché. Compagnies, altitude, meilleure période et alerte prix gratuite.",
+      "Vols Paris-Mexico au prix total, taxes incluses, vendeur affiché. Climat tempéré par l'altitude, bonne période pour réserver, alerte prix gratuite.",
     intro:
       "Un vol direct Paris — Mexico dure environ onze heures. Perchée à plus de 2 200 mètres d'altitude, la capitale mexicaine profite d'un climat étonnamment tempéré toute l'année, bien loin de l'image de chaleur tropicale qu'on prête souvent au pays.",
     bestMonths: "Novembre-avril",
@@ -1134,9 +1154,9 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destinationCity: "Doha",
     country: "Qatar",
     heading: "Vols pas chers Paris — Doha",
-    metaTitle: "Vol pas cher Paris Doha : prix, compagnies, quand partir | TrouveMonVol",
+    metaTitle: "Vol Paris Doha pas cher : escale ou séjour, quand partir | TrouveMonVol",
     metaDescription:
-      "Comparez les vols Paris — Doha au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+      "Vols Paris-Doha au prix total, taxes incluses, vendeur affiché. Trajet depuis Hamad International, meilleure période pour réserver, alerte gratuite.",
     intro:
       "Un vol direct Paris — Doha dure environ six heures et demie. La ville sert aussi de porte d'entrée pratique vers l'Asie et l'Océanie via une escale courte, mais mérite un arrêt à part entière pour ses musées et son front de mer.",
     bestMonths: "Novembre-mars",
