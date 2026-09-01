@@ -1,14 +1,16 @@
-/** Helpers partagés pour le sitemap index et ses segments. */
+/** Helpers partagés pour le sitemap. */
 
 export type SitemapEntry = {
   loc: string;
-  changefreq?: string;
-  priority?: string;
-  /** Date ISO (YYYY-MM-DD) de dernière modification connue. Omis si inconnue plutôt qu'inventé. */
+  /**
+   * Date ISO (AAAA-MM-JJ) de dernière modification RÉELLE du contenu.
+   *
+   * Omise quand nous ne la connaissons pas, plutôt qu'inventée : une date de
+   * génération qui bouge tous les jours sur des centaines d'URL est un signal
+   * de contenu automatisé, pas de fraîcheur.
+   */
   lastmod?: string;
 };
-
-export const SITEMAP_SEGMENT_SIZE = 500;
 
 export function xmlResponse(body: string): Response {
   return new Response(body, {
@@ -19,6 +21,10 @@ export function xmlResponse(body: string): Response {
   });
 }
 
+/**
+ * `changefreq` et `priority` ne sont volontairement pas émis : Google les
+ * ignore totalement depuis des années.
+ */
 export function urlsetXml(origin: string, entries: SitemapEntry[]): string {
   const urls = entries
     .map((entry) =>
@@ -26,8 +32,6 @@ export function urlsetXml(origin: string, entries: SitemapEntry[]): string {
         "  <url>",
         `    <loc>${origin}${entry.loc}</loc>`,
         entry.lastmod ? `    <lastmod>${entry.lastmod}</lastmod>` : null,
-        entry.changefreq ? `    <changefreq>${entry.changefreq}</changefreq>` : null,
-        entry.priority ? `    <priority>${entry.priority}</priority>` : null,
         "  </url>",
       ]
         .filter(Boolean)
@@ -40,21 +44,4 @@ export function urlsetXml(origin: string, entries: SitemapEntry[]): string {
 ${urls}
 </urlset>
 `;
-}
-
-export function sitemapIndexXml(origin: string, paths: string[]): string {
-  const items = paths
-    .map((path) => `  <sitemap>\n    <loc>${origin}${path}</loc>\n  </sitemap>`)
-    .join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${items}
-</sitemapindex>
-`;
-}
-
-export function chunk<T>(items: T[], size: number): T[][] {
-  const out: T[][] = [];
-  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
-  return out;
 }
