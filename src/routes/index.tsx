@@ -130,8 +130,10 @@ export const Route = createFileRoute("/")({
 const REASONS = [
   {
     icon: BadgeEuro,
-    title: "Ce que vous voyez, c'est ce que vous payez",
-    text: "Taxes et frais obligatoires sont déjà inclus dans le prix affiché. Pas de tarif d'appel qui gonfle au moment de payer.",
+    // Même raison que pour le H1 : ne pas reformuler ailleurs la garantie de
+    // prix qu'on vient de retirer du titre.
+    title: "Le montant affiché est le total",
+    text: "Taxes et frais obligatoires sont déjà inclus dans le prix affiché : pas de tarif d'appel qui gonfle au moment de payer. Chaque prix porte sa date de relevé, et au-delà de 24 h il est présenté comme une estimation, pas comme un prix ferme.",
   },
   {
     icon: Store,
@@ -174,14 +176,24 @@ function HomePage() {
         />
         <div className="container-page grid gap-10 py-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-16">
           <div className="rounded-2xl bg-gradient-to-br from-background/95 via-background/90 to-background/70 p-6 lg:p-8 shadow-sm">
+            {/*
+              L'ancien titre — « Le prix que vous voyez est celui que vous
+              payez » — promettait une garantie de prix que notre source
+              tarifaire ne permet pas de tenir : les tarifs viennent des
+              vendeurs et peuvent bouger entre le relevé et le clic. Ce que nous
+              pouvons réellement garantir, c'est ce que le titre décrit
+              maintenant : le montant affiché est le total taxes comprises, et
+              le vendeur est nommé.
+            */}
             <h1 className="hero-in hero-in-1 font-display leading-tight">
-              Le prix que vous voyez est celui que vous payez
+              Prix total, taxes incluses, vendeur affiché
             </h1>
             <div className="hero-in hero-in-2">
               <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-                Taxes incluses, vendeur affiché, aucune surprise à la caisse. TrouveMonVol compare
-                les vols au prix total réel — ou partez de votre budget : indiquez la somme que vous
-                voulez dépenser et découvrez toutes les destinations accessibles depuis votre ville.
+                Pas de tarif d'appel ni de frais découverts au paiement : le montant que nous
+                affichons est le total, et vous savez chez qui vous réservez. Chaque prix porte sa
+                date de relevé — ou partez de votre budget et découvrez toutes les destinations
+                accessibles depuis votre ville.
               </p>
               <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
                 <li>• Dates flexibles ± 3 jours pour repérer le jour le moins cher</li>

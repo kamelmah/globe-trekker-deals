@@ -47,12 +47,24 @@ export function PriceRefreshStatus() {
   return (
     <div className="mt-6 flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="font-medium">Prix mis à jour automatiquement toutes les heures</p>
+        {/*
+          Ancien libellé : « Prix mis à jour automatiquement toutes les heures ».
+          La cadence relevée en base sur 24 h est d'environ une heure en journée,
+          mais avec de vrais trous la nuit (jusqu'à près de 7 h entre deux
+          passages) : « toutes les heures » annonçait une garantie que la tâche
+          planifiée ne tient pas. La date réelle du dernier passage, affichée
+          juste en dessous, reste l'information vérifiable.
+
+          Cette cadence ne concerne QUE les prix de référence de cette page. Les
+          résultats de recherche portent la date de relevé du vendeur, que nous
+          ne maîtrisons pas — d'où la mention distincte sur chaque offre.
+        */}
+        <p className="font-medium">Prix de référence rafraîchis plusieurs fois par jour</p>
         <p className="mt-1 text-muted-foreground">
           {state?.lastAt ? (
             <>
-              Dernière mise à jour : {formatParisDateTime(state.lastAt)} (heure de Paris) ·
-              prochaine mise à jour prévue vers {formatParisDateTime(state.nextAt)}
+              Dernier relevé : {formatParisDateTime(state.lastAt)} (heure de Paris) · prochain
+              passage attendu vers {formatParisDateTime(state.nextAt)}
             </>
           ) : query.isPending ? (
             "Chargement de l'état de mise à jour…"

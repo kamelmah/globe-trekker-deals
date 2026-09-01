@@ -26,20 +26,32 @@ function formatTime(iso: string): string {
 }
 
 /**
- * Au-delà de ce seuil (cohérent avec le reste du cache du site, 6 h), on ne
- * présente plus le prix comme ferme : en pratique, un tarif de plusieurs
- * jours peut avoir dérivé de 30 % ou plus chez le vendeur final au moment
- * du clic (vérifié en conditions réelles sur plusieurs trajets).
+ * Seuil de fermeté du prix.
+ *
+ * Au-delà de 24 h, le montant n'est plus présenté comme un prix : il devient
+ * explicitement une estimation, et le bouton de réservation perd son style
+ * principal. Un tarif de plusieurs jours peut avoir dérivé de 30 % ou plus chez
+ * le vendeur au moment du clic — l'annoncer comme ferme serait une pratique
+ * commerciale trompeuse.
+ *
+ * La date de relevé vient du vendeur (`found_at` / `search_date` renvoyés par
+ * l'API), pas de notre propre rafraîchissement : nous constatons l'âge du prix,
+ * nous ne le maîtrisons pas.
  */
-const STALE_THRESHOLD_MS = 6 * 60 * 60 * 1000;
+const ESTIMATE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
 
-type Freshness = { label: string; stale: boolean };
+/** En deçà, le relevé est assez récent pour être signalé en vert. */
+const FRESH_THRESHOLD_MS = 60 * 60 * 1000;
+
+type FreshnessTone = "frais" | "neutre" | "ancien";
+type Freshness = { label: string; tone: FreshnessTone; estimate: boolean };
 
 /** Fraîcheur du relevé de prix, calculée côté client pour éviter tout écart SSR. */
 function computeFreshness(iso: string | null): Freshness {
   const d = iso ? new Date(iso) : null;
   if (!d || Number.isNaN(d.getTime())) {
-    return { label: "fraîcheur inconnue", stale: true };
+    // Âge inconnu : on ne peut pas affirmer que le prix est ferme.
+    return { label: "date de relevé inconnue", tone: "ancien", estimate: true };
   }
   const ageMs = Date.now() - d.getTime();
   const minutes = Math.max(0, Math.round(ageMs / 60000));
@@ -53,8 +65,22 @@ function computeFreshness(iso: string | null): Freshness {
         ? `relevé il y a ${hours} h`
         : `relevé le ${d.toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}`;
   }
-  return { label, stale: ageMs > STALE_THRESHOLD_MS };
+  const tone: FreshnessTone =
+    ageMs < FRESH_THRESHOLD_MS ? "frais" : ageMs <= ESTIMATE_THRESHOLD_MS ? "neutre" : "ancien";
+  return { label, tone, estimate: ageMs > ESTIMATE_THRESHOLD_MS };
 }
+
+/**
+ * `--warning` seul ne passe en texte dans aucun des deux thèmes : trop clair sur
+ * fond clair, et `--warning-foreground` est une couleur prévue POUR un fond
+ * warning. Au-delà de 24 h on utilise donc la paire telle qu'elle a été conçue,
+ * en pastille — ce qui appuie au passage l'avertissement.
+ */
+const TONE_CLASS: Record<FreshnessTone, string> = {
+  frais: "text-success",
+  neutre: "text-muted-foreground",
+  ancien: "rounded-md bg-warning px-2 py-0.5 text-warning-foreground",
+};
 
 function useFreshness(iso: string | null): Freshness | null {
   // null tant que non monté côté client : évite un écart de rendu SSR, la
@@ -122,23 +148,43 @@ export function FlightCard({
           </ul>
         </div>
 
-        <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
-          <p className="font-display text-2xl font-semibold">{format(offer.priceEur)}</p>
-          <p className="text-xs text-muted-foreground">Prix total, taxes incluses</p>
-          {freshness?.stale ? (
-            <p className="inline-flex items-center gap-1 rounded-md bg-warning px-2 py-1 text-xs font-medium text-warning-foreground">
-              <AlertTriangle className="size-3 shrink-0" aria-hidden />
-              Prix à titre indicatif ({freshness.label}) — à confirmer chez le vendeur
+        <div className="flex shrink-0 flex-col items-start gap-1.5 sm:items-end">
+          {/*
+            Au-delà de 24 h le montant cesse d'être présenté comme un prix : le
+            tilde, la mention « estimation » et la typo atténuée disent la même
+            chose que le libellé de fraîcheur juste en dessous.
+          */}
+          {freshness?.estimate ? (
+            <p className="font-display text-2xl font-medium text-muted-foreground">
+              ~{format(offer.priceEur)} <span className="text-sm font-normal">(estimation)</span>
             </p>
-          ) : freshness ? (
-            <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="size-3" aria-hidden />
-              Prix {freshness.label}
+          ) : (
+            <p className="font-display text-2xl font-semibold">{format(offer.priceEur)}</p>
+          )}
+
+          {/* La fraîcheur est portée par le prix lui-même, pas reléguée à côté. */}
+          {freshness && (
+            <p
+              className={`inline-flex items-center gap-1 text-xs font-medium ${TONE_CLASS[freshness.tone]}`}
+            >
+              {freshness.tone === "ancien" ? (
+                <AlertTriangle className="size-3 shrink-0" aria-hidden />
+              ) : (
+                <Clock className="size-3 shrink-0" aria-hidden />
+              )}
+              {freshness.label}
             </p>
-          ) : null}
-          <Button asChild>
+          )}
+
+          <p className="text-xs text-muted-foreground">
+            {freshness?.estimate
+              ? "Estimation d'après un relevé ancien — prix à confirmer chez le vendeur"
+              : "Prix total, taxes incluses"}
+          </p>
+
+          <Button asChild variant={freshness?.estimate ? "outline" : "default"} className="mt-1">
             <a href={offer.bookingUrl} target="_blank" rel="noopener noreferrer nofollow sponsored">
-              Réserver chez {offer.seller}
+              {freshness?.estimate ? "Vérifier chez" : "Réserver chez"} {offer.seller}
             </a>
           </Button>
         </div>
