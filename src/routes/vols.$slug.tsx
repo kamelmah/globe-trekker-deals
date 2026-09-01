@@ -11,7 +11,7 @@ import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
 import { DESTINATIONS, getDestination } from "@/data/destinations";
 import { legacyRedirectTarget } from "@/data/route-redirects";
-import { routeMetaTitle } from "@/lib/route-title";
+import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
@@ -46,6 +46,13 @@ export const Route = createFileRoute("/vols/$slug")({
       : null;
     // Prix d'appel simulé pour la démo, sinon le plancher réellement observé.
     const lowestObserved = route.simulatedLowestPrice ?? route.observedLowestPrice ?? historyLowest;
+    // Date de relevé du prix affiché. Jamais celle d'un prix simulé, et jamais
+    // déduite : on ne date que ce qui vient réellement de l'historique.
+    const lowestObservedAt = route.simulatedLowestPrice
+      ? null
+      : (route.observedPriceAt ??
+        history.months.find((m) => m.priceEur === historyLowest)?.updatedAt ??
+        null);
     // Maillage interne : autres pages SSR disponibles depuis la même origine.
     const { related } = await relatedRoutePages({
       data: {
@@ -59,7 +66,7 @@ export const Route = createFileRoute("/vols/$slug")({
     // indexée : ces liaisons n'existent pas commercialement et noyaient les
     // pages valables sous un millier de pages creuses.
     const indexable = isIndexableRoute(route.slug, DESTINATIONS);
-    return { route, months: history.months, lowestObserved, related, indexable };
+    return { route, months: history.months, lowestObserved, lowestObservedAt, related, indexable };
   },
 
   head: ({ loaderData }) => {
@@ -194,10 +201,24 @@ export const Route = createFileRoute("/vols/$slug")({
   component: DestinationPage,
 });
 
+/** Date de relevé en toutes lettres, ex. « 28 août 2026 ». */
+function formatObservedDate(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
 function DestinationPage() {
-  const { route, months, lowestObserved, related } = Route.useLoaderData();
+  const { route, months, lowestObserved, lowestObservedAt, related } = Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity);
   const guide = getCityGuideForRoute(route.slug);
+  // Même gabarit que la balise title, sans prix : le prix vit dans le corps de
+  // la page, daté, pas dans le H1.
+  const heading = routeHeading(route.originCity, route.destinationCity);
 
   return (
     <article className="container-page py-10">
@@ -222,7 +243,7 @@ function DestinationPage() {
           aria-hidden
         />
         <h1 className="absolute inset-x-0 bottom-0 p-4 font-display text-white drop-shadow sm:p-6">
-          {route.heading}
+          {heading}
         </h1>
       </div>
 
@@ -239,7 +260,9 @@ function DestinationPage() {
               : "Historique en constitution"}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous
+            {lowestObservedAt
+              ? `Relevé le ${formatObservedDate(lowestObservedAt)}, taxes incluses. Repère indicatif, distinct de l'historique mesuré ci-dessous.`
+              : "Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous"}
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">

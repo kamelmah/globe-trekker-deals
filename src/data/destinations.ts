@@ -9,8 +9,6 @@ export type DestinationRoute = {
   destination: string;
   destinationCity: string;
   country: string;
-  /** Titre H1 de la page. */
-  heading: string;
   metaDescription: string;
   /** Résumé court affiché en tête de page. */
   intro: string;
@@ -26,6 +24,8 @@ export type DestinationRoute = {
   observedAirline?: string;
   /** Date/heure de départ relevée (ISO 8601), si connue. */
   observedDepartureAt?: string;
+  /** Date à laquelle ce prix a été relevé (ISO 8601), si connue. */
+  observedPriceAt?: string;
 };
 
 const CORE_DESTINATIONS: DestinationRoute[] = [
@@ -36,7 +36,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "RAK",
     destinationCity: "Marrakech",
     country: "Maroc",
-    heading: "Billet d'avion Paris - Marrakech pas cher",
     metaDescription:
       "Le vrai prix des vols Paris-Marrakech, taxes incluses et vendeur affiché en clair. Meilleure saison pour partir, historique des tarifs sur un an et alerte gratuite.",
     intro:
@@ -93,7 +92,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "BKK",
     destinationCity: "Bangkok",
     country: "Thaïlande",
-    heading: "Vols pas chers Paris — Bangkok",
     metaDescription:
       "Vols directs et avec escale vers Bangkok comparés au prix total, sans frais cachés. Bons mois pour partir, courbe tarifaire sur 12 mois, alerte prix gratuite.",
     intro:
@@ -154,7 +152,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "NYC",
     destinationCity: "New York",
     country: "États-Unis",
-    heading: "Vols pas chers Paris — New York",
     metaDescription:
       "Cinq compagnies en concurrence sur Paris-New York : le prix total taxes incluses, vendeur affiché. Historique 12 mois, meilleure fenêtre tarifaire, alerte gratuite.",
     intro:
@@ -215,7 +212,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "LIS",
     destinationCity: "Lisbonne",
     country: "Portugal",
-    heading: "Vol Paris - Lisbonne au meilleur prix",
     metaDescription:
       "Comparateur de vols Paris-Lisbonne, prix total sans surprise et vendeur affiché. Saison la moins chère, courbe de prix sur un an, alerte gratuite.",
     intro:
@@ -272,7 +268,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "BCN",
     destinationCity: "Barcelone",
     country: "Espagne",
-    heading: "Vols pas chers Paris — Barcelone",
     metaDescription:
       "Sur cette ligne, le prix dépend surtout de la date : comparez au prix total, taxes incluses, vendeur affiché. Meilleure période, historique tarifaire, alerte gratuite.",
     intro:
@@ -332,7 +327,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "IST",
     destinationCity: "Istanbul",
     country: "Turquie",
-    heading: "Vols pas chers Paris — Istanbul",
     metaDescription:
       "Vols Paris-Istanbul au prix total, vendeur clairement affiché, deux aéroports comparés. Bonne saison pour partir, courbe de prix 12 mois, alerte gratuite.",
     intro:
@@ -392,7 +386,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "DXB",
     destinationCity: "Dubaï",
     country: "Émirats arabes unis",
-    heading: "Vols pas chers Paris — Dubaï",
     metaDescription:
       "Comparez vols directs et stopovers vers Dubaï au prix total, taxes incluses, vendeur affiché. Meilleure saison pour partir, évolution des prix, alerte gratuite.",
     intro:
@@ -452,7 +445,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "TYO",
     destinationCity: "Tokyo",
     country: "Japon",
-    heading: "Vols pas chers Paris — Tokyo",
     metaDescription:
       "Vols Paris-Tokyo au prix total taxes incluses, vendeur affiché. Bons mois hors saison des cerisiers, courbe de prix sur 12 mois, alertes gratuites.",
     intro:
@@ -513,7 +505,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "ALG",
     destinationCity: "Alger",
     country: "Algérie",
-    heading: "Vols pas chers Paris — Alger",
     metaDescription:
       "Vols Paris-Alger comparés au prix total, franchises bagages incluses dans le calcul, vendeur affiché. Meilleures périodes, historique de prix, alerte gratuite.",
     intro:
@@ -573,7 +564,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "ROM",
     destinationCity: "Rome",
     country: "Italie",
-    heading: "Vols pas chers Paris — Rome",
     metaDescription:
       "Vols Paris-Rome au prix total, sans frais cachés, vendeur affiché. Meilleure saison pour visiter, courbe de prix sur 12 mois, alerte prix gratuite.",
     intro:
@@ -633,7 +623,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "TUN",
     destinationCity: "Tunis",
     country: "Tunisie",
-    heading: "Vols pas chers Lyon — Tunis",
     metaDescription:
       "Vols Lyon-Tunis comparés au prix total, taxes incluses, vendeur affiché en clair. Compagnies sur la ligne, durée du trajet, meilleure période, alerte gratuite.",
     intro:
@@ -691,7 +680,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "ICN",
     destinationCity: "Séoul",
     country: "Corée du Sud",
-    heading: "Vols pas chers Paris — Séoul",
     metaDescription:
       "Vols Paris-Séoul comparés au prix total, vendeur affiché. Liaison depuis l'aéroport d'Incheon, meilleure période pour réserver, alerte prix gratuite.",
     intro:
@@ -740,7 +728,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "HKG",
     destinationCity: "Hong Kong",
     country: "Hong Kong",
-    heading: "Vols pas chers Paris — Hong Kong",
     metaDescription:
       "Vols Paris-Hong Kong au prix total, taxes incluses, vendeur affiché. Trajet depuis Chek Lap Kok, meilleure saison pour réserver, alerte prix gratuite.",
     intro:
@@ -789,7 +776,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "YUL",
     destinationCity: "Montréal",
     country: "Canada",
-    heading: "Vols pas chers Paris — Montréal",
     metaDescription:
       "Vols Paris-Montréal au prix total, taxes incluses, vendeur affiché. Accès depuis Trudeau, meilleure période pour réserver, alerte prix gratuite.",
     intro:
@@ -838,7 +824,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "LAX",
     destinationCity: "Los Angeles",
     country: "États-Unis",
-    heading: "Vols pas chers Paris — Los Angeles",
     metaDescription:
       "Vols Paris-Los Angeles au prix total, taxes incluses, vendeur affiché. Formalités ESTA à prévoir, meilleure saison pour réserver, alerte gratuite.",
     intro:
@@ -887,7 +872,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "CAI",
     destinationCity: "Le Caire",
     country: "Égypte",
-    heading: "Vols pas chers Paris — Le Caire",
     metaDescription:
       "Vols Paris-Le Caire au prix total, taxes incluses, vendeur affiché. Formalités visa à connaître, meilleure période pour visiter, alerte prix gratuite.",
     intro:
@@ -936,7 +920,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "DKR",
     destinationCity: "Dakar",
     country: "Sénégal",
-    heading: "Vols pas chers Paris — Dakar",
     metaDescription:
       "Vols Paris-Dakar au prix total, taxes incluses, vendeur affiché. Repères sur la saison sèche, formalités d'entrée, alerte prix gratuite.",
     intro:
@@ -985,7 +968,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "KEF",
     destinationCity: "Reykjavik",
     country: "Islande",
-    heading: "Vols pas chers Paris — Reykjavik",
     metaDescription:
       "Vols Paris-Reykjavik au prix total, taxes incluses, vendeur affiché. Saison des aurores boréales, meilleure période pour réserver, alerte gratuite.",
     intro:
@@ -1034,7 +1016,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "ARN",
     destinationCity: "Stockholm",
     country: "Suède",
-    heading: "Vols pas chers Paris — Stockholm",
     metaDescription:
       "Vols Paris-Stockholm au prix total, taxes incluses, vendeur affiché. Liaison depuis Arlanda, meilleure saison pour partir, alerte prix gratuite.",
     intro:
@@ -1083,7 +1064,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "MEX",
     destinationCity: "Mexico",
     country: "Mexique",
-    heading: "Vols pas chers Paris — Mexico",
     metaDescription:
       "Vols Paris-Mexico au prix total, taxes incluses, vendeur affiché. Climat tempéré par l'altitude, bonne période pour réserver, alerte prix gratuite.",
     intro:
@@ -1131,7 +1111,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "DOH",
     destinationCity: "Doha",
     country: "Qatar",
-    heading: "Vols pas chers Paris — Doha",
     metaDescription:
       "Vols Paris-Doha au prix total, taxes incluses, vendeur affiché. Trajet depuis Hamad International, meilleure période pour réserver, alerte gratuite.",
     intro:
@@ -1180,7 +1159,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "DPS",
     destinationCity: "Bali",
     country: "Indonésie",
-    heading: "Vols pas chers Paris — Bali",
     metaDescription:
       "Vols Paris-Bali au prix total, taxes incluses, vendeur affiché. Aucun direct : comparez les escales, meilleure saison pour partir, alerte prix gratuite.",
     intro:
@@ -1241,7 +1219,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "CMN",
     destinationCity: "Casablanca",
     country: "Maroc",
-    heading: "Vols pas chers Paris — Casablanca",
     metaDescription:
       "Comparez les vols Paris — Casablanca au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
     intro:
@@ -1290,7 +1267,6 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
     destination: "MIA",
     destinationCity: "Miami",
     country: "États-Unis",
-    heading: "Vols pas chers Paris — Miami",
     metaDescription:
       "Comparez les vols Paris — Miami au prix total taxes incluses, vendeur affiché. Compagnies, ESTA, meilleure période et alerte prix gratuite.",
     intro:

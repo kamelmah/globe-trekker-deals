@@ -211,7 +211,18 @@ export async function resolveRouteSlug(slug: string): Promise<{
   return null;
 }
 
-type ObservedPrice = { priceEur: number; airline: string | null; departureAt: string | null };
+type ObservedPrice = {
+  priceEur: number;
+  airline: string | null;
+  departureAt: string | null;
+  /**
+   * Date à laquelle ce prix a été relevé — à ne pas confondre avec
+   * `departureAt`, qui est la date de départ du vol. Nulle quand le prix vient
+   * du cache du balayage mondial, qui ne conserve pas cette information : on
+   * préfère alors ne pas dater le prix plutôt que d'inventer une date.
+   */
+  observedAt: string | null;
+};
 
 /** Prix le plus bas déjà relevé sur ce trajet (cache mondial, puis historique). */
 async function readObservedPrice(
@@ -224,20 +235,26 @@ async function readObservedPrice(
         priceEur: Math.round(Number(cached.priceEur)),
         airline: cached.airline ?? null,
         departureAt: cached.departureAt ?? null,
+        observedAt: null,
       }
     : null;
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: history } = await supabaseAdmin
       .from("price_history")
-      .select("lowest_price")
+      .select("lowest_price,updated_at")
       .eq("origin", origin)
       .eq("destination", destination)
       .order("lowest_price", { ascending: true })
       .limit(1);
     const historyLow = history?.[0] ? Math.round(Number(history[0].lowest_price)) : null;
     if (historyLow && historyLow > 0 && (!best || historyLow < best.priceEur)) {
-      best = { priceEur: historyLow, airline: best?.airline ?? null, departureAt: null };
+      best = {
+        priceEur: historyLow,
+        airline: best?.airline ?? null,
+        departureAt: null,
+        observedAt: history?.[0]?.updated_at ?? null,
+      };
     }
   } catch (error) {
     console.error("Lecture de l'historique impossible", error);
@@ -262,6 +279,19 @@ function durationLabel(km: number): string {
   const h = Math.floor(hours);
   const m = Math.round((hours - h) * 60);
   return `≈ ${h} h ${String(m).padStart(2, "0")} estimé (${km.toLocaleString("fr-FR")} km)`;
+}
+
+/** Date complète en toutes lettres, ex. « 28 août 2026 ». */
+function frenchDay(iso: string | null): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 function frenchMonth(iso: string | null): string | null {
@@ -310,20 +340,20 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     ? `La distance entre ${origin.city} et ${destination.city} (${destination.country}) est d'environ ${km.toLocaleString("fr-FR")} km, soit ${durationLabel(km)} pour un vol direct. Les itinéraires avec une ou deux escales sont souvent moins chers mais rallongent sensiblement le trajet : nos filtres vous permettent d'exclure les escales trop longues en un clic.`
     : `Aucune compagnie n'assure ${origin.city} — ${destination.city} sans escale : tous les itinéraires passent par une correspondance. La distance à vol d'oiseau est d'environ ${km.toLocaleString("fr-FR")} km, mais comptez sensiblement plus que les ${durationLabel(km)} théoriques, selon la durée de l'escale. Nos filtres permettent d'écarter les correspondances les plus longues.`;
 
-  const heading = priceLabel
-    ? `Vol ${origin.city} — ${destination.city} : relevé dès ${priceLabel}`
-    : `Vol ${origin.city} — ${destination.city} pas cher`;
-
-  // Le titre n'est plus porté par les données : il est calculé au rendu depuis
-  // le gabarit unique (`routeMetaTitle`), pour les pages générées comme pour
-  // les pages éditoriales.
+  // Ni le H1 ni la balise title ne sont portés par les données : tous deux sont
+  // calculés au rendu depuis le gabarit unique (`routeHeading`,
+  // `routeMetaTitle`), pour les pages générées comme pour les éditoriales.
 
   const metaDescription = priceLabel
     ? `Prix le plus bas relevé sur ${origin.city} — ${destination.city} (${destination.country}) : ${priceLabel}, taxes incluses, vendeur affiché. Comparez sans frais cachés ni faux compte à rebours.`
     : `Comparez les vols ${origin.city} — ${destination.city} (${destination.country}) : prix total taxes incluses, vendeur réel identifié et lien direct, sans frais cachés.`;
 
+  // Un prix affirmé sans date n'est pas vérifiable : quand nous connaissons la
+  // date du relevé, elle accompagne le montant.
+  const observedDay = frenchDay(observed?.observedAt ?? null);
+
   const intro = priceLabel
-    ? `Le prix le plus bas que nous avons relevé sur la liaison ${origin.city} — ${destination.city} est de ${priceLabel} taxes incluses${observedMonth ? `, pour un départ en ${observedMonth}` : ""}${observed?.airline ? `, opéré par ${observed.airline}` : ""}. Ce montant provient de nos relevés de prix réels : il n'est ni arrondi, ni simulé.`
+    ? `Le prix le plus bas que nous avons relevé sur la liaison ${origin.city} — ${destination.city} est de ${priceLabel} taxes incluses${observedMonth ? `, pour un départ en ${observedMonth}` : ""}${observed?.airline ? `, opéré par ${observed.airline}` : ""}${observedDay ? `, relevé le ${observedDay}` : ""}. Ce montant provient de nos relevés de prix réels : il n'est ni arrondi, ni simulé.`
     : `Aucun relevé de prix n'est encore enregistré sur ${origin.city} — ${destination.city}. Lancez une recherche en direct pour obtenir les tarifs réels du jour, taxes incluses et vendeur identifié.`;
 
   const sections = [
@@ -378,7 +408,6 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     destination: destination.code,
     destinationCity: destination.city,
     country: destination.country,
-    heading,
     metaDescription,
     intro,
     sections,
@@ -388,6 +417,7 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     ...(observed ? { observedLowestPrice: observed.priceEur } : {}),
     ...(observed?.airline ? { observedAirline: observed.airline } : {}),
     ...(observed?.departureAt ? { observedDepartureAt: observed.departureAt } : {}),
+    ...(observed?.observedAt ? { observedPriceAt: observed.observedAt } : {}),
   };
 }
 
