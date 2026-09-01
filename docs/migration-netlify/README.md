@@ -4,46 +4,18 @@ Ordre d'exécution. Chaque étape suppose la précédente vérifiée.
 
 ---
 
-## 0. Avant tout : sortir les données irremplaçables
+## 0. Données à reprendre — sans objet
 
-`price_alerts` et `newsletter_subscribers` sont les deux seules tables qui ne se
-reconstruisent pas. Tout le reste — prix, cache, journal, guides — se régénère
-depuis la source tarifaire.
+`price_alerts` et `newsletter_subscribers` étaient les deux seules tables non
+régénérables. Elles ont été jugées vides et l'export abandonné.
 
-**Trois chemins, du plus sûr au moins souhaitable.**
+À savoir si un doute survient plus tard : **les comptes n'ont jamais été
+relevés.** L'endpoint qui devait les donner n'a pas pu être déployé, le
+pipeline Lovable s'étant arrêté faute de crédits. La décision repose sur la
+connaissance du site, pas sur une mesure.
 
-**A. Demander à l'agent Lovable.** Il a un accès SQL au projet : c'est lui qui a
-appliqué les migrations. Lui demander en chat d'exporter les deux tables en JSON
-ne demande aucun déploiement et n'expose rien. À essayer en premier.
-
-**B. La section Cloud / Base de l'interface Lovable**, si elle expose un éditeur
-SQL :
-
-```sql
-SELECT count(*) AS alertes FROM public.price_alerts;
-SELECT count(*) AS inscrits FROM public.newsletter_subscribers;
-
-SELECT json_agg(t) FROM public.price_alerts t;
-SELECT json_agg(t) FROM public.newsletter_subscribers t;
-```
-
-**C. L'endpoint d'export**, `src/routes/api/public/exporter-donnees.ts`, en
-dernier recours. Il n'est utile que déployé, donc **sur `main`** — la branche
-`netlify` n'est pas construite par leur pipeline. Il expose des adresses
-e-mail : à supprimer aussitôt l'export vérifié.
-
-```bash
-curl.exe -s -H "x-admin-token: <ADMIN_LOGS_TOKEN>" https://trouvemonvol.fr/api/public/exporter-donnees -o export.json
-```
-
-Si la réponse est `503`, `ADMIN_LOGS_TOKEN` n'est pas définie et il faut la
-créer côté Lovable avant de réessayer.
-
-**Vérification obligatoire avant de continuer :** le nombre de lignes de
-l'export doit correspondre au `count(*)` de la base. Un export tronqué ne se
-voit pas à l'œil.
-
----
+`scripts/extraire-donnees-dump.mjs` reste dans le dépôt : il extrait ces trois
+tables d'un dump SQL complet, si un export devenait nécessaire.
 
 ## 1. Base de données
 
@@ -158,7 +130,6 @@ l'ingress Lovable (`185.158.133.1` → `lovable-app-cd-1-4.p.l5e.io`).
 
 - Retirer le repli sur la clé publiable dans `job-auth.server.ts` (dette
   assumée, tracée dans le code).
-- Supprimer `src/routes/api/public/exporter-donnees.ts`.
 - Supprimer les endpoints `rafraichir-prix` et `relever-saisonnalite`, devenus
   redondants avec les fonctions planifiées.
 - Sortir de `@lovable.dev/vite-tanstack-config` (voir `vite.config.ts`).
