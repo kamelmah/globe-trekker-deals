@@ -21,8 +21,14 @@
  *     impossible. Le secret reste la vraie protection.
  */
 
-/** Variable d'environnement portant le secret des tâches planifiées. */
-export const CRON_SECRET_ENV = "CRON_SECRET";
+/**
+ * Variable d'environnement portant le secret des tâches planifiées.
+ *
+ * `LOVABLE_CRON_SECRET` est déjà provisionnée et injectée par la plateforme :
+ * c'est elle qui fait foi. `CRON_SECRET` reste acceptée si elle existe, mais
+ * elle n'a jamais besoin d'être créée.
+ */
+export const CRON_SECRET_ENV = "LOVABLE_CRON_SECRET";
 
 /** En-tête attendu. */
 export const CRON_SECRET_HEADER = "x-cron-secret";
@@ -80,11 +86,17 @@ export function refuseJobRequest(
   request: Request,
   secretsHerites: { header: string; env: string }[] = [],
 ): Response | null {
-  const attendus = [{ header: CRON_SECRET_HEADER, env: CRON_SECRET_ENV }, ...secretsHerites]
+  const valeursAcceptees = [
+    process.env[CRON_SECRET_ENV],
+    process.env["LOVABLE_CRON_SECRET_PREVIOUS"],
+    process.env["CRON_SECRET"],
+  ].filter((v): v is string => Boolean(v));
+
+  const attendus = secretsHerites
     .map((couple) => ({ header: couple.header, valeur: process.env[couple.env] }))
     .filter((couple): couple is { header: string; valeur: string } => Boolean(couple.valeur));
 
-  if (attendus.length === 0) {
+  if (valeursAcceptees.length === 0 && attendus.length === 0) {
     console.error(
       `[tâche planifiée] ${CRON_SECRET_ENV} n'est pas définie : tout appel est refusé.`,
     );
@@ -101,10 +113,19 @@ export function refuseJobRequest(
     return json({ error: "Trop d'appels, réessayez dans une minute." }, 429);
   }
 
-  const autorise = attendus.some((couple) => {
-    const fourni = request.headers.get(couple.header);
-    return typeof fourni === "string" && memeSecret(fourni, couple.valeur);
-  });
+  // Le secret peut arriver soit en `x-cron-secret`, soit en `Authorization:
+  // Bearer` (forme utilisée par le planificateur Lovable).
+  const bearer = /^Bearer ([^\s,]+)$/.exec(request.headers.get("authorization") ?? "")?.[1];
+  const fournis = [request.headers.get(CRON_SECRET_HEADER), bearer].filter(
+    (v): v is string => typeof v === "string" && v.length > 0,
+  );
+
+  const autorise =
+    fournis.some((fourni) => valeursAcceptees.some((valeur) => memeSecret(fourni, valeur))) ||
+    attendus.some((couple) => {
+      const fourni = request.headers.get(couple.header);
+      return typeof fourni === "string" && memeSecret(fourni, couple.valeur);
+    });
 
   if (!autorise) {
     console.error(`[tâche planifiée] secret invalide depuis ${ip}`);
