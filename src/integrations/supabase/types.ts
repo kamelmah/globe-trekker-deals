@@ -231,7 +231,6 @@ export type Database = {
           id: string
           lowest_price: number
           month: string
-          observed_at: string | null
           origin: string
           updated_at: string
         }
@@ -241,7 +240,6 @@ export type Database = {
           id?: string
           lowest_price: number
           month: string
-          observed_at?: string | null
           origin: string
           updated_at?: string
         }
@@ -251,42 +249,8 @@ export type Database = {
           id?: string
           lowest_price?: number
           month?: string
-          observed_at?: string | null
           origin?: string
           updated_at?: string
-        }
-        Relationships: []
-      }
-      price_observations: {
-        Row: {
-          currency: string
-          departure_month: string
-          destination: string
-          id: string
-          lowest_price: number
-          observed_at: string
-          observed_on: string
-          origin: string
-        }
-        Insert: {
-          currency?: string
-          departure_month: string
-          destination: string
-          id?: string
-          lowest_price: number
-          observed_at?: string
-          observed_on?: string
-          origin: string
-        }
-        Update: {
-          currency?: string
-          departure_month?: string
-          destination?: string
-          id?: string
-          lowest_price?: number
-          observed_at?: string
-          observed_on?: string
-          origin?: string
         }
         Relationships: []
       }
