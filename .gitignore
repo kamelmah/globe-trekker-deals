@@ -41,3 +41,6 @@ package-lock.json
 
 # Sortie du build Netlify (nitro)
 .netlify/
+
+# Exports de donnees : contiennent des adresses e-mail, jamais commites
+*.donnees.sql
