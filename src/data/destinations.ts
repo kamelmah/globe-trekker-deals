@@ -1258,6 +1258,106 @@ const CORE_DESTINATIONS: DestinationRoute[] = [
       },
     ],
   },
+  {
+    slug: "paris-casablanca",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "CMN",
+    destinationCity: "Casablanca",
+    country: "Maroc",
+    heading: "Vols pas chers Paris — Casablanca",
+    metaTitle: "Vol pas cher Paris Casablanca : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Casablanca au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
+    intro:
+      "Casablanca se rejoint en un peu plus de trois heures de vol direct depuis Paris, sur l'une des liaisons les plus fréquentées entre la France et le Maroc — portée par une forte demande professionnelle en semaine et familiale le week-end.",
+    bestMonths: "Mars-mai et septembre-novembre",
+    averageDuration: "3 h 20 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et accès depuis l'aéroport",
+        paragraphs: [
+          "Royal Air Maroc, Air France et Transavia opèrent la ligne en direct depuis Charles-de-Gaulle et Orly. La forte concurrence entre régulières et low-cost maintient des tarifs bas hors périodes de forte demande.",
+          "L'aéroport Mohammed-V dispose d'une gare ferroviaire directe (ligne ONCF) qui rejoint Casa-Voyageurs, la gare centrale, en une trentaine de minutes — un atout rare parmi les grandes destinations du Maghreb, où le taxi reste ailleurs la norme.",
+          "Casablanca se parcourt en taxi (petits taxis rouges, à négocier ou au compteur) ou en tramway pour les grands axes ; la ville est plus étendue que Marrakech ou Tunis, avec des distances à anticiper entre quartiers.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Mars-mai et septembre-novembre offrent des températures modérées (18-26 °C), la position côtière de Casablanca limitant les excès de chaleur observés à Marrakech en été. Juillet-août restent chauds et humides sans être extrêmes.",
+          "Comme sur les autres liaisons vers le Maghreb, les vacances scolaires françaises et les grandes fêtes religieuses concentrent la demande de la diaspora marocaine : les prix montent alors plus tôt et plus fort qu'en période normale.",
+          "Casablanca reste abordable au quotidien : un repas dans une gargote locale revient à 5-8 €, une chambre correcte en hôtel d'affaires à 45-75 € la nuit.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Casablanca ?",
+        answer: "Environ 3 h 20 en vol direct.",
+      },
+      {
+        question: "Comment rejoindre le centre depuis l'aéroport de Casablanca ?",
+        answer:
+          "Le train ONCF relie directement l'aéroport Mohammed-V à la gare de Casa-Voyageurs en une trentaine de minutes.",
+      },
+      {
+        question: "Faut-il un visa pour aller au Maroc ?",
+        answer:
+          "Non pour un séjour touristique de moins de 90 jours, passeport valide requis (carte d'identité insuffisante).",
+      },
+    ],
+  },
+  {
+    slug: "paris-miami",
+    origin: "PAR",
+    originCity: "Paris",
+    destination: "MIA",
+    destinationCity: "Miami",
+    country: "États-Unis",
+    heading: "Vols pas chers Paris — Miami",
+    metaTitle: "Vol pas cher Paris Miami : prix, compagnies, quand partir | TrouveMonVol",
+    metaDescription:
+      "Comparez les vols Paris — Miami au prix total taxes incluses, vendeur affiché. Compagnies, ESTA, meilleure période et alerte prix gratuite.",
+    intro:
+      "Un vol direct Paris — Miami dure environ neuf heures et demie. La Floride du Sud se visite surtout en hiver et au printemps, la saison chaude s'accompagnant d'une humidité marquée et d'un risque d'ouragans à surveiller entre juin et novembre.",
+    bestMonths: "Décembre-avril",
+    averageDuration: "9 h 30 en vol direct",
+    sections: [
+      {
+        heading: "Compagnies et organisation sur place",
+        paragraphs: [
+          "Air France, French Bee et Delta desservent la ligne depuis Charles-de-Gaulle. French Bee, compagnie à bas coût long-courrier, propose des tarifs d'appel nettement inférieurs, options payantes (bagage, repas) à comparer au prix total.",
+          "L'aéroport de Miami est relié au centre par le Metrorail (ligne Orange) via le Miami Intermodal Center, mais une voiture de location reste la solution la plus pratique pour rayonner entre South Beach, Wynwood et les Keys.",
+          "Miami se répartit en quartiers assez éloignés les uns des autres : South Beach (Art déco et plage), Wynwood (street art et galeries), Little Havana (culture cubaine) et Brickell (quartier d'affaires), chacun avec une ambiance distincte.",
+        ],
+      },
+      {
+        heading: "Quand partir et quel budget prévoir",
+        paragraphs: [
+          "Décembre à avril offre le climat le plus agréable (22-28 °C, faible humidité), et concentre logiquement la plus forte affluence et les tarifs les plus élevés, notamment autour du Nouvel An.",
+          "De juin à novembre, la chaleur devient lourde et humide, avec un risque réel d'ouragans en fin d'été : les tarifs de vol baissent sensiblement, en compensation de ce risque météo à surveiller avant de réserver un hébergement non remboursable.",
+          "Miami reste une ville chère pour les États-Unis : hébergement à partir de 90-150 € la nuit à South Beach, repas de rue ou food truck à 10-15 €, taxes et pourboire (environ 25-30 % au total) non inclus dans les prix affichés.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Combien dure le vol Paris — Miami ?",
+        answer: "Environ 9 h 30 en vol direct.",
+      },
+      {
+        question: "Faut-il un visa pour aller à Miami ?",
+        answer:
+          "Non pour un séjour touristique de moins de 90 jours, mais une autorisation ESTA est obligatoire, à demander en ligne avant le départ.",
+      },
+      {
+        question: "Quand éviter Miami à cause des ouragans ?",
+        answer:
+          "La saison des ouragans s'étend officiellement de juin à novembre, avec un pic en août-septembre. Ce n'est pas rédhibitoire, mais à surveiller avant de réserver un hébergement non remboursable.",
+      },
+    ],
+  },
 ];
 
 /** Fiches éditoriales : trajets curés + capitales européennes. */

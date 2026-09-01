@@ -2393,6 +2393,136 @@ export const CITY_GUIDES: CityGuide[] = [
       },
     ],
   },
+  {
+    slug: "casablanca",
+    city: "Casablanca",
+    country: "Maroc",
+    routeSlug: "paris-casablanca",
+    origin: "PAR",
+    destination: "CMN",
+    originCity: "Paris",
+    title: "Que faire à Casablanca : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Casablanca : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Casablanca : meilleure période, mosquée Hassan II, budget réel sur place, accès depuis l'aéroport pour les voyageurs français.",
+    intro:
+      "Casablanca, capitale économique du Maroc, contraste avec l'image touristique de Marrakech : architecture Art déco, corniche atlantique et rythme de grande ville active. Voici les repères concrets avant de réserver.",
+    readingMinutes: 6,
+    updated: "2026-09-01",
+    practical: {
+      monnaie: "Dirham marocain (MAD).",
+      langue: "Arabe et français, très largement parlé dans les affaires et le tourisme.",
+      visa: "Aucun visa pour un séjour touristique de moins de 90 jours, passeport valide requis.",
+      transport: "Tramway, petits taxis (à négocier ou au compteur) et train ONCF direct depuis l'aéroport.",
+      budgetJour: "45 à 75 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Casablanca ?",
+        paragraphs: [
+          "Mars-mai et septembre-novembre offrent des températures modérées (18-26 °C), la position côtière limitant les excès de chaleur observés dans les villes marocaines plus continentales comme Marrakech.",
+          "L'été reste chaud et humide sans être extrême, tempéré par la proximité de l'Atlantique. L'hiver est doux en journée mais peut être pluvieux et venteux, avec des nuits fraîches.",
+          "Les grandes fêtes religieuses (Ramadan, Aïd) concentrent une forte affluence de la diaspora marocaine sur les vols : les prix montent alors plus tôt qu'en période normale.",
+        ],
+      },
+      {
+        heading: "Les incontournables à voir en priorité",
+        paragraphs: [
+          "La mosquée Hassan II, l'une des plus grandes au monde, se dresse directement au bord de l'Atlantique et se visite en partie par visite guidée — un incontournable architectural, y compris pour les non-pratiquants.",
+          "L'ancienne médina, plus modeste que celle de Marrakech ou Fès, garde une ambiance authentique loin des circuits touristiques denses ; le quartier des Habous (nouvelle médina) offre une version plus ordonnée et récente du même esprit.",
+          "La Corniche d'Ain Diab, front de mer bordé de cafés et de piscines privées, concentre la vie balnéaire et nocturne de la ville, particulièrement animée le week-end.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement reste abordable : 45-75 € la nuit pour un hôtel d'affaires correct, davantage dans les enseignes internationales du quartier des affaires.",
+          "Un repas dans une gargote locale (tajine, couscous) revient à 5-8 €, un dîner plus soigné en bord de mer à 15-25 € par personne.",
+          "Les petits taxis rouges se négocient hors compteur ou se prennent au compteur (moins cher) : un trajet en ville coûte généralement 2-5 €.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : le train ONCF relie directement Mohammed-V à la gare de Casa-Voyageurs en une trentaine de minutes — bien plus pratique et économique qu'un taxi aux heures de pointe.",
+          "Casablanca est une ville de travail avant d'être une ville touristique : les rues sont moins orientées vers les visiteurs qu'à Marrakech, ce qui en fait une expérience plus authentique mais avec moins d'infrastructure dédiée au tourisme.",
+          "Négociation : dans les petits taxis sans compteur utilisé, convenez du prix avant de monter.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Deux nuits suffisent pour la mosquée Hassan II, la médina et la Corniche.",
+          "Casablanca fonctionne aussi très bien comme point de passage : beaucoup de voyageurs y font escale une nuit avant de rejoindre Marrakech, Rabat (moins d'une heure de train) ou Essaouira.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "miami",
+    city: "Miami",
+    country: "États-Unis",
+    routeSlug: "paris-miami",
+    origin: "PAR",
+    destination: "MIA",
+    originCity: "Paris",
+    title: "Que faire à Miami : guide complet pour bien préparer son voyage",
+    metaTitle: "Que faire à Miami : guide voyage complet 2026 | TrouveMonVol",
+    description:
+      "Guide Miami : meilleure période, quartiers à voir, budget réel sur place, ESTA et conseils pratiques pour les voyageurs français.",
+    intro:
+      "Miami mélange plages Art déco, culture latino-américaine et vie nocturne, à neuf heures et demie de vol de Paris. Voici les repères concrets avant de réserver : climat, quartiers, budget réel et organisation sur place.",
+    readingMinutes: 6,
+    updated: "2026-09-01",
+    practical: {
+      monnaie: "Dollar américain (USD).",
+      langue: "Anglais et espagnol, très largement parlé compte tenu de la forte population latino-américaine.",
+      visa: "Aucun visa pour un séjour touristique de moins de 90 jours, mais autorisation ESTA obligatoire avant le départ.",
+      transport: "Metrorail et bus limités ; la location de voiture reste recommandée pour sortir du centre.",
+      budgetJour: "75 à 120 € par personne et par jour, hébergement compris.",
+    },
+    sections: [
+      {
+        heading: "Quelle est la meilleure période pour visiter Miami ?",
+        paragraphs: [
+          "Décembre à avril offre le climat le plus agréable (22-28 °C, faible humidité), avec logiquement la plus forte affluence et les tarifs les plus élevés autour du Nouvel An.",
+          "De juin à novembre, la chaleur devient lourde et humide, avec un risque réel d'ouragans en fin d'été (pic en août-septembre) : les tarifs de vol et d'hôtel baissent en compensation, un vrai arbitrage à faire.",
+          "Mai et la première quinzaine de novembre offrent un compromis intéressant, entre chaleur encore maîtrisée et tarifs déjà en baisse.",
+        ],
+      },
+      {
+        heading: "Les quartiers à voir en priorité",
+        paragraphs: [
+          "South Beach, avec son architecture Art déco pastel et sa plage bordée d'Ocean Drive, concentre l'image la plus connue de Miami — animée jour et nuit, notamment autour de Lincoln Road.",
+          "Wynwood, ancien quartier industriel reconverti, rassemble le plus grand ensemble de street art de la ville (Wynwood Walls) et une scène de galeries, bars et brunchs très dynamique.",
+          "Little Havana, cœur de la communauté cubaine de Miami, offre cafés cubains, cigares roulés à la main et musique live, en particulier le long de Calle Ocho.",
+        ],
+      },
+      {
+        heading: "Quel budget prévoir sur place ?",
+        paragraphs: [
+          "L'hébergement à South Beach revient à 90-150 € la nuit pour un hôtel correct, avec des options plus abordables à Downtown ou Brickell.",
+          "La restauration de rue et les food trucks permettent de manger pour 10-15 €, un dîner plus soigné à 25-40 € par personne — taxes et pourboire (environ 25-30 % au total) non inclus dans le prix affiché.",
+          "La location de voiture, souvent utile pour sortir du centre, coûte 40-70 € par jour selon la catégorie, en plus du stationnement souvent payant.",
+        ],
+      },
+      {
+        heading: "Conseils pratiques avant de partir",
+        paragraphs: [
+          "Depuis l'aéroport : le Metrorail (ligne Orange) relie l'aéroport au centre via le Miami Intermodal Center, mais un VTC ou une voiture de location restent plus pratiques avec des bagages.",
+          "Ouragans : suivez les prévisions si vous voyagez entre juin et novembre, et privilégiez un hébergement à annulation flexible sur cette période.",
+          "Pourboire et taxes : comme dans le reste des États-Unis, les prix affichés n'incluent ni taxe ni pourboire, à ajouter mentalement à chaque addition.",
+        ],
+      },
+      {
+        heading: "Combien de temps rester ?",
+        paragraphs: [
+          "Quatre nuits permettent de couvrir South Beach, Wynwood et Little Havana sans excès de route chaque jour.",
+          "Une semaine ou plus laisse le temps d'ajouter une excursion aux Keys (Key West, à environ trois heures de route) ou aux Everglades.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getCityGuide(slug: string): CityGuide | undefined {
