@@ -48,12 +48,14 @@ export function ResultsPriceCalendar({
   destination,
   departureAt,
   tripDuration,
+  passengers,
   onSelectDate,
 }: {
   origin: string;
   destination: string;
   departureAt: string;
   tripDuration: number;
+  passengers: { adults: number; children: number; infants: number };
   onSelectDate: (date: string) => void;
 }) {
   const [month, setMonth] = useState(() => monthOf(departureAt));
@@ -61,10 +63,30 @@ export function ResultsPriceCalendar({
   const runCalendar = useServerFn(calendarPrices);
 
   const pricesQuery = useQuery({
-    queryKey: ["results-calendar", origin, destination, month, tripDuration, currency],
+    queryKey: [
+      "results-calendar",
+      origin,
+      destination,
+      month,
+      tripDuration,
+      passengers.adults,
+      passengers.children,
+      passengers.infants,
+      currency,
+    ],
     queryFn: () =>
       runCalendar({
-        data: { origin, destination, month, tripDuration, currency, mode: "departure" },
+        data: {
+          origin,
+          destination,
+          month,
+          tripDuration,
+          currency,
+          mode: "departure",
+          adults: passengers.adults,
+          children: passengers.children,
+          infants: passengers.infants,
+        },
       }),
   });
 

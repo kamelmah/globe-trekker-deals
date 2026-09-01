@@ -461,6 +461,11 @@ function SearchResultsPage() {
                 destination={search.destination}
                 departureAt={search.depart}
                 tripDuration={effectiveTripDuration}
+                passengers={{
+                  adults: search["adultes"],
+                  children: search["enfants"],
+                  infants: search["bebes"],
+                }}
                 onSelectDate={(date) => {
                   void navigate({
                     search: (prev) => ({

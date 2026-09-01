@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { createAlert, deactivateAlert } from "@/lib/alerts.server";
 import type { ApiDebugInfo } from "@/lib/flights.types";
+import { totalPriceForPassengers, type PassengerCounts } from "@/lib/passenger-price";
 import { addDaysIso as addDays, nightsBetween } from "@/lib/trip-duration";
 import {
   TravelpayoutsError,
@@ -67,6 +68,11 @@ export const searchFlights = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const dates = data.flexible ? shiftDates(data.departureAt, 3) : [data.departureAt];
     const nights = data.tripDuration ?? 0;
+    const passengers: PassengerCounts = {
+      adults: data.adults ?? 1,
+      children: data.children ?? 0,
+      infants: Math.min(data.adults ?? 1, data.infants ?? 0),
+    };
     try {
       const batches = await Promise.all(
         dates.map((departureAt) =>
@@ -77,17 +83,24 @@ export const searchFlights = createServerFn({ method: "GET" })
             // Avec un raccourci de durée, le retour suit chaque date de départ testée.
             returnAt: nights > 0 ? addDays(departureAt, nights) : data.returnAt ?? null,
             currency: data.currency ?? "EUR",
-            adults: data.adults ?? 1,
-            children: data.children ?? 0,
-            infants: Math.min(data.adults ?? 1, data.infants ?? 0),
+            adults: passengers.adults,
+            children: passengers.children,
+            infants: passengers.infants,
           }),
         ),
       );
 
+      // L'API renvoie le même prix quel que soit le nombre de passagers demandé
+      // (vérifié en direct) : c'est un prix de référence par voyageur, jamais un
+      // vrai total. On multiplie nous-mêmes pour refléter le prix réellement dû.
       const offers = batches
         .flatMap((batch) => batch.offers)
         .sort((a, b) => a.priceEur - b.priceEur)
-        .slice(0, 40);
+        .slice(0, 40)
+        .map((offer) => ({
+          ...offer,
+          priceEur: totalPriceForPassengers(offer.priceEur, passengers),
+        }));
 
       // Aucune offre sur la date exacte : les résultats viennent de dates proches réelles.
       const nearDateOnly = offers.length > 0 && batches.every((batch) => !batch.exactDate);
@@ -119,7 +132,11 @@ export const searchFlights = createServerFn({ method: "GET" })
                 Math.abs(Date.parse(`${b.date}T00:00:00Z`) - ref),
             )
             .slice(0, 6)
-            .sort((a, b) => a.date.localeCompare(b.date));
+            .sort((a, b) => a.date.localeCompare(b.date))
+            .map((day) => ({
+              ...day,
+              priceEur: totalPriceForPassengers(day.priceEur, passengers),
+            }));
         } catch (calendarError) {
           console.error("Dates alternatives indisponibles", calendarError);
         }
@@ -157,18 +174,34 @@ export const cheapestDestinations = createServerFn({ method: "GET" })
         destinations: z.array(iata).min(1).max(80).optional(),
         world: z.boolean().optional(),
         currency,
+        adults: z.number().int().min(1).max(9).optional(),
+        children: z.number().int().min(0).max(8).optional(),
+        infants: z.number().int().min(0).max(9).optional(),
       })
       .parse(data),
   )
   .handler(async ({ data }) => {
+    const passengers: PassengerCounts = {
+      adults: data.adults ?? 1,
+      children: data.children ?? 0,
+      infants: Math.min(data.adults ?? 1, data.infants ?? 0),
+    };
     try {
-      const { prices, raw } = await fetchCheapestDestinations({
+      // Le balayage mondial est mis en cache par origine/mois/devise, partagé
+      // entre toutes les recherches quel que soit le nombre de passagers : on
+      // multiplie seulement après lecture du cache, jamais avant, pour ne
+      // jamais y écrire un total propre à une seule recherche.
+      const { prices: refPrices, raw } = await fetchCheapestDestinations({
         origin: data.origin,
         ...(data.destinations ? { destinations: data.destinations } : {}),
         world: data.world === true,
         month: data.month ?? undefined,
         currency: data.currency ?? "EUR",
       });
+      const prices = refPrices.map((price) => ({
+        ...price,
+        priceEur: totalPriceForPassengers(price.priceEur, passengers),
+      }));
       return { prices, error: null as string | null, debug: debugOf(raw) };
     } catch (error) {
       return { prices: [], error: messageOf(error), debug: null };
@@ -186,12 +219,22 @@ export const calendarPrices = createServerFn({ method: "GET" })
         currency,
         mode: z.enum(["departure", "return"]).optional(),
         departureAt: isoDate.nullish(),
+        adults: z.number().int().min(1).max(9).optional(),
+        children: z.number().int().min(0).max(8).optional(),
+        infants: z.number().int().min(0).max(9).optional(),
       })
       .parse(data),
   )
   .handler(async ({ data }) => {
+    const passengers: PassengerCounts = {
+      adults: data.adults ?? 1,
+      children: data.children ?? 0,
+      infants: Math.min(data.adults ?? 1, data.infants ?? 0),
+    };
     try {
-      const { days, raw, cached } = await fetchCalendarPrices({
+      // Même règle que cheapestDestinations : le cache calendrier est partagé
+      // entre recherches, la multiplication ne doit jamais y être écrite.
+      const { days: refDays, raw, cached } = await fetchCalendarPrices({
         origin: data.origin,
         destination: data.destination,
         month: data.month,
@@ -200,6 +243,10 @@ export const calendarPrices = createServerFn({ method: "GET" })
         mode: data.mode ?? "departure",
         departureAt: data.departureAt ?? null,
       });
+      const days = refDays.map((day) => ({
+        ...day,
+        priceEur: totalPriceForPassengers(day.priceEur, passengers),
+      }));
       return { days, error: null as string | null, debug: debugOf(raw), cached };
     } catch (error) {
       return { days: [], error: messageOf(error), debug: null, cached: false };

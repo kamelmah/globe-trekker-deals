@@ -113,7 +113,7 @@ function PostPage() {
           <li>
             <Link
               to="/mode-budget"
-              search={{ origin: "PAR", budget: 400, month: "" }}
+              search={{ origin: "PAR", budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
               className="font-medium text-primary underline-offset-2 hover:underline"
             >
               Voir où partir avec mon budget

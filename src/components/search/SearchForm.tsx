@@ -122,7 +122,14 @@ export function SearchForm({
 
     navigate({
       to: "/mode-budget",
-      search: { origin, budget: budget ? Number(budget) : 400, month: "" },
+      search: {
+        origin,
+        budget: budget ? Number(budget) : 400,
+        month: "",
+        adultes: passengers.adults,
+        enfants: passengers.children,
+        bebes: passengers.infants,
+      },
     });
   }
 

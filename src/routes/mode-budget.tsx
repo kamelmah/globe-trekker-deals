@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { lazy, Suspense, useCallback, useState } from "react";
 
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
+import { PassengerSelector, type Passengers } from "@/components/search/PassengerSelector";
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,21 +23,48 @@ const TITLE = "Mode budget : où partir avec votre budget | TrouveMonVol";
 const DESCRIPTION =
   "Indiquez votre budget et votre ville de départ, puis explorez sur une carte du monde interactive toutes les destinations accessibles à ce prix, taxes incluses.";
 
-type SearchParams = { origin: string; budget: number; month: string };
+type SearchParams = {
+  origin: string;
+  budget: number;
+  month: string;
+  adultes: number;
+  enfants: number;
+  bebes: number;
+};
+
+function clampPassengers(search: Record<string, unknown>): Passengers {
+  const adults = Math.min(9, Math.max(1, Math.round(numberOr(search["adultes"], 1))));
+  return {
+    adults,
+    children: Math.min(8, Math.max(0, Math.round(numberOr(search["enfants"], 0)))),
+    infants: Math.min(adults, Math.max(0, Math.round(numberOr(search["bebes"], 0)))),
+  };
+}
 
 export const Route = createFileRoute("/mode-budget")({
-  validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    origin: iataOr(search["origin"], "PAR"),
-    budget: Math.max(20, numberOr(search["budget"], 400)),
-    month: monthOr(search["month"], ""),
-  }),
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    const passengers = clampPassengers(search);
+    return {
+      origin: iataOr(search["origin"], "PAR"),
+      budget: Math.max(20, numberOr(search["budget"], 400)),
+      month: monthOr(search["month"], ""),
+      adultes: passengers.adults,
+      enfants: passengers.children,
+      bebes: passengers.infants,
+    };
+  },
   loader: async ({ location }) => {
-    const origin = iataOr((location.search as Record<string, unknown>)["origin"], "PAR");
-    const month = monthOr((location.search as Record<string, unknown>)["month"], "");
+    const rawSearch = location.search as Record<string, unknown>;
+    const origin = iataOr(rawSearch["origin"], "PAR");
+    const month = monthOr(rawSearch["month"], "");
+    const passengers = clampPassengers(rawSearch);
     const { prices, error, debug } = await cheapestDestinations({
       data: {
         origin,
         world: true,
+        adults: passengers.adults,
+        children: passengers.children,
+        infants: passengers.infants,
         ...(month ? { month } : {}),
       },
     });
@@ -67,14 +95,31 @@ function BudgetPage() {
   const router = useRouter();
   const [selected, setSelected] = useState<string | undefined>(undefined);
   const [budgetInput, setBudgetInput] = useState(String(search["budget"]));
+  const [monthInput, setMonthInput] = useState(search.month);
+  const [passengers, setPassengers] = useState<Passengers>({
+    adults: search.adultes,
+    children: search.enfants,
+    infants: search.bebes,
+  });
 
   const query = useQuery({
-    queryKey: ["budget", search["origin"], search.month, currency],
+    queryKey: [
+      "budget",
+      search["origin"],
+      search.month,
+      search.adultes,
+      search.enfants,
+      search.bebes,
+      currency,
+    ],
     queryFn: () =>
       runDestinations({
         data: {
           origin: search["origin"],
           world: true,
+          adults: search.adultes,
+          children: search.enfants,
+          infants: search.bebes,
           ...(search["month"] ? { month: search["month"] } : {}),
           currency,
         },
@@ -91,9 +136,9 @@ function BudgetPage() {
       retour: "",
       budget: search["budget"],
       flexible: true,
-      adultes: 1,
-      enfants: 0,
-      bebes: 0,
+      adultes: search.adultes,
+      enfants: search.enfants,
+      bebes: search.bebes,
     }),
     [search],
   );
@@ -127,27 +172,41 @@ function BudgetPage() {
         </p>
 
         <form
-          className="mt-5 flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-end"
+          className="mt-5 grid gap-3 rounded-xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end"
           onSubmit={(event) => {
             event.preventDefault();
             navigate({
-              search: (prev) => ({ ...prev, budget: Math.max(20, Number(budgetInput) || 400) }),
+              search: (prev) => ({
+                ...prev,
+                budget: Math.max(20, Number(budgetInput) || 400),
+                month: monthOr(monthInput, ""),
+                adultes: passengers.adults,
+                enfants: passengers.children,
+                bebes: passengers.infants,
+              }),
             });
           }}
         >
-          <div className="sm:w-64">
-            <PlaceAutocomplete
-              id="budget-origin"
-              label="Ville ou aéroport de départ"
-              value={search.origin}
-              onChange={(code) =>
-                code && navigate({ search: (prev) => ({ ...prev, origin: code }) })
-              }
-              placeholder="Ex. Paris, Lyon, CDG…"
+          <PlaceAutocomplete
+            id="budget-origin"
+            label="Ville ou aéroport de départ"
+            value={search.origin}
+            onChange={(code) => code && navigate({ search: (prev) => ({ ...prev, origin: code }) })}
+            placeholder="Ex. Paris, Lyon, CDG…"
+          />
+
+          <div className="space-y-1.5">
+            <Label htmlFor="budget-month">Mois de départ (facultatif)</Label>
+            <Input
+              id="budget-month"
+              type="month"
+              min={currentMonth()}
+              value={monthInput}
+              onChange={(e) => setMonthInput(e.target.value)}
             />
           </div>
 
-          <div className="space-y-1.5 sm:w-48">
+          <div className="space-y-1.5">
             <Label htmlFor="budget-amount">Budget maximum (€)</Label>
             <Input
               id="budget-amount"
@@ -158,8 +217,16 @@ function BudgetPage() {
               onChange={(e) => setBudgetInput(e.target.value)}
             />
           </div>
+
+          <PassengerSelector value={passengers} onChange={setPassengers} />
+
           <Button type="submit">Mettre à jour la carte</Button>
         </form>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Le mode budget compare un aller simple sur l'ensemble du mois choisi (ou toute l'année si
+          aucun mois n'est précisé) : pas de date de retour ni de dates flexibles ici, contrairement à
+          la recherche classique — utile pour repérer une destination avant d'affiner les dates exactes.
+        </p>
       </div>
 
       <div className="container-page mt-6 grid gap-4 pb-12 lg:grid-cols-[1fr_360px]">

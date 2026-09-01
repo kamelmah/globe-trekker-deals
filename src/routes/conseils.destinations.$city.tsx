@@ -293,7 +293,7 @@ function CityGuidePage() {
             </p>
             <Link
               to="/mode-budget"
-              search={{ origin: guide.origin, budget: 400, month: "" }}
+              search={{ origin: guide.origin, budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
               className="mt-3 block text-sm font-medium text-primary underline-offset-2 hover:underline"
             >
               Explorer par budget

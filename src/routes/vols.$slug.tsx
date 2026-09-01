@@ -408,7 +408,10 @@ function DestinationPage() {
               vous voulez dépenser.
             </p>
             <Button asChild variant="outline" className="mt-4">
-              <Link to="/mode-budget" search={{ origin: route.origin, budget: 400, month: "" }}>
+              <Link
+                to="/mode-budget"
+                search={{ origin: route.origin, budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
+              >
                 Explorer par budget
               </Link>
             </Button>
