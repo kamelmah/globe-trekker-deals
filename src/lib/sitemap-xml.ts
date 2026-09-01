@@ -9,7 +9,6 @@ export type SitemapEntry = {
 };
 
 export const SITEMAP_SEGMENT_SIZE = 500;
-export const SITEMAP_MAX_ROUTES = 5000;
 
 export function xmlResponse(body: string): Response {
   return new Response(body, {

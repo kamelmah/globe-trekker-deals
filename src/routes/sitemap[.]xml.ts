@@ -1,22 +1,17 @@
 import { SITE_URL } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 
-import {
-  SITEMAP_MAX_ROUTES,
-  SITEMAP_SEGMENT_SIZE,
-  sitemapIndexXml,
-  xmlResponse,
-} from "@/lib/sitemap-xml";
+import { INDEXED_LEGACY_SLUGS, ROUTE_WHITELIST } from "@/data/route-whitelist";
+import { SITEMAP_SEGMENT_SIZE, sitemapIndexXml, xmlResponse } from "@/lib/sitemap-xml";
 
-/** Sitemap index : segmente les pages /vols générées pour un crawl efficace. */
+/** Sitemap index : segmente les pages /vols pour un crawl efficace. */
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: () => {
         const origin = SITE_URL;
-        const { listWorldRouteSlugs } = await import("@/lib/route-pages.server");
-        const generated = await listWorldRouteSlugs(SITEMAP_MAX_ROUTES);
-        const segments = Math.max(1, Math.ceil(generated.length / SITEMAP_SEGMENT_SIZE));
+        const routes = ROUTE_WHITELIST.length + INDEXED_LEGACY_SLUGS.length;
+        const segments = Math.max(1, Math.ceil(routes / SITEMAP_SEGMENT_SIZE));
 
         const paths = ["/sitemap-pages.xml"];
         for (let page = 1; page <= segments; page += 1) {

@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { routeSlug } from "@/lib/slug";
 import { getAirport } from "@/data/airports";
+import { WHITELIST_SLUGS } from "@/data/route-whitelist";
 import { useCurrency } from "@/lib/currency-context";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { iataOr, monthOr, numberOr } from "@/lib/search-params";
@@ -86,7 +87,6 @@ export const Route = createFileRoute("/mode-budget")({
   component: BudgetPage,
 });
 
-
 function BudgetPage() {
   const search = Route.useSearch();
   const initial = Route.useLoaderData();
@@ -156,20 +156,20 @@ function BudgetPage() {
   const originAirport = getAirport(search["origin"]);
   const prices = [...(query.data?.prices ?? [])].sort((a, b) => a.priceEur - b.priceEur);
   const affordable = prices.filter((p) => p.priceEur <= search["budget"]);
-  
 
   return (
     <div>
       <div className="container-page py-10">
         <h1 className="font-display">
-          Mode budget : où partir de {originAirport?.city ?? search.origin} avec {format(search["budget"])}
+          Mode budget : où partir de {originAirport?.city ?? search.origin} avec{" "}
+          {format(search["budget"])}
         </h1>
         <p className="mt-4 max-w-3xl text-sm text-muted-foreground">
-          Dites-nous votre budget, on vous montre le monde qui rentre dedans. Chaque point de la carte
-          correspond à une ville accessible avec le prix le plus bas relevé récemment, taxes incluses.
-          Les destinations au-dessus de votre budget restent visibles, simplement estompées, pour vous
-          laisser explorer. Aujourd'hui, {affordable.length} destinations sur {prices.length} tiennent
-          dans votre budget.
+          Dites-nous votre budget, on vous montre le monde qui rentre dedans. Chaque point de la
+          carte correspond à une ville accessible avec le prix le plus bas relevé récemment, taxes
+          incluses. Les destinations au-dessus de votre budget restent visibles, simplement
+          estompées, pour vous laisser explorer. Aujourd'hui, {affordable.length} destinations sur{" "}
+          {prices.length} tiennent dans votre budget.
         </p>
 
         <form
@@ -216,8 +216,9 @@ function BudgetPage() {
         </form>
         <p className="mt-2 text-xs text-muted-foreground">
           Le mode budget compare un aller simple sur l'ensemble du mois choisi (ou toute l'année si
-          aucun mois n'est précisé) : pas de date de retour ni de dates flexibles ici, contrairement à
-          la recherche classique — utile pour repérer une destination avant d'affiner les dates exactes.
+          aucun mois n'est précisé) : pas de date de retour ni de dates flexibles ici, contrairement
+          à la recherche classique — utile pour repérer une destination avant d'affiner les dates
+          exactes.
         </p>
       </div>
 
@@ -240,7 +241,9 @@ function BudgetPage() {
         </div>
 
         <aside className="max-h-[640px] overflow-y-auto rounded-xl border border-border bg-card p-4">
-          <h2 className="font-display text-base font-semibold">Destinations, du moins cher au plus cher</h2>
+          <h2 className="font-display text-base font-semibold">
+            Destinations, du moins cher au plus cher
+          </h2>
           {query.isFetching && (
             <p className="mt-3 text-sm text-muted-foreground">Chargement des prix…</p>
           )}
@@ -251,12 +254,18 @@ function BudgetPage() {
           )}
           {!query.isFetching && !query.data?.error && prices.length === 0 && (
             <p className="mt-3 text-sm text-muted-foreground">
-              Aucun vol trouvé pour cette recherche, essayez un autre mois ou une autre ville de départ.
+              Aucun vol trouvé pour cette recherche, essayez un autre mois ou une autre ville de
+              départ.
             </p>
           )}
           <ul className="mt-3 space-y-2">
             {prices.map((price) => {
               const inBudget = price.priceEur <= search.budget;
+              // Le balayage budget couvre le monde entier, la liste blanche non :
+              // on ne propose la fiche trajet que si la page correspondante est
+              // conservée. Lier une page en `noindex` gaspille du budget de crawl.
+              const routePage = routeSlug(originAirport?.city ?? search.origin, price.city);
+              const hasRoutePage = WHITELIST_SLUGS.has(routePage);
               return (
                 <li key={price.destination}>
                   <Link
@@ -274,15 +283,16 @@ function BudgetPage() {
                     </span>
                     <span className="font-semibold text-primary">{format(price.priceEur)}</span>
                   </Link>
-                  <Link
-                    to="/vols/$slug"
-                    params={{ slug: routeSlug(originAirport?.city ?? search.origin, price.city) }}
-                    className="mt-1 block px-3 text-xs text-muted-foreground underline hover:text-foreground"
-                  >
-                    Fiche trajet {price.city} — prix, durée, FAQ
-                  </Link>
+                  {hasRoutePage && (
+                    <Link
+                      to="/vols/$slug"
+                      params={{ slug: routePage }}
+                      className="mt-1 block px-3 text-xs text-muted-foreground underline hover:text-foreground"
+                    >
+                      Fiche trajet {price.city} — prix, durée, FAQ
+                    </Link>
+                  )}
                 </li>
-
               );
             })}
           </ul>

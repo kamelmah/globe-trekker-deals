@@ -120,6 +120,93 @@ const DESTINATIONS = [
 ].map(([code, fr, family]) => ({ code, fr, family }));
 
 /**
+ * Pays en français par code IATA. Explicite comme les noms de villes : les
+ * pages affichent ces libellés, ils ne doivent pas dépendre d'un référentiel
+ * tiers qui peut changer sous nos pieds.
+ */
+const COUNTRIES = {
+  AAE: "Algérie",
+  AGA: "Maroc",
+  AGP: "Espagne",
+  AJA: "France",
+  ALC: "Espagne",
+  ALG: "Algérie",
+  AMS: "Pays-Bas",
+  ATH: "Grèce",
+  AYT: "Turquie",
+  BCN: "Espagne",
+  BER: "Allemagne",
+  BES: "France",
+  BIA: "France",
+  BJA: "Algérie",
+  BRU: "Belgique",
+  BUD: "Hongrie",
+  BUH: "Roumanie",
+  CAG: "Italie",
+  CAI: "Égypte",
+  CFU: "Grèce",
+  CLY: "France",
+  CMN: "Maroc",
+  CPH: "Danemark",
+  CTA: "Italie",
+  CZL: "Algérie",
+  DBV: "Croatie",
+  DJE: "Tunisie",
+  DUB: "Irlande",
+  DXB: "Émirats arabes unis",
+  FAO: "Portugal",
+  FEZ: "Maroc",
+  FRA: "Allemagne",
+  FSC: "France",
+  GVA: "Suisse",
+  HER: "Grèce",
+  HRG: "Égypte",
+  IBZ: "Espagne",
+  IST: "Turquie",
+  IZM: "Turquie",
+  KRK: "Pologne",
+  LIL: "France",
+  LIS: "Portugal",
+  LON: "Royaume-Uni",
+  LYS: "France",
+  MAD: "Espagne",
+  MIL: "Italie",
+  MIR: "Tunisie",
+  MLA: "Malte",
+  MPL: "France",
+  MRS: "France",
+  MUC: "Allemagne",
+  NAP: "Italie",
+  NCE: "France",
+  NDR: "Maroc",
+  NTE: "France",
+  OLB: "Italie",
+  OPO: "Portugal",
+  ORN: "Algérie",
+  OUD: "Maroc",
+  PAR: "France",
+  PMI: "Espagne",
+  PMO: "Italie",
+  PRG: "République tchèque",
+  QSF: "Algérie",
+  RAK: "Maroc",
+  RHO: "Grèce",
+  ROM: "Italie",
+  SPU: "Croatie",
+  SSH: "Égypte",
+  SVQ: "Espagne",
+  SXB: "France",
+  TLM: "Algérie",
+  TLS: "France",
+  TNG: "Maroc",
+  TUN: "Tunisie",
+  VCE: "Italie",
+  VIE: "Autriche",
+  WAW: "Pologne",
+  ZRH: "Suisse",
+};
+
+/**
  * Politique de sélection — LE point à ajuster pour élargir ou resserrer le site.
  *
  * Marseille est le départ de référence : on garde tout ce que l'API valide.
@@ -305,8 +392,18 @@ const today = new Date().toISOString().slice(0, 10);
 const routeLines = rows.map((row) => {
   const slug = `${slugify(row.origin.fr)}-${slugify(row.destination.fr)}`;
   const validation = `{ offers: ${row.offers}, minPriceEur: ${row.minPrice ?? "null"}, airlines: [${row.airlines.map(q).join(", ")}] }`;
-  return `  { slug: ${q(slug)}, origin: ${q(row.origin.code)}, originCity: ${q(row.origin.fr)}, destination: ${q(row.destination.code)}, destinationCity: ${q(row.destination.fr)}, family: ${q(row.destination.family)}, validation: ${validation} },`;
+  return `  { slug: ${q(slug)}, origin: ${q(row.origin.code)}, originCity: ${q(row.origin.fr)}, destination: ${q(row.destination.code)}, destinationCity: ${q(row.destination.fr)}, country: ${q(COUNTRIES[row.destination.code] ?? "")}, family: ${q(row.destination.family)}, validation: ${validation} },`;
 });
+
+const countryLines = Object.entries(COUNTRIES)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([code, fr]) => `  ${code}: ${q(fr)},`)
+  .join("\n");
+
+const missingCountry = rows.filter((row) => !COUNTRIES[row.destination.code]);
+for (const row of missingCountry) {
+  console.error(`  ⚠ pays manquant pour ${row.destination.code} — compléter COUNTRIES.`);
+}
 
 const nameLines = Object.entries(names)
   .sort(([a], [b]) => a.localeCompare(b))
@@ -342,6 +439,7 @@ export type WhitelistedRoute = {
   originCity: string;
   destination: string;
   destinationCity: string;
+  country: string;
   family: RouteFamily;
   /** Preuve de validation : ce que l'API a réellement renvoyé sur la fenêtre. */
   validation: { offers: number; minPriceEur: number | null; airlines: string[] };
@@ -358,6 +456,11 @@ export const WHITELIST_VALIDATED_AT = ${q(today)};
  */
 export const AIRPORT_NAMES_FR: Record<string, string> = {
 ${nameLines}
+};
+
+/** Pays en français par code IATA, pour les mêmes raisons. */
+export const COUNTRY_NAMES_FR: Record<string, string> = {
+${countryLines}
 };
 
 /** Nom français d'usage d'un code IATA, ou null si nous ne le connaissons pas. */
@@ -430,6 +533,19 @@ export function isIndexableRoute(
 `;
 
 fs.writeFileSync(OUT, file);
+
+// Le fichier est écrit en une ligne par route pour rester lisible en diff ;
+// Prettier le remet ensuite au format du dépôt, sinon ESLint le rejette.
+try {
+  const { execFileSync } = await import("node:child_process");
+  execFileSync("npx", ["prettier", "--write", path.relative(ROOT, OUT)], {
+    cwd: ROOT,
+    stdio: "ignore",
+    shell: process.platform === "win32",
+  });
+} catch {
+  console.error("⚠ Prettier n'a pas pu formater le fichier — le lancer à la main.");
+}
 
 const slugs = rows.map((row) => `${slugify(row.origin.fr)}-${slugify(row.destination.fr)}`);
 const dupes = slugs.filter((slug, i) => slugs.indexOf(slug) !== i);

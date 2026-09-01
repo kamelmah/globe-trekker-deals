@@ -9,7 +9,8 @@ import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
-import { getDestination } from "@/data/destinations";
+import { DESTINATIONS, getDestination } from "@/data/destinations";
+import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
@@ -46,7 +47,11 @@ export const Route = createFileRoute("/vols/$slug")({
         limit: 12,
       },
     });
-    return { route, months: history.months, lowestObserved, related };
+    // Hors liste blanche, la page reste servie mais demande à ne pas être
+    // indexée : ces liaisons n'existent pas commercialement et noyaient les
+    // pages valables sous un millier de pages creuses.
+    const indexable = isIndexableRoute(route.slug, DESTINATIONS);
+    return { route, months: history.months, lowestObserved, related, indexable };
   },
 
   head: ({ loaderData }) => {
@@ -58,18 +63,23 @@ export const Route = createFileRoute("/vols/$slug")({
         ],
       };
     }
-    const { route, lowestObserved } = loaderData;
+    const { route, lowestObserved, indexable } = loaderData;
     const pageUrl = `${SITE_URL}/vols/${route.slug}`;
     // Visuel dédié /og/<slug>.jpg uniquement pour les destinations éditoriales
     // (fichier réellement présent) ; sinon on réutilise la bannière déjà
     // affichée en page pour ne jamais pointer vers une image inexistante.
     const ogImage = getDestination(route.slug)
       ? destinationOgImage(route.slug)
-      : absoluteUrl(getDestinationImage(route.destination, route.destinationCity, route.country).src);
+      : absoluteUrl(
+          getDestinationImage(route.destination, route.destinationCity, route.country).src,
+        );
     return {
       meta: [
         { title: route.metaTitle },
         { name: "description", content: route.metaDescription },
+        // `follow` et non `nofollow` : on cesse de demander l'évaluation de la
+        // page, sans couper la circulation du crawl vers les pages conservées.
+        ...(indexable ? [] : [{ name: "robots", content: "noindex, follow" }]),
         { property: "og:title", content: route.metaTitle },
         { property: "og:description", content: route.metaDescription },
         { property: "og:type", content: "article" },
@@ -130,7 +140,11 @@ export const Route = createFileRoute("/vols/$slug")({
             description: route.metaDescription,
             url: pageUrl,
             image: ogImage,
-            departureAirport: { "@type": "Airport", iataCode: route.origin, name: route.originCity },
+            departureAirport: {
+              "@type": "Airport",
+              iataCode: route.origin,
+              name: route.originCity,
+            },
             arrivalAirport: {
               "@type": "Airport",
               iataCode: route.destination,
@@ -202,7 +216,6 @@ function DestinationPage() {
       </div>
 
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
-
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4">
@@ -281,7 +294,6 @@ function DestinationPage() {
         </div>
       )}
 
-
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>
           {route.sections.map((section) => (
@@ -315,8 +327,8 @@ function DestinationPage() {
               </div>
               {months.length === 0 && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Aucune observation de prix enregistrée pour l'instant sur ce trajet : l'historique se
-                  constitue à partir des prix réellement relevés lors des recherches.
+                  Aucune observation de prix enregistrée pour l'instant sur ce trajet : l'historique
+                  se constitue à partir des prix réellement relevés lors des recherches.
                 </p>
               )}
             </section>
@@ -336,39 +348,38 @@ function DestinationPage() {
                   {related.map((item) => {
                     const thumb = getDestinationImage(null, item.city, item.country);
                     return (
-                    <li key={item.slug}>
-                      <Link
-                        to="/vols/$slug"
-                        params={{ slug: item.slug }}
-                        className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
-                      >
-                        <ResponsivePicture
-                          src={thumb.thumb}
-                          webp={thumb.thumbWebp}
-                          alt={thumb.alt}
-                          loading="lazy"
-                          width={96}
-                          height={72}
-                          className="size-12 shrink-0 rounded-md object-cover"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate font-medium">
-                            {route.originCity} — {item.city}
+                      <li key={item.slug}>
+                        <Link
+                          to="/vols/$slug"
+                          params={{ slug: item.slug }}
+                          className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
+                        >
+                          <ResponsivePicture
+                            src={thumb.thumb}
+                            webp={thumb.thumbWebp}
+                            alt={thumb.alt}
+                            loading="lazy"
+                            width={96}
+                            height={72}
+                            className="size-12 shrink-0 rounded-md object-cover"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-medium">
+                              {route.originCity} — {item.city}
+                            </span>
+                            <span className="block truncate text-xs text-muted-foreground">
+                              {item.country}
+                            </span>
                           </span>
-                          <span className="block truncate text-xs text-muted-foreground">
-                            {item.country}
-                          </span>
-                        </span>
-                        {item.priceEur !== null && (
-                          <span className="font-semibold text-primary">
-                            dès {formatPrice(item.priceEur)}
-                          </span>
-                        )}
-                      </Link>
-                    </li>
+                          {item.priceEur !== null && (
+                            <span className="font-semibold text-primary">
+                              dès {formatPrice(item.priceEur)}
+                            </span>
+                          )}
+                        </Link>
+                      </li>
                     );
                   })}
-
                 </ul>
               </section>
             </Reveal>
@@ -410,7 +421,14 @@ function DestinationPage() {
             <Button asChild variant="outline" className="mt-4">
               <Link
                 to="/mode-budget"
-                search={{ origin: route.origin, budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
+                search={{
+                  origin: route.origin,
+                  budget: 400,
+                  month: "",
+                  adultes: 1,
+                  enfants: 0,
+                  bebes: 0,
+                }}
               >
                 Explorer par budget
               </Link>

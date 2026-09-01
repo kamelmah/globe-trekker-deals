@@ -8,7 +8,8 @@
  */
 
 import { AIRPORTS } from "@/data/airports";
-import type { DestinationRoute } from "@/data/destinations";
+import { DESTINATIONS, type DestinationRoute } from "@/data/destinations";
+import { routesFrom } from "@/data/route-whitelist";
 import { getCityIndex, type CityRecord } from "@/lib/geo.server";
 import { routeSlug, slugify } from "@/lib/slug";
 
@@ -25,7 +26,16 @@ async function buildSlugIndex(): Promise<SlugIndex> {
     const city = cities.get(airport.code.toUpperCase());
     const slug = slugify(city?.city ?? airport.city);
     if (!slug || index.has(slug)) continue;
-    index.set(slug, city ?? { code: airport.code, city: airport.city, country: airport.country, lat: airport.lat, lng: airport.lng });
+    index.set(
+      slug,
+      city ?? {
+        code: airport.code,
+        city: airport.city,
+        country: airport.country,
+        lat: airport.lat,
+        lng: airport.lng,
+      },
+    );
   }
   for (const city of cities.values()) {
     const slug = slugify(city.city);
@@ -119,7 +129,6 @@ async function revalidateWorldCache(origin: string, cacheKey: string): Promise<v
   }
 }
 
-
 /** Découpe "paris-new-york" en (origine, destination) en testant chaque césure. */
 export async function resolveRouteSlug(slug: string): Promise<{
   origin: CityRecord;
@@ -205,7 +214,6 @@ async function readObservedPrice(
   return best;
 }
 
-
 function distanceKm(a: CityRecord, b: CityRecord): number {
   const toRad = (v: number) => (v * Math.PI) / 180;
   const R = 6371;
@@ -229,9 +237,11 @@ function frenchMonth(iso: string | null): string | null {
   if (!iso) return null;
   const date = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric", timeZone: "UTC" }).format(
-    date,
-  );
+  return new Intl.DateTimeFormat("fr-FR", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 /**
@@ -328,42 +338,9 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
   };
 }
 
-/**
- * Slugs des pages de liaison générées, issus du balayage mondial déjà en cache
- * (aucun appel API) — utilisé par le sitemap. Le nombre est plafonné.
- */
-export async function listWorldRouteSlugs(limit = 400): Promise<string[]> {
-  try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("price_cache")
-      .select("cache_key,payload")
-      .like("cache_key", "world-destinations:%")
-      .order("expires_at", { ascending: false })
-      .limit(6);
-    const cities = await getCityIndex();
-    const slugs = new Set<string>();
-    for (const row of data ?? []) {
-      const originCode = row.cache_key.split(":")[1] ?? "";
-      const originCity = cities.get(originCode.toUpperCase());
-      if (!originCity) continue;
-      const prices = (row.payload as { prices?: unknown } | null)?.prices;
-      if (!Array.isArray(prices)) continue;
-      const sorted = [...(prices as { destination?: string; city?: string; priceEur?: number }[])]
-        .filter((p) => p.city && Number.isFinite(Number(p.priceEur)))
-        .sort((a, b) => Number(a.priceEur) - Number(b.priceEur));
-      for (const price of sorted) {
-        if (slugs.size >= limit) break;
-        slugs.add(routeSlug(originCity.city, price.city as string));
-      }
-      if (slugs.size >= limit) break;
-    }
-    return [...slugs];
-  } catch (error) {
-    console.error("Liste des trajets pour le sitemap indisponible", error);
-    return [];
-  }
-}
+// `listWorldRouteSlugs` a été supprimée : elle alimentait le sitemap depuis le
+// balayage mondial en cache et produisait à elle seule le millier de pages de
+// liaisons inexistantes. Le sitemap part maintenant de la liste blanche.
 
 export type RelatedRoute = {
   slug: string;
@@ -373,9 +350,17 @@ export type RelatedRoute = {
 };
 
 /**
- * Autres destinations SSR disponibles depuis la même ville de départ, pour
- * renforcer le maillage interne des pages /vols/<origine>-<destination>.
- * Uniquement issues des prix déjà relevés : aucun appel API, aucun prix inventé.
+ * Autres destinations proposées depuis la même ville de départ, pour renforcer
+ * le maillage interne des pages /vols/<origine>-<destination>.
+ *
+ * La liste vient de la LISTE BLANCHE, jamais du balayage mondial : un lien
+ * interne vers une page en `noindex` gaspille du budget de crawl et signale à
+ * Google une page que nous ne voulons pas voir évaluée. Les prix, eux, restent
+ * ceux déjà relevés en cache — aucun appel API, aucun prix inventé.
+ *
+ * Les départs absents de la liste blanche (Paris, Lyon) retombent sur les pages
+ * éditoriales de la même origine : elles sont indexables, et sans ce repli ces
+ * pages perdraient tout maillage sortant.
  */
 export async function listRelatedRoutes(params: {
   origin: string;
@@ -384,19 +369,46 @@ export async function listRelatedRoutes(params: {
   limit?: number | undefined;
 }): Promise<RelatedRoute[]> {
   const limit = params.limit ?? 12;
-  const entries = await readWorldCache(params.origin.toUpperCase());
-  const best = new Map<string, RelatedRoute>();
-  for (const entry of entries) {
-    if (entry.destination === params.exclude?.toUpperCase()) continue;
-    const slug = routeSlug(params.originCity, entry.city);
-    if (!slug.includes("-")) continue;
-    const priceEur = Math.round(Number(entry.priceEur));
-    const current = best.get(slug);
-    if (!current || (current.priceEur !== null && priceEur < current.priceEur)) {
-      best.set(slug, { slug, city: entry.city, country: entry.country, priceEur });
-    }
+  const origin = params.origin.toUpperCase();
+  const exclude = params.exclude?.toUpperCase();
+
+  const whitelisted = routesFrom(origin)
+    .filter((route) => route.destination !== exclude)
+    .map((route) => ({
+      destination: route.destination,
+      slug: route.slug,
+      city: route.destinationCity,
+      country: route.country,
+    }));
+  const siblings =
+    whitelisted.length > 0
+      ? whitelisted
+      : DESTINATIONS.filter(
+          (route) => route.origin.toUpperCase() === origin && route.destination !== exclude,
+        ).map((route) => ({
+          destination: route.destination,
+          slug: route.slug,
+          city: route.destinationCity,
+          country: route.country,
+        }));
+  if (siblings.length === 0) return [];
+
+  // Plancher déjà observé par destination, s'il existe.
+  const observed = new Map<string, number>();
+  for (const entry of await readWorldCache(origin)) {
+    const price = Math.round(Number(entry.priceEur));
+    if (!Number.isFinite(price)) continue;
+    const current = observed.get(entry.destination);
+    if (current === undefined || price < current) observed.set(entry.destination, price);
   }
-  return [...best.values()]
+
+  return siblings
+    .map((route) => ({
+      slug: route.slug,
+      city: route.city,
+      country: route.country,
+      priceEur: observed.get(route.destination) ?? null,
+    }))
     .sort((a, b) => (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity))
     .slice(0, limit);
 }
