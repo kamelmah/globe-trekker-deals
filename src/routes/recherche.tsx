@@ -423,16 +423,17 @@ function SearchResultsPage() {
 
       {/*
         Ce bandeau annonçait « Prix garanti sans frais cachés — vous payez ce
-        qui est affiché ici » : c'est la garantie de prix retirée du H1 de
-        l'accueil, sous une forme encore plus ferme, et elle contredisait
-        frontalement les cartes juste en dessous, qui présentent la plupart des
-        tarifs comme des estimations à confirmer chez le vendeur. Ce que nous
-        pouvons affirmer, c'est la composition du montant, pas sa stabilité.
+        qui est affiché ici », au-dessus de cartes renvoyant vers des agences
+        dont les frais de service sont le premier motif de plainte publique.
+        Nous ne maîtrisons pas le tunnel de paiement d'un tiers : promettre son
+        absence de frais était une garantie que nous ne pouvons pas tenir.
+        Sur 234 offres relevées, 233 passent par une agence — le risque est la
+        règle, pas l'exception, et la phrase doit le dire.
       */}
       <p className="mt-4 inline-flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-        Montants taxes et frais obligatoires compris, avec le vendeur et la date de relevé de chaque
-        prix.
+        Prix total taxes incluses. Des frais de service peuvent s'ajouter chez certains revendeurs —
+        le vendeur est indiqué sur chaque offre.
       </p>
 
       <p className="mt-2 text-xs text-muted-foreground">

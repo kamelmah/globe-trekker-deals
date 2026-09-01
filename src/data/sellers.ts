@@ -71,46 +71,81 @@ const COMPAGNIES = [
   "EgyptAir",
 ];
 
+type AgenceEntry = {
+  name: string;
+  /**
+   * Groupe propriétaire, quand plusieurs marques du même propriétaire
+   * apparaissent dans nos résultats. Sans cette mention, quatre lignes Gotogate,
+   * Mytrip, Flightnetwork et SuperSaver donnent l'illusion de quatre options
+   * concurrentes alors que c'est le même opérateur, avec le même tunnel de
+   * paiement et les mêmes frais de service.
+   */
+  group?: string;
+  /**
+   * Domaine du vendeur, utilisé pour construire le lien vers ses avis publics.
+   * Aucune note n'est récupérée : les CGU de Trustpilot interdisent le
+   * moissonnage, un lien sortant suffit et laisse le lecteur juger sur pièces.
+   */
+  domain?: string;
+};
+
 /**
- * Agences en ligne rencontrées dans les résultats. Cette liste ne change pas le
- * comportement — une agence inconnue est traitée pareil — mais elle documente
- * ce que la source tarifaire renvoie réellement, et sert de garde-fou : un nom
- * qui n'y figure pas mérite d'être vérifié avant d'être ajouté aux compagnies.
+ * Agences en ligne rencontrées dans les résultats. Cette liste ne change pas la
+ * nature attribuée — une agence inconnue est traitée pareil — mais elle porte
+ * le groupe propriétaire et le domaine, et sert de garde-fou : un nom qui n'y
+ * figure pas mérite d'être vérifié avant d'être ajouté aux compagnies.
  */
-const AGENCES = [
-  "Aviasales",
-  "Trip.com",
-  "Kupi.com",
-  "Aviakassa",
-  "Clickavia",
-  "Kiwi.com",
-  "Farera",
-  "City.Travel",
-  "Tickets",
-  "Mytrip.com",
-  "Flightnetwork",
-  "Biletix",
-  "Lucky2Go",
-  "Wingie",
-  "Vayama",
-  "Gotogate",
-  "SuperKassa",
-  "Jetradar",
-  "Kupibilet",
-  "Biletik.aero",
-  "OneTwoTrip",
-  "Multibilet",
-  "Cheap.travel",
+const AGENCES: readonly AgenceEntry[] = [
+  { name: "Aviasales", domain: "aviasales.com" },
+  { name: "Trip.com", group: "Trip.com Group", domain: "trip.com" },
+  { name: "Vayama", group: "Trip.com Group", domain: "vayama.com" },
+  { name: "Gotogate", group: "Etraveli Group", domain: "gotogate.com" },
+  { name: "Mytrip", group: "Etraveli Group", domain: "mytrip.com" },
+  { name: "Mytrip.com", group: "Etraveli Group", domain: "mytrip.com" },
+  { name: "Flightnetwork", group: "Etraveli Group", domain: "flightnetwork.com" },
+  { name: "SuperSaver", group: "Etraveli Group", domain: "supersaver.com" },
+  { name: "Kupi.com", domain: "kupi.com" },
+  { name: "Aviakassa", domain: "aviakassa.com" },
+  { name: "Clickavia", domain: "clickavia.ru" },
+  { name: "Kiwi.com", domain: "kiwi.com" },
+  { name: "Farera", domain: "farera.com" },
+  { name: "City.Travel", domain: "city.travel" },
+  { name: "Tickets", domain: "tickets.ua" },
+  { name: "Biletix", domain: "biletix.com" },
+  { name: "Lucky2Go", domain: "lucky2go.com" },
+  { name: "Wingie", domain: "wingie.com" },
+  { name: "SuperKassa", domain: "superkassa.ru" },
+  { name: "Jetradar", domain: "jetradar.com" },
+  { name: "Kupibilet", domain: "kupibilet.ru" },
+  { name: "Biletik.aero", domain: "biletik.aero" },
+  { name: "OneTwoTrip", domain: "onetwotrip.com" },
+  { name: "Multibilet", domain: "multibilet.ru" },
+  { name: "Cheap.travel", domain: "cheap.travel" },
 ];
 
 const COMPAGNIES_NORM = new Set(COMPAGNIES.map(normalize));
-const AGENCES_NORM = new Set(AGENCES.map(normalize));
+const AGENCES_PAR_NOM = new Map(AGENCES.map((a) => [normalize(a.name), a]));
 
 export type SellerNature = {
   kind: SellerKind;
   /** Le vendeur figure-t-il dans l'une de nos listes, ou est-ce le repli ? */
   known: boolean;
+  /** Groupe propriétaire, quand nous le connaissons. */
+  group?: string;
+  /**
+   * Nom à afficher : « Gotogate (groupe Etraveli) » plutôt que « Gotogate »,
+   * pour que quatre marques du même propriétaire ne passent pas pour quatre
+   * options distinctes.
+   */
+  label: string;
+  /** Lien vers les avis publics du vendeur, ou null si le domaine est inconnu. */
+  reviewsUrl: string | null;
 };
+
+/** Groupe affiché sans son suffixe « Group », qui alourdit sans rien apporter. */
+function groupLabel(group: string): string {
+  return group.replace(/\s+Group$/i, "");
+}
 
 /**
  * Nature d'un vendeur.
@@ -124,14 +159,37 @@ export function sellerNature(
   seller: string | null | undefined,
   airline?: string | null,
 ): SellerNature {
-  if (!seller) return { kind: "agence", known: false };
-  const vendeur = normalize(seller);
-  if (!vendeur) return { kind: "agence", known: false };
+  const nom = seller?.trim() ?? "";
+  const inconnu: SellerNature = {
+    kind: "agence",
+    known: false,
+    label: nom || "vendeur non communiqué",
+    reviewsUrl: null,
+  };
+  if (!nom) return inconnu;
+  const vendeur = normalize(nom);
+  if (!vendeur) return inconnu;
 
-  if (COMPAGNIES_NORM.has(vendeur)) return { kind: "compagnie", known: true };
-  if (airline && normalize(airline) === vendeur) return { kind: "compagnie", known: true };
-  if (AGENCES_NORM.has(vendeur)) return { kind: "agence", known: true };
+  if (COMPAGNIES_NORM.has(vendeur) || (airline && normalize(airline) === vendeur)) {
+    return { kind: "compagnie", known: true, label: nom, reviewsUrl: null };
+  }
 
-  // Repli : le cas de loin le plus fréquent, et le plus prudent.
-  return { kind: "agence", known: false };
+  const agence = AGENCES_PAR_NOM.get(vendeur);
+  if (!agence) return inconnu;
+
+  // « Trip.com (groupe Trip.com) » n'apprend rien : le suffixe n'a de sens que
+  // lorsque la marque et le groupe portent des noms différents.
+  const suffixeUtile =
+    agence.group !== undefined && normalize(agence.name) !== normalize(groupLabel(agence.group));
+
+  return {
+    kind: "agence",
+    known: true,
+    ...(agence.group ? { group: agence.group } : {}),
+    label:
+      suffixeUtile && agence.group
+        ? `${agence.name} (groupe ${groupLabel(agence.group)})`
+        : agence.name,
+    reviewsUrl: agence.domain ? `https://fr.trustpilot.com/review/${agence.domain}` : null,
+  };
 }

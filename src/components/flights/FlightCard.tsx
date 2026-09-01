@@ -198,7 +198,9 @@ export function FlightCard({
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2 py-1 text-sm font-medium">
               <Store className="size-4 text-primary" aria-hidden />
-              Vendu par {offer.seller}
+              {/* Le groupe propriétaire fait partie du nom : quatre marques
+                  d'Etraveli ne sont pas quatre options concurrentes. */}
+              Vendu par {vendeur.label}
             </p>
             {vendeur.kind === "compagnie" ? (
               <Badge className="bg-success text-success-foreground">
@@ -215,6 +217,22 @@ export function FlightCard({
           {vendeur.kind === "agence" && (
             <p className="mt-1 text-xs text-muted-foreground">
               Frais de service possibles à l'étape paiement, chez ce vendeur.
+              {vendeur.reviewsUrl && (
+                <>
+                  {" "}
+                  {/* Lien sortant vers les avis publics. Aucune note n'est
+                      récupérée : le moissonnage est contraire aux CGU de
+                      Trustpilot, et le lecteur juge mieux sur pièces. */}
+                  <a
+                    href={vendeur.reviewsUrl}
+                    target="_blank"
+                    rel="noopener nofollow"
+                    className="underline underline-offset-2 hover:text-foreground"
+                  >
+                    Voir les avis sur ce vendeur
+                  </a>
+                </>
+              )}
             </p>
           )}
 
