@@ -4,6 +4,7 @@ import logo from "@/assets/logo-64.png";
 import logoWebp from "@/assets/logo-64.webp";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
+import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { routesFrom } from "@/data/route-whitelist";
 import { useCookieConsent } from "@/lib/cookie-consent-context";
 
@@ -68,13 +69,15 @@ export function Footer() {
 
           <p className="mt-6 text-sm font-semibold">Au départ de Paris</p>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            {DESTINATIONS.slice(0, 4).map((d) => (
-              <li key={d.slug}>
-                <Link to="/vols/$slug" params={{ slug: d.slug }} className={linkClass}>
-                  {d.originCity} — {d.destinationCity}
-                </Link>
-              </li>
-            ))}
+            {withoutPruned(DESTINATIONS, PRUNED_ROUTE_SLUGS)
+              .slice(0, 4)
+              .map((d) => (
+                <li key={d.slug}>
+                  <Link to="/vols/$slug" params={{ slug: d.slug }} className={linkClass}>
+                    {d.originCity} — {d.destinationCity}
+                  </Link>
+                </li>
+              ))}
           </ul>
         </div>
 

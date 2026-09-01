@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { isComparisonPruned, isGuidePruned, isRoutePruned } from "@/data/pruned-pages";
 
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
@@ -59,6 +60,10 @@ export const Route = createFileRoute("/comparatifs/$slug")({
       meta: [
         { title: comparison.metaTitle },
         { name: "description", content: comparison.metaDescription },
+        // Comparatif dont les deux destinations sont élaguées.
+        ...(isComparisonPruned(comparison.slug)
+          ? [{ name: "robots", content: "noindex, follow" }]
+          : []),
         { property: "og:title", content: comparison.metaTitle },
         { property: "og:description", content: comparison.metaDescription },
         { property: "og:type", content: "article" },
@@ -153,20 +158,27 @@ function CitySidePanel({
         </p>
       )}
       <div className="mt-3 flex flex-col gap-2">
-        <Link
-          to="/conseils/destinations/$city"
-          params={{ city: guide.slug }}
-          className="text-sm font-medium text-primary underline-offset-2 hover:underline"
-        >
-          Voir le guide {guide.city}
-        </Link>
-        <Link
-          to="/vols/$slug"
-          params={{ slug: side.destinationSlug }}
-          className="text-sm font-medium text-primary underline-offset-2 hover:underline"
-        >
-          Voir les vols {destination.originCity} — {guide.city}
-        </Link>
+        {/* Un comparatif conservé ne doit pas pointer vers une page élaguée :
+            c'est le cas de bangkok-ou-bali et dubai-ou-doha, dont une seule
+            destination sur deux survit. */}
+        {!isGuidePruned(guide.slug) && (
+          <Link
+            to="/conseils/destinations/$city"
+            params={{ city: guide.slug }}
+            className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Voir le guide {guide.city}
+          </Link>
+        )}
+        {!isRoutePruned(side.destinationSlug) && (
+          <Link
+            to="/vols/$slug"
+            params={{ slug: side.destinationSlug }}
+            className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Voir les vols {destination.originCity} — {guide.city}
+          </Link>
+        )}
       </div>
     </div>
   );

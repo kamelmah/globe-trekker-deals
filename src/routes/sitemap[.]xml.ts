@@ -4,6 +4,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CITY_GUIDES } from "@/data/city-guides";
 import { COMPARISONS } from "@/data/comparisons";
 import { DESTINATIONS } from "@/data/destinations";
+import {
+  PRUNED_COMPARISON_SLUGS,
+  PRUNED_GUIDE_SLUGS,
+  PRUNED_ROUTE_SLUGS,
+  withoutPruned,
+} from "@/data/pruned-pages";
 import { POSTS } from "@/data/posts";
 import {
   INDEXED_LEGACY_SLUGS,
@@ -52,7 +58,9 @@ export const Route = createFileRoute("/sitemap.xml")({
           ...staticPages.map((loc) => ({ loc })),
           // Pages de liaison éditoriales : rédigées à la main, sans date de
           // révision suivie dans les données.
-          ...DESTINATIONS.map((d) => ({ loc: `/vols/${d.slug}` })),
+          ...withoutPruned(DESTINATIONS, PRUNED_ROUTE_SLUGS).map((d) => ({
+            loc: `/vols/${d.slug}`,
+          })),
           // Pages de liaison de la liste blanche : leur contenu ne bouge qu'à la
           // revalidation de la liste contre l'API, c'est la vraie date.
           ...ROUTE_WHITELIST.map((r) => ({
@@ -62,12 +70,15 @@ export const Route = createFileRoute("/sitemap.xml")({
           // Pages générées hors liste blanche mais déjà indexées : on ne les
           // retire pas de l'index, donc elles restent listées.
           ...INDEXED_LEGACY_SLUGS.map((slug) => ({ loc: `/vols/${slug}` })),
-          ...CITY_GUIDES.map((g) => ({
+          ...withoutPruned(CITY_GUIDES, PRUNED_GUIDE_SLUGS).map((g) => ({
             loc: `/conseils/destinations/${g.slug}`,
             lastmod: g.updated,
           })),
           ...POSTS.map((p) => ({ loc: `/conseils/${p.slug}`, lastmod: p.updated })),
-          ...COMPARISONS.map((c) => ({ loc: `/comparatifs/${c.slug}`, lastmod: c.updated })),
+          ...withoutPruned(COMPARISONS, PRUNED_COMPARISON_SLUGS).map((c) => ({
+            loc: `/comparatifs/${c.slug}`,
+            lastmod: c.updated,
+          })),
           ...TRAVEL_DOCUMENTS.map((d) => ({
             loc: `/conseils/formalites/${d.slug}`,
             lastmod: d.updated,

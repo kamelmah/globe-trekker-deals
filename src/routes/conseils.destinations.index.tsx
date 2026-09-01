@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
+import { PRUNED_GUIDE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { listPublishedGuides } from "@/lib/published-guides.functions";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { getDestinationImage } from "@/lib/destination-images";
@@ -19,7 +20,10 @@ export const Route = createFileRoute("/conseils/destinations/")({
     const { guides } = await listPublishedGuides();
     const known = new Set(CITY_GUIDES.map((guide) => guide.slug));
     const extra = guides.filter((guide) => !known.has(guide.slug));
-    return { guides: [...CITY_GUIDES, ...extra] as CityGuide[] };
+    // Les guides élagués sortent de la liste : aucun lien interne ne doit
+    // pointer vers une page en noindex.
+    const listed = withoutPruned(CITY_GUIDES, PRUNED_GUIDE_SLUGS);
+    return { guides: [...listed, ...extra] as CityGuide[] };
   },
   head: () => ({
     meta: [
@@ -40,7 +44,7 @@ export const Route = createFileRoute("/conseils/destinations/")({
           "@type": "ItemList",
           name: TITLE,
           url: PAGE_URL,
-          itemListElement: CITY_GUIDES.map((guide, index) => ({
+          itemListElement: withoutPruned(CITY_GUIDES, PRUNED_GUIDE_SLUGS).map((guide, index) => ({
             "@type": "ListItem",
             position: index + 1,
             name: guide.title,

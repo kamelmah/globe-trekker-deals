@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { COMPARISONS } from "@/data/comparisons";
+import { PRUNED_COMPARISON_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { getCityGuide } from "@/data/city-guides";
 import { getDestinationImage } from "@/lib/destination-images";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/comparatifs/")({
           "@type": "ItemList",
           name: TITLE,
           url: PAGE_URL,
-          itemListElement: COMPARISONS.map((c, index) => ({
+          itemListElement: withoutPruned(COMPARISONS, PRUNED_COMPARISON_SLUGS).map((c, index) => ({
             "@type": "ListItem",
             position: index + 1,
             name: c.title,
@@ -62,7 +63,7 @@ function ComparisonsIndex() {
       </p>
 
       <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {COMPARISONS.map((comparison) => {
+        {withoutPruned(COMPARISONS, PRUNED_COMPARISON_SLUGS).map((comparison) => {
           const guideA = getCityGuide(comparison.cityA.guideSlug);
           const guideB = getCityGuide(comparison.cityB.guideSlug);
           const imageA = guideA ? getDestinationImage(guideA.destination, guideA.city) : null;

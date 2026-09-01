@@ -22,6 +22,7 @@ import { HOME_DESTINATION_CODES } from "@/lib/price-refresh.shared";
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
+import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { routesFrom, type RouteFamily } from "@/data/route-whitelist";
 import { getDestinationImage } from "@/lib/destination-images";
 import { cheapestDestinations } from "@/lib/flights.functions";
@@ -312,7 +313,7 @@ function HomePage() {
             mois et les questions les plus fréquentes sur le trajet.
           </p>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {DESTINATIONS.map((d) => {
+            {withoutPruned(DESTINATIONS, PRUNED_ROUTE_SLUGS).map((d) => {
               const image = getDestinationImage(d.destination, d.destinationCity, d.country);
               return (
                 <li key={d.slug}>

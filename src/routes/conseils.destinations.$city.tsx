@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { isGuidePruned } from "@/data/pruned-pages";
 
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
@@ -42,6 +43,9 @@ export const Route = createFileRoute("/conseils/destinations/$city")({
       meta: [
         { title: guide.metaTitle },
         { name: "description", content: guide.description },
+        // Guide portant uniquement sur une destination élaguée : on cesse de le
+        // faire évaluer, sans couper la circulation du crawl.
+        ...(isGuidePruned(guide.slug) ? [{ name: "robots", content: "noindex, follow" }] : []),
         { property: "og:title", content: guide.metaTitle },
         { property: "og:description", content: guide.description },
         { property: "og:type", content: "article" },
@@ -293,7 +297,14 @@ function CityGuidePage() {
             </p>
             <Link
               to="/mode-budget"
-              search={{ origin: guide.origin, budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
+              search={{
+                origin: guide.origin,
+                budget: 400,
+                month: "",
+                adultes: 1,
+                enfants: 0,
+                bebes: 0,
+              }}
               className="mt-3 block text-sm font-medium text-primary underline-offset-2 hover:underline"
             >
               Explorer par budget

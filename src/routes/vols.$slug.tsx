@@ -11,6 +11,7 @@ import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
 import { DESTINATIONS, getDestination } from "@/data/destinations";
 import { legacyRedirectTarget } from "@/data/route-redirects";
+import { isRoutePruned } from "@/data/pruned-pages";
 import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
@@ -65,7 +66,9 @@ export const Route = createFileRoute("/vols/$slug")({
     // Hors liste blanche, la page reste servie mais demande à ne pas être
     // indexée : ces liaisons n'existent pas commercialement et noyaient les
     // pages valables sous un millier de pages creuses.
-    const indexable = isIndexableRoute(route.slug, DESTINATIONS);
+    // `isRoutePruned` couvre la deuxième vague : des pages ÉDITORIALES
+    // long-courrier au départ de Paris, hors liste blanche et jamais indexées.
+    const indexable = !isRoutePruned(route.slug) && isIndexableRoute(route.slug, DESTINATIONS);
     return { route, months: history.months, lowestObserved, lowestObservedAt, related, indexable };
   },
 
