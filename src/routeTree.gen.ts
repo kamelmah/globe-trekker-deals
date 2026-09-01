@@ -30,6 +30,7 @@ import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
 import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
 import { Route as VolsSlugRouteImport } from './routes/vols.$slug'
+import { Route as ApiPublicCompterLignesRouteImport } from './routes/api/public/compter-lignes'
 import { Route as ApiPublicRafraichirPrixRouteImport } from './routes/api/public/rafraichir-prix'
 import { Route as ApiPublicReleverSaisonnaliteRouteImport } from './routes/api/public/relever-saisonnalite'
 import { Route as ApiPublicVerifierAlertesRouteImport } from './routes/api/public/verifier-alertes'
@@ -144,6 +145,11 @@ const VolsSlugRoute = VolsSlugRouteImport.update({
   path: '/vols/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCompterLignesRoute = ApiPublicCompterLignesRouteImport.update({
+  id: '/api/public/compter-lignes',
+  path: '/api/public/compter-lignes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicRafraichirPrixRoute = ApiPublicRafraichirPrixRouteImport.update({
   id: '/api/public/rafraichir-prix',
   path: '/api/public/rafraichir-prix',
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/vols/$slug': typeof VolsSlugRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
+  '/api/public/compter-lignes': typeof ApiPublicCompterLignesRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByTo {
   '/vols/$slug': typeof VolsSlugRoute
   '/comparatifs': typeof ComparatifsIndexRoute
   '/conseils': typeof ConseilsIndexRoute
+  '/api/public/compter-lignes': typeof ApiPublicCompterLignesRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
@@ -275,6 +283,7 @@ export interface FileRoutesById {
   '/vols/$slug': typeof VolsSlugRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
+  '/api/public/compter-lignes': typeof ApiPublicCompterLignesRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
@@ -308,6 +317,7 @@ export interface FileRouteTypes {
     | '/vols/$slug'
     | '/comparatifs/'
     | '/conseils/'
+    | '/api/public/compter-lignes'
     | '/api/public/rafraichir-prix'
     | '/api/public/relever-saisonnalite'
     | '/api/public/verifier-alertes'
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/vols/$slug'
     | '/comparatifs'
     | '/conseils'
+    | '/api/public/compter-lignes'
     | '/api/public/rafraichir-prix'
     | '/api/public/relever-saisonnalite'
     | '/api/public/verifier-alertes'
@@ -370,6 +381,7 @@ export interface FileRouteTypes {
     | '/vols/$slug'
     | '/comparatifs/'
     | '/conseils/'
+    | '/api/public/compter-lignes'
     | '/api/public/rafraichir-prix'
     | '/api/public/relever-saisonnalite'
     | '/api/public/verifier-alertes'
@@ -402,6 +414,7 @@ export interface RootRouteChildren {
   VolsSlugRoute: typeof VolsSlugRoute
   ComparatifsIndexRoute: typeof ComparatifsIndexRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
+  ApiPublicCompterLignesRoute: typeof ApiPublicCompterLignesRoute
   ApiPublicRafraichirPrixRoute: typeof ApiPublicRafraichirPrixRoute
   ApiPublicReleverSaisonnaliteRoute: typeof ApiPublicReleverSaisonnaliteRoute
   ApiPublicVerifierAlertesRoute: typeof ApiPublicVerifierAlertesRoute
@@ -561,6 +574,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VolsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/compter-lignes': {
+      id: '/api/public/compter-lignes'
+      path: '/api/public/compter-lignes'
+      fullPath: '/api/public/compter-lignes'
+      preLoaderRoute: typeof ApiPublicCompterLignesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/rafraichir-prix': {
       id: '/api/public/rafraichir-prix'
       path: '/api/public/rafraichir-prix'
@@ -642,6 +662,7 @@ const rootRouteChildren: RootRouteChildren = {
   VolsSlugRoute: VolsSlugRoute,
   ComparatifsIndexRoute: ComparatifsIndexRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
+  ApiPublicCompterLignesRoute: ApiPublicCompterLignesRoute,
   ApiPublicRafraichirPrixRoute: ApiPublicRafraichirPrixRoute,
   ApiPublicReleverSaisonnaliteRoute: ApiPublicReleverSaisonnaliteRoute,
   ApiPublicVerifierAlertesRoute: ApiPublicVerifierAlertesRoute,
