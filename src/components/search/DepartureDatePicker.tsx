@@ -11,11 +11,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrency } from "@/lib/currency-context";
 import { calendarPrices } from "@/lib/flights.functions";
 import { cn } from "@/lib/utils";
+import { currentMonth } from "@/lib/search-params";
 
 const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];
 
 function monthOf(date: string): string {
-  return /^\d{4}-\d{2}/.test(date) ? date.slice(0, 7) : new Date().toISOString().slice(0, 7);
+  return /^\d{4}-\d{2}/.test(date) ? date.slice(0, 7) : currentMonth();
 }
 
 function shiftMonth(month: string, delta: number): string {

@@ -12,12 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resolvePlace } from "@/lib/places.functions";
 import { addDaysIso, nightsBetween, TRIP_DURATIONS } from "@/lib/trip-duration";
+import { todayPlus } from "@/lib/search-params";
 
-function defaultDate(offsetDays: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + offsetDays);
-  return d.toISOString().slice(0, 10);
-}
+/** Même règle que partout ailleurs : composantes locales, jamais UTC. */
+const defaultDate = todayPlus;
 
 export type SearchFormProps = {
   initialOrigin?: string;

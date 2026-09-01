@@ -32,12 +32,29 @@ export function numberOr(value: unknown, fallback: number): number {
   return asNumber(value, fallback);
 }
 
+/**
+ * Date du jour décalée de `days`, au format AAAA-MM-JJ.
+ *
+ * `toISOString()` convertissait en UTC : entre minuit et 2 h du matin heure de
+ * Paris, le 1er septembre local est encore le 31 août à Greenwich, et toutes
+ * les dates par défaut du site reculaient d'un jour. Le défaut ne se voyait
+ * qu'à ces heures-là, ce qui explique qu'il ait survécu si longtemps.
+ *
+ * On lit donc les composantes LOCALES, sans jamais repasser par UTC.
+ */
 export function todayPlus(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return isoLocal(d);
 }
 
+/** Mois courant, au format AAAA-MM. Même raison qu'au-dessus. */
 export function currentMonth(): string {
-  return new Date().toISOString().slice(0, 7);
+  return isoLocal(new Date()).slice(0, 7);
+}
+
+/** Composantes locales d'une date, jamais son instant UTC. */
+function isoLocal(d: Date): string {
+  const deuxChiffres = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${deuxChiffres(d.getMonth() + 1)}-${deuxChiffres(d.getDate())}`;
 }

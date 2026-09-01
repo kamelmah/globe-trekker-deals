@@ -4,6 +4,7 @@ import L from "leaflet";
 import { useEffect, useRef } from "react";
 
 import { formatAmount, type CurrencyCode } from "@/lib/currency";
+import { formatDateLong } from "@/lib/dates";
 import type { DestinationPrice } from "@/lib/flights.types";
 
 export type BudgetMapProps = {
@@ -97,7 +98,9 @@ export default function BudgetMap({
            )}</p>
            <p class="text-lg font-semibold text-primary">${priceLabel}</p>
            <p class="text-xs text-muted-foreground">Départ le ${escapeHtml(
-             price.departureAt.slice(0, 10),
+             // Les bulles Leaflet sont construites en HTML brut : le helper de
+             // formatage n'y avait jamais été appliqué, d'où la date machine.
+             formatDateLong(price.departureAt.slice(0, 10)),
            )}${affordable ? "" : " · au-dessus du budget"}</p>
             <a href="${escapeHtml(hrefFor(price))}"
                class="mt-1 inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium hover:opacity-90"

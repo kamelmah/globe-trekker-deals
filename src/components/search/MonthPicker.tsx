@@ -9,11 +9,24 @@ import { cn } from "@/lib/utils";
 
 const MONTHS_AHEAD = 12;
 
+/**
+ * Mois courant décalé de `offset`, au format AAAA-MM.
+ *
+ * L'ancienne version produisait « Août 2026 » un 2 septembre, et sautait
+ * octobre. Deux effets du même `toISOString()`, qui bascule en UTC :
+ *
+ *  — à 01 h 30 CEST, le 1er septembre local est le 31 août à Greenwich, d'où
+ *    un mois déjà passé en tête de liste ;
+ *  — le 1er novembre est en CET (+1), pas CEST (+2) : le décalage d'une seule
+ *    heure ne suffit plus à reculer d'un jour, et octobre disparaît.
+ *
+ * Le mois courant est lu en heure locale, puis l'arithmétique se fait en UTC
+ * sur le 1er du mois — où aucun changement d'heure ne peut la faire déborder.
+ */
 function monthKey(offset: number): string {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + offset);
-  return d.toISOString().slice(0, 7);
+  const maintenant = new Date();
+  const d = new Date(Date.UTC(maintenant.getFullYear(), maintenant.getMonth() + offset, 1));
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
 function monthLabel(month: string): string {
@@ -51,7 +64,7 @@ export function MonthPicker({
             <span className="truncate">{value ? monthLabel(value) : "Tous les mois"}</span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="z-50 w-72 p-3 pointer-events-auto">
+        <PopoverContent align="start" className="z-[1000] w-72 p-3 pointer-events-auto">
           <button
             type="button"
             onClick={() => {
