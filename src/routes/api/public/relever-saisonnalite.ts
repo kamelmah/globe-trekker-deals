@@ -8,34 +8,40 @@ import { createFileRoute } from "@tanstack/react-router";
  * reprenable : il n'y a aucun curseur à tenir, l'ordre de fraîcheur suffit à
  * reprendre là où le passage précédent s'est arrêté — ou interrompu.
  *
- * `?routes=N` permet de forcer la taille d'un passage, dans la limite de 24
- * routes (soit ~288 appels) pour qu'une invocation reste courte.
+ * `?routes=N` force la taille d'un passage, dans la limite de 24.
  *
- * Même protection que le rafraîchissement des prix : secret partagé
- * `PRICE_REFRESH_SECRET` (en-tête x-refresh-secret), ou à défaut la clé
- * publiable du projet (apikey).
+ * Protection : secret serveur `CRON_SECRET` en en-tête `x-cron-secret`, jamais
+ * la clé publiable — celle-ci est dans le bundle client et ne protège rien.
  */
+
+/**
+ * Un seul relevé à la fois par isolat.
+ *
+ * Sans ce garde, deux appels concurrents traiteraient les mêmes routes (elles
+ * sont choisies par ancienneté, et rien n'est encore écrit au moment du choix)
+ * et doubleraient la consommation du quota tarifaire pour rien.
+ */
+let enCours = false;
+
 export const Route = createFileRoute("/api/public/relever-saisonnalite")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secret = process.env["PRICE_REFRESH_SECRET"];
-        const publishable =
-          process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["SUPABASE_ANON_KEY"];
-        const authorized = secret
-          ? request.headers.get("x-refresh-secret") === secret
-          : Boolean(publishable) && request.headers.get("apikey") === publishable;
+        const { refuseJobRequest } = await import("@/lib/job-auth.server");
+        const refus = refuseJobRequest(request);
+        if (refus) return refus;
 
-        if (!authorized) {
-          return new Response(JSON.stringify({ error: "Unauthorized" }), {
-            status: 401,
-            headers: { "Content-Type": "application/json" },
-          });
+        if (enCours) {
+          return new Response(
+            JSON.stringify({ error: "Un relevé est déjà en cours.", reprenable: true }),
+            { status: 409, headers: { "Content-Type": "application/json" } },
+          );
         }
 
         const demande = Number(new URL(request.url).searchParams.get("routes"));
         const routes = Number.isFinite(demande) && demande > 0 ? Math.min(demande, 24) : undefined;
 
+        enCours = true;
         try {
           const { ingestSeasonality } = await import("@/lib/seasonality.server");
           const rapport = await ingestSeasonality(routes === undefined ? {} : { routes });
@@ -53,6 +59,8 @@ export const Route = createFileRoute("/api/public/relever-saisonnalite")({
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
+        } finally {
+          enCours = false;
         }
       },
     },

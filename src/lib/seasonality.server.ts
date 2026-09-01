@@ -191,58 +191,85 @@ async function stalestRoutes(limit: number): Promise<{ routes: Route[]; restante
 /* Écriture                                                                    */
 /* -------------------------------------------------------------------------- */
 
-async function record(route: Route, month: string, priceEur: number): Promise<void> {
-  const db = await admin();
-  const departureMonth = `${month}-01`;
-  const maintenant = new Date().toISOString();
+type Releve = { month: string; priceEur: number };
 
-  // 1) Suite en ajout seul : c'est elle qui rendra l'évolution lisible plus
-  //    tard. Un second passage le même jour corrige la valeur du jour.
-  const { error: erreurObservation } = await db.from("price_observations").upsert(
-    {
+/**
+ * Écrit les douze mois d'une route en trois requêtes au lieu de trente-six.
+ *
+ * Ce n'est pas de l'optimisation gratuite : un Worker Cloudflare est plafonné
+ * en nombre de sous-requêtes par invocation (50 sur le palier gratuit). Écrire
+ * mois par mois faisait dépasser ce plafond dès trois routes, et l'invocation
+ * échouait au milieu — sans casser quoi que ce soit, mais sans avancer non plus.
+ */
+async function recordRoute(route: Route, releves: Releve[]): Promise<number> {
+  if (releves.length === 0) return 0;
+  const db = await admin();
+  const maintenant = new Date().toISOString();
+  const moisSql = (month: string) => `${month}-01`;
+
+  // 1) La suite en ajout seul, en un appel. Un second passage le même jour
+  //    corrige la valeur du jour au lieu d'empiler un doublon.
+  const { error: erreurObservations } = await db.from("price_observations").upsert(
+    releves.map((r) => ({
       origin: route.origin,
       destination: route.destination,
-      departure_month: departureMonth,
-      lowest_price: priceEur,
+      departure_month: moisSql(r.month),
+      lowest_price: r.priceEur,
       currency: "eur",
       observed_at: maintenant,
-    },
+    })),
     { onConflict: "origin,destination,departure_month,observed_on" },
   );
-  if (erreurObservation) throw erreurObservation;
+  if (erreurObservations) throw erreurObservations;
 
   // 2) price_history garde son sens : le plus bas JAMAIS vu sur ce mois de
-  //    départ. On ne le redate que lorsqu'il change réellement — sinon
-  //    `observed_at` prétendrait dater un relevé qui n'a rien produit.
-  const { data: existante } = await db
+  //    départ. Lecture groupée des lignes déjà présentes.
+  const { data: existantes, error: erreurLecture } = await db
     .from("price_history")
-    .select("id,lowest_price")
+    .select("id,month,lowest_price")
     .eq("origin", route.origin)
     .eq("destination", route.destination)
-    .eq("month", departureMonth)
-    .maybeSingle();
+    .in(
+      "month",
+      releves.map((r) => moisSql(r.month)),
+    );
+  if (erreurLecture) throw erreurLecture;
 
-  if (!existante) {
-    const { error } = await db.from("price_history").insert({
-      origin: route.origin,
-      destination: route.destination,
-      month: departureMonth,
-      lowest_price: priceEur,
-      currency: "eur",
-      updated_at: maintenant,
-      observed_at: maintenant,
-    });
-    if (error) throw error;
-    return;
+  const parMois = new Map((existantes ?? []).map((row) => [String(row.month).slice(0, 10), row]));
+  const aInserer = [];
+  const aBaisser: { id: string; priceEur: number }[] = [];
+  for (const releve of releves) {
+    const dejaLa = parMois.get(moisSql(releve.month));
+    if (!dejaLa) {
+      aInserer.push({
+        origin: route.origin,
+        destination: route.destination,
+        month: moisSql(releve.month),
+        lowest_price: releve.priceEur,
+        currency: "eur",
+        updated_at: maintenant,
+        observed_at: maintenant,
+      });
+    } else if (releve.priceEur < Number(dejaLa.lowest_price)) {
+      aBaisser.push({ id: dejaLa.id, priceEur: releve.priceEur });
+    }
   }
 
-  if (priceEur < Number(existante.lowest_price)) {
+  if (aInserer.length > 0) {
+    const { error } = await db.from("price_history").insert(aInserer);
+    if (error) throw error;
+  }
+  // Une mise à jour par baisse réelle uniquement : redater une ligne dont la
+  // valeur n'a pas bougé ferait mentir observed_at.
+  for (const baisse of aBaisser) {
     const { error } = await db
       .from("price_history")
-      .update({ lowest_price: priceEur, updated_at: maintenant, observed_at: maintenant })
-      .eq("id", existante.id);
+      .update({ lowest_price: baisse.priceEur, updated_at: maintenant, observed_at: maintenant })
+      .eq("id", baisse.id);
     if (error) throw error;
   }
+
+  return releves.length;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -260,8 +287,10 @@ export type IngestReport = {
 
 /**
  * Un passage : les `routes` les plus anciennement relevées, douze mois chacune.
- * Par défaut huit routes, soit environ 96 appels et une vingtaine de secondes —
- * de quoi couvrir les 128 routes du site en seize invocations.
+ *
+ * Une route coûte 12 appels tarifaires et 3 écritures, soit 15 sous-requêtes.
+ * C'est ce chiffre qui décide du nombre de routes tenable par invocation, pas
+ * la durée.
  */
 export async function ingestSeasonality(params?: {
   routes?: number;
@@ -281,29 +310,28 @@ export async function ingestSeasonality(params?: {
   let echecs = 0;
 
   for (const route of routes) {
-    // Les mois d'une même route en parallèle mesuré, les routes en série :
-    // le débit reste modeste et un échec ne concerne qu'une route.
+    // Les mois d'une route en parallèle mesuré, les routes en série : le débit
+    // reste modeste et un échec ne concerne qu'une route.
+    const releves: Releve[] = [];
     let curseur = 0;
-    const files = Array.from({ length: PARALLELISME }, async () => {
-      for (;;) {
-        const month = mois[curseur++];
-        if (!month) return;
-        const prix = await lowestForMonth(route, month, token);
-        appels += 1;
-        if (prix === null) continue;
-        try {
-          await record(route, month, prix);
-          moisEcrits += 1;
-        } catch (error) {
-          echecs += 1;
-          console.error(
-            `Relevé non enregistré ${route.origin}-${route.destination} ${month}`,
-            error,
-          );
+    await Promise.all(
+      Array.from({ length: PARALLELISME }, async () => {
+        for (;;) {
+          const month = mois[curseur++];
+          if (!month) return;
+          const priceEur = await lowestForMonth(route, month, token);
+          appels += 1;
+          if (priceEur !== null) releves.push({ month, priceEur });
         }
-      }
-    });
-    await Promise.all(files);
+      }),
+    );
+
+    try {
+      moisEcrits += await recordRoute(route, releves);
+    } catch (error) {
+      echecs += 1;
+      console.error(`Relevés non enregistrés ${route.origin}-${route.destination}`, error);
+    }
   }
 
   return {
