@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { formatDateTimeCompact, formatDateTimeShort, formatDateMedium } from "@/lib/dates";
 import { sellerNature } from "@/data/sellers";
+import { airportLabel, secondaryAirport } from "@/data/airports";
 import {
   BAGGAGE_LEVELS,
   baggagePolicy,
@@ -12,6 +13,7 @@ import {
 import {
   AlertTriangle,
   BadgeCheck,
+  TriangleAlert,
   Building2,
   Luggage,
   Leaf,
@@ -141,6 +143,8 @@ export function FlightCard({
   const freshness = useFreshness(offer.observedAt);
   const policy = baggagePolicy(offer.airlineCode);
   const vendeur = sellerNature(offer.seller, offer.airline);
+  const departSecondaire = secondaryAirport(offer.originAirport);
+  const arriveeSecondaire = secondaryAirport(offer.destinationAirport);
 
   // Le prix mis en avant est celui du niveau demandé ; à défaut de barème, on
   // ne majore rien plutôt que d'inventer un supplément.
@@ -188,6 +192,31 @@ export function FlightCard({
             {offer.returnAt ? ` · retour ${formatTime(offer.returnAt)}` : " · aller simple"} · vol{" "}
             {offer.flightNumber}
           </p>
+
+          {/*
+            L'aéroport réel, pas le code ville : la moitié des offres « Paris »
+            partent de Beauvais. Le trajet vers le centre est un coût que le
+            voyageur doit voir avant de cliquer, pas découvrir en arrivant.
+          */}
+          <p className="mt-1 text-sm">
+            {airportLabel(offer.originAirport, offer.origin)} →{" "}
+            {airportLabel(offer.destinationAirport, offer.destination)}
+          </p>
+          {(departSecondaire || arriveeSecondaire) && (
+            <ul className="mt-1 space-y-0.5">
+              {[departSecondaire, arriveeSecondaire].filter(Boolean).map((a) => (
+                <li
+                  key={a!.code}
+                  className="inline-flex items-start gap-1 text-xs text-warning-foreground"
+                >
+                  <TriangleAlert className="mt-0.5 size-3 shrink-0" aria-hidden />
+                  <span className="rounded bg-warning px-1.5 py-0.5">
+                    {a!.code} est à {a!.distanceKm} km de {a!.city} — {a!.access} à prévoir
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
 
           {/*
             Nommer le vendeur ne suffit pas : « Kiwi.com » ou « Clickavia » ne

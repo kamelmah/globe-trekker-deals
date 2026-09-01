@@ -12,6 +12,7 @@ import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
 import { DESTINATIONS, getDestination } from "@/data/destinations";
 import { legacyRedirectTarget } from "@/data/route-redirects";
+import { secondaryAirport } from "@/data/airports";
 import { isRoutePruned } from "@/data/pruned-pages";
 import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { isIndexableRoute } from "@/data/route-whitelist";
@@ -215,6 +216,11 @@ function DestinationPage() {
   // Même gabarit que la balise title, sans prix : le prix vit dans le corps de
   // la page, daté, pas dans le H1.
   const heading = routeHeading(route.originCity, route.destinationCity);
+  // Le prix de référence vient d’un relevé précis : s’il part d’un aéroport
+  // secondaire, la page doit le dire plutôt que de laisser croire au centre-ville.
+  const aeroportEloigne =
+    secondaryAirport(route.observedOriginAirport) ??
+    secondaryAirport(route.observedDestinationAirport);
 
   return (
     <article className="container-page py-10">
@@ -260,6 +266,14 @@ function DestinationPage() {
               ? `Relevé le ${formatObservedDate(lowestObservedAt)}, taxes incluses. Repère indicatif, distinct de l'historique mesuré ci-dessous.`
               : "Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous"}
           </p>
+          {aeroportEloigne && (
+            <p className="mt-1.5 inline-flex items-start gap-1 text-xs text-warning-foreground">
+              <span className="rounded bg-warning px-1.5 py-0.5">
+                Ce tarif part de {aeroportEloigne.code}, à {aeroportEloigne.distanceKm} km de{" "}
+                {aeroportEloigne.city} — {aeroportEloigne.access} à prévoir.
+              </span>
+            </p>
+          )}
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Meilleure période</p>

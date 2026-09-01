@@ -98,6 +98,8 @@ type CachedEntry = {
   priceEur: number;
   airline?: string;
   departureAt?: string;
+  originAirport?: string;
+  destinationAirport?: string;
 };
 
 /**
@@ -405,6 +407,10 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     ...(observed?.airline ? { observedAirline: observed.airline } : {}),
     ...(observed?.departureAt ? { observedDepartureAt: observed.departureAt } : {}),
     ...(observed?.observedAt ? { observedPriceAt: observed.observedAt } : {}),
+    ...(cached?.originAirport ? { observedOriginAirport: cached.originAirport } : {}),
+    ...(cached?.destinationAirport
+      ? { observedDestinationAirport: cached.destinationAirport }
+      : {}),
   };
 }
 

@@ -26,6 +26,12 @@ export type DestinationRoute = {
   observedDepartureAt?: string;
   /** Date à laquelle ce prix a été relevé (ISO 8601), si connue. */
   observedPriceAt?: string;
+  /**
+   * Aéroports du relevé le moins cher, si connus. Un « Paris — Marrakech » à
+   * 50 € part souvent de Beauvais : la page doit le dire.
+   */
+  observedOriginAirport?: string;
+  observedDestinationAirport?: string;
 };
 
 const CORE_DESTINATIONS: DestinationRoute[] = [

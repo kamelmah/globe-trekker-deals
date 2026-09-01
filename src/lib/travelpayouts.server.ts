@@ -260,6 +260,8 @@ type ApiOffer = {
   duration?: number;
   duration_to?: number;
   transfers?: number;
+  origin_airport?: string;
+  destination_airport?: string;
   gate?: string;
   link?: string;
   found_at?: string;
@@ -304,6 +306,8 @@ function offersFromApi(
         id: `${offer.origin}-${offer.destination}-${offer.departure_at}-${index}`,
         origin: offer.origin,
         destination: offer.destination,
+        originAirport: offer.origin_airport ?? offer.origin,
+        destinationAirport: offer.destination_airport ?? offer.destination,
         priceEur: Math.round(offer.price),
         airline,
         airlineCode: offer.airline,
@@ -573,7 +577,13 @@ async function writeJsonCache(key: string, payload: unknown, ttlMs: number): Pro
   }
 }
 
-type WorldOffer = { price: number; airline: string; departureAt: string };
+type WorldOffer = {
+  price: number;
+  airline: string;
+  departureAt: string;
+  originAirport?: string;
+  destinationAirport?: string;
+};
 
 function keepCheapest(map: Map<string, WorldOffer>, code: string, offer: WorldOffer): void {
   if (!code || offer.price <= 0 || !offer.departureAt) return;
@@ -657,6 +667,8 @@ export async function fetchCheapestDestinations(params: {
       price: offer.price,
       airline: offer.airline,
       departureAt: offer.departure_at,
+      ...(offer.origin_airport ? { originAirport: offer.origin_airport } : {}),
+      ...(offer.destination_airport ? { destinationAirport: offer.destination_airport } : {}),
     });
   }
 
@@ -737,6 +749,8 @@ export async function fetchCheapestDestinations(params: {
       priceEur: Math.round(offer.price),
       airline: airlineName(offer.airline),
       departureAt: offer.departureAt,
+      ...(offer.originAirport ? { originAirport: offer.originAirport } : {}),
+      ...(offer.destinationAirport ? { destinationAirport: offer.destinationAirport } : {}),
     });
   }
 

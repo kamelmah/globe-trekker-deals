@@ -18,7 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cityLabel } from "@/data/airports";
+import { cityLabel, PARIS_MAIN_AIRPORTS } from "@/data/airports";
 import { KIWI_FALLBACK_URL } from "@/lib/affiliate-partners";
 import { useCurrency } from "@/lib/currency-context";
 import { searchFlights } from "@/lib/flights.functions";
@@ -125,6 +125,7 @@ function SearchResultsPage() {
   const [view, setView] = useState<"list" | "calendar">("list");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [baggageLevel, setBaggageLevel] = useState<BaggageLevel>("personnel");
+  const [parisMainOnly, setParisMainOnly] = useState(false);
 
   const from = cityLabel(search["origin"]);
   const to = cityLabel(search["destination"]);
@@ -183,6 +184,9 @@ function SearchResultsPage() {
   const filtered = offers
     .filter((offer) => {
       if (directOnly && offer.stops > 0) return false;
+      // Beauvais est vendu comme « Paris » : ce filtre permet d écarter les
+      // aéroports éloignés sans avoir à les repérer un par un.
+      if (parisMainOnly && !PARIS_MAIN_AIRPORTS.includes(offer.originAirport)) return false;
       if (airline && offer.airline !== airline) return false;
       // Le budget s'applique au prix du niveau choisi : filtrer sur le prix nu
       // laisserait passer des offres hors budget une fois la valise ajoutée.
@@ -208,6 +212,21 @@ function SearchResultsPage() {
         <Checkbox checked={directOnly} onCheckedChange={(v) => setDirectOnly(v === true)} />
         Vols directs uniquement
       </label>
+      {search["origin"] === "PAR" && (
+        <label className="flex cursor-pointer items-start gap-2">
+          <Checkbox
+            checked={parisMainOnly}
+            onCheckedChange={(v) => setParisMainOnly(v === true)}
+            className="mt-0.5"
+          />
+          <span>
+            Aéroports parisiens principaux uniquement (CDG, ORY)
+            <span className="block text-xs text-muted-foreground">
+              Écarte Beauvais, à 85 km de Paris.
+            </span>
+          </span>
+        </label>
+      )}
       <label className="flex cursor-pointer items-center gap-2">
         <Checkbox checked={morningOnly} onCheckedChange={(v) => setMorningOnly(v === true)} />
         Départ le matin (avant 12 h)
@@ -388,7 +407,7 @@ function SearchResultsPage() {
             )}
             {offer.departureAt.slice(0, 10) !== search["depart"] && (
               <Badge variant="outline">
-                Départ le {offer.departureAt.slice(0, 10).split("-").reverse().join("/")}
+                Départ le {formatDateCompact(offer.departureAt.slice(0, 10))}
               </Badge>
             )}
           </div>

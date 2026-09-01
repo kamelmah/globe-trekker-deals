@@ -2,6 +2,16 @@ export type FlightOffer = {
   id: string;
   origin: string;
   destination: string;
+  /**
+   * Aéroport RÉEL du vol, distinct du code ville.
+   *
+   * La moitié des offres annoncées « Paris » partent en fait de Beauvais, à
+   * 85 km, avec une navette payante à la clé (mesuré : 156 offres sur 313).
+   * Afficher « Paris » sans le préciser masque un coût que le voyageur
+   * découvre trop tard. La donnée est renseignée à 100 % par l'API.
+   */
+  originAirport: string;
+  destinationAirport: string;
   /** Prix total taxes incluses, en euros, tel que renvoyé par l'API. */
   priceEur: number;
   airline: string;
@@ -35,6 +45,15 @@ export type FlightOffer = {
 
 export type DestinationPrice = {
   destination: string;
+  /**
+   * Aéroports réels, quand la source les fournit. Le balayage mondial fusionne
+   * trois endpoints et seul `prices_for_dates` porte cette information : sur la
+   * carte du mode budget, l’absence d’avertissement ne prouve donc pas l’absence
+   * d’aéroport secondaire. Sur l’accueil, où cette source est la seule utilisée,
+   * la couverture est complète.
+   */
+  originAirport?: string;
+  destinationAirport?: string;
   city: string;
   country: string;
   lat: number;
