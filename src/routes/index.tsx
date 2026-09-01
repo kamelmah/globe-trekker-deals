@@ -61,21 +61,41 @@ type HomeSearch = {
 };
 
 export const Route = createFileRoute("/")({
+  /**
+   * N'émet QUE les paramètres réellement présents dans l'URL.
+   *
+   * Renvoyer une valeur par défaut pour chaque clé faisait réécrire l'URL par
+   * le routeur : `/` répondait 307 vers
+   * `/?origin=&destination=&depart=&retour=&budget=0&flexible=true&…`. Chaque
+   * visite de la page d'accueil payait donc un aller-retour réseau complet
+   * avant même de recevoir un octet de HTML — et une 307 ne se met pas en cache
+   * en edge, ce qui privait la page la plus visitée du site de tout cache CDN.
+   *
+   * Les valeurs par défaut sont appliquées à la lecture (voir `prefill`), pas
+   * écrites dans l'URL.
+   */
   validateSearch: (search: Record<string, unknown>): HomeSearch => {
     const clamp = (v: unknown, min: number, max: number, fallback: number) => {
       const n = Math.round(numberOr(v, fallback));
       return Math.min(max, Math.max(min, n));
     };
+    const origin = search["origin"] ? iataOr(search["origin"], "PAR") : "";
+    const destination = search["destination"] ? iataOr(search["destination"], "") : "";
+    const depart = dateOr(search["depart"], "");
+    const retour = dateOr(search["retour"], "");
+    const budget = Math.max(0, Math.round(numberOr(search["budget"], 0)));
     return {
-      origin: search["origin"] ? iataOr(search["origin"], "PAR") : "",
-      destination: search["destination"] ? iataOr(search["destination"], "") : "",
-      depart: dateOr(search["depart"], ""),
-      retour: dateOr(search["retour"], ""),
-      budget: Math.max(0, Math.round(numberOr(search["budget"], 0))),
-      flexible: numberOr(search["flexible"], 1) === 1,
-      adultes: clamp(search["adultes"], 1, 9, 1),
-      enfants: clamp(search["enfants"], 0, 8, 0),
-      bebes: clamp(search["bebes"], 0, 8, 0),
+      ...(origin ? { origin } : {}),
+      ...(destination ? { destination } : {}),
+      ...(depart ? { depart } : {}),
+      ...(retour ? { retour } : {}),
+      ...(budget > 0 ? { budget } : {}),
+      ...(search["flexible"] === undefined
+        ? {}
+        : { flexible: numberOr(search["flexible"], 1) === 1 }),
+      ...(search["adultes"] === undefined ? {} : { adultes: clamp(search["adultes"], 1, 9, 1) }),
+      ...(search["enfants"] === undefined ? {} : { enfants: clamp(search["enfants"], 0, 8, 0) }),
+      ...(search["bebes"] === undefined ? {} : { bebes: clamp(search["bebes"], 0, 8, 0) }),
     };
   },
   loader: async () => {

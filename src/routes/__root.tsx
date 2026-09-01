@@ -14,12 +14,11 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { CookieBanner } from "@/components/site/CookieBanner";
 import { Toaster } from "@/components/ui/sonner";
-import { CookieConsentProvider, useMapsConsent } from "@/lib/cookie-consent-context";
+import { CookieConsentProvider } from "@/lib/cookie-consent-context";
 import { CurrencyProvider } from "@/lib/currency-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
-import { STAY22_LMA_ID } from "@/components/stay/Stay22Map";
 
 function NotFoundComponent() {
   return (
@@ -136,7 +135,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "(function(){try{var t=localStorage.getItem('tmv-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();",
       },
       {
-
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
@@ -171,26 +169,11 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-function Stay22AffiliateScript() {
-  // Cookie tiers optionnel (voir /cookies) : ce script ne doit jamais être
-  // injecté avant un accord explicite pour la catégorie "Cartes Stay22".
-  const mapsConsent = useMapsConsent();
-
-  useEffect(() => {
-    if (!mapsConsent) return;
-    const w = window as typeof window & { Stay22?: { params?: Record<string, string> } };
-    if (document.getElementById("stay22-letmeallez")) return;
-    w.Stay22 = w.Stay22 || {};
-    w.Stay22.params = { lmaID: STAY22_LMA_ID };
-    const script = document.createElement("script");
-    script.id = "stay22-letmeallez";
-    script.async = true;
-    script.src = "https://scripts.stay22.com/letmeallez.js";
-    document.head.appendChild(script);
-  }, [mapsConsent]);
-
-  return null;
-}
+// Le script d’affiliation Stay22 (letmeallez.js) ne vit plus ici : injecté
+// depuis la racine, il se chargeait sur TOUTES les pages, y compris celles
+// sans carte d’hébergement, pour y poser du suivi et réécrire des liens. Il est
+// désormais chargé par <Stay22Map>, donc uniquement là où une carte existe et
+// seulement quand elle entre dans le champ de vision.
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
@@ -200,7 +183,6 @@ function RootComponent() {
       <ThemeProvider>
         <CurrencyProvider>
           <CookieConsentProvider>
-            <Stay22AffiliateScript />
             <div className="flex min-h-screen flex-col">
               <Header />
               <main className="flex-1">
@@ -217,4 +199,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-

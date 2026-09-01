@@ -63,6 +63,31 @@ export function Stay22Map({
     return () => observer.disconnect();
   }, [visible]);
 
+  /**
+   * Script d'affiliation Stay22 (letmeallez.js).
+   *
+   * Il était injecté depuis la racine de l'application : il se chargeait donc
+   * sur toutes les pages, y compris celles sans carte d'hébergement, pour y
+   * poser du suivi et réécrire des liens. Il vit maintenant ici, et à trois
+   * conditions cumulées — une carte est présente, elle est entrée dans le champ
+   * de vision, et le consentement « Cartes Stay22 » est accordé.
+   *
+   * L'iframe elle-même n'en dépend pas : elle porte son propre `aid`. Ce script
+   * ne sert qu'à l'attribution des liens hors iframe.
+   */
+  useEffect(() => {
+    if (!visible || !mapsConsent) return;
+    if (document.getElementById("stay22-letmeallez")) return;
+    const w = window as typeof window & { Stay22?: { params?: Record<string, string> } };
+    w.Stay22 = w.Stay22 ?? {};
+    w.Stay22.params = { lmaID: STAY22_LMA_ID };
+    const script = document.createElement("script");
+    script.id = "stay22-letmeallez";
+    script.async = true;
+    script.src = "https://scripts.stay22.com/letmeallez.js";
+    document.head.appendChild(script);
+  }, [visible, mapsConsent]);
+
   const src = useMemo(() => {
     const params = new URLSearchParams({
       aid: STAY22_LMA_ID,
@@ -129,8 +154,8 @@ export function Stay22Map({
         {!mapsConsent ? (
           <div className="flex h-[420px] w-full flex-col items-center justify-center gap-4 p-6 text-center sm:h-[520px]">
             <p className="max-w-sm text-sm text-muted-foreground">
-              Cette carte est fournie par notre partenaire Stay22 et dépose des cookies tiers.
-              Elle ne s'affiche qu'avec votre accord.
+              Cette carte est fournie par notre partenaire Stay22 et dépose des cookies tiers. Elle
+              ne s'affiche qu'avec votre accord.
             </p>
             <Button onClick={() => savePreferences({ maps: true })} size="sm">
               Autoriser les cartes Stay22
@@ -190,5 +215,3 @@ export function Stay22Map({
     </section>
   );
 }
-
-
