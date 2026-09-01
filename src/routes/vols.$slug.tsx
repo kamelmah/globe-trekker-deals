@@ -16,6 +16,7 @@ import { secondaryAirport } from "@/data/airports";
 import { isRoutePruned } from "@/data/pruned-pages";
 import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { hreflangLinks } from "@/lib/hreflang";
+import { routeOgImage } from "@/lib/og-image";
 import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
@@ -92,11 +93,17 @@ export const Route = createFileRoute("/vols/$slug")({
     // Visuel dédié /og/<slug>.jpg uniquement pour les destinations éditoriales
     // (fichier réellement présent) ; sinon on réutilise la bannière déjà
     // affichée en page pour ne jamais pointer vers une image inexistante.
-    const ogImage = getDestination(route.slug)
-      ? destinationOgImage(route.slug)
-      : absoluteUrl(
-          getDestinationImage(route.destination, route.destinationCity, route.country).src,
-        );
+    // Carte dédiée au trajet quand elle existe : elle porte le prix d'appel et
+    // sa date de relevé, seule vignette qui dise quelque chose du vol partagé.
+    // À défaut, on retombe sur le visuel éditorial, puis sur la bannière déjà
+    // affichée en page — jamais sur une image absente.
+    const ogImage =
+      routeOgImage(route.slug) ??
+      (getDestination(route.slug)
+        ? destinationOgImage(route.slug)
+        : absoluteUrl(
+            getDestinationImage(route.destination, route.destinationCity, route.country).src,
+          ));
     return {
       meta: [
         { title: metaTitle },
@@ -109,6 +116,10 @@ export const Route = createFileRoute("/vols/$slug")({
         { property: "og:type", content: "article" },
         { property: "og:url", content: pageUrl },
         { property: "og:image", content: ogImage },
+        {
+          property: "og:image:type",
+          content: ogImage.endsWith(".png") ? "image/png" : "image/jpeg",
+        },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
         {
