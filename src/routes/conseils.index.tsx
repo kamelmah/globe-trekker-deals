@@ -125,7 +125,14 @@ function BlogIndex() {
         >
           comparatifs de destinations
         </Link>{" "}
-        si vous hésitez encore entre deux villes.
+        si vous hésitez encore entre deux villes, ou nos{" "}
+        <Link
+          to="/conseils/formalites"
+          className="font-medium text-primary underline-offset-2 hover:underline"
+        >
+          fiches visa et formalités
+        </Link>{" "}
+        pour vérifier ce qu'il faut avant de réserver.
       </div>
     </div>
   );

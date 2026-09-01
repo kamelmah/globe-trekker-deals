@@ -36,6 +36,8 @@ import { Route as ApiPublicRafraichirPrixRouteImport } from './routes/api/public
 import { Route as ApiPublicVerifierAlertesRouteImport } from './routes/api/public/verifier-alertes'
 import { Route as ConseilsDestinationsIndexRouteImport } from './routes/conseils.destinations.index'
 import { Route as ConseilsDestinationsCityRouteImport } from './routes/conseils.destinations.$city'
+import { Route as ConseilsFormalitesIndexRouteImport } from './routes/conseils.formalites.index'
+import { Route as ConseilsFormalitesPaysRouteImport } from './routes/conseils.formalites.$pays'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -176,6 +178,16 @@ const ConseilsDestinationsCityRoute =
     path: '/conseils/destinations/$city',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ConseilsFormalitesIndexRoute = ConseilsFormalitesIndexRouteImport.update({
+  id: '/conseils/formalites/',
+  path: '/conseils/formalites/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConseilsFormalitesPaysRoute = ConseilsFormalitesPaysRouteImport.update({
+  id: '/conseils/formalites/$pays',
+  path: '/conseils/formalites/$pays',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -210,7 +222,9 @@ export interface FileRoutesByFullPath {
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
+  '/conseils/formalites/$pays': typeof ConseilsFormalitesPaysRoute
   '/conseils/destinations/': typeof ConseilsDestinationsIndexRoute
+  '/conseils/formalites/': typeof ConseilsFormalitesIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -240,7 +254,9 @@ export interface FileRoutesByTo {
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
+  '/conseils/formalites/$pays': typeof ConseilsFormalitesPaysRoute
   '/conseils/destinations': typeof ConseilsDestinationsIndexRoute
+  '/conseils/formalites': typeof ConseilsFormalitesIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -271,7 +287,9 @@ export interface FileRoutesById {
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/verifier-alertes': typeof ApiPublicVerifierAlertesRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
+  '/conseils/formalites/$pays': typeof ConseilsFormalitesPaysRoute
   '/conseils/destinations/': typeof ConseilsDestinationsIndexRoute
+  '/conseils/formalites/': typeof ConseilsFormalitesIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -303,7 +321,9 @@ export interface FileRouteTypes {
     | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
+    | '/conseils/formalites/$pays'
     | '/conseils/destinations/'
+    | '/conseils/formalites/'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -333,7 +353,9 @@ export interface FileRouteTypes {
     | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
+    | '/conseils/formalites/$pays'
     | '/conseils/destinations'
+    | '/conseils/formalites'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -363,7 +385,9 @@ export interface FileRouteTypes {
     | '/api/public/rafraichir-prix'
     | '/api/public/verifier-alertes'
     | '/conseils/destinations/$city'
+    | '/conseils/formalites/$pays'
     | '/conseils/destinations/'
+    | '/conseils/formalites/'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -394,7 +418,9 @@ export interface RootRouteChildren {
   ApiPublicRafraichirPrixRoute: typeof ApiPublicRafraichirPrixRoute
   ApiPublicVerifierAlertesRoute: typeof ApiPublicVerifierAlertesRoute
   ConseilsDestinationsCityRoute: typeof ConseilsDestinationsCityRoute
+  ConseilsFormalitesPaysRoute: typeof ConseilsFormalitesPaysRoute
   ConseilsDestinationsIndexRoute: typeof ConseilsDestinationsIndexRoute
+  ConseilsFormalitesIndexRoute: typeof ConseilsFormalitesIndexRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -589,6 +615,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConseilsDestinationsCityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conseils/formalites/': {
+      id: '/conseils/formalites/'
+      path: '/conseils/formalites'
+      fullPath: '/conseils/formalites/'
+      preLoaderRoute: typeof ConseilsFormalitesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conseils/formalites/$pays': {
+      id: '/conseils/formalites/$pays'
+      path: '/conseils/formalites/$pays'
+      fullPath: '/conseils/formalites/$pays'
+      preLoaderRoute: typeof ConseilsFormalitesPaysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -626,7 +666,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicRafraichirPrixRoute: ApiPublicRafraichirPrixRoute,
   ApiPublicVerifierAlertesRoute: ApiPublicVerifierAlertesRoute,
   ConseilsDestinationsCityRoute: ConseilsDestinationsCityRoute,
+  ConseilsFormalitesPaysRoute: ConseilsFormalitesPaysRoute,
   ConseilsDestinationsIndexRoute: ConseilsDestinationsIndexRoute,
+  ConseilsFormalitesIndexRoute: ConseilsFormalitesIndexRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport

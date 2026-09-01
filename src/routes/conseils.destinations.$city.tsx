@@ -6,6 +6,7 @@ import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
 import { getCityGuide } from "@/data/city-guides";
+import { getTravelDocumentForGuide } from "@/data/travel-documents";
 import { guidePriceSnapshot } from "@/lib/guide-prices.functions";
 import { publishedGuide } from "@/lib/published-guides.functions";
 import { formatParisDateTime } from "@/lib/price-refresh.shared";
@@ -18,8 +19,7 @@ export const Route = createFileRoute("/conseils/destinations/$city")({
     // Guide écrit en dur, sinon fiche générée puis publiée depuis
     // /destinations-proposes.
     const guide =
-      getCityGuide(params.city) ??
-      (await publishedGuide({ data: { slug: params.city } })).guide;
+      getCityGuide(params.city) ?? (await publishedGuide({ data: { slug: params.city } })).guide;
     if (!guide) throw notFound();
     // Prix réellement relevé par Travelpayouts (aucune estimation) + date du relevé.
     const price = await guidePriceSnapshot({
@@ -111,6 +111,7 @@ function formatMonthLabel(month: string): string {
 function CityGuidePage() {
   const { guide, price } = Route.useLoaderData();
   const image = getDestinationImage(guide.destination, guide.city);
+  const travelDocument = getTravelDocumentForGuide(guide.slug);
 
   const practical: { label: string; value: string }[] = [
     { label: "Monnaie", value: guide.practical.monnaie },
@@ -153,7 +154,9 @@ function CityGuidePage() {
 
       <p className="mt-2 text-xs text-muted-foreground">
         {guide.readingMinutes} min de lecture · guide mis à jour le {guide.updated}
-        {price.updatedAt ? ` · prix des vols relevés le ${formatParisDateTime(price.updatedAt)}` : ""}
+        {price.updatedAt
+          ? ` · prix des vols relevés le ${formatParisDateTime(price.updatedAt)}`
+          : ""}
       </p>
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{guide.intro}</p>
 
@@ -182,9 +185,26 @@ function CityGuidePage() {
               </h2>
               <dl className="mt-4 divide-y divide-border rounded-xl border border-border bg-card">
                 {practical.map((item) => (
-                  <div key={item.label} className="grid gap-1 p-4 sm:grid-cols-[220px_1fr] sm:gap-4">
+                  <div
+                    key={item.label}
+                    className="grid gap-1 p-4 sm:grid-cols-[220px_1fr] sm:gap-4"
+                  >
                     <dt className="text-sm font-medium">{item.label}</dt>
-                    <dd className="text-sm text-muted-foreground">{item.value}</dd>
+                    <dd className="text-sm text-muted-foreground">
+                      {item.value}
+                      {item.label === "Formalités pour les Français" && travelDocument && (
+                        <>
+                          {" "}
+                          <Link
+                            to="/conseils/formalites/$pays"
+                            params={{ pays: travelDocument.slug }}
+                            className="font-medium text-primary underline-offset-2 hover:underline"
+                          >
+                            Détail des formalités ({travelDocument.country})
+                          </Link>
+                        </>
+                      )}
+                    </dd>
                   </div>
                 ))}
               </dl>
@@ -268,7 +288,8 @@ function CityGuidePage() {
           <div className="rounded-xl border border-border bg-card p-5">
             <h2 className="font-display text-base font-semibold">Pas encore décidé ?</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Indiquez votre budget et découvrez toutes les villes accessibles depuis votre aéroport.
+              Indiquez votre budget et découvrez toutes les villes accessibles depuis votre
+              aéroport.
             </p>
             <Link
               to="/mode-budget"

@@ -5,6 +5,7 @@ import { DESTINATIONS } from "@/data/destinations";
 import { CITY_GUIDES } from "@/data/city-guides";
 import { POSTS } from "@/data/posts";
 import { COMPARISONS } from "@/data/comparisons";
+import { TRAVEL_DOCUMENTS } from "@/data/travel-documents";
 import { urlsetXml, xmlResponse, type SitemapEntry } from "@/lib/sitemap-xml";
 
 /** Pages fixes, pages de liaison éditoriales et articles du blog. */
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/sitemap-pages.xml")({
           { loc: "/conseils", priority: "0.7", changefreq: "weekly" },
           { loc: "/conseils/destinations", priority: "0.7", changefreq: "weekly" },
           { loc: "/comparatifs", priority: "0.6", changefreq: "weekly" },
+          { loc: "/conseils/formalites", priority: "0.6", changefreq: "weekly" },
           { loc: "/faq", priority: "0.6", changefreq: "monthly" },
           { loc: "/contact", priority: "0.5", changefreq: "monthly" },
           { loc: "/mentions-legales", priority: "0.2", changefreq: "yearly" },
@@ -52,6 +54,12 @@ export const Route = createFileRoute("/sitemap-pages.xml")({
             priority: "0.6",
             changefreq: "monthly",
             lastmod: c.updated,
+          })),
+          ...TRAVEL_DOCUMENTS.map((d) => ({
+            loc: `/conseils/formalites/${d.slug}`,
+            priority: "0.6",
+            changefreq: "monthly",
+            lastmod: d.updated,
           })),
         ];
 

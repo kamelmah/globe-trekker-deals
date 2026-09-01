@@ -71,6 +71,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/conseils/formalites" className={linkClass}>
+                Visa et formalités par pays
+              </Link>
+            </li>
+            <li>
               <Link to="/faq" className={linkClass}>
                 Questions fréquentes (FAQ)
               </Link>
@@ -112,7 +117,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <button type="button" onClick={openManager} className={`${linkClass} cursor-pointer text-left`}>
+              <button
+                type="button"
+                onClick={openManager}
+                className={`${linkClass} cursor-pointer text-left`}
+              >
                 Gérer mes cookies
               </button>
             </li>
@@ -123,7 +132,8 @@ export function Footer() {
       <div className="container-page space-y-2 border-t border-border py-6 text-xs text-muted-foreground">
         <p>
           Prix indicatifs fournis par nos partenaires de distribution, taxes incluses. Nous touchons
-          une commission d'affiliation si vous réservez — sans que cela change le prix que vous payez.
+          une commission d'affiliation si vous réservez — sans que cela change le prix que vous
+          payez.
         </p>
         <p>© {year} TrouveMonVol — Tous droits réservés.</p>
       </div>
