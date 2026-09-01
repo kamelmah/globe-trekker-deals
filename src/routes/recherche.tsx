@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -16,13 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cityLabel } from "@/data/airports";
 import { KIWI_FALLBACK_URL } from "@/lib/affiliate-partners";
@@ -45,12 +39,22 @@ type SearchParams = {
 };
 
 export const Route = createFileRoute("/recherche")({
+  /**
+   * `validateSearch` ne reçoit que ce que porte l'URL : un paramètre absent
+   * prend sa valeur par défaut, jamais celle de la recherche précédente.
+   *
+   * La destination n'a volontairement PAS de valeur par défaut. Elle valait
+   * "RAK" : une URL sans destination affichait donc des résultats Marrakech
+   * qu'aucun visiteur n'avait demandés — et ce, quelle que soit la navigation
+   * précédente. Sans destination, il n'y a pas de trajet à afficher : la
+   * recherche relève du mode budget, et `beforeLoad` y redirige.
+   */
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     const duree = Math.min(30, Math.max(0, Math.round(numberOr(search["duree"], 0))));
     const depart = dateOr(search["depart"], todayPlus(30));
     return {
       origin: iataOr(search["origin"], "PAR"),
-      destination: iataOr(search["destination"], "RAK"),
+      destination: iataOr(search["destination"], ""),
       depart,
       retour: duree > 0 ? addDaysIso(depart, duree) : dateOr(search["retour"], ""),
       duree,
@@ -64,6 +68,28 @@ export const Route = createFileRoute("/recherche")({
         Math.max(0, Math.round(numberOr(search["bebes"], 0))),
       ),
     };
+  },
+
+  /**
+   * Une recherche sans destination est une recherche par budget : c'est déjà
+   * ce que fait le formulaire quand le champ destination est laissé vide. On
+   * conserve les critères saisis plutôt que d'inventer une destination.
+   */
+  beforeLoad: ({ search }) => {
+    if (search.destination) return;
+    throw redirect({
+      to: "/mode-budget",
+      search: {
+        origin: search.origin,
+        // /mode-budget refuse un budget nul : sans budget saisi, on reprend sa
+        // propre valeur par défaut plutôt que d'en fabriquer une autre.
+        budget: search.budget > 0 ? search.budget : 400,
+        month: search.depart ? search.depart.slice(0, 7) : "",
+        adultes: search.adultes,
+        enfants: search.enfants,
+        bebes: search.bebes,
+      },
+    });
   },
 
   head: ({ match }) => {
@@ -96,7 +122,6 @@ function SearchResultsPage() {
   const [maxDuration, setMaxDuration] = useState(0);
   const [view, setView] = useState<"list" | "calendar">("list");
   const [filtersOpen, setFiltersOpen] = useState(false);
-
 
   const from = cityLabel(search["origin"]);
   const to = cityLabel(search["destination"]);
@@ -136,7 +161,6 @@ function SearchResultsPage() {
           infants: search["bebes"],
           currency,
         },
-
       }),
   });
 
@@ -298,7 +322,11 @@ function SearchResultsPage() {
               Voir le calendrier des prix
             </Button>
             <Button asChild variant="outline">
-              <a href={KIWI_FALLBACK_URL} target="_blank" rel="noopener noreferrer nofollow sponsored">
+              <a
+                href={KIWI_FALLBACK_URL}
+                target="_blank"
+                rel="noopener noreferrer nofollow sponsored"
+              >
                 Vérifier en temps réel sur Kiwi.com
               </a>
             </Button>
@@ -306,17 +334,20 @@ function SearchResultsPage() {
         </div>
       )}
 
-
       {!offersQuery.isPending && offersQuery.data?.nearDateOnly && filtered.length > 0 && (
         <div className="rounded-xl border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
           <p>
             Notre source de prix (mise à jour périodiquement) n'a pas de vol enregistré pour le{" "}
-            {search["depart"]}. Cela ne veut pas dire qu'aucun vol n'existe — voici les dates proches
-            (± 3 jours) où nous avons trouvé des prix réels. La date de chaque vol est indiquée sur
-            son résultat.
+            {search["depart"]}. Cela ne veut pas dire qu'aucun vol n'existe — voici les dates
+            proches (± 3 jours) où nous avons trouvé des prix réels. La date de chaque vol est
+            indiquée sur son résultat.
           </p>
           <Button asChild variant="outline" size="sm" className="mt-3">
-            <a href={KIWI_FALLBACK_URL} target="_blank" rel="noopener noreferrer nofollow sponsored">
+            <a
+              href={KIWI_FALLBACK_URL}
+              target="_blank"
+              rel="noopener noreferrer nofollow sponsored"
+            >
               Vérifier en temps réel sur Kiwi.com
             </a>
           </Button>
@@ -338,9 +369,7 @@ function SearchResultsPage() {
         >
           <div className="mb-2 flex flex-wrap items-center gap-2">
             {index === 0 && (
-              <Badge className="bg-success text-success-foreground">
-                Prix le plus bas trouvé
-              </Badge>
+              <Badge className="bg-success text-success-foreground">Prix le plus bas trouvé</Badge>
             )}
             {offer.departureAt.slice(0, 10) !== search["depart"] && (
               <Badge variant="outline">
@@ -351,7 +380,6 @@ function SearchResultsPage() {
           <FlightCard offer={offer} greenest={offer.id === greenestId} />
         </div>
       ))}
-
     </div>
   );
 
@@ -364,8 +392,8 @@ function SearchResultsPage() {
         Départ le {search.depart}
         {search["retour"] ? `, retour le ${search.retour}` : " (aller simple)"}
         {search["duree"] > 0 ? ` · ${tripDurationLabel(search.duree)} (${search.duree} nuits)` : ""}
-        {search["flexible"] === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des prix
-        totaux, taxes incluses pour{" "}
+        {search["flexible"] === 1 ? " · dates flexibles ± 3 jours" : ""}. Les prix affichés sont des
+        prix totaux, taxes incluses pour{" "}
         {passengersSummary({
           adults: search["adultes"],
           children: search["enfants"],
@@ -381,7 +409,10 @@ function SearchResultsPage() {
 
       <p className="mt-2 text-xs text-muted-foreground">
         Vol déjà réservé, retardé ou annulé ?{" "}
-        <Link to="/indemnisation" className="font-medium text-primary underline-offset-2 hover:underline">
+        <Link
+          to="/indemnisation"
+          className="font-medium text-primary underline-offset-2 hover:underline"
+        >
           Voir si vous avez droit à une indemnisation
         </Link>
         .
