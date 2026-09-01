@@ -22,12 +22,26 @@ import { HOME_DESTINATION_CODES } from "@/lib/price-refresh.shared";
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
+import { routesFrom, type RouteFamily } from "@/data/route-whitelist";
 import { getDestinationImage } from "@/lib/destination-images";
 import { cheapestDestinations } from "@/lib/flights.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const HOME_CODES = HOME_DESTINATION_CODES;
+
+/** Marseille est le départ de référence du site : il est mis en avant sur l'accueil. */
+const MARSEILLE_ROUTES = [...routesFrom("MRS")].sort((a, b) =>
+  a.destinationCity.localeCompare(b.destinationCity, "fr"),
+);
+
+const MARSEILLE_FAMILIES: [RouteFamily, string][] = [
+  ["maghreb", "Maghreb"],
+  ["europe-sud", "Europe du Sud et îles"],
+  ["france-corse", "France et Corse"],
+  ["turquie-orient", "Turquie, Égypte et Proche-Orient"],
+  ["europe-nord-est", "Europe du Nord et de l'Est"],
+];
 
 const TITLE = "TrouveMonVol — comparateur de vols transparent, prix total et vendeur affiché";
 const DESCRIPTION =
@@ -153,7 +167,10 @@ function HomePage() {
           height={1080}
           className="hero-parallax-img absolute inset-0 -z-10 size-full object-cover"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/35 via-background/15 to-background/45" aria-hidden />
+        <div
+          className="absolute inset-0 -z-10 bg-gradient-to-b from-background/35 via-background/15 to-background/45"
+          aria-hidden
+        />
         <div className="container-page grid gap-10 py-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-16">
           <div className="rounded-2xl bg-gradient-to-br from-background/95 via-background/90 to-background/70 p-6 lg:p-8 shadow-sm">
             <h1 className="hero-in hero-in-1 font-display leading-tight">
@@ -161,9 +178,9 @@ function HomePage() {
             </h1>
             <div className="hero-in hero-in-2">
               <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-                Taxes incluses, vendeur affiché, aucune surprise à la caisse. TrouveMonVol compare les
-                vols au prix total réel — ou partez de votre budget : indiquez la somme que vous voulez
-                dépenser et découvrez toutes les destinations accessibles depuis votre ville.
+                Taxes incluses, vendeur affiché, aucune surprise à la caisse. TrouveMonVol compare
+                les vols au prix total réel — ou partez de votre budget : indiquez la somme que vous
+                voulez dépenser et découvrez toutes les destinations accessibles depuis votre ville.
               </p>
               <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
                 <li>• Dates flexibles ± 3 jours pour repérer le jour le moins cher</li>
@@ -173,7 +190,14 @@ function HomePage() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to="/mode-budget"
-                  search={{ origin: "PAR", budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
+                  search={{
+                    origin: "PAR",
+                    budget: 400,
+                    month: "",
+                    adultes: 1,
+                    enfants: 0,
+                    bebes: 0,
+                  }}
                   className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
                 >
                   <MapIcon className="size-4 text-primary" aria-hidden />
@@ -186,17 +210,17 @@ function HomePage() {
           <div id="recherche" className="hero-in hero-in-3 scroll-mt-24">
             <SearchForm
               key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
-            initialOrigin={prefill.origin || "PAR"}
-            initialDestination={prefill.destination ?? ""}
-            {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
-            initialRetour={prefill.retour ?? ""}
-            initialBudget={prefill.budget ? String(prefill.budget) : ""}
-            initialFlexible={prefill.flexible ?? true}
-            initialPassengers={{
-              adults: prefill.adultes ?? 1,
-              children: prefill.enfants ?? 0,
-              infants: Math.min(prefill.bebes ?? 0, prefill.adultes ?? 1),
-            }}
+              initialOrigin={prefill.origin || "PAR"}
+              initialDestination={prefill.destination ?? ""}
+              {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
+              initialRetour={prefill.retour ?? ""}
+              initialBudget={prefill.budget ? String(prefill.budget) : ""}
+              initialFlexible={prefill.flexible ?? true}
+              initialPassengers={{
+                adults: prefill.adultes ?? 1,
+                children: prefill.enfants ?? 0,
+                infants: Math.min(prefill.bebes ?? 0, prefill.adultes ?? 1),
+              }}
             />
           </div>
         </div>
@@ -204,12 +228,10 @@ function HomePage() {
 
       <Reveal>
         <section className="container-page py-14">
-          <h2 className="font-display">
-            Où partir au départ de Paris, du moins cher au plus cher
-          </h2>
+          <h2 className="font-display">Où partir au départ de Paris, du moins cher au plus cher</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Prix les plus bas relevés récemment pour un aller simple, taxes incluses. Cliquez sur une
-            destination pour voir les vols et le vendeur de chaque billet.
+            Prix les plus bas relevés récemment pour un aller simple, taxes incluses. Cliquez sur
+            une destination pour voir les vols et le vendeur de chaque billet.
           </p>
           <div className="mt-6">
             <DestinationPriceGrid prices={prices} origin="PAR" error={error} />
@@ -223,9 +245,9 @@ function HomePage() {
           <div className="container-page">
             <h2 className="font-display">Pourquoi passer par nous</h2>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              La plupart des comparateurs vivent de l'urgence artificielle et du classement payant. Nous avons
-              fait le choix inverse : une information complète, vérifiable, et un chemin de réservation le
-              plus court possible.
+              La plupart des comparateurs vivent de l'urgence artificielle et du classement payant.
+              Nous avons fait le choix inverse : une information complète, vérifiable, et un chemin
+              de réservation le plus court possible.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               {REASONS.map((reason) => (
@@ -240,12 +262,54 @@ function HomePage() {
         </section>
       </Reveal>
 
+      {/* Marseille est l'aéroport de référence du site : il passe avant le reste. */}
+      <Reveal>
+        <section className="container-page py-14">
+          <h2 className="font-display">Vols au départ de Marseille</h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            {MARSEILLE_ROUTES.length} liaisons au départ de Marseille Provence, toutes vérifiées
+            comme réellement desservies — en vol direct, sauf mention d'escale. Prix total taxes
+            incluses et vendeur affiché, comme partout sur le site.
+          </p>
+          {MARSEILLE_FAMILIES.map(([family, label]) => {
+            const routes = MARSEILLE_ROUTES.filter((route) => route.family === family);
+            if (routes.length === 0) return null;
+            return (
+              <div key={family} className="mt-6">
+                <h3 className="text-sm font-semibold text-muted-foreground">{label}</h3>
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {routes.map((route) => (
+                    <li key={route.slug}>
+                      <Link
+                        to="/vols/$slug"
+                        params={{ slug: route.slug }}
+                        className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-secondary"
+                      >
+                        <span className="font-medium">{route.destinationCity}</span>
+                        {!route.nonstop && (
+                          <span className="text-xs text-muted-foreground">avec escale</span>
+                        )}
+                        {route.validation.minPriceEur !== null && (
+                          <span className="text-xs text-primary">
+                            dès {route.validation.minPriceEur} €
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </section>
+      </Reveal>
+
       <Reveal>
         <section className="container-page py-14">
           <h2 className="font-display">Nos pages destinations</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Chaque page détaille la meilleure période pour partir, l'évolution des prix sur douze mois et
-            les questions les plus fréquentes sur le trajet.
+            Chaque page détaille la meilleure période pour partir, l'évolution des prix sur douze
+            mois et les questions les plus fréquentes sur le trajet.
           </p>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {DESTINATIONS.map((d) => {

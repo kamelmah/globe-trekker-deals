@@ -13,6 +13,9 @@ export const Route = createFileRoute("/cookies")({
     meta: [
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
+      // Page de service, sans valeur pour la recherche : `noindex, follow`
+      // pour ne pas la faire évaluer, sans couper la circulation du crawl.
+      { name: "robots", content: "noindex, follow" },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:url", content: `${SITE_URL}/cookies` },
@@ -45,7 +48,10 @@ function CookiesPage() {
       <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
         <li>Devise d'affichage choisie</li>
         <li>Thème clair ou sombre choisi</li>
-        <li>Votre choix de consentement aux cookies lui-même (catégories ci-dessous), pendant 13 mois maximum</li>
+        <li>
+          Votre choix de consentement aux cookies lui-même (catégories ci-dessous), pendant 13 mois
+          maximum
+        </li>
       </ul>
 
       <h2 className="mt-8 font-display text-xl font-semibold">

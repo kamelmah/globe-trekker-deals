@@ -89,24 +89,24 @@ function airlineName(code: string): string {
  * marque commerciale latine pour ne jamais afficher un vendeur illisible.
  */
 const SELLER_ALIASES: Record<string, string> = {
-  "авиасейлс": "Aviasales",
-  "авиасэйлс": "Aviasales",
-  "аviasales": "Aviasales",
-  "джетрадар": "Jetradar",
-  "купибилет": "Kupibilet",
+  авиасейлс: "Aviasales",
+  авиасэйлс: "Aviasales",
+  аviasales: "Aviasales",
+  джетрадар: "Jetradar",
+  купибилет: "Kupibilet",
   "билетик аэро": "Biletik.aero",
-  "билетикаэро": "Biletik.aero",
+  билетикаэро: "Biletik.aero",
   "трип.ком": "Trip.com",
-  "тинькофф": "Tinkoff Travel",
-  "аэрофлот": "Aeroflot",
-  "победа": "Pobeda",
-  "с7": "S7 Airlines",
+  тинькофф: "Tinkoff Travel",
+  аэрофлот: "Aeroflot",
+  победа: "Pobeda",
+  с7: "S7 Airlines",
   "уральские авиалинии": "Ural Airlines",
-  "оnetwotrip": "OneTwoTrip",
-  "вантутрип": "OneTwoTrip",
-  "клиkавиа": "Clickavia",
-  "кликавиа": "Clickavia",
-  "мультибилет": "Multibilet",
+  оnetwotrip: "OneTwoTrip",
+  вантутрип: "OneTwoTrip",
+  клиkавиа: "Clickavia",
+  кликавиа: "Clickavia",
+  мультибилет: "Multibilet",
   "чип.трэвел": "Cheap.travel",
 };
 
@@ -123,13 +123,15 @@ function resolveSeller(gate: unknown, airline: string): string {
   // Nom encore non latin (partenaire inconnu) : on retire les caractères
   // illisibles et, s'il ne reste rien d'exploitable, on affiche la compagnie.
   if (NON_LATIN_RE.test(raw)) {
-    const latin = raw.replace(/[^\u0020-\u024F]/g, "").replace(/\s{2,}/g, " ").trim();
+    const latin = raw
+      .replace(/[^\u0020-\u024F]/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
     return latin.length > 1 ? latin : airline;
   }
 
   return raw;
 }
-
 
 /* -------------------------------------------------------------------------- */
 /* Lien de réservation : exactement celui renvoyé par l'API                    */
@@ -222,7 +224,6 @@ async function callApi<T>(
       "Impossible de charger les prix pour le moment, réessayez plus tard.",
     );
   }
-
 
   logOps({
     kind: "travelpayouts",
@@ -334,7 +335,6 @@ export async function fetchOffers(params: {
   children?: number;
   infants?: number;
 }): Promise<{ offers: FlightOffer[]; raw: RawApiCall; exactDate: boolean }> {
-
   const creds = getCredentials();
   const query: Record<string, string> = {
     origin: params.origin,
@@ -437,11 +437,7 @@ export async function fetchOffers(params: {
     void recordHistory(params.origin, params.destination, offers);
   }
   return { offers, raw, exactDate };
-
 }
-
-
-
 
 /** Enregistre l'observation réelle du prix le plus bas du mois (best effort). */
 async function recordHistory(
@@ -540,9 +536,7 @@ export async function recordDestinationHistory(
 /** Cache Supabase générique (mémorisation de réponses API, jamais d'estimation). */
 const DESTINATIONS_TTL_MS = 6 * 60 * 60 * 1000;
 
-async function readJsonCacheEntry<T>(
-  key: string,
-): Promise<{ payload: T; stale: boolean } | null> {
+async function readJsonCacheEntry<T>(key: string): Promise<{ payload: T; stale: boolean } | null> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
@@ -562,7 +556,6 @@ async function readJsonCache<T>(key: string): Promise<T | null> {
   const entry = await readJsonCacheEntry<T>(key);
   return entry && !entry.stale ? entry.payload : null;
 }
-
 
 async function writeJsonCache(key: string, payload: unknown, ttlMs: number): Promise<void> {
   try {
@@ -605,7 +598,6 @@ function scheduleWorldRevalidation(
     .finally(() => worldRevalidations.delete(cacheKey));
 }
 
-
 /**
  * Balayage mondial : agrège plusieurs endpoints Travelpayouts couvrant toutes les
  * destinations connues depuis l'origine (aucune liste de villes codée en dur).
@@ -644,7 +636,6 @@ export async function fetchCheapestDestinations(params: {
     }
   }
 
-
   const monthQuery: Record<string, string> = {
     origin,
     one_way: "true",
@@ -659,7 +650,6 @@ export async function fetchCheapestDestinations(params: {
     monthQuery,
     currency,
   );
-
 
   const cheapest = new Map<string, WorldOffer>();
   for (const offer of datesCall.data?.data ?? []) {
@@ -753,10 +743,8 @@ export async function fetchCheapestDestinations(params: {
   prices.sort((a, b) => a.priceEur - b.priceEur);
   if (world && prices.length > 0) await writeJsonCache(cacheKey, { prices }, DESTINATIONS_TTL_MS);
 
-
   return { prices, raw: datesCall.raw };
 }
-
 
 /* -------------------------------------------------------------------------- */
 /* Calendrier des prix                                                         */
@@ -872,7 +860,6 @@ export async function fetchCalendarPrices(params: {
         if (!map.has(back) || price < map.get(back)!) map.set(back, price);
       }
     }
-
   } else {
     const call = await callApi<{ data?: Record<string, ApiOffer> | ApiOffer[] }>(
       "/aviasales/v3/grouped_prices",
@@ -907,13 +894,10 @@ export async function fetchCalendarPrices(params: {
     .filter((d) => map.has(d))
     .map((d) => ({ date: d, priceEur: map.get(d)! }));
 
-
   await writeCalendarCache(cacheKey, days);
 
   return { days, raw, cached: false };
 }
-
-
 
 /* -------------------------------------------------------------------------- */
 /* Historique réel observé (table price_history)                               */
@@ -927,7 +911,7 @@ export async function fetchMonthlyHistory(params: {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("price_history")
-      .select("month,lowest_price")
+      .select("month,lowest_price,updated_at")
       .eq("origin", params.origin)
       .eq("destination", params.destination)
       .order("month", { ascending: true })
@@ -937,6 +921,8 @@ export async function fetchMonthlyHistory(params: {
       months: (data ?? []).map((row) => ({
         month: row.month.slice(0, 7),
         priceEur: Math.round(Number(row.lowest_price)),
+        // Date de relevé réelle : la page affiche le prix daté, pas nu.
+        ...(row.updated_at ? { updatedAt: row.updated_at } : {}),
       })),
     };
   } catch (error) {
@@ -968,4 +954,3 @@ export function shiftDates(date: string, days: number): string[] {
   }
   return out.length ? out : [date];
 }
-

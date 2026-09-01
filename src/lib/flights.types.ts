@@ -52,6 +52,8 @@ export type CalendarDayPrice = {
 export type MonthlyPrice = {
   month: string;
   priceEur: number;
+  /** Date ISO du relevé, telle qu'enregistrée en base. Absente si inconnue. */
+  updatedAt?: string;
 };
 
 /** Trace de l'appel API, exposée uniquement en développement. */

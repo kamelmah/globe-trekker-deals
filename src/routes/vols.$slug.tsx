@@ -1,4 +1,4 @@
-import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute, notFound, redirect } from "@tanstack/react-router";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
 import { LivePriceButton } from "@/components/flights/LivePriceButton";
@@ -9,7 +9,10 @@ import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
-import { getDestination } from "@/data/destinations";
+import { DESTINATIONS, getDestination } from "@/data/destinations";
+import { legacyRedirectTarget } from "@/data/route-redirects";
+import { routeHeading, routeMetaTitle } from "@/lib/route-title";
+import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
@@ -21,6 +24,12 @@ import { SITE_URL, absoluteUrl, destinationOgImage } from "@/lib/site";
 
 export const Route = createFileRoute("/vols/$slug")({
   loader: async ({ params }) => {
+    // Les routes conservées qui ont changé de slug (« Ville de Madrid » devenu
+    // « Madrid ») redirigent en 301 vers leur URL actuelle.
+    const renamed = legacyRedirectTarget(params.slug);
+    if (renamed) {
+      throw redirect({ to: "/vols/$slug", params: { slug: renamed }, statusCode: 301 });
+    }
     // Page éditoriale si le trajet est curé, sinon page générée côté serveur
     // pour n'importe quelle destination trouvée en mode budget.
     const route =
@@ -37,6 +46,13 @@ export const Route = createFileRoute("/vols/$slug")({
       : null;
     // Prix d'appel simulé pour la démo, sinon le plancher réellement observé.
     const lowestObserved = route.simulatedLowestPrice ?? route.observedLowestPrice ?? historyLowest;
+    // Date de relevé du prix affiché. Jamais celle d'un prix simulé, et jamais
+    // déduite : on ne date que ce qui vient réellement de l'historique.
+    const lowestObservedAt = route.simulatedLowestPrice
+      ? null
+      : (route.observedPriceAt ??
+        history.months.find((m) => m.priceEur === historyLowest)?.updatedAt ??
+        null);
     // Maillage interne : autres pages SSR disponibles depuis la même origine.
     const { related } = await relatedRoutePages({
       data: {
@@ -46,7 +62,11 @@ export const Route = createFileRoute("/vols/$slug")({
         limit: 12,
       },
     });
-    return { route, months: history.months, lowestObserved, related };
+    // Hors liste blanche, la page reste servie mais demande à ne pas être
+    // indexée : ces liaisons n'existent pas commercialement et noyaient les
+    // pages valables sous un millier de pages creuses.
+    const indexable = isIndexableRoute(route.slug, DESTINATIONS);
+    return { route, months: history.months, lowestObserved, lowestObservedAt, related, indexable };
   },
 
   head: ({ loaderData }) => {
@@ -58,19 +78,27 @@ export const Route = createFileRoute("/vols/$slug")({
         ],
       };
     }
-    const { route, lowestObserved } = loaderData;
+    const { route, lowestObserved, indexable } = loaderData;
     const pageUrl = `${SITE_URL}/vols/${route.slug}`;
+    // Gabarit unique, y compris pour les pages éditoriales : leurs titres
+    // avaient été écrits un par un et ne suivaient plus la même forme.
+    const metaTitle = routeMetaTitle(route.originCity, route.destinationCity);
     // Visuel dédié /og/<slug>.jpg uniquement pour les destinations éditoriales
     // (fichier réellement présent) ; sinon on réutilise la bannière déjà
     // affichée en page pour ne jamais pointer vers une image inexistante.
     const ogImage = getDestination(route.slug)
       ? destinationOgImage(route.slug)
-      : absoluteUrl(getDestinationImage(route.destination, route.destinationCity, route.country).src);
+      : absoluteUrl(
+          getDestinationImage(route.destination, route.destinationCity, route.country).src,
+        );
     return {
       meta: [
-        { title: route.metaTitle },
+        { title: metaTitle },
         { name: "description", content: route.metaDescription },
-        { property: "og:title", content: route.metaTitle },
+        // `follow` et non `nofollow` : on cesse de demander l'évaluation de la
+        // page, sans couper la circulation du crawl vers les pages conservées.
+        ...(indexable ? [] : [{ name: "robots", content: "noindex, follow" }]),
+        { property: "og:title", content: metaTitle },
         { property: "og:description", content: route.metaDescription },
         { property: "og:type", content: "article" },
         { property: "og:url", content: pageUrl },
@@ -94,7 +122,7 @@ export const Route = createFileRoute("/vols/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            name: route.metaTitle,
+            name: metaTitle,
             url: pageUrl,
             inLanguage: "fr-FR",
             mainEntity: route.faq.map((item) => ({
@@ -130,7 +158,11 @@ export const Route = createFileRoute("/vols/$slug")({
             description: route.metaDescription,
             url: pageUrl,
             image: ogImage,
-            departureAirport: { "@type": "Airport", iataCode: route.origin, name: route.originCity },
+            departureAirport: {
+              "@type": "Airport",
+              iataCode: route.origin,
+              name: route.originCity,
+            },
             arrivalAirport: {
               "@type": "Airport",
               iataCode: route.destination,
@@ -169,10 +201,24 @@ export const Route = createFileRoute("/vols/$slug")({
   component: DestinationPage,
 });
 
+/** Date de relevé en toutes lettres, ex. « 28 août 2026 ». */
+function formatObservedDate(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
 function DestinationPage() {
-  const { route, months, lowestObserved, related } = Route.useLoaderData();
+  const { route, months, lowestObserved, lowestObservedAt, related } = Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity);
   const guide = getCityGuideForRoute(route.slug);
+  // Même gabarit que la balise title, sans prix : le prix vit dans le corps de
+  // la page, daté, pas dans le H1.
+  const heading = routeHeading(route.originCity, route.destinationCity);
 
   return (
     <article className="container-page py-10">
@@ -197,12 +243,11 @@ function DestinationPage() {
           aria-hidden
         />
         <h1 className="absolute inset-x-0 bottom-0 p-4 font-display text-white drop-shadow sm:p-6">
-          {route.heading}
+          {heading}
         </h1>
       </div>
 
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
-
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4">
@@ -215,7 +260,9 @@ function DestinationPage() {
               : "Historique en constitution"}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous
+            {lowestObservedAt
+              ? `Relevé le ${formatObservedDate(lowestObservedAt)}, taxes incluses. Repère indicatif, distinct de l'historique mesuré ci-dessous.`
+              : "Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous"}
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
@@ -281,7 +328,6 @@ function DestinationPage() {
         </div>
       )}
 
-
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>
           {route.sections.map((section) => (
@@ -315,8 +361,8 @@ function DestinationPage() {
               </div>
               {months.length === 0 && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Aucune observation de prix enregistrée pour l'instant sur ce trajet : l'historique se
-                  constitue à partir des prix réellement relevés lors des recherches.
+                  Aucune observation de prix enregistrée pour l'instant sur ce trajet : l'historique
+                  se constitue à partir des prix réellement relevés lors des recherches.
                 </p>
               )}
             </section>
@@ -336,39 +382,38 @@ function DestinationPage() {
                   {related.map((item) => {
                     const thumb = getDestinationImage(null, item.city, item.country);
                     return (
-                    <li key={item.slug}>
-                      <Link
-                        to="/vols/$slug"
-                        params={{ slug: item.slug }}
-                        className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
-                      >
-                        <ResponsivePicture
-                          src={thumb.thumb}
-                          webp={thumb.thumbWebp}
-                          alt={thumb.alt}
-                          loading="lazy"
-                          width={96}
-                          height={72}
-                          className="size-12 shrink-0 rounded-md object-cover"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate font-medium">
-                            {route.originCity} — {item.city}
+                      <li key={item.slug}>
+                        <Link
+                          to="/vols/$slug"
+                          params={{ slug: item.slug }}
+                          className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm transition-colors hover:bg-secondary"
+                        >
+                          <ResponsivePicture
+                            src={thumb.thumb}
+                            webp={thumb.thumbWebp}
+                            alt={thumb.alt}
+                            loading="lazy"
+                            width={96}
+                            height={72}
+                            className="size-12 shrink-0 rounded-md object-cover"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-medium">
+                              {route.originCity} — {item.city}
+                            </span>
+                            <span className="block truncate text-xs text-muted-foreground">
+                              {item.country}
+                            </span>
                           </span>
-                          <span className="block truncate text-xs text-muted-foreground">
-                            {item.country}
-                          </span>
-                        </span>
-                        {item.priceEur !== null && (
-                          <span className="font-semibold text-primary">
-                            dès {formatPrice(item.priceEur)}
-                          </span>
-                        )}
-                      </Link>
-                    </li>
+                          {item.priceEur !== null && (
+                            <span className="font-semibold text-primary">
+                              dès {formatPrice(item.priceEur)}
+                            </span>
+                          )}
+                        </Link>
+                      </li>
                     );
                   })}
-
                 </ul>
               </section>
             </Reveal>
@@ -410,7 +455,14 @@ function DestinationPage() {
             <Button asChild variant="outline" className="mt-4">
               <Link
                 to="/mode-budget"
-                search={{ origin: route.origin, budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
+                search={{
+                  origin: route.origin,
+                  budget: 400,
+                  month: "",
+                  adultes: 1,
+                  enfants: 0,
+                  bebes: 0,
+                }}
               >
                 Explorer par budget
               </Link>

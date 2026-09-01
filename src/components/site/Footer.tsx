@@ -4,9 +4,18 @@ import logo from "@/assets/logo-64.png";
 import logoWebp from "@/assets/logo-64.webp";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { DESTINATIONS } from "@/data/destinations";
+import { routesFrom } from "@/data/route-whitelist";
 import { useCookieConsent } from "@/lib/cookie-consent-context";
 
 const linkClass = "transition-colors hover:text-foreground";
+
+/**
+ * Les liaisons Marseille les mieux desservies, mesurées par le nombre d'offres
+ * réellement renvoyées par l'API lors de la validation de la liste blanche.
+ */
+const MARSEILLE_FOOTER_ROUTES = [...routesFrom("MRS")]
+  .sort((a, b) => b.validation.offers - a.validation.offers)
+  .slice(0, 6);
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -36,9 +45,30 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="text-sm font-semibold">Destinations populaires</p>
+          {/* Marseille est l'aéroport de référence du site : il ouvre la liste. */}
+          <p className="text-sm font-semibold">Au départ de Marseille</p>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            {DESTINATIONS.slice(0, 6).map((d) => (
+            {MARSEILLE_FOOTER_ROUTES.map((route) => (
+              <li key={route.slug}>
+                <Link to="/vols/$slug" params={{ slug: route.slug }} className={linkClass}>
+                  Marseille — {route.destinationCity}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link
+                to="/mode-budget"
+                search={{ origin: "MRS", budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
+                className={`${linkClass} font-medium`}
+              >
+                Toutes les destinations depuis Marseille
+              </Link>
+            </li>
+          </ul>
+
+          <p className="mt-6 text-sm font-semibold">Au départ de Paris</p>
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+            {DESTINATIONS.slice(0, 4).map((d) => (
               <li key={d.slug}>
                 <Link to="/vols/$slug" params={{ slug: d.slug }} className={linkClass}>
                   {d.originCity} — {d.destinationCity}

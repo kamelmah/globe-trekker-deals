@@ -8,7 +8,14 @@
  */
 
 import { AIRPORTS } from "@/data/airports";
-import type { DestinationRoute } from "@/data/destinations";
+import { DESTINATIONS, type DestinationRoute } from "@/data/destinations";
+import {
+  AIRPORT_NAMES_FR,
+  COUNTRY_NAMES_FR,
+  findWhitelistedRoute,
+  frenchName,
+  routesFrom,
+} from "@/data/route-whitelist";
 import { getCityIndex, type CityRecord } from "@/lib/geo.server";
 import { routeSlug, slugify } from "@/lib/slug";
 
@@ -16,16 +23,46 @@ type SlugIndex = Map<string, CityRecord>;
 
 let slugIndexPromise: Promise<SlugIndex> | null = null;
 
+/**
+ * Nom d'affichage d'une ville : le nom français d'usage quand nous le
+ * connaissons, sinon celui du référentiel. C'est ce dernier qui produisait
+ * « Ville de Madrid », « Buda » ou « dème de Thera » dans les URL et les titres.
+ */
+function displayCity(record: CityRecord): string {
+  return frenchName(record.code) ?? record.city;
+}
+
+function displayCountry(record: CityRecord): string {
+  return COUNTRY_NAMES_FR[record.code.toUpperCase()] ?? record.country;
+}
+
 async function buildSlugIndex(): Promise<SlugIndex> {
   const cities = await getCityIndex();
   const index: SlugIndex = new Map();
-  // Les aéroports curés passent d'abord : ils tranchent les homonymes
+  // Les noms français d'usage priment sur tout : sans eux, /vols/marseille-palma
+  // ne résoudrait pas (le référentiel dit « Palma de Mallorca »).
+  for (const [code, french] of Object.entries(AIRPORT_NAMES_FR)) {
+    const slug = slugify(french);
+    const city = cities.get(code.toUpperCase());
+    if (!slug || !city) continue;
+    index.set(slug, { ...city, city: french, country: displayCountry(city) });
+  }
+  // Puis les aéroports curés : ils tranchent les homonymes
   // (Paris, France plutôt que Paris, Texas).
   for (const airport of AIRPORTS) {
     const city = cities.get(airport.code.toUpperCase());
     const slug = slugify(city?.city ?? airport.city);
     if (!slug || index.has(slug)) continue;
-    index.set(slug, city ?? { code: airport.code, city: airport.city, country: airport.country, lat: airport.lat, lng: airport.lng });
+    index.set(
+      slug,
+      city ?? {
+        code: airport.code,
+        city: airport.city,
+        country: airport.country,
+        lat: airport.lat,
+        lng: airport.lng,
+      },
+    );
   }
   for (const city of cities.values()) {
     const slug = slugify(city.city);
@@ -119,7 +156,6 @@ async function revalidateWorldCache(origin: string, cacheKey: string): Promise<v
   }
 }
 
-
 /** Découpe "paris-new-york" en (origine, destination) en testant chaque césure. */
 export async function resolveRouteSlug(slug: string): Promise<{
   origin: CityRecord;
@@ -145,9 +181,13 @@ export async function resolveRouteSlug(slug: string): Promise<{
     const destSlug = parts.slice(cut).join("-");
 
     // Priorité au balayage budget déjà en cache : c'est lui qui donne le bon
-    // code IATA (homonymes de villes) et le prix réellement observé.
+    // code IATA (homonymes de villes) et le prix réellement observé. Le cache
+    // porte les noms du référentiel, on teste donc aussi le nom français —
+    // sinon /vols/marseille-palma raterait l'entrée « Palma de Mallorca ».
+    const matchesDestination = (entry: CachedEntry) =>
+      slugify(entry.city) === destSlug || slugify(frenchName(entry.destination) ?? "") === destSlug;
     const cached = (await readWorldCache(origin.code))
-      .filter((e) => slugify(e.city) === destSlug && e.destination !== origin.code)
+      .filter((e) => matchesDestination(e) && e.destination !== origin.code)
       .sort((a, b) => Number(a.priceEur) - Number(b.priceEur))[0];
     if (cached) {
       return {
@@ -171,7 +211,18 @@ export async function resolveRouteSlug(slug: string): Promise<{
   return null;
 }
 
-type ObservedPrice = { priceEur: number; airline: string | null; departureAt: string | null };
+type ObservedPrice = {
+  priceEur: number;
+  airline: string | null;
+  departureAt: string | null;
+  /**
+   * Date à laquelle ce prix a été relevé — à ne pas confondre avec
+   * `departureAt`, qui est la date de départ du vol. Nulle quand le prix vient
+   * du cache du balayage mondial, qui ne conserve pas cette information : on
+   * préfère alors ne pas dater le prix plutôt que d'inventer une date.
+   */
+  observedAt: string | null;
+};
 
 /** Prix le plus bas déjà relevé sur ce trajet (cache mondial, puis historique). */
 async function readObservedPrice(
@@ -184,27 +235,32 @@ async function readObservedPrice(
         priceEur: Math.round(Number(cached.priceEur)),
         airline: cached.airline ?? null,
         departureAt: cached.departureAt ?? null,
+        observedAt: null,
       }
     : null;
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: history } = await supabaseAdmin
       .from("price_history")
-      .select("lowest_price")
+      .select("lowest_price,updated_at")
       .eq("origin", origin)
       .eq("destination", destination)
       .order("lowest_price", { ascending: true })
       .limit(1);
     const historyLow = history?.[0] ? Math.round(Number(history[0].lowest_price)) : null;
     if (historyLow && historyLow > 0 && (!best || historyLow < best.priceEur)) {
-      best = { priceEur: historyLow, airline: best?.airline ?? null, departureAt: null };
+      best = {
+        priceEur: historyLow,
+        airline: best?.airline ?? null,
+        departureAt: null,
+        observedAt: history?.[0]?.updated_at ?? null,
+      };
     }
   } catch (error) {
     console.error("Lecture de l'historique impossible", error);
   }
   return best;
 }
-
 
 function distanceKm(a: CityRecord, b: CityRecord): number {
   const toRad = (v: number) => (v * Math.PI) / 180;
@@ -225,13 +281,28 @@ function durationLabel(km: number): string {
   return `≈ ${h} h ${String(m).padStart(2, "0")} estimé (${km.toLocaleString("fr-FR")} km)`;
 }
 
+/** Date complète en toutes lettres, ex. « 28 août 2026 ». */
+function frenchDay(iso: string | null): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
 function frenchMonth(iso: string | null): string | null {
   if (!iso) return null;
   const date = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric", timeZone: "UTC" }).format(
-    date,
-  );
+  return new Intl.DateTimeFormat("fr-FR", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 /**
@@ -241,27 +312,48 @@ function frenchMonth(iso: string | null): string | null {
 export async function buildDynamicRoutePage(slug: string): Promise<DestinationRoute | null> {
   const pair = await resolveRouteSlug(slug);
   if (!pair) return null;
-  const { origin, destination, cached } = pair;
+  const { cached } = pair;
+
+  // Tout ce qui suit — H1, titre, texte, slug canonique — part du nom français
+  // d'usage. Le référentiel n'est plus qu'une source de coordonnées.
+  const origin: CityRecord = {
+    ...pair.origin,
+    city: displayCity(pair.origin),
+    country: displayCountry(pair.origin),
+  };
+  const destination: CityRecord = {
+    ...pair.destination,
+    city: displayCity(pair.destination),
+    country: displayCountry(pair.destination),
+  };
 
   const observed = await readObservedPrice(origin.code, destination.code, cached);
   const km = distanceKm(origin, destination);
   const priceLabel = observed ? `${observed.priceEur} €` : null;
   const observedMonth = frenchMonth(observed?.departureAt ?? null);
 
-  const heading = priceLabel
-    ? `Vol ${origin.city} — ${destination.city} : relevé dès ${priceLabel}`
-    : `Vol ${origin.city} — ${destination.city} pas cher`;
+  // Quelques liaisons de la liste blanche n'existent qu'avec escale : la page ne
+  // doit pas leur annoncer une durée de vol direct.
+  const whitelisted = findWhitelistedRoute(routeSlug(origin.city, destination.city));
+  const nonstop = whitelisted?.nonstop ?? true;
+  const distanceSentence = nonstop
+    ? `La distance entre ${origin.city} et ${destination.city} (${destination.country}) est d'environ ${km.toLocaleString("fr-FR")} km, soit ${durationLabel(km)} pour un vol direct. Les itinéraires avec une ou deux escales sont souvent moins chers mais rallongent sensiblement le trajet : nos filtres vous permettent d'exclure les escales trop longues en un clic.`
+    : `Aucune compagnie n'assure ${origin.city} — ${destination.city} sans escale : tous les itinéraires passent par une correspondance. La distance à vol d'oiseau est d'environ ${km.toLocaleString("fr-FR")} km, mais comptez sensiblement plus que les ${durationLabel(km)} théoriques, selon la durée de l'escale. Nos filtres permettent d'écarter les correspondances les plus longues.`;
 
-  const metaTitle = priceLabel
-    ? `Vol ${origin.city} ${destination.city} dès ${priceLabel} | TrouveMonVol`
-    : `Vol ${origin.city} ${destination.city} pas cher | TrouveMonVol`;
+  // Ni le H1 ni la balise title ne sont portés par les données : tous deux sont
+  // calculés au rendu depuis le gabarit unique (`routeHeading`,
+  // `routeMetaTitle`), pour les pages générées comme pour les éditoriales.
 
   const metaDescription = priceLabel
     ? `Prix le plus bas relevé sur ${origin.city} — ${destination.city} (${destination.country}) : ${priceLabel}, taxes incluses, vendeur affiché. Comparez sans frais cachés ni faux compte à rebours.`
     : `Comparez les vols ${origin.city} — ${destination.city} (${destination.country}) : prix total taxes incluses, vendeur réel identifié et lien direct, sans frais cachés.`;
 
+  // Un prix affirmé sans date n'est pas vérifiable : quand nous connaissons la
+  // date du relevé, elle accompagne le montant.
+  const observedDay = frenchDay(observed?.observedAt ?? null);
+
   const intro = priceLabel
-    ? `Le prix le plus bas que nous avons relevé sur la liaison ${origin.city} — ${destination.city} est de ${priceLabel} taxes incluses${observedMonth ? `, pour un départ en ${observedMonth}` : ""}${observed?.airline ? `, opéré par ${observed.airline}` : ""}. Ce montant provient de nos relevés de prix réels : il n'est ni arrondi, ni simulé.`
+    ? `Le prix le plus bas que nous avons relevé sur la liaison ${origin.city} — ${destination.city} est de ${priceLabel} taxes incluses${observedMonth ? `, pour un départ en ${observedMonth}` : ""}${observed?.airline ? `, opéré par ${observed.airline}` : ""}${observedDay ? `, relevé le ${observedDay}` : ""}. Ce montant provient de nos relevés de prix réels : il n'est ni arrondi, ni simulé.`
     : `Aucun relevé de prix n'est encore enregistré sur ${origin.city} — ${destination.city}. Lancez une recherche en direct pour obtenir les tarifs réels du jour, taxes incluses et vendeur identifié.`;
 
   const sections = [
@@ -271,7 +363,7 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
         priceLabel
           ? `Sur ce trajet, notre plancher observé est de ${priceLabel} taxes comprises. Les prix affichés sur TrouveMonVol sont ceux réellement renvoyés par les vendeurs : vous voyez le montant total dès la liste de résultats, sans supplément découvert au moment du paiement. Chaque offre indique qui vend le billet — la compagnie elle-même ou l'agence précise — et le bouton de réservation ouvre en un clic le lien de réservation de ce vendeur, sans comparateur intermédiaire caché.`
           : `Les tarifs de cette liaison varient fortement selon la saison, le jour de la semaine et l'anticipation. Nous n'affichons aucun prix estimé : tant qu'aucun relevé n'existe sur ${origin.city} — ${destination.city}, seule une recherche en direct vous donnera un montant, toujours taxes incluses et avec le vendeur réel identifié.`,
-        `La distance entre ${origin.city} et ${destination.city} (${destination.country}) est d'environ ${km.toLocaleString("fr-FR")} km, soit ${durationLabel(km)} pour un vol direct. Les itinéraires avec une ou deux escales sont souvent moins chers mais rallongent sensiblement le trajet : nos filtres vous permettent d'exclure les escales trop longues en un clic.`,
+        distanceSentence,
       ],
     },
     {
@@ -299,7 +391,9 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     },
     {
       question: `Combien de temps dure le vol ${origin.city} — ${destination.city} ?`,
-      answer: `La distance est d'environ ${km.toLocaleString("fr-FR")} km, ce qui représente ${durationLabel(km)} sur un vol direct. Avec escale, comptez plusieurs heures supplémentaires selon la correspondance.`,
+      answer: nonstop
+        ? `La distance est d'environ ${km.toLocaleString("fr-FR")} km, ce qui représente ${durationLabel(km)} sur un vol direct. Avec escale, comptez plusieurs heures supplémentaires selon la correspondance.`
+        : `Cette liaison n'est pas desservie sans escale. La distance est d'environ ${km.toLocaleString("fr-FR")} km, soit ${durationLabel(km)} de vol pur, auxquelles s'ajoute la correspondance — souvent plusieurs heures selon l'itinéraire retenu.`,
     },
     {
       question: "Chez qui vais-je réserver mon billet ?",
@@ -314,8 +408,6 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     destination: destination.code,
     destinationCity: destination.city,
     country: destination.country,
-    heading,
-    metaTitle,
     metaDescription,
     intro,
     sections,
@@ -325,45 +417,13 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     ...(observed ? { observedLowestPrice: observed.priceEur } : {}),
     ...(observed?.airline ? { observedAirline: observed.airline } : {}),
     ...(observed?.departureAt ? { observedDepartureAt: observed.departureAt } : {}),
+    ...(observed?.observedAt ? { observedPriceAt: observed.observedAt } : {}),
   };
 }
 
-/**
- * Slugs des pages de liaison générées, issus du balayage mondial déjà en cache
- * (aucun appel API) — utilisé par le sitemap. Le nombre est plafonné.
- */
-export async function listWorldRouteSlugs(limit = 400): Promise<string[]> {
-  try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("price_cache")
-      .select("cache_key,payload")
-      .like("cache_key", "world-destinations:%")
-      .order("expires_at", { ascending: false })
-      .limit(6);
-    const cities = await getCityIndex();
-    const slugs = new Set<string>();
-    for (const row of data ?? []) {
-      const originCode = row.cache_key.split(":")[1] ?? "";
-      const originCity = cities.get(originCode.toUpperCase());
-      if (!originCity) continue;
-      const prices = (row.payload as { prices?: unknown } | null)?.prices;
-      if (!Array.isArray(prices)) continue;
-      const sorted = [...(prices as { destination?: string; city?: string; priceEur?: number }[])]
-        .filter((p) => p.city && Number.isFinite(Number(p.priceEur)))
-        .sort((a, b) => Number(a.priceEur) - Number(b.priceEur));
-      for (const price of sorted) {
-        if (slugs.size >= limit) break;
-        slugs.add(routeSlug(originCity.city, price.city as string));
-      }
-      if (slugs.size >= limit) break;
-    }
-    return [...slugs];
-  } catch (error) {
-    console.error("Liste des trajets pour le sitemap indisponible", error);
-    return [];
-  }
-}
+// `listWorldRouteSlugs` a été supprimée : elle alimentait le sitemap depuis le
+// balayage mondial en cache et produisait à elle seule le millier de pages de
+// liaisons inexistantes. Le sitemap part maintenant de la liste blanche.
 
 export type RelatedRoute = {
   slug: string;
@@ -373,9 +433,17 @@ export type RelatedRoute = {
 };
 
 /**
- * Autres destinations SSR disponibles depuis la même ville de départ, pour
- * renforcer le maillage interne des pages /vols/<origine>-<destination>.
- * Uniquement issues des prix déjà relevés : aucun appel API, aucun prix inventé.
+ * Autres destinations proposées depuis la même ville de départ, pour renforcer
+ * le maillage interne des pages /vols/<origine>-<destination>.
+ *
+ * La liste vient de la LISTE BLANCHE, jamais du balayage mondial : un lien
+ * interne vers une page en `noindex` gaspille du budget de crawl et signale à
+ * Google une page que nous ne voulons pas voir évaluée. Les prix, eux, restent
+ * ceux déjà relevés en cache — aucun appel API, aucun prix inventé.
+ *
+ * Les départs absents de la liste blanche (Paris, Lyon) retombent sur les pages
+ * éditoriales de la même origine : elles sont indexables, et sans ce repli ces
+ * pages perdraient tout maillage sortant.
  */
 export async function listRelatedRoutes(params: {
   origin: string;
@@ -384,19 +452,46 @@ export async function listRelatedRoutes(params: {
   limit?: number | undefined;
 }): Promise<RelatedRoute[]> {
   const limit = params.limit ?? 12;
-  const entries = await readWorldCache(params.origin.toUpperCase());
-  const best = new Map<string, RelatedRoute>();
-  for (const entry of entries) {
-    if (entry.destination === params.exclude?.toUpperCase()) continue;
-    const slug = routeSlug(params.originCity, entry.city);
-    if (!slug.includes("-")) continue;
-    const priceEur = Math.round(Number(entry.priceEur));
-    const current = best.get(slug);
-    if (!current || (current.priceEur !== null && priceEur < current.priceEur)) {
-      best.set(slug, { slug, city: entry.city, country: entry.country, priceEur });
-    }
+  const origin = params.origin.toUpperCase();
+  const exclude = params.exclude?.toUpperCase();
+
+  const whitelisted = routesFrom(origin)
+    .filter((route) => route.destination !== exclude)
+    .map((route) => ({
+      destination: route.destination,
+      slug: route.slug,
+      city: route.destinationCity,
+      country: route.country,
+    }));
+  const siblings =
+    whitelisted.length > 0
+      ? whitelisted
+      : DESTINATIONS.filter(
+          (route) => route.origin.toUpperCase() === origin && route.destination !== exclude,
+        ).map((route) => ({
+          destination: route.destination,
+          slug: route.slug,
+          city: route.destinationCity,
+          country: route.country,
+        }));
+  if (siblings.length === 0) return [];
+
+  // Plancher déjà observé par destination, s'il existe.
+  const observed = new Map<string, number>();
+  for (const entry of await readWorldCache(origin)) {
+    const price = Math.round(Number(entry.priceEur));
+    if (!Number.isFinite(price)) continue;
+    const current = observed.get(entry.destination);
+    if (current === undefined || price < current) observed.set(entry.destination, price);
   }
-  return [...best.values()]
+
+  return siblings
+    .map((route) => ({
+      slug: route.slug,
+      city: route.city,
+      country: route.country,
+      priceEur: observed.get(route.destination) ?? null,
+    }))
     .sort((a, b) => (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity))
     .slice(0, limit);
 }

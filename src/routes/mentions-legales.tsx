@@ -11,6 +11,9 @@ export const Route = createFileRoute("/mentions-legales")({
     meta: [
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
+      // Page de service, sans valeur pour la recherche : `noindex, follow`
+      // pour ne pas la faire évaluer, sans couper la circulation du crawl.
+      { name: "robots", content: "noindex, follow" },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:url", content: `${SITE_URL}/mentions-legales` },
@@ -29,13 +32,15 @@ function LegalPage() {
 
       <h2 className="mt-8 font-display text-xl font-semibold">Éditeur du site</h2>
       <p className="mt-2 text-muted-foreground">
-        Nom de l'éditeur : [à compléter]. Forme juridique : [à compléter]. Adresse du siège :
-        [à compléter]. SIRET : [à compléter]. Numéro de TVA intracommunautaire : [à compléter].
-        Adresse e-mail de contact : [à compléter].
+        Nom de l'éditeur : [à compléter]. Forme juridique : [à compléter]. Adresse du siège : [à
+        compléter]. SIRET : [à compléter]. Numéro de TVA intracommunautaire : [à compléter]. Adresse
+        e-mail de contact : [à compléter].
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Responsable de la publication</h2>
-      <p className="mt-2 text-muted-foreground">[Nom du responsable de la publication — à compléter].</p>
+      <p className="mt-2 text-muted-foreground">
+        [Nom du responsable de la publication — à compléter].
+      </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Hébergeur</h2>
       <p className="mt-2 text-muted-foreground">

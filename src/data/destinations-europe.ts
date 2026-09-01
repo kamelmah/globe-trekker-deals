@@ -16,8 +16,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "LON",
     destinationCity: "Londres",
     country: "Royaume-Uni",
-    heading: "Vols pas chers Paris — Londres",
-    metaTitle: "Vol pas cher Paris Londres : prix, aéroports, meilleure période | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Londres au prix total taxes incluses, vendeur affiché. Aéroports londoniens, compagnies, meilleure période et alerte prix gratuite.",
     intro:
@@ -67,8 +65,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "AMS",
     destinationCity: "Amsterdam",
     country: "Pays-Bas",
-    heading: "Vols pas chers Paris — Amsterdam",
-    metaTitle: "Vol pas cher Paris Amsterdam : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Amsterdam au prix total taxes incluses, avec le vendeur affiché. Compagnies, durée, meilleure période et alerte prix gratuite.",
     intro:
@@ -96,7 +92,8 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     faq: [
       {
         question: "Combien de temps dure le vol Paris — Amsterdam ?",
-        answer: "Environ 1 h 20 en vol direct, contre 3 h 20 en Thalys entre les deux centres-villes.",
+        answer:
+          "Environ 1 h 20 en vol direct, contre 3 h 20 en Thalys entre les deux centres-villes.",
       },
       {
         question: "Comment rejoindre le centre depuis Schiphol ?",
@@ -117,8 +114,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "MIL",
     destinationCity: "Milan",
     country: "Italie",
-    heading: "Vols pas chers Paris — Milan",
-    metaTitle: "Vol pas cher Paris Milan : prix, aéroports, meilleure période | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Milan au prix total taxes incluses, vendeur affiché. Malpensa, Linate ou Bergame, compagnies, quand partir et alerte prix gratuite.",
     intro:
@@ -168,8 +163,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "BER",
     destinationCity: "Berlin",
     country: "Allemagne",
-    heading: "Vols pas chers Paris — Berlin",
-    metaTitle: "Vol pas cher Paris Berlin : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Berlin au prix total taxes incluses, avec le vendeur affiché. Compagnies, aéroport BER, meilleure période et alerte prix gratuite.",
     intro:
@@ -218,8 +211,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "ATH",
     destinationCity: "Athènes",
     country: "Grèce",
-    heading: "Vols pas chers Paris — Athènes",
-    metaTitle: "Vol pas cher Paris Athènes : prix, saison, compagnies | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Athènes au prix total taxes incluses, vendeur affiché. Compagnies, durée du vol, meilleure période et alerte prix gratuite.",
     intro:
@@ -268,8 +259,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "VIE",
     destinationCity: "Vienne",
     country: "Autriche",
-    heading: "Vols pas chers Paris — Vienne",
-    metaTitle: "Vol pas cher Paris Vienne : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Vienne au prix total taxes incluses, avec le vendeur affiché. Compagnies, durée, meilleure période et alerte prix gratuite.",
     intro:
@@ -318,8 +307,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "PRG",
     destinationCity: "Prague",
     country: "Tchéquie",
-    heading: "Vols pas chers Paris — Prague",
-    metaTitle: "Vol pas cher Paris Prague : prix, compagnies, meilleure période | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Prague au prix total taxes incluses, vendeur affiché. Compagnies, durée du vol, quand partir et alerte prix gratuite.",
     intro:
@@ -368,8 +355,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "SVQ",
     destinationCity: "Séville",
     country: "Espagne",
-    heading: "Vols pas chers Paris — Séville",
-    metaTitle: "Vol pas cher Paris Séville : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Séville au prix total taxes incluses, vendeur affiché. Compagnies, durée, meilleure période et alerte prix gratuite.",
     intro:
@@ -418,8 +403,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "CPH",
     destinationCity: "Copenhague",
     country: "Danemark",
-    heading: "Vols pas chers Paris — Copenhague",
-    metaTitle: "Vol pas cher Paris Copenhague : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Copenhague au prix total taxes incluses, vendeur affiché. Compagnies, durée du vol, meilleure période et alerte prix gratuite.",
     intro:
@@ -468,8 +451,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "MAD",
     destinationCity: "Madrid",
     country: "Espagne",
-    heading: "Vols pas chers Paris — Madrid",
-    metaTitle: "Vol pas cher Paris Madrid : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Madrid au prix total taxes incluses, vendeur affiché. Compagnies, aéroport, meilleure période et alerte prix gratuite.",
     intro:
@@ -518,8 +499,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "DUB",
     destinationCity: "Dublin",
     country: "Irlande",
-    heading: "Vols pas chers Paris — Dublin",
-    metaTitle: "Vol pas cher Paris Dublin : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Dublin au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
     intro:
@@ -568,8 +547,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "MUC",
     destinationCity: "Munich",
     country: "Allemagne",
-    heading: "Vols pas chers Paris — Munich",
-    metaTitle: "Vol pas cher Paris Munich : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Munich au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, Oktoberfest et alerte prix gratuite.",
     intro:
@@ -618,8 +595,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "OPO",
     destinationCity: "Porto",
     country: "Portugal",
-    heading: "Vols pas chers Paris — Porto",
-    metaTitle: "Vol pas cher Paris Porto : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Porto au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
     intro:
@@ -668,8 +643,6 @@ export const EUROPE_DESTINATIONS: DestinationRoute[] = [
     destination: "BUD",
     destinationCity: "Budapest",
     country: "Hongrie",
-    heading: "Vols pas chers Paris — Budapest",
-    metaTitle: "Vol pas cher Paris Budapest : prix, compagnies, quand partir | TrouveMonVol",
     metaDescription:
       "Comparez les vols Paris — Budapest au prix total taxes incluses, vendeur affiché. Compagnies, accès depuis l'aéroport, meilleure période et alerte prix.",
     intro:
