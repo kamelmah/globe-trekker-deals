@@ -7,6 +7,7 @@ import { FaqAccordion } from "@/components/site/FaqAccordion";
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Stay22Map } from "@/components/stay/Stay22Map";
+import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
 import { getDestination } from "@/data/destinations";
 import { monthlyHistory } from "@/lib/flights.functions";
@@ -388,6 +389,8 @@ function DestinationPage() {
             title={`Trouvez aussi votre hébergement à ${route.destinationCity}`}
             description={`Hôtels, appartements et auberges disponibles à ${route.destinationCity}, affichés sur une carte. Les prix proviennent directement des plateformes de réservation.`}
           />
+
+          <TravelPartnersSection className="mt-10" partners={["esim", "assurance", "voiture"]} />
         </div>
 
         <aside className="space-y-6">

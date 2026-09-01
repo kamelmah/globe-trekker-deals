@@ -2,6 +2,7 @@ import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
 import { getCityGuide } from "@/data/city-guides";
@@ -207,6 +208,10 @@ function CityGuidePage() {
                 description={`Carte interactive des hôtels et locations à ${guide.city} (via notre partenaire Stay22).`}
               />
             </section>
+          </Reveal>
+
+          <Reveal className="mt-10">
+            <TravelPartnersSection partners={["esim", "assurance", "voiture"]} />
           </Reveal>
         </div>
 

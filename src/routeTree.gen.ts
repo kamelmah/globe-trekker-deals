@@ -17,6 +17,7 @@ import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as DestinationsProposesRouteImport } from './routes/destinations-proposes'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as HebergementRouteImport } from './routes/hebergement'
+import { Route as IndemnisationRouteImport } from './routes/indemnisation'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
@@ -73,6 +74,11 @@ const FaqRoute = FaqRouteImport.update({
 const HebergementRoute = HebergementRouteImport.update({
   id: '/hebergement',
   path: '/hebergement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndemnisationRoute = IndemnisationRouteImport.update({
+  id: '/indemnisation',
+  path: '/indemnisation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
@@ -174,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
   '/hebergement': typeof HebergementRoute
+  '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
   '/hebergement': typeof HebergementRoute
+  '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
   '/hebergement': typeof HebergementRoute
+  '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/destinations-proposes'
     | '/faq'
     | '/hebergement'
+    | '/indemnisation'
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/destinations-proposes'
     | '/faq'
     | '/hebergement'
+    | '/indemnisation'
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
     | '/destinations-proposes'
     | '/faq'
     | '/hebergement'
+    | '/indemnisation'
     | '/mentions-legales'
     | '/mode-budget'
     | '/recherche'
@@ -340,6 +352,7 @@ export interface RootRouteChildren {
   DestinationsProposesRoute: typeof DestinationsProposesRoute
   FaqRoute: typeof FaqRoute
   HebergementRoute: typeof HebergementRoute
+  IndemnisationRoute: typeof IndemnisationRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
@@ -415,6 +428,13 @@ declare module '@tanstack/react-router' {
       path: '/hebergement'
       fullPath: '/hebergement'
       preLoaderRoute: typeof HebergementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/indemnisation': {
+      id: '/indemnisation'
+      path: '/indemnisation'
+      fullPath: '/indemnisation'
+      preLoaderRoute: typeof IndemnisationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mentions-legales': {
@@ -548,6 +568,7 @@ const rootRouteChildren: RootRouteChildren = {
   DestinationsProposesRoute: DestinationsProposesRoute,
   FaqRoute: FaqRoute,
   HebergementRoute: HebergementRoute,
+  IndemnisationRoute: IndemnisationRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,

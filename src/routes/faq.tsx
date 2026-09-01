@@ -48,6 +48,11 @@ const FAQ = [
     answer:
       "Nous estimons les émissions à partir de la distance réelle entre les aéroports, d'un facteur d'émission par passager qui varie selon la longueur du vol, et d'une majoration lorsque le trajet comporte des escales. C'est un ordre de grandeur destiné à comparer deux itinéraires, pas une mesure certifiée.",
   },
+  {
+    question: "Mon vol a été retardé ou annulé, ai-je droit à une indemnisation ?",
+    answer:
+      "Dans plusieurs cas (retard de 3 heures ou plus, annulation tardive, refus d'embarquement pour surbooking), la réglementation européenne prévoit une compensation financière, indépendamment du prix du billet. Consultez notre page dédiée « Indemnisation » (accessible depuis le pied de page) pour connaître les conditions exactes et faire votre demande.",
+  },
 ];
 
 export const Route = createFileRoute("/faq")({
@@ -103,6 +108,13 @@ function FaqPage() {
         économique. Pour les conseils de réservation, rendez-vous dans nos{" "}
         <Link to="/conseils" className="font-medium text-primary underline-offset-2 hover:underline">
           articles
+        </Link>
+        . Vol retardé ou annulé ?{" "}
+        <Link
+          to="/indemnisation"
+          className="font-medium text-primary underline-offset-2 hover:underline"
+        >
+          Voir vos droits à indemnisation
         </Link>
         .
       </p>

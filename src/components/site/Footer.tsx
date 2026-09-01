@@ -71,6 +71,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/indemnisation" className={linkClass}>
+                Vol retardé ou annulé
+              </Link>
+            </li>
+            <li>
               <Link to="/contact" className={linkClass}>
                 Contact & newsletter
               </Link>

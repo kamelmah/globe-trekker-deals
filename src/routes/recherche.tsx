@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -10,6 +10,7 @@ import { FlightCard } from "@/components/flights/FlightCard";
 import { ResultsPriceCalendar } from "@/components/flights/ResultsPriceCalendar";
 import { passengersSummary } from "@/components/search/PassengerSelector";
 import { SearchForm } from "@/components/search/SearchForm";
+import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -368,6 +369,14 @@ function SearchResultsPage() {
         Prix garanti sans frais cachés — vous payez ce qui est affiché ici.
       </p>
 
+      <p className="mt-2 text-xs text-muted-foreground">
+        Vol déjà réservé, retardé ou annulé ?{" "}
+        <Link to="/indemnisation" className="font-medium text-primary underline-offset-2 hover:underline">
+          Voir si vous avez droit à une indemnisation
+        </Link>
+        .
+      </p>
+
       <p className="mt-2 max-w-2xl text-xs text-muted-foreground">
         Notre source tarifaire renvoie le meilleur prix trouvé par date de départ, pas la liste
         complète des vols du jour. Avec les dates flexibles ± 3 jours, vous obtenez un prix par date
@@ -489,8 +498,13 @@ function SearchResultsPage() {
         </section>
       </div>
 
-      <Stay22Map
+      <TravelPartnersSection
         className="mt-12 border-t border-border pt-8"
+        partners={["assurance", "voiture"]}
+      />
+
+      <Stay22Map
+        className="mt-10"
         city={to}
         {...(search.depart ? { checkin: search.depart } : {})}
         {...(search.retour ? { checkout: search.retour } : {})}
