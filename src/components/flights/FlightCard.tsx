@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { formatDateTimeCompact, formatDateTimeShort, formatDateMedium } from "@/lib/dates";
+import { sellerNature } from "@/data/sellers";
 import {
   BAGGAGE_LEVELS,
   baggagePolicy,
@@ -8,7 +9,16 @@ import {
   type BaggageLevel,
   type BaggageSupplement,
 } from "@/data/baggage-fees";
-import { AlertTriangle, Luggage, Leaf, Plane, Store, Clock } from "lucide-react";
+import {
+  AlertTriangle,
+  BadgeCheck,
+  Building2,
+  Luggage,
+  Leaf,
+  Plane,
+  Store,
+  Clock,
+} from "lucide-react";
 
 import { co2Label } from "@/lib/co2";
 import { useCurrency } from "@/lib/currency-context";
@@ -130,6 +140,7 @@ export function FlightCard({
   const { formatApi: format } = useCurrency();
   const freshness = useFreshness(offer.observedAt);
   const policy = baggagePolicy(offer.airlineCode);
+  const vendeur = sellerNature(offer.seller, offer.airline);
 
   // Le prix mis en avant est celui du niveau demandé ; à défaut de barème, on
   // ne majore rien plutôt que d'inventer un supplément.
@@ -178,10 +189,34 @@ export function FlightCard({
             {offer.flightNumber}
           </p>
 
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-secondary px-2 py-1 text-sm font-medium">
-            <Store className="size-4 text-primary" aria-hidden />
-            Vendu par {offer.seller}
-          </p>
+          {/*
+            Nommer le vendeur ne suffit pas : « Kiwi.com » ou « Clickavia » ne
+            disent rien à qui ne les connaît pas, alors que ce sont des
+            intermédiaires susceptibles d'ajouter des frais au paiement. La
+            nature du vendeur est donc annoncée avec son nom, pas séparément.
+          */}
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <p className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2 py-1 text-sm font-medium">
+              <Store className="size-4 text-primary" aria-hidden />
+              Vendu par {offer.seller}
+            </p>
+            {vendeur.kind === "compagnie" ? (
+              <Badge className="bg-success text-success-foreground">
+                <BadgeCheck className="mr-1 size-3" aria-hidden />
+                Vente directe compagnie
+              </Badge>
+            ) : (
+              <Badge variant="secondary">
+                <Building2 className="mr-1 size-3" aria-hidden />
+                Agence en ligne
+              </Badge>
+            )}
+          </div>
+          {vendeur.kind === "agence" && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Frais de service possibles à l'étape paiement, chez ce vendeur.
+            </p>
+          )}
 
           {/*
             Le bagage est le premier coût caché d'un billet low-cost : un Ryanair
