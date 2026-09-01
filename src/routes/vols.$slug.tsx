@@ -11,6 +11,7 @@ import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
 import { DESTINATIONS, getDestination } from "@/data/destinations";
 import { legacyRedirectTarget } from "@/data/route-redirects";
+import { routeMetaTitle } from "@/lib/route-title";
 import { isIndexableRoute } from "@/data/route-whitelist";
 import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
@@ -72,6 +73,9 @@ export const Route = createFileRoute("/vols/$slug")({
     }
     const { route, lowestObserved, indexable } = loaderData;
     const pageUrl = `${SITE_URL}/vols/${route.slug}`;
+    // Gabarit unique, y compris pour les pages éditoriales : leurs titres
+    // avaient été écrits un par un et ne suivaient plus la même forme.
+    const metaTitle = routeMetaTitle(route.originCity, route.destinationCity);
     // Visuel dédié /og/<slug>.jpg uniquement pour les destinations éditoriales
     // (fichier réellement présent) ; sinon on réutilise la bannière déjà
     // affichée en page pour ne jamais pointer vers une image inexistante.
@@ -82,12 +86,12 @@ export const Route = createFileRoute("/vols/$slug")({
         );
     return {
       meta: [
-        { title: route.metaTitle },
+        { title: metaTitle },
         { name: "description", content: route.metaDescription },
         // `follow` et non `nofollow` : on cesse de demander l'évaluation de la
         // page, sans couper la circulation du crawl vers les pages conservées.
         ...(indexable ? [] : [{ name: "robots", content: "noindex, follow" }]),
-        { property: "og:title", content: route.metaTitle },
+        { property: "og:title", content: metaTitle },
         { property: "og:description", content: route.metaDescription },
         { property: "og:type", content: "article" },
         { property: "og:url", content: pageUrl },
@@ -111,7 +115,7 @@ export const Route = createFileRoute("/vols/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            name: route.metaTitle,
+            name: metaTitle,
             url: pageUrl,
             inLanguage: "fr-FR",
             mainEntity: route.faq.map((item) => ({

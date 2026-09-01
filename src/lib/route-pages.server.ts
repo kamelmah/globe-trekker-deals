@@ -314,9 +314,9 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     ? `Vol ${origin.city} — ${destination.city} : relevé dès ${priceLabel}`
     : `Vol ${origin.city} — ${destination.city} pas cher`;
 
-  const metaTitle = priceLabel
-    ? `Vol ${origin.city} ${destination.city} dès ${priceLabel} | TrouveMonVol`
-    : `Vol ${origin.city} ${destination.city} pas cher | TrouveMonVol`;
+  // Le titre n'est plus porté par les données : il est calculé au rendu depuis
+  // le gabarit unique (`routeMetaTitle`), pour les pages générées comme pour
+  // les pages éditoriales.
 
   const metaDescription = priceLabel
     ? `Prix le plus bas relevé sur ${origin.city} — ${destination.city} (${destination.country}) : ${priceLabel}, taxes incluses, vendeur affiché. Comparez sans frais cachés ni faux compte à rebours.`
@@ -379,7 +379,6 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     destinationCity: destination.city,
     country: destination.country,
     heading,
-    metaTitle,
     metaDescription,
     intro,
     sections,
