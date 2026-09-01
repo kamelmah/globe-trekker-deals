@@ -1,5 +1,5 @@
 import { Link, createFileRoute, notFound, redirect } from "@tanstack/react-router";
-import { formatDateTimeLong } from "@/lib/dates";
+import { formatDateMedium, formatDateTimeLong } from "@/lib/dates";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
 import { LivePriceButton } from "@/components/flights/LivePriceButton";
@@ -22,7 +22,7 @@ import { monthlyHistory } from "@/lib/flights.functions";
 import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions";
 import { formatPrice } from "@/lib/currency";
 import { withPreposition } from "@/lib/french-grammar";
-import { getCityGuideForRoute } from "@/data/city-guides";
+import { guideForRoutePage } from "@/data/city-guides";
 import { getDestinationImage } from "@/lib/destination-images";
 import { todayPlus } from "@/lib/search-params";
 import { SITE_URL, absoluteUrl, destinationOgImage } from "@/lib/site";
@@ -215,12 +215,39 @@ export const Route = createFileRoute("/vols/$slug")({
 });
 
 /** Date de relevé en toutes lettres, ex. « 28 août 2026 ». */
+/**
+ * Seuils d'affichage de l'historique de prix.
+ *
+ * La section s'intitulait « Évolution du prix le plus bas sur 12 mois » et
+ * s'affichait quel que soit le nombre de points — y compris zéro ou un. Deux
+ * choses y étaient fausses.
+ *
+ * Le volume d'abord : sur la quasi-totalité des trajets, elle annonçait douze
+ * mois d'observation là où il y en avait un seul. En dessous de trois points,
+ * une courbe ne dit rien, la section disparaît donc.
+ *
+ * La nature ensuite, et c'est le plus grave : `price_history.month` est le
+ * mois de DÉPART du vol, pas la date du relevé. Les valeurs stockées sont
+ * toutes dans le futur. Cette courbe n'a jamais été une évolution dans le
+ * temps — c'est le prix le plus bas par mois de départ, c'est-à-dire une
+ * saisonnalité. Le titre le dit désormais.
+ */
+const RELEVES_MINIMUM = 3;
+const RELEVES_SERIE_COMPLETE = 6;
+
 const formatObservedDate = formatDateTimeLong;
 
 function DestinationPage() {
   const { route, months, lowestObserved, lowestObservedAt, related } = Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity);
-  const guide = getCityGuideForRoute(route.slug);
+  const guide = guideForRoutePage(route.slug, route.destination);
+  // Date du plus ancien relevé, pour dire depuis quand la série se constitue.
+  // Jamais déduite du mois affiché : seule la date de relevé réelle compte.
+  const premierReleve = months
+    .map((m) => m.updatedAt)
+    .filter((v): v is string => Boolean(v))
+    .sort()[0];
+  const serieComplete = months.length > RELEVES_SERIE_COMPLETE;
   // Même gabarit que la balise title, sans prix : le prix vit dans le corps de
   // la page, daté, pas dans le H1.
   const heading = routeHeading(route.originCity, route.destinationCity);
@@ -364,27 +391,23 @@ function DestinationPage() {
             </Reveal>
           ))}
 
-          <Reveal className="mt-10">
-            <section>
-              <h2 className="font-display text-xl font-semibold">
-                Évolution du prix le plus bas sur 12 mois
-              </h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {months.length > 0
-                  ? `Historique mesuré : le plancher relevé sur les 12 derniers mois est de ${formatPrice(Math.min(...months.map((m) => m.priceEur)))}.`
-                  : "Historique mesuré en cours de constitution sur ce trajet."}
-              </p>
-              <div className="mt-4 rounded-xl border border-border bg-card p-4">
-                <PriceHistoryChart months={months} />
-              </div>
-              {months.length === 0 && (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Aucune observation de prix enregistrée pour l'instant sur ce trajet : l'historique
-                  se constitue à partir des prix réellement relevés lors des recherches.
+          {months.length >= RELEVES_MINIMUM && (
+            <Reveal className="mt-10">
+              <section>
+                <h2 className="font-display text-xl font-semibold">
+                  Prix le plus bas par mois de départ
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {serieComplete
+                    ? `Prix le plus bas relevé pour chacun des ${months.length} mois de départ couverts. Le plancher est de ${formatPrice(Math.min(...months.map((m) => m.priceEur)))}.`
+                    : `Relevé partiel — ${months.length} mois de départ couverts${premierReleve ? `, mesurés depuis le ${formatDateMedium(premierReleve.slice(0, 10))}` : ""}. Le plancher est de ${formatPrice(Math.min(...months.map((m) => m.priceEur)))}.`}
                 </p>
-              )}
-            </section>
-          </Reveal>
+                <div className="mt-4 rounded-xl border border-border bg-card p-4">
+                  <PriceHistoryChart months={months} />
+                </div>
+              </section>
+            </Reveal>
+          )}
 
           {related.length > 0 && (
             <Reveal className="mt-10">

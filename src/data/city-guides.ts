@@ -45,11 +45,15 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 7,
     updated: "2026-08-30",
     practical: {
-      monnaie: "Dirham marocain (MAD). Environ 1 € = 10,8 MAD. Devise non exportable : changez sur place.",
-      langue: "Arabe et amazigh. Le français est très largement parlé dans le tourisme et les commerces.",
+      monnaie:
+        "Dirham marocain (MAD). Environ 1 € = 10,8 MAD. Devise non exportable : changez sur place.",
+      langue:
+        "Arabe et amazigh. Le français est très largement parlé dans le tourisme et les commerces.",
       visa: "Aucun visa pour les Français pour un séjour touristique de moins de 90 jours. Passeport valide requis.",
-      transport: "Petits taxis (négociez ou exigez le compteur), bus n°19 depuis l'aéroport, médina uniquement à pied.",
-      budgetJour: "40 à 70 € par personne et par jour en riad confortable, repas et visites inclus.",
+      transport:
+        "Petits taxis (négociez ou exigez le compteur), bus n°19 depuis l'aéroport, médina uniquement à pied.",
+      budgetJour:
+        "40 à 70 € par personne et par jour en riad confortable, repas et visites inclus.",
     },
     sections: [
       {
@@ -111,11 +115,14 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 8,
     updated: "2026-08-30",
     practical: {
-      monnaie: "Baht thaïlandais (THB). Environ 1 € = 38 THB. Cartes acceptées en centre-ville, espèces ailleurs.",
+      monnaie:
+        "Baht thaïlandais (THB). Environ 1 € = 38 THB. Cartes acceptées en centre-ville, espèces ailleurs.",
       langue: "Thaï. L'anglais est courant dans les hôtels, centres commerciaux et transports.",
       visa: "Pas de visa pour les Français jusqu'à 60 jours de tourisme. Passeport valide 6 mois après l'entrée.",
-      transport: "BTS Skytrain, MRT, bateaux express du Chao Phraya, taxis au compteur et applications VTC.",
-      budgetJour: "35 à 70 € par jour et par personne, beaucoup moins en voyageant en street food et guesthouse.",
+      transport:
+        "BTS Skytrain, MRT, bateaux express du Chao Phraya, taxis au compteur et applications VTC.",
+      budgetJour:
+        "35 à 70 € par jour et par personne, beaucoup moins en voyageant en street food et guesthouse.",
     },
     sections: [
       {
@@ -177,10 +184,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 8,
     updated: "2026-08-30",
     practical: {
-      monnaie: "Dollar américain (USD). Cartes acceptées partout, y compris pour de très petits montants.",
+      monnaie:
+        "Dollar américain (USD). Cartes acceptées partout, y compris pour de très petits montants.",
       langue: "Anglais. L'espagnol est très présent dans plusieurs quartiers.",
       visa: "ESTA obligatoire avant l'embarquement (environ 21 $, valable 2 ans) pour les Français, passeport biométrique requis.",
-      transport: "Métro 24h/24 avec paiement sans contact OMNY, bus, ferry gratuit vers Staten Island.",
+      transport:
+        "Métro 24h/24 avec paiement sans contact OMNY, bus, ferry gratuit vers Staten Island.",
       budgetJour: "120 à 220 € par jour et par personne, hébergement compris.",
     },
     sections: [
@@ -245,9 +254,11 @@ export const CITY_GUIDES: CityGuide[] = [
     updated: "2026-08-30",
     practical: {
       monnaie: "Euro (EUR). Cartes acceptées presque partout, y compris dans les petits cafés.",
-      langue: "Portugais. L'anglais est largement parlé, le français moins souvent chez les jeunes.",
+      langue:
+        "Portugais. L'anglais est largement parlé, le français moins souvent chez les jeunes.",
       visa: "Aucune formalité pour les Français : carte d'identité ou passeport en cours de validité suffit.",
-      transport: "Métro, tramways historiques (28, 15), funiculaires, train de banlieue vers Cascais et Sintra.",
+      transport:
+        "Métro, tramways historiques (28, 15), funiculaires, train de banlieue vers Cascais et Sintra.",
       budgetJour: "70 à 120 € par jour et par personne, hébergement inclus.",
     },
     sections: [
@@ -314,7 +325,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Euro (EUR). Paiement par carte accepté dans la quasi-totalité des commerces.",
       langue: "Catalan et espagnol. L'anglais est courant dans le tourisme.",
       visa: "Aucune formalité pour les Français : carte d'identité ou passeport valide.",
-      transport: "Métro dense, bus, tramway, vélos en libre-service, aéroport relié par Aerobús et métro L9.",
+      transport:
+        "Métro dense, bus, tramway, vélos en libre-service, aéroport relié par Aerobús et métro L9.",
       budgetJour: "80 à 130 € par jour et par personne, hébergement inclus.",
     },
     sections: [
@@ -378,11 +390,14 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 8,
     updated: "2026-08-30",
     practical: {
-      monnaie: "Livre turque (TRY). Taux très variable : changez par petites sommes, les bureaux de Grand-Rue offrent de meilleurs taux que l'aéroport.",
+      monnaie:
+        "Livre turque (TRY). Taux très variable : changez par petites sommes, les bureaux de Grand-Rue offrent de meilleurs taux que l'aéroport.",
       langue: "Turc. L'anglais est courant dans le tourisme, le français beaucoup moins.",
       visa: "Aucun visa pour les Français en séjour touristique de moins de 90 jours. Passeport valide au moins 150 jours après l'entrée.",
-      transport: "Tramway T1, métro, funiculaires et ferries. Prenez une carte Istanbulkart dès l'arrivée, elle sert sur tous les modes.",
-      budgetJour: "45 à 80 € par personne et par jour, hébergement en hôtel confortable, repas et visites inclus.",
+      transport:
+        "Tramway T1, métro, funiculaires et ferries. Prenez une carte Istanbulkart dès l'arrivée, elle sert sur tous les modes.",
+      budgetJour:
+        "45 à 80 € par personne et par jour, hébergement en hôtel confortable, repas et visites inclus.",
     },
     sections: [
       {
@@ -444,11 +459,14 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 8,
     updated: "2026-08-30",
     practical: {
-      monnaie: "Dirham des Émirats (AED), indexé sur le dollar. Environ 1 € = 4 AED. Carte acceptée quasiment partout.",
+      monnaie:
+        "Dirham des Émirats (AED), indexé sur le dollar. Environ 1 € = 4 AED. Carte acceptée quasiment partout.",
       langue: "Arabe officiel, anglais parlé partout, y compris dans les taxis et les commerces.",
       visa: "Aucun visa préalable pour les Français : visa gratuit de 90 jours délivré à l'arrivée. Passeport valide 6 mois.",
-      transport: "Métro (lignes rouge et verte), tramway de la Marina, taxis abordables et applications VTC.",
-      budgetJour: "80 à 150 € par personne et par jour hors hôtel de luxe ; beaucoup moins en mangeant local.",
+      transport:
+        "Métro (lignes rouge et verte), tramway de la Marina, taxis abordables et applications VTC.",
+      budgetJour:
+        "80 à 150 € par personne et par jour hors hôtel de luxe ; beaucoup moins en mangeant local.",
     },
     sections: [
       {
@@ -510,11 +528,15 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 9,
     updated: "2026-08-30",
     practical: {
-      monnaie: "Yen (JPY). Environ 1 € = 165 JPY. Les espèces restent utiles malgré la généralisation du sans contact.",
-      langue: "Japonais. L'anglais est limité à l'oral mais la signalétique des transports est bilingue.",
+      monnaie:
+        "Yen (JPY). Environ 1 € = 165 JPY. Les espèces restent utiles malgré la généralisation du sans contact.",
+      langue:
+        "Japonais. L'anglais est limité à l'oral mais la signalétique des transports est bilingue.",
       visa: "Aucun visa pour les Français jusqu'à 90 jours de tourisme. Formulaire d'immigration en ligne via Visit Japan Web.",
-      transport: "Métro Tokyo Metro et Toei, lignes JR dont la Yamanote. Carte Suica ou Pasmo indispensable.",
-      budgetJour: "70 à 130 € par personne et par jour, hébergement compris en hôtel de catégorie moyenne.",
+      transport:
+        "Métro Tokyo Metro et Toei, lignes JR dont la Yamanote. Carte Suica ou Pasmo indispensable.",
+      budgetJour:
+        "70 à 130 € par personne et par jour, hébergement compris en hôtel de catégorie moyenne.",
     },
     sections: [
       {
@@ -576,10 +598,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 8,
     updated: "2026-08-30",
     practical: {
-      monnaie: "Dinar algérien (DZD), non exportable et non convertible hors du pays. Prévoyez des espèces en euros.",
+      monnaie:
+        "Dinar algérien (DZD), non exportable et non convertible hors du pays. Prévoyez des espèces en euros.",
       langue: "Arabe et amazigh officiels ; le français est très largement compris et parlé.",
       visa: "Visa obligatoire pour les Français : demande au consulat avec réservation d'hôtel ou attestation d'hébergement.",
-      transport: "Métro, tramway, téléphériques, taxis et bus ETUSA. Les courses en taxi se négocient souvent au départ.",
+      transport:
+        "Métro, tramway, téléphériques, taxis et bus ETUSA. Les courses en taxi se négocient souvent au départ.",
       budgetJour: "35 à 60 € par personne et par jour, hébergement en hôtel correct compris.",
     },
     sections: [
@@ -645,8 +669,10 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Euro. Carte acceptée partout, y compris pour les petits montants.",
       langue: "Italien. L'anglais est courant dans le centre, le français parfois compris.",
       visa: "Aucune formalité pour les Français : carte d'identité ou passeport en cours de validité suffit.",
-      transport: "Métro (lignes A, B, C), tramways et bus ATAC. Le centre historique se parcourt à pied.",
-      budgetJour: "70 à 120 € par personne et par jour, hébergement en hôtel de catégorie moyenne compris.",
+      transport:
+        "Métro (lignes A, B, C), tramways et bus ATAC. Le centre historique se parcourt à pied.",
+      budgetJour:
+        "70 à 120 € par personne et par jour, hébergement en hôtel de catégorie moyenne compris.",
     },
     sections: [
       {
@@ -708,10 +734,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 7,
     updated: "2026-08-30",
     practical: {
-      monnaie: "Dinar tunisien (TND), non exportable. Environ 1 € = 3,4 TND. Changez sur place et gardez les reçus.",
+      monnaie:
+        "Dinar tunisien (TND), non exportable. Environ 1 € = 3,4 TND. Changez sur place et gardez les reçus.",
       langue: "Arabe officiel ; le français est très largement parlé et compris partout.",
       visa: "Aucun visa pour les Français en séjour touristique de moins de 90 jours. Passeport valide requis.",
-      transport: "Métro léger, train TGM vers Carthage et La Marsa, louages et taxis jaunes au compteur.",
+      transport:
+        "Métro léger, train TGM vers Carthage et La Marsa, louages et taxis jaunes au compteur.",
       budgetJour: "30 à 55 € par personne et par jour, hébergement en hôtel confortable compris.",
     },
     sections: [
@@ -774,10 +802,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 7,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Livre sterling (GBP). Environ 1 € = 0,85 £. Paiement par carte accepté quasiment partout, même pour 1 £.",
+      monnaie:
+        "Livre sterling (GBP). Environ 1 € = 0,85 £. Paiement par carte accepté quasiment partout, même pour 1 £.",
       langue: "Anglais. Le français est peu parlé hors des grands hôtels.",
       visa: "Pas de visa pour les Français en séjour touristique de moins de 6 mois, mais passeport obligatoire (la carte d'identité n'est plus acceptée) et autorisation électronique ETA à demander avant le départ.",
-      transport: "Métro (Tube), bus rouges, Overground et Elizabeth Line : payez sans contact avec votre carte bancaire, le plafond journalier s'applique automatiquement.",
+      transport:
+        "Métro (Tube), bus rouges, Overground et Elizabeth Line : payez sans contact avec votre carte bancaire, le plafond journalier s'applique automatiquement.",
       budgetJour: "90 à 150 € par personne et par jour, hébergement compris, hors shopping.",
     },
     sections: [
@@ -840,10 +870,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 6,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Euro (EUR). Attention : de nombreux commerces n'acceptent que les cartes de débit, pas les cartes de crédit.",
+      monnaie:
+        "Euro (EUR). Attention : de nombreux commerces n'acceptent que les cartes de débit, pas les cartes de crédit.",
       langue: "Néerlandais. L'anglais est parlé partout, y compris dans les petits commerces.",
       visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport en cours de validité suffisent.",
-      transport: "Vélo, tramways GVB, métro et ferries gratuits vers Amsterdam-Noord. Le train relie Schiphol au centre en 15 minutes.",
+      transport:
+        "Vélo, tramways GVB, métro et ferries gratuits vers Amsterdam-Noord. Le train relie Schiphol au centre en 15 minutes.",
       budgetJour: "90 à 140 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -909,7 +941,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Euro (EUR). Carte acceptée partout, même pour les petits montants.",
       langue: "Italien. L'anglais est courant dans l'hôtellerie et le centre-ville.",
       visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
-      transport: "Métro ATM (4 lignes), trams historiques, Malpensa Express depuis l'aéroport principal.",
+      transport:
+        "Métro ATM (4 lignes), trams historiques, Malpensa Express depuis l'aéroport principal.",
       budgetJour: "80 à 130 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -975,7 +1008,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Euro (EUR). Beaucoup de bars, snacks et clubs restent uniquement en espèces.",
       langue: "Allemand. L'anglais est très largement parlé, surtout dans les quartiers centraux.",
       visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
-      transport: "U-Bahn, S-Bahn, trams et bus (réseau BVG). Un ticket AB couvre l'essentiel de la ville.",
+      transport:
+        "U-Bahn, S-Bahn, trams et bus (réseau BVG). Un ticket AB couvre l'essentiel de la ville.",
       budgetJour: "70 à 120 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1038,10 +1072,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 7,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Euro (EUR). Carte largement acceptée ; espèces utiles dans les tavernes de quartier.",
+      monnaie:
+        "Euro (EUR). Carte largement acceptée ; espèces utiles dans les tavernes de quartier.",
       langue: "Grec. L'anglais est très répandu dans le tourisme.",
       visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
-      transport: "Métro (3 lignes), tram vers la côte, bus X95 depuis l'aéroport, ferries au Pirée.",
+      transport:
+        "Métro (3 lignes), tram vers la côte, bus X95 depuis l'aéroport, ferries au Pirée.",
       budgetJour: "60 à 100 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1104,10 +1140,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 6,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Euro (EUR). Carte acceptée dans la plupart des commerces ; espèces encore utiles dans les cafés traditionnels.",
+      monnaie:
+        "Euro (EUR). Carte acceptée dans la plupart des commerces ; espèces encore utiles dans les cafés traditionnels.",
       langue: "Allemand. L'anglais est parlé dans le tourisme et le centre.",
       visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
-      transport: "U-Bahn, trams (dont le Ring), bus. Le City Airport Train et le S7 relient l'aéroport au centre.",
+      transport:
+        "U-Bahn, trams (dont le Ring), bus. Le City Airport Train et le S7 relient l'aéroport au centre.",
       budgetJour: "75 à 120 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1170,10 +1208,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 6,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Couronne tchèque (CZK). Environ 1 € = 25 CZK. Refusez le change de rue et les bureaux affichant « 0 % commission ».",
+      monnaie:
+        "Couronne tchèque (CZK). Environ 1 € = 25 CZK. Refusez le change de rue et les bureaux affichant « 0 % commission ».",
       langue: "Tchèque. L'anglais est courant dans le centre, l'allemand souvent compris.",
       visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
-      transport: "Métro (3 lignes), tramways très denses dont le 22 panoramique, bus AE depuis l'aéroport.",
+      transport:
+        "Métro (3 lignes), tramways très denses dont le 22 panoramique, bus AE depuis l'aéroport.",
       budgetJour: "50 à 90 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1302,10 +1342,12 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 6,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Couronne danoise (DKK). Environ 1 € = 7,45 DKK. Paiement par carte accepté partout, espèces quasiment inutiles.",
+      monnaie:
+        "Couronne danoise (DKK). Environ 1 € = 7,45 DKK. Paiement par carte accepté partout, espèces quasiment inutiles.",
       langue: "Danois. L'anglais est parlé couramment par presque tout le monde.",
       visa: "Aucun visa : espace Schengen. Carte d'identité ou passeport valide suffisent.",
-      transport: "Métro automatique 24 h/24, trains S-tog, bus et surtout vélo : la ville compte plus de pistes cyclables que de voies automobiles.",
+      transport:
+        "Métro automatique 24 h/24, trains S-tog, bus et surtout vélo : la ville compte plus de pistes cyclables que de voies automobiles.",
       budgetJour: "110 à 170 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1371,7 +1413,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Euro (EUR).",
       langue: "Espagnol. L'anglais est répandu dans le centre et les lieux touristiques.",
       visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
-      transport: "Métro dense (13 lignes) et bus ; un abonnement touristique pluri-jours revient souvent moins cher qu'un ticket à l'unité au-delà de deux jours.",
+      transport:
+        "Métro dense (13 lignes) et bus ; un abonnement touristique pluri-jours revient souvent moins cher qu'un ticket à l'unité au-delà de deux jours.",
       budgetJour: "60 à 100 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1436,8 +1479,10 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Euro (EUR).",
       langue: "Anglais (et irlandais, langue officielle mais peu utilisée au quotidien).",
       visa: "Pas de visa pour un séjour touristique ; carte d'identité valide suffisante malgré l'absence de l'Irlande dans l'espace Schengen.",
-      transport: "Pas de métro : bus, tram Luas et trains DART pour la côte. Le centre se parcourt largement à pied.",
-      budgetJour: "70 à 120 € par personne et par jour, hébergement compris — l'Irlande est plus chère que la moyenne européenne.",
+      transport:
+        "Pas de métro : bus, tram Luas et trains DART pour la côte. Le centre se parcourt largement à pied.",
+      budgetJour:
+        "70 à 120 € par personne et par jour, hébergement compris — l'Irlande est plus chère que la moyenne européenne.",
     },
     sections: [
       {
@@ -1501,7 +1546,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Euro (EUR).",
       langue: "Allemand. L'anglais est bien maîtrisé, notamment par les jeunes générations.",
       visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
-      transport: "S-Bahn, U-Bahn, tram et bus formant un réseau dense ; un billet de zone unique est valable sur tous les modes.",
+      transport:
+        "S-Bahn, U-Bahn, tram et bus formant un réseau dense ; un billet de zone unique est valable sur tous les modes.",
       budgetJour: "70 à 110 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1566,7 +1612,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Euro (EUR).",
       langue: "Portugais. L'anglais est courant dans les zones touristiques.",
       visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
-      transport: "Métro léger, bus et le tram historique (ligne 1) le long du Douro ; centre historique vallonné, à parcourir à pied avec de bonnes chaussures.",
+      transport:
+        "Métro léger, bus et le tram historique (ligne 1) le long du Douro ; centre historique vallonné, à parcourir à pied avec de bonnes chaussures.",
       budgetJour: "45 à 75 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1628,10 +1675,13 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 6,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Forint hongrois (HUF), pas l'euro. Environ 1 € = 400 HUF. Cartes bancaires largement acceptées.",
-      langue: "Hongrois. L'anglais et l'allemand sont répandus dans le centre et les lieux touristiques.",
+      monnaie:
+        "Forint hongrois (HUF), pas l'euro. Environ 1 € = 400 HUF. Cartes bancaires largement acceptées.",
+      langue:
+        "Hongrois. L'anglais et l'allemand sont répandus dans le centre et les lieux touristiques.",
       visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
-      transport: "Métro (4 lignes, dont la ligne 1 historique classée UNESCO), tram et bus ; ticket à la journée très abordable.",
+      transport:
+        "Métro (4 lignes, dont la ligne 1 historique classée UNESCO), tram et bus ; ticket à la journée très abordable.",
       budgetJour: "35 à 60 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1693,10 +1743,13 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 6,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Won sud-coréen (KRW). Cartes bancaires largement acceptées, y compris dans le métro.",
-      langue: "Coréen. L'anglais est limité hors zones touristiques ; les applications de traduction sont très utiles.",
+      monnaie:
+        "Won sud-coréen (KRW). Cartes bancaires largement acceptées, y compris dans le métro.",
+      langue:
+        "Coréen. L'anglais est limité hors zones touristiques ; les applications de traduction sont très utiles.",
       visa: "Aucun visa pour un séjour touristique de moins de 90 jours, mais autorisation électronique K-ETA obligatoire avant le départ.",
-      transport: "Métro dense et ponctuel, signalé en anglais ; carte T-money rechargeable utilisable aussi en bus et taxi.",
+      transport:
+        "Métro dense et ponctuel, signalé en anglais ; carte T-money rechargeable utilisable aussi en bus et taxi.",
       budgetJour: "50 à 90 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1759,10 +1812,13 @@ export const CITY_GUIDES: CityGuide[] = [
     updated: "2026-08-31",
     practical: {
       monnaie: "Dollar de Hong Kong (HKD).",
-      langue: "Cantonais et anglais, tous deux langues officielles ; l'anglais est largement compris dans le tourisme et les affaires.",
+      langue:
+        "Cantonais et anglais, tous deux langues officielles ; l'anglais est largement compris dans le tourisme et les affaires.",
       visa: "Aucun visa pour un séjour touristique de moins de 90 jours, passeport valide suffisant.",
-      transport: "Métro MTR très dense, ferries Star Ferry entre Hong Kong Island et Kowloon ; carte Octopus rechargeable pour tous les modes.",
-      budgetJour: "60 à 100 € par personne et par jour, hébergement compris — l'une des villes les plus chères d'Asie côté logement.",
+      transport:
+        "Métro MTR très dense, ferries Star Ferry entre Hong Kong Island et Kowloon ; carte Octopus rechargeable pour tous les modes.",
+      budgetJour:
+        "60 à 100 € par personne et par jour, hébergement compris — l'une des villes les plus chères d'Asie côté logement.",
     },
     sections: [
       {
@@ -1824,9 +1880,11 @@ export const CITY_GUIDES: CityGuide[] = [
     updated: "2026-08-31",
     practical: {
       monnaie: "Dollar canadien (CAD).",
-      langue: "Français (majoritaire) et anglais. La quasi-totalité des Montréalais parlent les deux.",
+      langue:
+        "Français (majoritaire) et anglais. La quasi-totalité des Montréalais parlent les deux.",
       visa: "Aucun visa pour un séjour touristique de moins de 6 mois, mais autorisation de voyage électronique (AVE) obligatoire avant l'embarquement.",
-      transport: "Métro à 4 lignes, bus et réseau piéton souterrain (la « ville souterraine ») utile en hiver.",
+      transport:
+        "Métro à 4 lignes, bus et réseau piéton souterrain (la « ville souterraine ») utile en hiver.",
       budgetJour: "60 à 100 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1891,7 +1949,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Dollar américain (USD).",
       langue: "Anglais. L'espagnol est également très répandu.",
       visa: "Aucun visa pour un séjour touristique de moins de 90 jours, mais autorisation ESTA obligatoire avant le départ.",
-      transport: "Métro léger et bus limités ; la location de voiture reste la solution la plus pratique vu l'étalement de la ville.",
+      transport:
+        "Métro léger et bus limités ; la location de voiture reste la solution la plus pratique vu l'étalement de la ville.",
       budgetJour: "80 à 130 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -1956,7 +2015,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Livre égyptienne (EGP).",
       langue: "Arabe. L'anglais est répandu dans le tourisme.",
       visa: "Visa obligatoire pour les Français, à obtenir en ligne avant le départ (e-visa) ou à l'arrivée à l'aéroport contre paiement.",
-      transport: "Pas de liaison ferrée directe depuis l'aéroport : taxi ou VTC. Le Caire dispose d'un métro utile pour se déplacer en ville.",
+      transport:
+        "Pas de liaison ferrée directe depuis l'aéroport : taxi ou VTC. Le Caire dispose d'un métro utile pour se déplacer en ville.",
       budgetJour: "30 à 55 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -2021,7 +2081,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Franc CFA (XOF), indexé sur l'euro à taux fixe.",
       langue: "Français (langue officielle) et wolof, très parlé au quotidien.",
       visa: "Aucun visa pour un séjour touristique, le Sénégal ayant supprimé cette obligation pour toutes les nationalités. Passeport valide requis.",
-      transport: "Pas de métro : taxis (à négocier ou via application) et cars rapides locaux. Le centre se visite en partie à pied.",
+      transport:
+        "Pas de métro : taxis (à négocier ou via application) et cars rapides locaux. Le centre se visite en partie à pied.",
       budgetJour: "40 à 70 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -2083,11 +2144,14 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 6,
     updated: "2026-08-31",
     practical: {
-      monnaie: "Couronne islandaise (ISK). Cartes bancaires acceptées presque partout, y compris pour de très petits montants.",
+      monnaie:
+        "Couronne islandaise (ISK). Cartes bancaires acceptées presque partout, y compris pour de très petits montants.",
       langue: "Islandais. L'anglais est parlé couramment par la quasi-totalité de la population.",
       visa: "Aucun visa pour un séjour touristique, l'Islande faisant partie de l'espace Schengen. Carte d'identité valide suffisante.",
-      transport: "Pas de métro ni de train urbain : bus locaux et location de voiture, quasi indispensable pour sortir de Reykjavik.",
-      budgetJour: "110 à 170 € par personne et par jour, hébergement compris — l'un des pays les plus chers d'Europe.",
+      transport:
+        "Pas de métro ni de train urbain : bus locaux et location de voiture, quasi indispensable pour sortir de Reykjavik.",
+      budgetJour:
+        "110 à 170 € par personne et par jour, hébergement compris — l'un des pays les plus chers d'Europe.",
     },
     sections: [
       {
@@ -2151,7 +2215,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Couronne suédoise (SEK), pas l'euro.",
       langue: "Suédois. L'anglais est parlé couramment par la quasi-totalité de la population.",
       visa: "Aucun visa pour un séjour touristique, carte d'identité valide suffisante (espace Schengen).",
-      transport: "Métro, bus et ferries urbains entre les îles ; un pass transport de plusieurs jours est souvent le plus avantageux.",
+      transport:
+        "Métro, bus et ferries urbains entre les îles ; un pass transport de plusieurs jours est souvent le plus avantageux.",
       budgetJour: "80 à 130 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -2214,9 +2279,11 @@ export const CITY_GUIDES: CityGuide[] = [
     updated: "2026-08-31",
     practical: {
       monnaie: "Peso mexicain (MXN).",
-      langue: "Espagnol. L'anglais est répandu dans les zones touristiques, moins dans le reste de la ville.",
+      langue:
+        "Espagnol. L'anglais est répandu dans les zones touristiques, moins dans le reste de la ville.",
       visa: "Aucun visa pour un séjour touristique de moins de 180 jours, passeport valide requis.",
-      transport: "Métro étendu et bon marché, mais taxi officiel ou VTC recommandés pour un premier trajet avec bagages.",
+      transport:
+        "Métro étendu et bon marché, mais taxi officiel ou VTC recommandés pour un premier trajet avec bagages.",
       budgetJour: "45 à 80 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -2279,9 +2346,11 @@ export const CITY_GUIDES: CityGuide[] = [
     updated: "2026-08-31",
     practical: {
       monnaie: "Riyal qatari (QAR).",
-      langue: "Arabe. L'anglais est très largement parlé, notamment dans le tourisme et les affaires.",
+      langue:
+        "Arabe. L'anglais est très largement parlé, notamment dans le tourisme et les affaires.",
       visa: "Aucun visa pour un séjour touristique de courte durée, passeport valide requis.",
-      transport: "Métro de Doha (ligne rouge notamment), taxis et VTC ; les distances entre quartiers restent importantes.",
+      transport:
+        "Métro de Doha (ligne rouge notamment), taxis et VTC ; les distances entre quartiers restent importantes.",
       budgetJour: "55 à 100 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -2343,11 +2412,15 @@ export const CITY_GUIDES: CityGuide[] = [
     readingMinutes: 8,
     updated: "2026-09-01",
     practical: {
-      monnaie: "Roupie indonésienne (IDR). Environ 1 € = 17 000 IDR. Distributeurs largement disponibles, prévoyez du liquide pour les warungs.",
-      langue: "Indonésien (bahasa Indonesia) et balinais. L'anglais est très répandu dans les zones touristiques du sud de l'île.",
+      monnaie:
+        "Roupie indonésienne (IDR). Environ 1 € = 17 000 IDR. Distributeurs largement disponibles, prévoyez du liquide pour les warungs.",
+      langue:
+        "Indonésien (bahasa Indonesia) et balinais. L'anglais est très répandu dans les zones touristiques du sud de l'île.",
       visa: "Visa à l'arrivée (VOA) payant pour les Français, environ 30 € pour 30 jours, prolongeable une fois sur place. Passeport valide au moins 6 mois.",
-      transport: "Pas de transport public structuré : scooter de location (permis international requis), chauffeur à la journée, ou applications Gojek/Grab pour de courts trajets.",
-      budgetJour: "35 à 65 € par personne et par jour, davantage dans les villas avec piscine du sud de l'île.",
+      transport:
+        "Pas de transport public structuré : scooter de location (permis international requis), chauffeur à la journée, ou applications Gojek/Grab pour de courts trajets.",
+      budgetJour:
+        "35 à 65 € par personne et par jour, davantage dans les villas avec piscine du sud de l'île.",
     },
     sections: [
       {
@@ -2413,7 +2486,8 @@ export const CITY_GUIDES: CityGuide[] = [
       monnaie: "Dirham marocain (MAD).",
       langue: "Arabe et français, très largement parlé dans les affaires et le tourisme.",
       visa: "Aucun visa pour un séjour touristique de moins de 90 jours, passeport valide requis.",
-      transport: "Tramway, petits taxis (à négocier ou au compteur) et train ONCF direct depuis l'aéroport.",
+      transport:
+        "Tramway, petits taxis (à négocier ou au compteur) et train ONCF direct depuis l'aéroport.",
       budgetJour: "45 à 75 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -2476,9 +2550,11 @@ export const CITY_GUIDES: CityGuide[] = [
     updated: "2026-09-01",
     practical: {
       monnaie: "Dollar américain (USD).",
-      langue: "Anglais et espagnol, très largement parlé compte tenu de la forte population latino-américaine.",
+      langue:
+        "Anglais et espagnol, très largement parlé compte tenu de la forte population latino-américaine.",
       visa: "Aucun visa pour un séjour touristique de moins de 90 jours, mais autorisation ESTA obligatoire avant le départ.",
-      transport: "Metrorail et bus limités ; la location de voiture reste recommandée pour sortir du centre.",
+      transport:
+        "Metrorail et bus limités ; la location de voiture reste recommandée pour sortir du centre.",
       budgetJour: "75 à 120 € par personne et par jour, hébergement compris.",
     },
     sections: [
@@ -2532,4 +2608,25 @@ export function getCityGuide(slug: string): CityGuide | undefined {
 /** Guide correspondant à une page trajet (/vols/<routeSlug>). */
 export function getCityGuideForRoute(routeSlug: string): CityGuide | undefined {
   return CITY_GUIDES.find((guide) => guide.routeSlug === routeSlug);
+}
+
+/**
+ * Guide de la ville d'ARRIVÉE d'une page trajet.
+ *
+ * Le rattachement se faisait par `routeSlug`, donc par couple départ-arrivée :
+ * le guide de Barcelone n'était visible que depuis /vols/paris-barcelone, alors
+ * que marseille-barcelone, nice-barcelone et toulouse-barcelone parlent de la
+ * même ville. Or ce contenu — quartiers, budget sur place, transports,
+ * formalités — ne dépend pas de l'aéroport de départ.
+ *
+ * Le repli sur `routeSlug` couvre les pages générées, dont le code de
+ * destination vient du référentiel géographique et peut désigner un aéroport
+ * précis là où le guide porte le code de la ville (MXP contre MIL).
+ */
+export function guideForRoutePage(routeSlug: string, destination: string): CityGuide | undefined {
+  const code = destination.toUpperCase();
+  return (
+    CITY_GUIDES.find((guide) => guide.destination.toUpperCase() === code) ??
+    getCityGuideForRoute(routeSlug)
+  );
 }
