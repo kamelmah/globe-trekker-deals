@@ -9,6 +9,7 @@
 
 import { AIRPORTS } from "@/data/airports";
 import { DESTINATIONS, type DestinationRoute } from "@/data/destinations";
+import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import {
   AIRPORT_NAMES_FR,
   COUNTRY_NAMES_FR,
@@ -466,14 +467,14 @@ export async function listRelatedRoutes(params: {
   const siblings =
     whitelisted.length > 0
       ? whitelisted
-      : DESTINATIONS.filter(
-          (route) => route.origin.toUpperCase() === origin && route.destination !== exclude,
-        ).map((route) => ({
-          destination: route.destination,
-          slug: route.slug,
-          city: route.destinationCity,
-          country: route.country,
-        }));
+      : withoutPruned(DESTINATIONS, PRUNED_ROUTE_SLUGS)
+          .filter((route) => route.origin.toUpperCase() === origin && route.destination !== exclude)
+          .map((route) => ({
+            destination: route.destination,
+            slug: route.slug,
+            city: route.destinationCity,
+            country: route.country,
+          }));
   if (siblings.length === 0) return [];
 
   // Plancher déjà observé par destination, s'il existe.

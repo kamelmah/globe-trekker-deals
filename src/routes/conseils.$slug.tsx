@@ -1,5 +1,6 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
+import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { DESTINATIONS } from "@/data/destinations";
 import { getPost } from "@/data/posts";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -13,7 +14,10 @@ export const Route = createFileRoute("/conseils/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Article introuvable | TrouveMonVol" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Article introuvable | TrouveMonVol" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const { post } = loaderData;
@@ -69,11 +73,14 @@ export const Route = createFileRoute("/conseils/$slug")({
 
 function PostPage() {
   const { post } = Route.useLoaderData();
+  // Les pages élaguées sont exclues : un article indexable ne doit pas
+  // envoyer le crawl vers une page en noindex.
+  const indexable = withoutPruned(DESTINATIONS, PRUNED_ROUTE_SLUGS);
   const related = post.relatedSlugs
     ? post.relatedSlugs
-        .map((slug) => DESTINATIONS.find((d) => d.slug === slug))
+        .map((slug) => indexable.find((d) => d.slug === slug))
         .filter((d): d is (typeof DESTINATIONS)[number] => d !== undefined)
-    : DESTINATIONS.slice(0, 4);
+    : indexable.slice(0, 4);
 
   return (
     <article className="container-page py-10">
@@ -121,11 +128,7 @@ function PostPage() {
           </li>
           {related.map((d) => (
             <li key={d.slug}>
-              <Link
-                to="/vols/$slug"
-                params={{ slug: d.slug }}
-                className="hover:text-foreground"
-              >
+              <Link to="/vols/$slug" params={{ slug: d.slug }} className="hover:text-foreground">
                 Vols pas chers {d.originCity} — {d.destinationCity}
               </Link>
             </li>
