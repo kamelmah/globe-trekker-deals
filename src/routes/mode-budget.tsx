@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { lazy, Suspense, useCallback, useState } from "react";
 
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
+import { MonthPicker } from "@/components/search/MonthPicker";
 import { PassengerSelector, type Passengers } from "@/components/search/PassengerSelector";
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ import { routeSlug } from "@/lib/slug";
 import { getAirport } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { cheapestDestinations } from "@/lib/flights.functions";
-import { currentMonth, iataOr, monthOr, numberOr } from "@/lib/search-params";
+import { iataOr, monthOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const BudgetMap = lazy(() => import("@/components/budget/BudgetMap"));
@@ -195,16 +196,7 @@ function BudgetPage() {
             placeholder="Ex. Paris, Lyon, CDG…"
           />
 
-          <div className="space-y-1.5">
-            <Label htmlFor="budget-month">Mois de départ (facultatif)</Label>
-            <Input
-              id="budget-month"
-              type="month"
-              min={currentMonth()}
-              value={monthInput}
-              onChange={(e) => setMonthInput(e.target.value)}
-            />
-          </div>
+          <MonthPicker id="budget-month" value={monthInput} onChange={setMonthInput} />
 
           <div className="space-y-1.5">
             <Label htmlFor="budget-amount">Budget maximum (€)</Label>
