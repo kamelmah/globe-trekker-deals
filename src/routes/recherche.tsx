@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, Luggage, ShieldCheck, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
@@ -11,6 +11,7 @@ import { ResultsPriceCalendar } from "@/components/flights/ResultsPriceCalendar"
 import { passengersSummary } from "@/components/search/PassengerSelector";
 import { SearchForm } from "@/components/search/SearchForm";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
+import { LienHotelsCom } from "@/components/stay/LienHotelsCom";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import { cityLabel, PARIS_MAIN_AIRPORTS } from "@/data/airports";
 import { KIWI_FALLBACK_URL } from "@/lib/affiliate-partners";
 import { useCurrency } from "@/lib/currency-context";
 import { searchFlights } from "@/lib/flights.functions";
-import { dateOr, iataOr, numberOr, todayPlus } from "@/lib/search-params";
+import { dateOr, iataOr, numberOr, saveLastFlightSearch, todayPlus } from "@/lib/search-params";
 import { formatDateCompact, formatDateLong, formatMonthLong } from "@/lib/dates";
 import { BAGGAGE_LEVELS, priceWithBaggage, type BaggageLevel } from "@/data/baggage-fees";
 import { addDaysIso, nightsBetween, tripDurationLabel } from "@/lib/trip-duration";
@@ -129,6 +130,31 @@ function SearchResultsPage() {
 
   const from = cityLabel(search["origin"]);
   const to = cityLabel(search["destination"]);
+
+  /**
+   * Mémorise la recherche dans le navigateur du visiteur, pour que la page
+   * hébergement puisse lui reproposer cette ville et ces dates. Rien ne part au
+   * serveur (voir saveLastFlightSearch).
+   */
+  useEffect(() => {
+    saveLastFlightSearch({
+      origin: search.origin,
+      destination: search.destination,
+      depart: search.depart,
+      retour: search.retour,
+      adultes: search.adultes,
+      enfants: search.enfants,
+      bebes: search.bebes,
+    });
+  }, [
+    search.origin,
+    search.destination,
+    search.depart,
+    search.retour,
+    search.adultes,
+    search.enfants,
+    search.bebes,
+  ]);
 
   // Durée réelle du séjour recherché : le raccourci "Durée du séjour" la fixe
   // directement, mais un aller-retour saisi avec deux dates précises ne passe
@@ -639,6 +665,35 @@ function SearchResultsPage() {
         title="Et pour dormir sur place ?"
         description={`Hébergements disponibles à ${to}${search.depart ? ` pour votre séjour du ${formatDateLong(search.depart)}${search.retour ? ` au ${formatDateLong(search.retour)}` : ""}` : ""}, affichés sur une carte.`}
       />
+
+      {/* Les dates du vol partent telles quelles chez le partenaire, et vers
+          notre page hébergement — c'est le seul endroit du site où le séjour a
+          une vraie date de début ET de fin. */}
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
+        <LienHotelsCom
+          className="sm:w-auto sm:min-w-72"
+          ville={to}
+          sid={`recherche-${search.destination.toLowerCase()}`}
+          arrivee={search.depart}
+          depart={search.retour}
+          voyageurs={search.adultes}
+          libelle={`Voir les hôtels à ${to}`}
+          mention
+        />
+        <Button asChild variant="outline">
+          <Link
+            to="/hebergement"
+            search={{
+              ville: to,
+              ...(search.depart ? { arrivee: search.depart } : {}),
+              ...(search.retour ? { depart: search.retour } : {}),
+              ...(search.adultes > 1 ? { voyageurs: search.adultes } : {}),
+            }}
+          >
+            Comparer les hébergements
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }

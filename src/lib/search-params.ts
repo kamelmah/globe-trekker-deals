@@ -58,3 +58,86 @@ function isoLocal(d: Date): string {
   const deuxChiffres = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${deuxChiffres(d.getMonth() + 1)}-${deuxChiffres(d.getDate())}`;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Dernière recherche de vol                                                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Dernière recherche de vol du visiteur, conservée dans SON navigateur.
+ *
+ * Sert à proposer, sur la page hébergement, la ville et les dates du vol qu'il
+ * vient de chercher plutôt que de lui faire tout ressaisir. Rien n'est envoyé
+ * au serveur : la donnée ne quitte jamais l'appareil, et elle ne contient que
+ * des codes d'aéroport, des dates et un nombre de voyageurs — jamais d'adresse
+ * e-mail ni d'identifiant.
+ *
+ * Volontairement sans consentement préalable : c'est un stockage strictement
+ * fonctionnel, déclaré comme tel sur /cookies.
+ */
+export type DerniereRecherche = {
+  origin: string;
+  destination: string;
+  depart: string;
+  retour: string;
+  adultes: number;
+  enfants: number;
+  bebes: number;
+  /** Horodatage ISO de la recherche, pour ne pas ressortir un séjour oublié. */
+  at: string;
+};
+
+const DERNIERE_RECHERCHE_KEY = "tmv-derniere-recherche";
+
+/** Au-delà, la « dernière recherche » n'est plus une intention de voyage. */
+const PEREMPTION_MS = 30 * 24 * 60 * 60 * 1000;
+
+export function saveLastFlightSearch(
+  search: Omit<DerniereRecherche, "at"> & { at?: string },
+): void {
+  if (typeof window === "undefined") return;
+  // Une recherche sans destination ne dit pas où dormir : elle n'est pas gardée.
+  if (!IATA.test(search.destination)) return;
+  try {
+    const payload: DerniereRecherche = {
+      origin: search.origin,
+      destination: search.destination,
+      depart: search.depart,
+      retour: search.retour,
+      adultes: search.adultes,
+      enfants: search.enfants,
+      bebes: search.bebes,
+      at: search.at ?? new Date().toISOString(),
+    };
+    window.localStorage.setItem(DERNIERE_RECHERCHE_KEY, JSON.stringify(payload));
+  } catch {
+    // Navigation privée, quota plein, stockage refusé : la fonctionnalité
+    // disparaît, la page continue.
+  }
+}
+
+export function readLastFlightSearch(): DerniereRecherche | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(DERNIERE_RECHERCHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<DerniereRecherche> | null;
+    const destination = iataOr(parsed?.destination, "");
+    const at = typeof parsed?.at === "string" ? parsed.at : "";
+    if (!destination || !at) return null;
+    const age = Date.now() - Date.parse(at);
+    if (!Number.isFinite(age) || age < 0 || age > PEREMPTION_MS) return null;
+    return {
+      origin: iataOr(parsed?.origin, ""),
+      destination,
+      depart: dateOr(parsed?.depart, ""),
+      retour: dateOr(parsed?.retour, ""),
+      adultes: Math.min(9, Math.max(1, Math.round(numberOr(parsed?.adultes, 1)))),
+      enfants: Math.min(8, Math.max(0, Math.round(numberOr(parsed?.enfants, 0)))),
+      bebes: Math.min(8, Math.max(0, Math.round(numberOr(parsed?.bebes, 0)))),
+      at,
+    };
+  } catch {
+    return null;
+  }
+}

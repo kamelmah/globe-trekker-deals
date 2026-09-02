@@ -43,3 +43,23 @@ export const cheapestWhitelistedRoutes = createServerFn({ method: "GET" })
     const { listCheapestWhitelistedRoutes } = await import("@/lib/route-pages.server");
     return { routes: await listCheapestWhitelistedRoutes(data) };
   });
+
+/**
+ * Plancher déjà relevé pour une poignée de destinations depuis une même
+ * origine. Aucun appel à l'API tarifaire : sans relevé, la valeur est absente
+ * et l'appelant n'affiche rien plutôt qu'un prix inventé.
+ */
+export const observedLowestPrices = createServerFn({ method: "GET" })
+  .inputValidator((data) =>
+    z
+      .object({
+        origin: z.string().trim().min(3).max(3),
+        destinations: z.array(z.string().trim().min(3).max(3)).min(1).max(40),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { readHistoryLows } = await import("@/lib/route-pages.server");
+    const lows = await readHistoryLows(data.origin, data.destinations);
+    return { prices: Object.fromEntries(lows) as Record<string, { priceEur: number }> };
+  });

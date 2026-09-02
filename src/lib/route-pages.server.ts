@@ -524,6 +524,44 @@ export type CheapestWhitelistedRoute = {
   observedAt: string | null;
 };
 
+export type PlancherObserve = { priceEur: number; observedAt: string | null };
+
+/**
+ * Plancher daté par destination, lu en UNE requête sur `price_history`.
+ *
+ * Une requête par destination coûtait un aller-retour réseau par carte
+ * affichée : sur une page qui en montre six, c'est six fois le même trajet
+ * pour une seule table.
+ */
+export async function readHistoryLows(
+  origin: string,
+  destinations: string[],
+): Promise<Map<string, PlancherObserve>> {
+  const lows = new Map<string, PlancherObserve>();
+  if (destinations.length === 0) return lows;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("price_history")
+      .select("destination,lowest_price,updated_at")
+      .eq("origin", origin.toUpperCase())
+      .in("destination", destinations)
+      .order("lowest_price", { ascending: true });
+    if (error) throw error;
+    for (const row of data ?? []) {
+      const price = Math.round(Number(row.lowest_price));
+      if (!Number.isFinite(price) || price <= 0) continue;
+      const current = lows.get(row.destination);
+      if (!current || price < current.priceEur) {
+        lows.set(row.destination, { priceEur: price, observedAt: row.updated_at ?? null });
+      }
+    }
+  } catch (error) {
+    console.error("Lecture de l'historique des liaisons impossible", error);
+  }
+  return lows;
+}
+
 /**
  * Liaisons les moins chères au départ d'une ville, pour la page d'accueil.
  *
@@ -559,30 +597,10 @@ export async function listCheapestWhitelistedRoutes(params: {
 
   // 2) Historique daté : une seule requête pour toutes les destinations, au
   //    lieu d'une par carte.
-  const history = new Map<string, { priceEur: number; observedAt: string | null }>();
-  try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
-      .from("price_history")
-      .select("destination,lowest_price,updated_at")
-      .eq("origin", origin)
-      .in(
-        "destination",
-        routes.map((route) => route.destination),
-      )
-      .order("lowest_price", { ascending: true });
-    if (error) throw error;
-    for (const row of data ?? []) {
-      const price = Math.round(Number(row.lowest_price));
-      if (!Number.isFinite(price) || price <= 0) continue;
-      const current = history.get(row.destination);
-      if (!current || price < current.priceEur) {
-        history.set(row.destination, { priceEur: price, observedAt: row.updated_at ?? null });
-      }
-    }
-  } catch (error) {
-    console.error("Lecture de l'historique des liaisons impossible", error);
-  }
+  const history = await readHistoryLows(
+    origin,
+    routes.map((route) => route.destination),
+  );
 
   // Même arbitrage que readObservedPrice : le plus bas des deux l'emporte, la
   // compagnie connue est conservée, la date ne vient que de l'historique.

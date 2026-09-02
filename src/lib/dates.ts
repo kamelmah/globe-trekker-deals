@@ -73,6 +73,33 @@ export function formatDateCompact(iso: string | null | undefined): string {
   }).format(date);
 }
 
+/**
+ * « 2 → 9 oct. » — une plage de dates en une seule mention.
+ *
+ * Le mois n'est répété que s'il change (« 28 sept. → 3 oct. ») : dans une ligne
+ * de rappel déjà dense, écrire deux fois le même mois n'apprend rien. Sans date
+ * de fin, seule la date de début est rendue.
+ */
+export function formatDateRangeShort(
+  debut: string | null | undefined,
+  fin: string | null | undefined,
+): string {
+  const from = debut ? parseDateOnly(debut) : null;
+  if (!from) return "";
+  const to = fin ? parseDateOnly(fin) : null;
+  const jourMois = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
+  if (!to || !fin) return jourMois.format(from);
+  const memeMois = debut!.slice(0, 7) === fin.slice(0, 7);
+  const gauche = memeMois
+    ? new Intl.DateTimeFormat("fr-FR", { day: "numeric", timeZone: "UTC" }).format(from)
+    : jourMois.format(from);
+  return `${gauche} → ${jourMois.format(to)}`;
+}
+
 /** « novembre 2026 » à partir d'un mois AAAA-MM. */
 export function formatMonthLong(month: string | null | undefined): string {
   if (!month || !/^\d{4}-\d{2}$/.test(month)) return "";

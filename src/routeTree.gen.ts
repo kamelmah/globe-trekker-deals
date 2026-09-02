@@ -16,7 +16,6 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as DestinationsProposesRouteImport } from './routes/destinations-proposes'
 import { Route as FaqRouteImport } from './routes/faq'
-import { Route as HebergementRouteImport } from './routes/hebergement'
 import { Route as IndemnisationRouteImport } from './routes/indemnisation'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MethodologieRouteImport } from './routes/methodologie'
@@ -30,6 +29,8 @@ import { Route as ComparatifsIndexRouteImport } from './routes/comparatifs.index
 import { Route as ComparatifsSlugRouteImport } from './routes/comparatifs.$slug'
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
 import { Route as ConseilsSlugRouteImport } from './routes/conseils.$slug'
+import { Route as HebergementIndexRouteImport } from './routes/hebergement.index'
+import { Route as HebergementVilleRouteImport } from './routes/hebergement.$ville'
 import { Route as VolsPasChersSlugRouteImport } from './routes/vols-pas-chers.$slug'
 import { Route as VolsSlugRouteImport } from './routes/vols.$slug'
 import { Route as ApiPublicRafraichirPrixRouteImport } from './routes/api/public/rafraichir-prix'
@@ -73,11 +74,6 @@ const DestinationsProposesRoute = DestinationsProposesRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HebergementRoute = HebergementRouteImport.update({
-  id: '/hebergement',
-  path: '/hebergement',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndemnisationRoute = IndemnisationRouteImport.update({
@@ -145,6 +141,16 @@ const ConseilsSlugRoute = ConseilsSlugRouteImport.update({
   path: '/conseils/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HebergementIndexRoute = HebergementIndexRouteImport.update({
+  id: '/hebergement/',
+  path: '/hebergement/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HebergementVilleRoute = HebergementVilleRouteImport.update({
+  id: '/hebergement/$ville',
+  path: '/hebergement/$ville',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VolsPasChersSlugRoute = VolsPasChersSlugRouteImport.update({
   id: '/vols-pas-chers/$slug',
   path: '/vols-pas-chers/$slug',
@@ -203,7 +209,6 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
-  '/hebergement': typeof HebergementRoute
   '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
@@ -214,11 +219,13 @@ export interface FileRoutesByFullPath {
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
+  '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes/': typeof AlertesIndexRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
+  '/hebergement/': typeof HebergementIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
@@ -235,7 +242,6 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
-  '/hebergement': typeof HebergementRoute
   '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
@@ -246,11 +252,13 @@ export interface FileRoutesByTo {
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
+  '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes': typeof AlertesIndexRoute
   '/comparatifs': typeof ComparatifsIndexRoute
   '/conseils': typeof ConseilsIndexRoute
+  '/hebergement': typeof HebergementIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
@@ -268,7 +276,6 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/destinations-proposes': typeof DestinationsProposesRoute
   '/faq': typeof FaqRoute
-  '/hebergement': typeof HebergementRoute
   '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
@@ -279,11 +286,13 @@ export interface FileRoutesById {
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
+  '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes/': typeof AlertesIndexRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
+  '/hebergement/': typeof HebergementIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
   '/api/public/relever-saisonnalite': typeof ApiPublicReleverSaisonnaliteRoute
   '/conseils/destinations/$city': typeof ConseilsDestinationsCityRoute
@@ -302,7 +311,6 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/destinations-proposes'
     | '/faq'
-    | '/hebergement'
     | '/indemnisation'
     | '/mentions-legales'
     | '/methodologie'
@@ -313,11 +321,13 @@ export interface FileRouteTypes {
     | '/alertes/desinscription'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
+    | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes/'
     | '/comparatifs/'
     | '/conseils/'
+    | '/hebergement/'
     | '/api/public/rafraichir-prix'
     | '/api/public/relever-saisonnalite'
     | '/conseils/destinations/$city'
@@ -334,7 +344,6 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/destinations-proposes'
     | '/faq'
-    | '/hebergement'
     | '/indemnisation'
     | '/mentions-legales'
     | '/methodologie'
@@ -345,11 +354,13 @@ export interface FileRouteTypes {
     | '/alertes/desinscription'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
+    | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes'
     | '/comparatifs'
     | '/conseils'
+    | '/hebergement'
     | '/api/public/rafraichir-prix'
     | '/api/public/relever-saisonnalite'
     | '/conseils/destinations/$city'
@@ -366,7 +377,6 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/destinations-proposes'
     | '/faq'
-    | '/hebergement'
     | '/indemnisation'
     | '/mentions-legales'
     | '/methodologie'
@@ -377,11 +387,13 @@ export interface FileRouteTypes {
     | '/alertes/desinscription'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
+    | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes/'
     | '/comparatifs/'
     | '/conseils/'
+    | '/hebergement/'
     | '/api/public/rafraichir-prix'
     | '/api/public/relever-saisonnalite'
     | '/conseils/destinations/$city'
@@ -399,7 +411,6 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   DestinationsProposesRoute: typeof DestinationsProposesRoute
   FaqRoute: typeof FaqRoute
-  HebergementRoute: typeof HebergementRoute
   IndemnisationRoute: typeof IndemnisationRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MethodologieRoute: typeof MethodologieRoute
@@ -410,11 +421,13 @@ export interface RootRouteChildren {
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
   ComparatifsSlugRoute: typeof ComparatifsSlugRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
+  HebergementVilleRoute: typeof HebergementVilleRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
   VolsSlugRoute: typeof VolsSlugRoute
   AlertesIndexRoute: typeof AlertesIndexRoute
   ComparatifsIndexRoute: typeof ComparatifsIndexRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
+  HebergementIndexRoute: typeof HebergementIndexRoute
   ApiPublicRafraichirPrixRoute: typeof ApiPublicRafraichirPrixRoute
   ApiPublicReleverSaisonnaliteRoute: typeof ApiPublicReleverSaisonnaliteRoute
   ConseilsDestinationsCityRoute: typeof ConseilsDestinationsCityRoute
@@ -473,13 +486,6 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hebergement': {
-      id: '/hebergement'
-      path: '/hebergement'
-      fullPath: '/hebergement'
-      preLoaderRoute: typeof HebergementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/indemnisation': {
@@ -573,6 +579,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConseilsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hebergement/': {
+      id: '/hebergement/'
+      path: '/hebergement'
+      fullPath: '/hebergement/'
+      preLoaderRoute: typeof HebergementIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hebergement/$ville': {
+      id: '/hebergement/$ville'
+      path: '/hebergement/$ville'
+      fullPath: '/hebergement/$ville'
+      preLoaderRoute: typeof HebergementVilleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vols-pas-chers/$slug': {
       id: '/vols-pas-chers/$slug'
       path: '/vols-pas-chers/$slug'
@@ -647,7 +667,6 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   DestinationsProposesRoute: DestinationsProposesRoute,
   FaqRoute: FaqRoute,
-  HebergementRoute: HebergementRoute,
   IndemnisationRoute: IndemnisationRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   MethodologieRoute: MethodologieRoute,
@@ -658,11 +677,13 @@ const rootRouteChildren: RootRouteChildren = {
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
   ComparatifsSlugRoute: ComparatifsSlugRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
+  HebergementVilleRoute: HebergementVilleRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
   VolsSlugRoute: VolsSlugRoute,
   AlertesIndexRoute: AlertesIndexRoute,
   ComparatifsIndexRoute: ComparatifsIndexRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
+  HebergementIndexRoute: HebergementIndexRoute,
   ApiPublicRafraichirPrixRoute: ApiPublicRafraichirPrixRoute,
   ApiPublicReleverSaisonnaliteRoute: ApiPublicReleverSaisonnaliteRoute,
   ConseilsDestinationsCityRoute: ConseilsDestinationsCityRoute,

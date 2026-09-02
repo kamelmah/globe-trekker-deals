@@ -52,6 +52,11 @@ function CookiesPage() {
           Votre choix de consentement aux cookies lui-même (catégories ci-dessous), pendant 13 mois
           maximum
         </li>
+        <li>
+          Votre dernière recherche de vol — villes, dates et nombre de voyageurs, pendant 30 jours —
+          pour vous la reproposer sur la page Hébergement plutôt que de vous la faire ressaisir.
+          Elle ne quitte jamais votre navigateur et ne contient ni adresse e-mail ni identifiant
+        </li>
       </ul>
 
       <h2 className="mt-8 font-display text-xl font-semibold">
@@ -74,6 +79,12 @@ function CookiesPage() {
         notamment de rattacher une éventuelle réservation à votre visite). Nous n'avons pas la main
         sur ces cookies-là ; c'est ce mécanisme d'affiliation qui finance le site, sans surcoût pour
         vous ni influence sur l'ordre des résultats.
+      </p>
+      <p className="mt-2 text-muted-foreground">
+        Il en va de même des liens « hôtels » vers Hotels.com : ils passent par la plateforme
+        d'affiliation CJ, qui dépose ses propres cookies au moment du clic pour rattacher une
+        éventuelle réservation à notre site. Rien n'est déposé tant que vous ne cliquez pas, et ces
+        liens sont signalés comme partenaires là où ils apparaissent.
       </p>
 
       <h2 className="mt-8 font-display text-xl font-semibold">Modifier votre choix</h2>

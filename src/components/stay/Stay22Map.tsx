@@ -25,6 +25,7 @@ export function Stay22Map({
   description,
   className,
   id = "hebergement",
+  hauteur = "h-[420px] sm:h-[520px]",
 }: {
   city: string;
   checkin?: string;
@@ -33,6 +34,12 @@ export function Stay22Map({
   description?: string;
   className?: string;
   id?: string;
+  /**
+   * Hauteur du cadre — la même pour la carte, son squelette et l'écran de
+   * consentement : trois valeurs différentes feraient sauter la page à chaque
+   * changement d'état.
+   */
+  hauteur?: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
@@ -152,7 +159,9 @@ export function Stay22Map({
       {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
       <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
         {!mapsConsent ? (
-          <div className="flex h-[420px] w-full flex-col items-center justify-center gap-4 p-6 text-center sm:h-[520px]">
+          <div
+            className={`flex w-full flex-col items-center justify-center gap-4 p-6 text-center ${hauteur}`}
+          >
             <p className="max-w-sm text-sm text-muted-foreground">
               Cette carte est fournie par notre partenaire Stay22 et dépose des cookies tiers. Elle
               ne s'affiche qu'avec votre accord.
@@ -162,7 +171,7 @@ export function Stay22Map({
             </Button>
           </div>
         ) : visible ? (
-          <div className="relative h-[420px] w-full sm:h-[520px]">
+          <div className={`relative w-full ${hauteur}`}>
             {status !== "error" && (
               <iframe
                 src={src}
@@ -206,7 +215,7 @@ export function Stay22Map({
           </div>
         ) : (
           <div
-            className="h-[420px] w-full animate-pulse bg-secondary sm:h-[520px]"
+            className={`w-full animate-pulse bg-secondary ${hauteur}`}
             role="status"
             aria-label="Chargement de la carte des hébergements"
           />

@@ -52,6 +52,7 @@ export function PriceDatePicker({
   departureAt = null,
   id = "depart",
   label = "Date de départ",
+  hint,
 }: {
   value: string;
   onChange: (date: string) => void;
@@ -63,6 +64,12 @@ export function PriceDatePicker({
   departureAt?: string | null;
   id?: string;
   label?: string;
+  /**
+   * Remplace la phrase d'explication au-dessus du calendrier. Là où le champ ne
+   * sert pas à choisir un vol — la page hébergement — parler de « prix aller
+   * simple par jour de départ » n'aurait aucun sens.
+   */
+  hint?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [month, setMonth] = useState(() => monthOf(value || departureAt || ""));
@@ -150,15 +157,17 @@ export function PriceDatePicker({
           </div>
 
           <p className="mt-1 text-xs text-muted-foreground">
-            {!destination
-              ? "Indiquez une destination pour voir les prix par jour."
-              : mode === "return"
-                ? departureAt
-                  ? `Prix aller-retour le plus bas pour un retour ce jour-là (départ le ${formatDateLong(departureAt)}).`
-                  : "Choisissez d'abord une date de départ pour voir les prix de retour."
-                : tripDuration > 0
-                  ? `Prix aller-retour le plus bas (séjour de ${tripDuration} nuits).`
-                  : "Prix aller simple le plus bas par jour de départ."}
+            {hint
+              ? hint
+              : !destination
+                ? "Indiquez une destination pour voir les prix par jour."
+                : mode === "return"
+                  ? departureAt
+                    ? `Prix aller-retour le plus bas pour un retour ce jour-là (départ le ${formatDateLong(departureAt)}).`
+                    : "Choisissez d'abord une date de départ pour voir les prix de retour."
+                  : tripDuration > 0
+                    ? `Prix aller-retour le plus bas (séjour de ${tripDuration} nuits).`
+                    : "Prix aller simple le plus bas par jour de départ."}
           </p>
 
           <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[11px] font-medium text-muted-foreground">
@@ -221,7 +230,11 @@ export function PriceDatePicker({
             <p className="mt-2 text-xs text-destructive">{pricesQuery.data.error}</p>
           )}
 
-          {!pricesQuery.isFetching &&
+          {/* `canFetch` : sans trajet, aucun prix n'a été demandé — annoncer
+              qu'il n'y en a « aucun sur ce trajet » serait faux, et se
+              contredisait déjà avec la phrase d'explication au-dessus. */}
+          {canFetch &&
+            !pricesQuery.isFetching &&
             !pricesQuery.data?.error &&
             (pricesQuery.data?.days?.length ?? 0) === 0 && (
               <p className="mt-2 text-xs text-muted-foreground">
@@ -229,7 +242,13 @@ export function PriceDatePicker({
               </p>
             )}
 
-          <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
+          {/* La légende ne s'affiche que s'il y a des prix à légender : sans
+              trajet (page hébergement), elle annoncerait un code couleur que
+              rien dans le calendrier n'utilise. */}
+          <div
+            className="mt-3 flex flex-wrap gap-3 text-[11px] text-muted-foreground"
+            hidden={priceByDate.size === 0}
+          >
             <span className="inline-flex items-center gap-1.5">
               <span className="size-2.5 rounded bg-success/40" aria-hidden /> Bas
             </span>

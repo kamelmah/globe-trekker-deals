@@ -1,0 +1,74 @@
+import { BedDouble } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { lienHotelsVille } from "@/lib/hotels";
+import { cn } from "@/lib/utils";
+
+/**
+ * Lien partenaire vers la recherche d'hôtels d'une ville sur Hotels.com.
+ *
+ * Point d'entrée UNIQUE : les attributs qui comptent — `rel="sponsored
+ * nofollow"` exigé par Google sur un lien rémunéré, l'ouverture en nouvel
+ * onglet avec `noopener`, et la mention de transparence — sont décidés ici une
+ * fois, et pas recopiés sur chacune des pages qui posent ce lien.
+ *
+ * Aucun clic n'est journalisé de notre côté : la mesure passe par le `sid`
+ * transmis à CJ, qui est le seul à savoir ce qu'un clic devient. Ajouter notre
+ * propre compteur reviendrait à suivre le visiteur pour une donnée que nous
+ * avons déjà.
+ */
+export function LienHotelsCom({
+  ville,
+  sid,
+  arrivee,
+  depart,
+  voyageurs,
+  libelle,
+  variant = "default",
+  size = "default",
+  mention = false,
+  className,
+}: {
+  /** Nom de ville tel qu'il sera cherché chez le partenaire (jamais un code IATA). */
+  ville: string;
+  /** Identifiant d'origine du clic dans les rapports CJ, ex. "vols-marseille-alger". */
+  sid: string;
+  /** Dates du séjour : transmises seulement si les deux sont connues (voir hotels.ts). */
+  arrivee?: string | undefined;
+  depart?: string | undefined;
+  voyageurs?: number | undefined;
+  libelle?: string;
+  variant?: "default" | "outline" | "secondary" | "link";
+  size?: "default" | "sm" | "lg";
+  /** Affiche la mention de transparence sous le bouton. */
+  mention?: boolean;
+  className?: string;
+}) {
+  const href = lienHotelsVille(ville, {
+    sid,
+    ...(arrivee ? { arrivee } : {}),
+    ...(depart ? { depart } : {}),
+    ...(voyageurs ? { voyageurs } : {}),
+  });
+
+  return (
+    <div className={cn("min-w-0", className)}>
+      <Button asChild variant={variant} size={size} className="w-full">
+        <a
+          href={href}
+          target="_blank"
+          rel="sponsored nofollow noopener"
+          className="gap-2 whitespace-normal text-center"
+        >
+          <BedDouble className="size-4 shrink-0" aria-hidden />
+          {libelle ?? `Voir les hôtels sur Hotels.com`}
+        </a>
+      </Button>
+      {mention && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          Lien partenaire : la commission ne change pas votre prix.
+        </p>
+      )}
+    </div>
+  );
+}
