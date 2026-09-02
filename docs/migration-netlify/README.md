@@ -29,19 +29,19 @@ Puis réimporter les deux tables exportées à l'étape 0.
 
 ## 2. Variables d'environnement Netlify
 
-Dans l'ordre. *Site configuration → Environment variables.*
+Dans l'ordre. _Site configuration → Environment variables._
 
 ### Base de données — depuis le nouveau projet Supabase
 
-| Variable | Où la trouver | Portée |
-|---|---|---|
-| `SUPABASE_URL` | Project Settings → API → Project URL | serveur |
-| `SUPABASE_SERVICE_ROLE_KEY` | Project Settings → API → `service_role` | **serveur seul** |
-| `SUPABASE_PUBLISHABLE_KEY` | Project Settings → API → `anon` / publishable | serveur |
-| `SUPABASE_PROJECT_ID` | l'identifiant du projet | serveur |
-| `VITE_SUPABASE_URL` | même valeur que `SUPABASE_URL` | **client** |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | même valeur que `SUPABASE_PUBLISHABLE_KEY` | **client** |
-| `VITE_SUPABASE_PROJECT_ID` | même valeur que `SUPABASE_PROJECT_ID` | **client** |
+| Variable                        | Où la trouver                                 | Portée           |
+| ------------------------------- | --------------------------------------------- | ---------------- |
+| `SUPABASE_URL`                  | Project Settings → API → Project URL          | serveur          |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Project Settings → API → `service_role`       | **serveur seul** |
+| `SUPABASE_PUBLISHABLE_KEY`      | Project Settings → API → `anon` / publishable | serveur          |
+| `SUPABASE_PROJECT_ID`           | l'identifiant du projet                       | serveur          |
+| `VITE_SUPABASE_URL`             | même valeur que `SUPABASE_URL`                | **client**       |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | même valeur que `SUPABASE_PUBLISHABLE_KEY`    | **client**       |
+| `VITE_SUPABASE_PROJECT_ID`      | même valeur que `SUPABASE_PROJECT_ID`         | **client**       |
 
 > Le préfixe `VITE_` place la valeur dans le bundle JavaScript, lisible par
 > n'importe quel visiteur. **Ne jamais préfixer `SUPABASE_SERVICE_ROLE_KEY`.**
@@ -50,28 +50,29 @@ Dans l'ordre. *Site configuration → Environment variables.*
 
 ### Source tarifaire — depuis le tableau de bord Travelpayouts
 
-| Variable | Note |
-|---|---|
-| `TRAVELPAYOUTS_TOKEN` | relisible chez eux, à recopier tel quel |
-| `TRAVELPAYOUTS_MARKER` | identifiant d'affiliation |
+| Variable               | Note                                    |
+| ---------------------- | --------------------------------------- |
+| `TRAVELPAYOUTS_TOKEN`  | relisible chez eux, à recopier tel quel |
+| `TRAVELPAYOUTS_MARKER` | identifiant d'affiliation               |
 
 ### E-mail — Resend
 
-| Variable | Note |
-|---|---|
-| `RESEND_API_KEY` | clé API Resend (`re_…`) |
+| Variable            | Note                                           |
+| ------------------- | ---------------------------------------------- |
+| `RESEND_API_KEY`    | clé API Resend (`re_…`)                        |
 | `ALERTS_FROM_EMAIL` | expéditeur, sur un domaine vérifié chez Resend |
 
 ### Génération de guides — Anthropic
 
-| Variable | Note |
-|---|---|
-| `ANTHROPIC_API_KEY` | console.anthropic.com |
+| Variable            | Note                                                                                                |
+| ------------------- | --------------------------------------------------------------------------------------------------- |
+| `ANTHROPIC_API_KEY` | platform.claude.com → Clés API. Utilisée par `generateGuideDraft`, depuis `/destinations-proposes`. |
+| `ANTHROPIC_MODEL`   | facultative — `claude-sonnet-5` par défaut.                                                         |
 
 ### Administration
 
-| Variable | Note |
-|---|---|
+| Variable           | Note                                      |
+| ------------------ | ----------------------------------------- |
 | `ADMIN_LOGS_TOKEN` | à régénérer, ne pas réutiliser l'ancienne |
 
 ### Ce qui disparaît
@@ -100,11 +101,11 @@ existants tournent en local avec les variables du nouveau projet.
 SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... TRAVELPAYOUTS_TOKEN=... node scripts/amorcer-base.mjs
 ```
 
-*(script à écrire — il enchaîne `refreshFlightPrices` puis `ingestSeasonality`
-jusqu'à `routesRestantes === 0`)*
+_(script à écrire — il enchaîne `refreshFlightPrices` puis `ingestSeasonality`
+jusqu'à `routesRestantes === 0`)_
 
 **Après publication.** Déclencher les deux fonctions planifiées à la main depuis
-*Netlify → Functions → Run*, puis attendre. La saisonnalité demande 6 passages
+_Netlify → Functions → Run_, puis attendre. La saisonnalité demande 6 passages
 pour couvrir les 128 routes.
 
 Dans les deux cas, l'ordre compte : **le rafraîchissement des prix d'abord**

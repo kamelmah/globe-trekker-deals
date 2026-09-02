@@ -43,7 +43,8 @@ async function db() {
 
 function guard(token: string): { ok: true } | { ok: false; message: string } {
   const expected = process.env["ADMIN_LOGS_TOKEN"];
-  if (!expected) return { ok: false, message: "Jeton d'administration non configuré côté serveur." };
+  if (!expected)
+    return { ok: false, message: "Jeton d'administration non configuré côté serveur." };
   if (token !== expected) return { ok: false, message: "Jeton invalide." };
   return { ok: true };
 }
@@ -204,15 +205,29 @@ const draftSchema = z.object({
     .max(6),
 });
 
+/**
+ * Modèle utilisé pour la rédaction des brouillons de guides.
+ *
+ * Sonnet 5 suffit largement pour un guide de quatre sections au format imposé :
+ * la tâche est cadrée par le prompt et validée par un schéma, elle ne demande
+ * pas le raisonnement d'un Opus ou d'un Fable, qui coûteraient plusieurs fois
+ * plus cher par guide.
+ */
+const ANTHROPIC_MODEL_PAR_DEFAUT = "claude-sonnet-5";
+
 export const generateGuideDraft = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ token: tokenField, id: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     const check = guard(data.token);
     if (!check.ok) return { ok: false as const, message: check.message };
-    const apiKey = process.env["LOVABLE_API_KEY"];
+    const apiKey = process.env["ANTHROPIC_API_KEY"];
     if (!apiKey) {
-      return { ok: false as const, message: "Clé de génération indisponible côté serveur." };
+      return {
+        ok: false as const,
+        message: "ANTHROPIC_API_KEY absente côté serveur (variables d'environnement Netlify).",
+      };
     }
+    const model = process.env["ANTHROPIC_MODEL"] || ANTHROPIC_MODEL_PAR_DEFAUT;
 
     const supabase = await db();
     const { data: row, error: readError } = await supabase
@@ -235,41 +250,59 @@ Contraintes :
 Réponds uniquement en JSON, sans texte autour, avec ce schéma exact :
 {"title":string,"metaTitle":string,"description":string,"intro":string,"readingMinutes":number,"practical":{"monnaie":string,"langue":string,"visa":string,"transport":string,"budgetJour":string},"sections":[{"heading":string,"paragraphs":[string]}]}`;
 
+    const debut = Date.now();
     try {
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      // API Anthropic en HTTP direct, sans SDK : le projet n'ajoute pas de
+      // dépendance pour un seul appel, comme c'était déjà le cas avec la
+      // passerelle qu'elle remplace.
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            {
-              role: "system",
-              content:
-                "Tu rédiges des guides de voyage factuels en français pour un comparateur de vols. Tu réponds uniquement en JSON valide.",
-            },
-            { role: "user", content: prompt },
-          ],
+          model,
+          max_tokens: 4096,
+          system:
+            "Tu rédiges des guides de voyage factuels en français pour un comparateur de vols. Tu réponds uniquement en JSON valide, sans balise de code ni texte autour.",
+          messages: [{ role: "user", content: prompt }],
         }),
       });
       if (!response.ok) {
         const detail = (await response.text()).slice(0, 200);
+        console.error("[guides] Anthropic", response.status, detail);
+        // Le message rendu à l'administrateur nomme la cause quand elle est
+        // identifiable : « HTTP 401 » ne dit pas quoi faire, « clé refusée » si.
         const message =
-          response.status === 429
-            ? "Quota de génération atteint, réessayez plus tard."
-            : `Génération refusée (HTTP ${response.status}).`;
+          response.status === 401
+            ? "Clé ANTHROPIC_API_KEY refusée (invalide ou révoquée)."
+            : response.status === 429
+              ? "Quota de génération atteint, réessayez plus tard."
+              : response.status === 400 && detail.toLowerCase().includes("credit")
+                ? "Crédits API épuisés : ajoutez des fonds sur platform.claude.com."
+                : `Génération refusée (HTTP ${response.status}).`;
         await supabase
           .from("guide_requests")
-          .update({ error_message: detail })
+          .update({ error_message: `HTTP ${response.status} — ${detail}` })
           .eq("id", request.id);
         return { ok: false as const, message };
       }
       const payload = (await response.json()) as {
-        choices?: { message?: { content?: string } }[];
+        content?: { type?: string; text?: string }[];
+        usage?: { input_tokens?: number; output_tokens?: number };
       };
-      const raw = payload.choices?.[0]?.message?.content ?? "";
+      // La réponse est une liste de blocs : on ne garde que le texte.
+      const raw = (payload.content ?? [])
+        .filter((bloc) => bloc.type === "text")
+        .map((bloc) => bloc.text ?? "")
+        .join("");
+      // Trace du coût : la génération est facturée au token, elle doit se suivre.
+      console.log(
+        `[guides] ${request.slug} · ${model} · ${payload.usage?.input_tokens ?? 0} tokens entrée · ` +
+          `${payload.usage?.output_tokens ?? 0} tokens sortie · ${Math.round((Date.now() - debut) / 1000)}s`,
+      );
       const json = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
       const parsed = draftSchema.safeParse(JSON.parse(json));
       if (!parsed.success) {
