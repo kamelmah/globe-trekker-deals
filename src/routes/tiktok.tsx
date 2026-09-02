@@ -190,19 +190,19 @@ function TikTokPage() {
         créée, l'en-tête du site est là : garder ce logo en afficherait deux, et
         la vignette raconterait un prix d'exemple juste au-dessus d'une vraie
         alerte.
-
-        Le logo n'est pas un lien vers l'accueil, et c'est délibéré : tant que
-        le formulaire est là, la page n'a qu'une action, et un logo cliquable
-        est précisément la sortie que prend le trafic social avant d'avoir rien
-        fait. Il est là pour dire chez qui on est, pas pour emmener ailleurs.
       */}
       {!creee && (
         <>
-          <header className="flex items-center gap-2 py-2">
-            <Logo className="size-7 text-primary" />
-            <span className="font-display text-base font-semibold tracking-tight">
-              TrouveMonVol
-            </span>
+          {/* Le logo mène à l'accueil. Il est resté inerte un temps, pour ne
+              pas offrir de sortie avant l'unique action de la page ; un logo
+              qui ne réagit pas se lit surtout comme une page cassée. */}
+          <header className="flex items-center py-2">
+            <Link to="/" className="flex items-center gap-2">
+              <Logo className="size-7 text-primary" />
+              <span className="font-display text-base font-semibold tracking-tight">
+                TrouveMonVol
+              </span>
+            </Link>
           </header>
 
           {/* La vignette montre le service avant que le titre ne l'explique :

@@ -13,6 +13,20 @@ import { Logo } from "@/components/site/Logo";
  * tracé), `aria-hidden`, positions déterministes. La chronologie vit dans
  * styles.css (bloc « Démo alerte »).
  */
+/**
+ * Les trajets montrés à tour de rôle, un par tour de 10 s.
+ *
+ * Un seul trajet répété dix fois de suite se lit comme une image figée, alors
+ * que la page vend justement une veille sur n'importe quel trajet. Ce sont des
+ * exemples, pas des relevés : ils illustrent la forme d'un email d'alerte, et
+ * n'ont aucun rapport avec les prix réels du moment.
+ */
+const EXEMPLES = [
+  { trajet: "Marseille → Alger", prix: "89 €", baisse: "−31 %" },
+  { trajet: "Marseille → Tunis", prix: "76 €", baisse: "−24 %" },
+  { trajet: "Marseille → Lisbonne", prix: "58 €", baisse: "−18 %" },
+];
+
 export function DemoAlerte() {
   return (
     <div className="demo-alerte" aria-hidden>
@@ -37,8 +51,12 @@ export function DemoAlerte() {
             <span>à l&apos;instant</span>
           </span>
           <span className="demo-notif-corps">
-            Marseille → Alger : <strong>89 €</strong>
-            <span className="demo-notif-baisse">−31 %</span>
+            {EXEMPLES.map((exemple) => (
+              <span className="demo-route" key={exemple.trajet}>
+                {exemple.trajet} : <strong>{exemple.prix}</strong>
+                <span className="demo-notif-baisse">{exemple.baisse}</span>
+              </span>
+            ))}
           </span>
         </span>
       </div>
