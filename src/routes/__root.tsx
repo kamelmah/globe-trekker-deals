@@ -16,6 +16,7 @@ import { Footer } from "@/components/site/Footer";
 import { CookieBanner } from "@/components/site/CookieBanner";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieConsentProvider } from "@/lib/cookie-consent-context";
+import { HabillageProvider, useHabillage } from "@/lib/habillage-context";
 import { CurrencyProvider } from "@/lib/currency-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -182,6 +183,11 @@ function RootShell({ children }: { children: ReactNode }) {
  * Une page d'atterrissage payée au clic n'a qu'une action, et chaque élément de
  * navigation autour est une façon de ne pas la faire. Ces pages dessinent donc
  * leur écran en entier, y compris leur logo.
+ *
+ * Le chemin ne donne que l'état de DÉPART : la page peut redemander l'habillage
+ * une fois son action accomplie (voir habillage-context). C'est ce sens-là —
+ * défaut masqué, révélation explicite — qui permet au serveur de rendre la page
+ * déjà nue, sans en-tête qui clignote à l'hydratation.
  */
 const PAGES_NUES = new Set(["/tiktok"]);
 
@@ -193,45 +199,62 @@ function estPageNue(chemin: string): boolean {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const nue = useRouterState({ select: (s) => estPageNue(s.location.pathname) });
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <CurrencyProvider>
           <CookieConsentProvider>
-            {nue ? (
-              /* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */
-              <Outlet />
-            ) : (
-              /*
+            <HabillageProvider>
+              <Habillage />
+            </HabillageProvider>
+          </CookieConsentProvider>
+        </CurrencyProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
+
+/**
+ * L'habillage lui-même. Composant distinct de RootComponent parce qu'un
+ * composant ne peut pas lire un contexte qu'il fournit dans le même rendu.
+ */
+function Habillage() {
+  const nueParDefaut = useRouterState({ select: (s) => estPageNue(s.location.pathname) });
+  const { revele } = useHabillage();
+  const nue = nueParDefaut && !revele;
+
+  return (
+    <>
+      {nue ? (
+        /* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */
+        <Outlet />
+      ) : (
+        /*
                 La barre d'onglets du bas est en position fixe sous lg : sans
                 cette marge, elle recouvre la fin de page, pied de page compris.
                 57px = 56 de zone tactile + 1 de bordure haute. La valeur ronde
                 laissait le pied de page passer d'un pixel sous la barre,
                 mesure à l'appui.
               */
-              <div className="flex min-h-screen flex-col pb-[calc(57px+env(safe-area-inset-bottom))] lg:pb-0">
-                <Header />
-                <main className="flex-1">
-                  {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-                  <Outlet />
-                </main>
-                <Footer />
-              </div>
-            )}
-            {/*
+        <div className="flex min-h-screen flex-col pb-[calc(57px+env(safe-area-inset-bottom))] lg:pb-0">
+          <Header />
+          <main className="flex-1">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
+      )}
+      {/*
               Pas de bandeau cookies sur une page nue : il ne porte que le
               consentement aux cartes Stay22, qui ne s'y chargent pas. Demander
               un accord pour un tiers absent mangerait le seul écran disponible
               sans rien protéger. Le choix reste à faire, et le bandeau
               réapparaît à la première page qui en dépose vraiment.
             */}
-            {!nue && <CookieBanner />}
-            <Toaster />
-          </CookieConsentProvider>
-        </CurrencyProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+      {!nue && <CookieBanner />}
+      <Toaster />
+    </>
   );
 }

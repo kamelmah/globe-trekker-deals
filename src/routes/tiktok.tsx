@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { DemoAlerte } from "@/components/site/DemoAlerte";
@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cityLabel } from "@/data/airports";
 import { subscribeToAlert } from "@/lib/flights.functions";
+import { useHabillage } from "@/lib/habillage-context";
 import { utmOr } from "@/lib/search-params";
 
 const TITLE = "Alerte prix vol gratuite — TrouveMonVol";
@@ -68,6 +69,23 @@ export const Route = createFileRoute("/tiktok")({
   component: TikTokPage,
 });
 
+/**
+ * Ouvre le calendrier natif du champ.
+ *
+ * `input type="date"` a bien un calendrier, mais il ne s'ouvre qu'en visant la
+ * petite icône : ailleurs dans le champ, on tombe sur la saisie « jj/mm/aaaa ».
+ * Sur un téléphone, viser 20 px avec le pouce, c'est renoncer. On ouvre donc au
+ * tap n'importe où dans le champ.
+ */
+function ouvrirCalendrier(champ: HTMLInputElement) {
+  try {
+    champ.showPicker();
+  } catch {
+    // Navigateur sans showPicker, ou appel hors geste utilisateur : le champ
+    // reste saisissable au clavier et l'icône continue de fonctionner.
+  }
+}
+
 /** Aujourd'hui en AAAA-MM-JJ, en heure locale — pas via toISOString, qui décale. */
 function aujourdhui(): string {
   const d = new Date();
@@ -98,6 +116,20 @@ function TikTokPage() {
   const [creee, setCreee] = useState<{ origin: string; destination: string } | null>(null);
 
   const manqueTrajet = !origin || !destination;
+
+  /**
+   * Tant que l'alerte n'existe pas, la page reste nue ; une fois créée, elle
+   * rend l'habillage du site, parce qu'il n'y a plus d'action à protéger et
+   * qu'il faut bien une porte pour continuer à visiter.
+   *
+   * Le nettoyage remet l'habillage à sa valeur par défaut en quittant la page :
+   * l'état vit dans la racine, il ne doit pas survivre à la route qui l'a posé.
+   */
+  const { setRevele } = useHabillage();
+  useEffect(() => {
+    setRevele(creee !== null);
+    return () => setRevele(false);
+  }, [creee, setRevele]);
 
   function choisirDestination(code: string) {
     setDestination(code);
@@ -146,21 +178,38 @@ function TikTokPage() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col px-4 pb-[env(safe-area-inset-bottom)]">
+    <div
+      className={
+        creee
+          ? "flex flex-col px-4 py-6"
+          : "flex min-h-svh flex-col px-4 pb-[env(safe-area-inset-bottom)]"
+      }
+    >
       {/*
-        Le logo n'est pas un lien vers l'accueil, et c'est délibéré : la page
-        n'a qu'une action, et un logo cliquable est précisément la sortie que
-        prend le trafic social avant d'avoir rien fait. Il est là pour dire chez
-        qui on est, pas pour emmener ailleurs.
-      */}
-      <header className="flex items-center gap-2 py-2">
-        <Logo className="size-7 text-primary" />
-        <span className="font-display text-base font-semibold tracking-tight">TrouveMonVol</span>
-      </header>
+        Logo et vignette n'appartiennent qu'à l'état nu. Une fois l'alerte
+        créée, l'en-tête du site est là : garder ce logo en afficherait deux, et
+        la vignette raconterait un prix d'exemple juste au-dessus d'une vraie
+        alerte.
 
-      {/* La vignette montre le service avant que le titre ne l'explique : une
-          notification de baisse de prix, comme sur l'écran verrouillé. */}
-      <DemoAlerte />
+        Le logo n'est pas un lien vers l'accueil, et c'est délibéré : tant que
+        le formulaire est là, la page n'a qu'une action, et un logo cliquable
+        est précisément la sortie que prend le trafic social avant d'avoir rien
+        fait. Il est là pour dire chez qui on est, pas pour emmener ailleurs.
+      */}
+      {!creee && (
+        <>
+          <header className="flex items-center gap-2 py-2">
+            <Logo className="size-7 text-primary" />
+            <span className="font-display text-base font-semibold tracking-tight">
+              TrouveMonVol
+            </span>
+          </header>
+
+          {/* La vignette montre le service avant que le titre ne l'explique :
+              une notification de baisse de prix, comme sur l'écran verrouillé. */}
+          <DemoAlerte />
+        </>
+      )}
 
       <main className="flex flex-1 flex-col pt-2 pb-4">
         {creee ? (
@@ -266,6 +315,8 @@ function TikTokPage() {
                     id="tiktok-depart"
                     type="date"
                     min={aujourdhui()}
+                    onClick={(e) => ouvrirCalendrier(e.currentTarget)}
+                    onFocus={(e) => ouvrirCalendrier(e.currentTarget)}
                     value={depart}
                     onChange={(e) => {
                       setDepart(e.target.value);
@@ -279,6 +330,8 @@ function TikTokPage() {
                     id="tiktok-retour"
                     type="date"
                     min={depart || aujourdhui()}
+                    onClick={(e) => ouvrirCalendrier(e.currentTarget)}
+                    onFocus={(e) => ouvrirCalendrier(e.currentTarget)}
                     value={retour}
                     onChange={(e) => setRetour(e.target.value)}
                   />
