@@ -409,6 +409,102 @@ export const AIRPORTS: Airport[] = [
     lat: 52.3676,
     lng: 4.9041,
   },
+  /*
+   * Maghreb secondaire : ces onze destinations sont dans la liste blanche des
+   * trajets vérifiés mais manquaient ici, si bien que cityLabel() retombait sur
+   * le code IATA — les emails d'alerte annonçaient « Marseille → ORN » au lieu
+   * de « Marseille → Oran », sur nos trajets les plus utilisés. Les noms de
+   * ville reprennent `destinationCity` de la liste blanche, coordonnées de
+   * l'aéroport lui-même (elles servent aussi au calcul de distance et de CO2).
+   */
+  {
+    code: "ORN",
+    city: "Oran",
+    country: "Algérie",
+    name: "Oran Ahmed Ben Bella",
+    lat: 35.6239,
+    lng: -0.6214,
+  },
+  {
+    code: "AAE",
+    city: "Annaba",
+    country: "Algérie",
+    name: "Annaba Rabah Bitat",
+    lat: 36.8221,
+    lng: 7.8092,
+  },
+  {
+    code: "CZL",
+    city: "Constantine",
+    country: "Algérie",
+    name: "Constantine Mohamed Boudiaf",
+    lat: 36.2794,
+    lng: 6.6203,
+  },
+  {
+    code: "BJA",
+    city: "Béjaïa",
+    country: "Algérie",
+    name: "Béjaïa Soummam — Abane Ramdane",
+    lat: 36.7119,
+    lng: 5.0692,
+  },
+  {
+    code: "TLM",
+    city: "Tlemcen",
+    country: "Algérie",
+    name: "Tlemcen Zenata — Messali El Hadj",
+    lat: 35.0164,
+    lng: -1.45,
+  },
+  {
+    code: "QSF",
+    city: "Sétif",
+    country: "Algérie",
+    name: "Sétif Aïn Arnat",
+    lat: 36.1781,
+    lng: 5.3244,
+  },
+  {
+    code: "TNG",
+    city: "Tanger",
+    country: "Maroc",
+    name: "Tanger Ibn Battouta",
+    lat: 35.7267,
+    lng: -5.9169,
+  },
+  {
+    code: "FEZ",
+    city: "Fès",
+    country: "Maroc",
+    name: "Fès Saïss",
+    lat: 33.9272,
+    lng: -4.9778,
+  },
+  {
+    code: "AGA",
+    city: "Agadir",
+    country: "Maroc",
+    name: "Agadir Al Massira",
+    lat: 30.325,
+    lng: -9.4131,
+  },
+  {
+    code: "DJE",
+    city: "Djerba",
+    country: "Tunisie",
+    name: "Djerba-Zarzis",
+    lat: 33.875,
+    lng: 10.7753,
+  },
+  {
+    code: "MIR",
+    city: "Monastir",
+    country: "Tunisie",
+    name: "Monastir Habib Bourguiba",
+    lat: 35.7581,
+    lng: 10.7547,
+  },
 ];
 
 const BY_CODE = new Map(AIRPORTS.map((a) => [a.code, a]));
