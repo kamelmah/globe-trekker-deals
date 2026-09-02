@@ -199,17 +199,20 @@ export async function buildEditorialContext(slug: string): Promise<EditorialCont
  * que publié tel quel.
  */
 const editorialSchema = z.object({
+  // Contrainte SEO, pas stylistique : au-delà de 160 caractères Google coupe.
   metaDescription: z.string().trim().min(120).max(160),
-  intro: z.string().trim().min(250).max(500),
+  intro: z.string().trim().min(150).max(450),
   sections: z
     .array(
       z.object({
         heading: z.string().trim().min(3).max(120),
-        paragraphs: z.array(z.string().trim().min(250).max(600)).min(2).max(3),
+        // Le prompt demande 200 à 400 ; le schéma tolère au-delà, pour qu'un
+        // texte un peu court ou un peu long reste publiable plutôt que perdu.
+        paragraphs: z.array(z.string().trim().min(150).max(500)).min(2).max(2),
       }),
     )
     .min(2)
-    .max(3),
+    .max(2),
 });
 
 export type RouteEditorial = z.infer<typeof editorialSchema>;
@@ -231,7 +234,15 @@ const SYSTEME = [
   "sur un peuple, conseils concrets liés aux compagnies listées (bagages), à l'aéroport d'arrivée et",
   "à son éloignement quand il est indiqué, lecture de la saisonnalité quand elle est fournie.",
   "",
-  "Tu réponds uniquement en JSON valide, sans balise de code ni texte autour.",
+  "LONGUEUR IMPOSÉE — c'est la contrainte la plus importante :",
+  "  metaDescription : 120 à 160 caractères ;",
+  "  intro : 200 à 350 caractères ;",
+  "  exactement 2 sections, exactement 2 paragraphes chacune ;",
+  "  chaque paragraphe : 200 à 400 caractères.",
+  "Un texte plus long est rejeté, pas raccourci. Sois dense plutôt qu'exhaustif.",
+  "",
+  "Tu réponds uniquement en JSON valide. Aucun texte avant ou après, aucune balise de code,",
+  "aucun commentaire. Le premier caractère de ta réponse est { et le dernier est }.",
 ].join("\n");
 
 function promptPour(contexte: EditorialContext): string {
@@ -245,12 +256,13 @@ function promptPour(contexte: EditorialContext): string {
     ' "intro": string de 250 à 500 caractères,',
     ' "sections": [{"heading": string, "paragraphs": [string, ...]}]}',
     "",
-    "2 à 3 sections, 2 à 3 paragraphes chacune, chaque paragraphe entre 250 et 600 caractères.",
+    "Exactement 2 sections, exactement 2 paragraphes chacune, 200 à 400 caractères par",
+    "paragraphe. Intro de 200 à 350 caractères. Ces bornes ne sont pas indicatives.",
     "Les titres de section doivent être propres à ce trajet, pas des intitulés génériques.",
   ].join("\n");
 }
 
-type Rapport = { ok: true; tokens: number } | { ok: false; message: string };
+type Rapport = { ok: true; tokens: number; dureeMs: number } | { ok: false; message: string };
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -310,7 +322,11 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
       },
       body: JSON.stringify({
         model,
-        max_tokens: 3000,
+        // Dimensionné pour le format ci-dessus (~700 tokens de sortie), avec de
+        // la marge. Ce n'est pas un garde-fou de longueur — c'est le schéma qui
+        // rejette un texte trop long ; une troncature reste détectée par
+        // stop_reason et signalée comme telle.
+        max_tokens: 2500,
         system: SYSTEME,
         messages: [{ role: "user", content: promptPour(contexte) }],
       }),
@@ -334,7 +350,7 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
   // Une réponse coupée à max_tokens produit un JSON incomplet : sans ce test, on
   // la confondrait avec un modèle qui répond mal, et on relancerait à l'identique.
   if (payload.stop_reason === "max_tokens") {
-    return echouer("Réponse tronquée à max_tokens (3000).");
+    return echouer("Réponse tronquée à max_tokens (2500).");
   }
 
   const raw = (payload.content ?? [])
@@ -395,7 +411,7 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
       outputTokens: payload.usage?.output_tokens ?? 0,
     },
   });
-  return { ok: true, tokens };
+  return { ok: true, tokens, dureeMs: Date.now() - debut };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -447,6 +463,9 @@ export type RedactionReport = {
   echecs: number;
   restantes: number;
   tokens: number;
+  /** Durée de chaque génération réussie, en ms : c'est elle qui décide du
+   *  nombre de trajets tenable par passage. */
+  dureesMs: number[];
 };
 
 /**
@@ -459,19 +478,21 @@ export async function redigerRoutes(params: { routes: number }): Promise<Redacti
   let traitees = 0;
   let echecs = 0;
   let tokens = 0;
+  const dureesMs: number[] = [];
 
   for (const slug of routes) {
     const rapport = await generateRouteEditorial(slug);
     if (rapport.ok) {
       traitees += 1;
       tokens += rapport.tokens;
+      dureesMs.push(rapport.dureeMs);
     } else {
       echecs += 1;
       console.error(`[rediger-routes] ${slug} : ${rapport.message}`);
     }
   }
 
-  return { traitees, echecs, restantes, tokens };
+  return { traitees, echecs, restantes, tokens, dureesMs };
 }
 
 /* -------------------------------------------------------------------------- */
