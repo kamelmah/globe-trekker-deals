@@ -14,12 +14,20 @@ export function AlertForm({
   departDate,
   returnDate,
   referencePrice,
+  id,
 }: {
   origin: string;
   destination: string;
   departDate?: string;
   returnDate?: string;
   referencePrice?: number | null;
+  /**
+   * Ancre de navigation, posée par l'appelant plutôt qu'écrite en dur ici :
+   * /recherche rend ce formulaire deux fois — colonne latérale et tiroir de
+   * filtres — et un id fixe y serait dupliqué. Une seule instance par page doit
+   * le porter, et seulement si elle est réellement affichée.
+   */
+  id?: string;
 }) {
   const subscribe = useServerFn(subscribeToAlert);
   const [email, setEmail] = useState("");
@@ -59,9 +67,9 @@ export function AlertForm({
     }
   }
 
-
   return (
     <form
+      {...(id ? { id } : {})}
       onSubmit={submit}
       className="rounded-xl border border-border bg-card p-5"
       aria-label="Alerte prix par email"
@@ -71,8 +79,8 @@ export function AlertForm({
         Être alerté si le prix baisse sur ce trajet
       </h2>
       <p className="mt-1.5 text-sm text-muted-foreground">
-        Votre email suffit, aucun compte à créer. Nous vérifions le prix une fois par jour et nous ne
-        vous écrivons que s'il baisse. Désinscription en un clic.
+        Votre email suffit, aucun compte à créer. Nous vérifions le prix une fois par jour et nous
+        ne vous écrivons que s'il baisse. Désinscription en un clic.
       </p>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1 space-y-1.5">
@@ -106,6 +114,5 @@ export function AlertForm({
         </p>
       )}
     </form>
-
   );
 }

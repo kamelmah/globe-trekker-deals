@@ -183,7 +183,13 @@ function RootComponent() {
       <ThemeProvider>
         <CurrencyProvider>
           <CookieConsentProvider>
-            <div className="flex min-h-screen flex-col">
+            {/*
+              La barre d'onglets du bas est en position fixe sous lg : sans cette
+              marge, elle recouvre la fin de page, pied de page compris. 57px =
+              56 de zone tactile + 1 de bordure haute. La valeur ronde laissait
+              le pied de page passer d'un pixel sous la barre, mesure à l'appui.
+            */}
+            <div className="flex min-h-screen flex-col pb-[calc(57px+env(safe-area-inset-bottom))] lg:pb-0">
               <Header />
               <main className="flex-1">
                 {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

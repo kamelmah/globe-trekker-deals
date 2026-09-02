@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { BedDouble, Menu, Plane } from "lucide-react";
-import { useCallback, useState } from "react";
+import { BedDouble, Bell, BookOpen, Compass, Plane } from "lucide-react";
+import { type ReactNode, useCallback } from "react";
 
 import logo from "@/assets/logo-64.png";
 import logoWebp from "@/assets/logo-64.webp";
@@ -9,23 +9,83 @@ import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
-const NAV = [
-  { to: "/mode-budget", label: "Mode budget", search: { origin: "PAR", budget: 400, month: "" } },
-  { to: "/conseils/destinations", label: "Guides destinations" },
-  { to: "/conseils", label: "Conseils" },
-  { to: "/faq", label: "FAQ" },
-  { to: "/contact", label: "Contact" },
-] as const;
+/**
+ * Search par défaut du mode budget.
+ *
+ * L'ancienne barre n'en passait que trois champs ; la route en exige six depuis
+ * l'ajout des passagers. Les valeurs reprises ici sont exactement celles que
+ * `validateSearch` applique par défaut, donc la destination est inchangée.
+ */
+const RECHERCHE_BUDGET = {
+  origin: "PAR",
+  budget: 400,
+  month: "",
+  adultes: 1,
+  enfants: 0,
+  bebes: 0,
+};
+
+/**
+ * Un onglet produit.
+ *
+ * Deux d'entre eux mènent à une page, trois agissent sur la page courante
+ * (recherche, hébergement, alerte) : d'où un descripteur commun plutôt qu'une
+ * simple liste de liens, pour que les deux barres — celle du haut en desktop et
+ * celle du bas en mobile — se comportent exactement pareil.
+ */
+type Onglet = {
+  id: "vols" | "budget" | "alertes" | "hotels" | "guides";
+  label: string;
+  Icone: typeof Plane;
+  /** Vrai quand la page affichée correspond à cet onglet. */
+  actif: (chemin: string) => boolean;
+};
+
+const ONGLETS: Record<Onglet["id"], Onglet> = {
+  // « Vols » couvre l'accueil et les pages de trajet : c'est le même parcours.
+  vols: {
+    id: "vols",
+    label: "Vols",
+    Icone: Plane,
+    actif: (c) => c === "/" || c.startsWith("/vols"),
+  },
+  budget: { id: "budget", label: "Budget", Icone: Compass, actif: (c) => c === "/mode-budget" },
+  // L'alerte n'a pas de page à elle : elle vit dans la page d'un trajet.
+  alertes: { id: "alertes", label: "Alertes", Icone: Bell, actif: () => false },
+  hotels: { id: "hotels", label: "Hôtels", Icone: BedDouble, actif: (c) => c === "/hebergement" },
+  guides: {
+    id: "guides",
+    label: "Guides",
+    Icone: BookOpen,
+    actif: (c) => c.startsWith("/conseils"),
+  },
+};
+
+const ORDRE_DESKTOP = ["vols", "budget", "hotels", "guides"] as const;
+const ORDRE_MOBILE = ["vols", "budget", "alertes", "hotels", "guides"] as const;
+
+/**
+ * Fait défiler jusqu'à un élément. Rend faux s'il n'y a nulle part où aller.
+ *
+ * Être dans le DOM ne suffit pas : sur /recherche le formulaire d'alerte vit
+ * dans un tiroir replié, où il mesure 0×0. `scrollIntoView` n'y fait rien, et
+ * l'onglet paraissait mort. On exige donc une boîte réellement dessinée —
+ * `getClientRects` est vide pour tout ce qui est en display:none.
+ */
+function allerVers(id: string): boolean {
+  const cible = document.getElementById(id);
+  if (!cible || cible.getClientRects().length === 0) return false;
+  cible.scrollIntoView({ behavior: "smooth", block: "start" });
+  return true;
+}
 
 export function Header() {
-  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   /** Scroll vers le formulaire de recherche et focus sur le champ départ. */
   const focusSearchForm = useCallback(() => {
-    const form = document.getElementById("recherche");
-    form?.scrollIntoView({ behavior: "smooth", block: "start" });
+    allerVers("recherche");
     const firstField = document.getElementById("origin");
     if (firstField instanceof HTMLElement) {
       // Léger délai pour laisser le scroll démarrer avant le focus.
@@ -33,8 +93,7 @@ export function Header() {
     }
   }, []);
 
-  const onCtaClick = useCallback(() => {
-    setOpen(false);
+  const onVolsClick = useCallback(() => {
     if (pathname === "/") {
       focusSearchForm();
       return;
@@ -49,111 +108,149 @@ export function Header() {
    * Si la page courante contient déjà un widget d'hébergement Stay22, on scrolle vers lui.
    * Sinon on redirige vers la page dédiée /hebergement.
    */
-  const onStayClick = useCallback(() => {
-    setOpen(false);
-    const section = document.getElementById("hebergement");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
+  const onHotelsClick = useCallback(() => {
+    if (allerVers("hebergement")) return;
     void navigate({ to: "/hebergement" });
   }, [navigate]);
 
-  return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
-      <div className="container-page flex h-16 items-center justify-between gap-2 sm:gap-3">
-        <Link
-          to="/"
-          className="flex shrink-0 items-center gap-1.5 whitespace-nowrap font-display text-base font-semibold sm:gap-2 sm:text-lg"
-        >
-          <ResponsivePicture
-            src={logo}
-            webp={logoWebp}
-            alt="TrouveMonVol"
-            width={40}
-            height={40}
-            className="size-9 shrink-0 rounded-lg object-contain dark:drop-shadow-[0_0_8px_rgba(59,130,246,0.45)] sm:size-10"
-          />
-          TrouveMonVol
+  /**
+   * Une alerte porte toujours sur un trajet précis : le formulaire n'existe que
+   * sur /recherche et /vols/*, jamais sur l'accueil. Quand il est sur la page,
+   * on y va ; sinon on renvoie vers la recherche, seul chemin qui mène à un
+   * trajet. Un lien vers /#alertes tomberait sur une ancre inexistante.
+   */
+  const onAlertesClick = useCallback(() => {
+    if (allerVers("alertes")) return;
+    onVolsClick();
+  }, [onVolsClick]);
+
+  const actionDe = useCallback(
+    (id: Onglet["id"]) => {
+      if (id === "vols") return onVolsClick;
+      if (id === "hotels") return onHotelsClick;
+      if (id === "alertes") return onAlertesClick;
+      return undefined;
+    },
+    [onVolsClick, onHotelsClick, onAlertesClick],
+  );
+
+  /**
+   * Rend un onglet : `Link` pour ceux qui mènent à une page, `button` pour ceux
+   * qui agissent sur la page courante. L'état actif se lit dans `pathname`
+   * plutôt que dans `activeProps` — « Vols » est actif sur deux chemins et n'est
+   * pas un lien, ce qu'`activeProps` ne sait pas exprimer.
+   */
+  const rendreOnglet = (id: Onglet["id"], classe: (actif: boolean) => string): ReactNode => {
+    const { label, Icone, actif: estActif } = ONGLETS[id];
+    const actif = estActif(pathname);
+    const commun = {
+      className: classe(actif),
+      ...(actif ? { "aria-current": "page" as const } : {}),
+    };
+    const contenu = (
+      <>
+        <Icone className="shrink-0" aria-hidden />
+        {label}
+      </>
+    );
+
+    if (id === "budget") {
+      return (
+        <Link key={id} to="/mode-budget" search={RECHERCHE_BUDGET} {...commun}>
+          {contenu}
         </Link>
+      );
+    }
+    if (id === "guides") {
+      return (
+        <Link key={id} to="/conseils/destinations" {...commun}>
+          {contenu}
+        </Link>
+      );
+    }
+    return (
+      <button key={id} type="button" onClick={actionDe(id)} {...commun}>
+        {contenu}
+      </button>
+    );
+  };
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              search={"search" in item ? item.search : {}}
-              // px-2 sous xl : à 1024px il manque une quinzaine de pixels pour
-              // que la barre tienne sur une ligne. Padding plein dès xl.
-              className="whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground xl:px-3"
-              activeProps={{ className: "bg-secondary text-foreground" }}
-            >
-              {item.label}
-            </Link>
-          ))}
+  return (
+    <>
+      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
+        <div className="container-page flex h-16 items-center justify-between gap-2 sm:gap-3">
+          <Link
+            to="/"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap font-display text-base font-semibold sm:gap-2 sm:text-lg"
+          >
+            <ResponsivePicture
+              src={logo}
+              webp={logoWebp}
+              alt="TrouveMonVol"
+              width={40}
+              height={40}
+              className="size-9 shrink-0 rounded-lg object-contain dark:drop-shadow-[0_0_8px_rgba(59,130,246,0.45)] sm:size-10"
+            />
+            TrouveMonVol
+          </Link>
+
+          <nav className="hidden lg:block" aria-label="Navigation principale">
+            <div className="flex items-center gap-1 rounded-2xl border border-border/50 bg-secondary p-1">
+              {ORDRE_DESKTOP.map((id) =>
+                rendreOnglet(
+                  id,
+                  (actif) =>
+                    "flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3.5 py-[7px] text-sm transition-colors [&_svg]:size-4 " +
+                    (actif
+                      ? "bg-background font-semibold text-primary shadow-sm"
+                      : "font-medium text-muted-foreground hover:text-foreground"),
+                ),
+              )}
+            </div>
+          </nav>
+
           {/*
-            « Trouver un hébergement » pesait 218px à lui seul : c'est ce bouton
-            qui empêchait la barre de tenir. Il n'apparaît qu'à partir de xl, et
-            sous son libellé court — en entier, même à 1280px, la barre repasse
-            en débordement. Le libellé complet reste dans le menu burger sous lg,
-            et dans le pied de page entre les deux.
+            Sous lg, les commandes passent à 32px de haut : la navigation étant
+            descendue en bas de l'écran, cette rangée n'est plus une cible
+            tactile principale. Seule la hauteur change — forcer la largeur
+            rendrait le sélecteur de devise illisible.
           */}
-          <Button
-            variant="outline"
-            onClick={onStayClick}
-            aria-label="Trouver un hébergement"
-            className="ml-2 hidden gap-1.5 whitespace-nowrap xl:flex"
-          >
-            <BedDouble className="size-4" aria-hidden />
-            Hébergement
-          </Button>
-          <Button onClick={onCtaClick} className="ml-1 gap-1.5 whitespace-nowrap shadow-sm">
-            <Plane className="size-4" aria-hidden />
-            Trouve mon vol
-          </Button>
-        </nav>
-
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          <ThemeToggle />
-          <CurrencySelect />
-          <Button
-            variant="outline"
-            size="icon"
-            className="lg:hidden"
-            aria-label="Ouvrir le menu"
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-          >
-            <Menu className="size-4" aria-hidden />
-          </Button>
-        </div>
-      </div>
-
-      {open && (
-        <nav className="border-t border-border bg-card lg:hidden" aria-label="Navigation mobile">
-          <div className="container-page flex flex-col py-2">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                search={"search" in item ? item.search : {}}
-                onClick={() => setOpen(false)}
-                className="rounded-md px-2 py-3 text-sm font-medium text-foreground"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Button variant="outline" onClick={onStayClick} className="mx-2 mb-2 mt-1 gap-1.5">
-              <BedDouble className="size-4" aria-hidden />
-              Trouver un hébergement
+          <div className="flex shrink-0 items-center gap-1.5 [&_button]:h-8 sm:gap-2 lg:[&_button]:h-9">
+            <Button
+              variant="outline"
+              onClick={onAlertesClick}
+              className="ml-1 hidden gap-1.5 whitespace-nowrap lg:inline-flex"
+            >
+              <Bell className="size-4" aria-hidden />
+              Alertes prix
             </Button>
-            <Button onClick={onCtaClick} className="mx-2 mb-2 gap-1.5">
-              <Plane className="size-4" aria-hidden />
-              Trouve mon vol
-            </Button>
+            <ThemeToggle />
+            <CurrencySelect />
           </div>
-        </nav>
-      )}
-    </header>
+        </div>
+      </header>
+
+      {/*
+        Barre du bas sous lg. Le pouce atteint le bas de l'écran bien plus
+        facilement que le haut : c'est là que va la navigation principale sur
+        mobile, et le menu déroulant disparaît avec elle. Le décalage de sécurité
+        évite la barre d'accueil des iPhone.
+      */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+        aria-label="Navigation principale"
+      >
+        <div className="grid grid-cols-5">
+          {ORDRE_MOBILE.map((id) =>
+            rendreOnglet(
+              id,
+              (actif) =>
+                "flex min-h-[56px] flex-col items-center justify-center gap-1 px-1 text-[11px] transition-colors [&_svg]:size-[22px] " +
+                (actif ? "font-semibold text-primary" : "text-muted-foreground"),
+            ),
+          )}
+        </div>
+      </nav>
+    </>
   );
 }
