@@ -18,6 +18,8 @@ export type SendEmailInput = {
   replyTo?: string;
   /** Nom affiché devant l'adresse d'expédition. */
   fromName?: string;
+  /** En-têtes supplémentaires (ex. List-Unsubscribe). */
+  headers?: Record<string, string>;
 };
 
 export type SendEmailResult =
@@ -61,6 +63,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   };
   if (input.text) body["text"] = input.text;
   if (input.replyTo) body["reply_to"] = input.replyTo;
+  if (input.headers && Object.keys(input.headers).length > 0) body["headers"] = input.headers;
 
   const res = await fetch(API, {
     method: "POST",

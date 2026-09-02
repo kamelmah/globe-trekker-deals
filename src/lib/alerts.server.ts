@@ -1,7 +1,6 @@
 import { fetchOffers } from "@/lib/travelpayouts.server";
 import { logOps } from "@/lib/ops-log.server";
-import { cityLabel } from "@/data/airports";
-import { formatPrice } from "@/lib/currency";
+import { buildAlertePrixEmail } from "@/lib/email-templates/alerte-prix";
 import { isEmailConfigured, sendEmail } from "@/lib/resend.server";
 
 export type AlertInput = {
@@ -149,31 +148,30 @@ async function sendDropEmail(params: {
   destination: string;
   oldPrice: number;
   newPrice: number;
+  departureAt?: string | null;
+  returnAt?: string | null;
+  airline?: string;
+  stops?: number;
+  durationMinutes?: number;
   unsubscribeToken: string;
   bookingUrl: string;
   siteUrl: string;
 }): Promise<boolean> {
-  const route = `${cityLabel(params.origin)} — ${cityLabel(params.destination)}`;
-  const subject = `Le prix baisse sur ${route} : ${formatPrice(params.newPrice)}`;
   const unsubscribeUrl = `${params.siteUrl}/alertes/desinscription?token=${params.unsubscribeToken}`;
-  const html = `
-    <div style="font-family:system-ui,sans-serif;color:#0f172a;max-width:520px">
-      <h1 style="font-size:20px">Bonne nouvelle : le prix a baissé</h1>
-      <p>Sur le trajet <strong>${route}</strong>, le prix le plus bas est passé de
-        ${formatPrice(params.oldPrice)} à <strong>${formatPrice(params.newPrice)}</strong>.</p>
-      <p><a href="${params.bookingUrl}" style="background:#1B6FD0;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Voir l'offre</a></p>
-      <p style="font-size:12px;color:#64748b">Prix indicatif au moment de la vérification, taxes incluses.
-        Nous ne prenons aucune commission supplémentaire sur votre réservation.</p>
-      <p style="font-size:12px;color:#64748b">
-        <a href="${unsubscribeUrl}">Ne plus recevoir d'alerte sur ce trajet</a>
-      </p>
-    </div>`;
-  const text =
-    `Bonne nouvelle : le prix a baissé sur ${route}.\n` +
-    `Le prix le plus bas est passé de ${formatPrice(params.oldPrice)} à ${formatPrice(params.newPrice)}.\n\n` +
-    `Voir l'offre : ${params.bookingUrl}\n\n` +
-    `Prix indicatif au moment de la vérification, taxes incluses.\n` +
-    `Ne plus recevoir d'alerte sur ce trajet : ${unsubscribeUrl}`;
+  const { subject, html, text } = buildAlertePrixEmail({
+    origin: params.origin,
+    destination: params.destination,
+    oldPrice: params.oldPrice,
+    newPrice: params.newPrice,
+    departureAt: params.departureAt,
+    returnAt: params.returnAt,
+    airline: params.airline,
+    stops: params.stops,
+    durationMinutes: params.durationMinutes,
+    bookingUrl: params.bookingUrl,
+    unsubscribeUrl,
+    siteUrl: params.siteUrl,
+  });
 
   const logContext = {
     origin: params.origin,
@@ -197,7 +195,15 @@ async function sendDropEmail(params: {
 
   const debut = Date.now();
   try {
-    const result = await sendEmail({ to: params.email, subject, html, text });
+    const result = await sendEmail({
+      to: params.email,
+      subject,
+      html,
+      text,
+      // Lien de désinscription reconnu par les messageries : affiché à côté de
+      // l'expéditeur et pris en compte dans le classement spam / boîte de réception.
+      headers: { "List-Unsubscribe": `<${unsubscribeUrl}>` },
+    });
     if (!result.sent) {
       logOps({
         kind: "alerte",
@@ -282,6 +288,11 @@ export async function runAlertCheck(siteUrl: string): Promise<{
         destination: alert.destination,
         oldPrice: previous,
         newPrice: cheapest.priceEur,
+        departureAt: cheapest.departureAt || alert.depart_date,
+        returnAt: cheapest.returnAt ?? alert.return_date,
+        airline: cheapest.airline,
+        stops: cheapest.stops,
+        durationMinutes: cheapest.durationMinutes,
         unsubscribeToken: alert.unsubscribe_token,
         bookingUrl: cheapest.bookingUrl,
         siteUrl,
