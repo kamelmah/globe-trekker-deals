@@ -1,7 +1,7 @@
 /**
  * Fonds animés thématiques des héros, sur le modèle de l'avion de l'accueil.
  *
- * Trois règles valent pour les trois variantes :
+ * Trois règles valent pour toutes les variantes :
  *
  * - Aucune image, aucune librairie : uniquement des formes CSS et deux petits
  *   SVG en ligne. Rien à télécharger, donc rien qui dispute le LCP au titre.
@@ -212,12 +212,72 @@ function CielBudget() {
   );
 }
 
-export function FondAnime({ variante }: { variante: "hotels" | "guides" | "budget" }) {
+/**
+ * Veille de prix des alertes : une courbe se trace, chute, un point s'allume,
+ * la cloche sonne et un email part. Tout tient dans un seul SVG de 440 × 200 :
+ * courbe, chute, cloche et enveloppe partagent le même repère, donc l'enveloppe
+ * part bien de la cloche et le point tombe bien au bout de la chute.
+ *
+ * La chronologie (cycle de 12 s) vit dans styles.css, avec les points de
+ * repère calculés depuis la longueur du tracé : la chute commence à 62 % de la
+ * courbe et finit à 78 %, d'où les 26 % et 32,5 % du cycle quand le tracé
+ * prend 5 s. Déplacer un point ici sans reprendre ces pourcentages désynchrone
+ * la cloche de la chute.
+ */
+function VeillePrix() {
+  return (
+    <>
+      <span className="fond-grille" />
+      <svg className="fond-veille" viewBox="0 0 440 200" focusable="false">
+        {/* Courbe complète, en bleu ; la chute est repeinte par-dessus en orange. */}
+        <path
+          className="fond-courbe"
+          pathLength={1}
+          d="M0 60 L60 64 L100 52 L150 58 L200 50 L250 56 L290 48 L310 52 L330 130 L370 126 L440 128"
+        />
+        <path className="fond-chute" pathLength={1} d="M310 52 L330 130" />
+
+        {/* Point de la baisse, deux ondes qui s'en échappent, et le pourcentage. */}
+        <circle className="fond-onde fond-onde-1" cx="330" cy="130" r="8" />
+        <circle className="fond-onde fond-onde-2" cx="330" cy="130" r="8" />
+        <circle className="fond-point-chute" cx="330" cy="130" r="5" />
+        <text className="fond-baisse" x="342" y="160">
+          −31 %
+        </text>
+
+        {/* Cloche : corps, battant, anneau, et deux arcs de sonnerie. */}
+        <g className="fond-cloche" transform="translate(392 70)">
+          <path className="fond-sonnerie" d="M-19 -8 Q-25 0 -19 8" />
+          <path className="fond-sonnerie fond-sonnerie-2" d="M19 -8 Q25 0 19 8" />
+          <g className="fond-cloche-corps">
+            <circle cx="0" cy="-16" r="2.5" />
+            <path d="M0 -14 C-8 -14 -11 -7 -11 1 L-13 8 L13 8 L11 1 C11 -7 8 -14 0 -14 Z" />
+            <circle cx="0" cy="11" r="3" />
+          </g>
+        </g>
+
+        {/* Enveloppe : naît sur la cloche, part vers le haut à droite. */}
+        {/* Le groupe extérieur porte la position, le groupe intérieur le vol :
+            un `transform` CSS remplacerait l'attribut au lieu de s'y ajouter. */}
+        <g transform="translate(380 62)">
+          <g className="fond-enveloppe">
+            <rect x="0" y="0" width="24" height="16" rx="2" />
+            <path d="M0 0 L12 9 L24 0" />
+          </g>
+        </g>
+      </svg>
+      <span className="fond-voile-mobile" />
+    </>
+  );
+}
+
+export function FondAnime({ variante }: { variante: "hotels" | "guides" | "budget" | "alertes" }) {
   return (
     <div className={`fond-anime fond-anime-${variante}`} aria-hidden>
       {variante === "hotels" && <Skyline />}
       {variante === "guides" && <CarteGuides />}
       {variante === "budget" && <CielBudget />}
+      {variante === "alertes" && <VeillePrix />}
     </div>
   );
 }

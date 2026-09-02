@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
+import { DemoAlerte } from "@/components/site/DemoAlerte";
 import { Logo } from "@/components/site/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,20 @@ const DEPART_PAR_DEFAUT = "MRS";
  * (lien recopié à la main, navigateur intégré qui nettoie l'URL).
  */
 const CANAL_PAR_DEFAUT = "tiktok";
+
+/**
+ * Destinations en un geste. Taper dans une liste déroulante est l'étape où le
+ * trafic social décroche : une puce remplace la saisie pour les trajets que
+ * l'audience (départs de Marseille) demande le plus.
+ */
+const DESTINATIONS_RAPIDES = [
+  { code: "ALG", nom: "Alger" },
+  { code: "ORN", nom: "Oran" },
+  { code: "TUN", nom: "Tunis" },
+  { code: "RAK", nom: "Marrakech" },
+  { code: "LIS", nom: "Lisbonne" },
+  { code: "BCN", nom: "Barcelone" },
+];
 
 type SearchParams = { utm_source?: string; utm_content?: string };
 
@@ -53,12 +68,29 @@ export const Route = createFileRoute("/tiktok")({
   component: TikTokPage,
 });
 
+/** Aujourd'hui en AAAA-MM-JJ, en heure locale — pas via toISOString, qui décale. */
+function aujourdhui(): string {
+  const d = new Date();
+  const mois = String(d.getMonth() + 1).padStart(2, "0");
+  const jour = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mois}-${jour}`;
+}
+
 function TikTokPage() {
   const { utm_source, utm_content } = Route.useSearch();
   const creer = useServerFn(subscribeToAlert);
 
   const [origin, setOrigin] = useState(DEPART_PAR_DEFAUT);
   const [destination, setDestination] = useState("");
+  /**
+   * PlaceAutocomplete ne relit `value` qu'au montage : une puce doit donc le
+   * remonter pour que le champ affiche la ville choisie. Ce compteur ne bouge
+   * qu'au clic sur une puce, jamais sur une saisie, pour ne pas remonter le
+   * champ sous le doigt.
+   */
+  const [cleDestination, setCleDestination] = useState(0);
+  const [depart, setDepart] = useState("");
+  const [retour, setRetour] = useState("");
   const [email, setEmail] = useState("");
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -66,6 +98,20 @@ function TikTokPage() {
   const [creee, setCreee] = useState<{ origin: string; destination: string } | null>(null);
 
   const manqueTrajet = !origin || !destination;
+
+  function choisirDestination(code: string) {
+    setDestination(code);
+    setCleDestination((n) => n + 1);
+  }
+
+  function nouvelleAlerte() {
+    setCreee(null);
+    setDestination("");
+    setCleDestination((n) => n + 1);
+    setDepart("");
+    setRetour("");
+    setErreur(null);
+  }
 
   async function soumettre(event: React.FormEvent) {
     event.preventDefault();
@@ -78,8 +124,11 @@ function TikTokPage() {
           email,
           origin,
           destination,
-          departDate: null,
-          returnDate: null,
+          // Dates facultatives : sans date, l'alerte suit le meilleur prix du
+          // trajet ; avec un aller seul, un aller simple ; avec les deux, un
+          // aller-retour. Le client choisit, la page n'impose rien.
+          departDate: depart || null,
+          returnDate: retour || null,
           referencePrice: null,
           source: utm_source ?? CANAL_PAR_DEFAUT,
           ...(utm_content ? { sourceContent: utm_content } : {}),
@@ -104,12 +153,16 @@ function TikTokPage() {
         prend le trafic social avant d'avoir rien fait. Il est là pour dire chez
         qui on est, pas pour emmener ailleurs.
       */}
-      <header className="flex items-center gap-2 py-3">
+      <header className="flex items-center gap-2 py-2">
         <Logo className="size-7 text-primary" />
         <span className="font-display text-base font-semibold tracking-tight">TrouveMonVol</span>
       </header>
 
-      <main className="flex flex-1 flex-col justify-center pb-4">
+      {/* La vignette montre le service avant que le titre ne l'explique : une
+          notification de baisse de prix, comme sur l'écran verrouillé. */}
+      <DemoAlerte />
+
+      <main className="flex flex-1 flex-col pt-2 pb-4">
         {creee ? (
           <div role="status" aria-live="polite">
             <h1 className="font-display text-2xl font-semibold leading-tight tracking-tight">
@@ -138,6 +191,14 @@ function TikTokPage() {
             >
               Voir où partir avec 100 €
             </Link>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={nouvelleAlerte}
+              className="mt-4 h-11 w-full"
+            >
+              Créer une autre alerte
+            </Button>
           </div>
         ) : (
           <>
@@ -160,13 +221,70 @@ function TikTokPage() {
                 onChange={setOrigin}
                 placeholder="Ex. Marseille, Paris…"
               />
-              <PlaceAutocomplete
-                id="tiktok-destination"
-                label="Destination"
-                value={destination}
-                onChange={setDestination}
-                placeholder="Ex. Alger, Barcelone, Lisbonne…"
-              />
+              <div className="space-y-2">
+                <PlaceAutocomplete
+                  key={`destination-${cleDestination}`}
+                  id="tiktok-destination"
+                  label="Destination"
+                  value={destination}
+                  onChange={setDestination}
+                  placeholder="Ex. Alger, Barcelone, Lisbonne…"
+                />
+                {/* Bande défilante sans barre : un pouce suffit, aucun retour à
+                    la ligne qui pousserait le bouton hors de l'écran. */}
+                <div
+                  className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  role="group"
+                  aria-label="Destinations fréquentes"
+                >
+                  {DESTINATIONS_RAPIDES.map((d) => {
+                    const active = destination === d.code;
+                    return (
+                      <button
+                        key={d.code}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => choisirDestination(d.code)}
+                        className={
+                          active
+                            ? "shrink-0 rounded-full border border-primary bg-primary px-3.5 py-1.5 text-sm font-medium text-primary-foreground"
+                            : "shrink-0 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-foreground active:bg-secondary"
+                        }
+                      >
+                        {d.nom}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Deux dates côte à côte, toutes deux facultatives : rien = meilleur
+                  prix du trajet, aller seul = aller simple, les deux = aller-retour. */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="tiktok-depart">Aller (facultatif)</Label>
+                  <Input
+                    id="tiktok-depart"
+                    type="date"
+                    min={aujourdhui()}
+                    value={depart}
+                    onChange={(e) => {
+                      setDepart(e.target.value);
+                      if (retour && e.target.value && retour < e.target.value) setRetour("");
+                    }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="tiktok-retour">Retour (facultatif)</Label>
+                  <Input
+                    id="tiktok-retour"
+                    type="date"
+                    min={depart || aujourdhui()}
+                    value={retour}
+                    onChange={(e) => setRetour(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div className="space-y-1.5">
                 <Label htmlFor="tiktok-email">Email</Label>
                 <Input
@@ -175,6 +293,10 @@ function TikTokPage() {
                   required
                   autoComplete="email"
                   inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  enterKeyHint="done"
                   placeholder="toi@exemple.fr"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -191,7 +313,11 @@ function TikTokPage() {
 
               <div className="text-center">
                 <p className="text-xs leading-snug text-muted-foreground">
-                  Gratuit. Un email quand le prix baisse, rien d&apos;autre.
+                  {manqueTrajet
+                    ? "Gratuit. Un email quand le prix baisse, rien d'autre."
+                    : `${cityLabel(origin)} → ${cityLabel(destination)}${
+                        depart ? (retour ? " aller-retour" : " aller simple") : ", toutes dates"
+                      } : vérifié chaque heure, un email dès que ça baisse.`}
                 </p>
                 {/*
                   Seul lien toléré avant validation, et il est obligatoire : on

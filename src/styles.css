@@ -302,6 +302,15 @@
   --fa-nacelle: oklch(0.42 0.1 60);
   --fa-ballon-bleu-1: oklch(0.5 0.17 251);
   --fa-ballon-bleu-2: oklch(0.65 0.1 235);
+  --fa-alerte-ciel-1: oklch(0.985 0.012 245);
+  --fa-alerte-ciel-2: oklch(0.93 0.035 250);
+  --fa-grille: oklch(0.24 0.035 250 / 9%);
+  --fa-courbe: oklch(0.45 0.17 251);
+  --fa-chute: oklch(0.58 0.19 41);
+  --fa-chute-halo: oklch(0.58 0.19 41 / 45%);
+  --fa-cloche: oklch(0.72 0.15 78);
+  --fa-enveloppe: oklch(1 0 0);
+  --fa-enveloppe-bord: oklch(0.45 0.17 251);
   --chart-1: oklch(0.55 0.155 249);
   --chart-2: oklch(0.68 0.11 200);
   --chart-3: oklch(0.6 0.13 155);
@@ -354,6 +363,15 @@
   --fa-nacelle: oklch(0.55 0.1 60);
   --fa-ballon-bleu-1: oklch(0.72 0.155 249);
   --fa-ballon-bleu-2: oklch(0.85 0.09 235);
+  --fa-alerte-ciel-1: oklch(0.13 0.045 265);
+  --fa-alerte-ciel-2: oklch(0.2 0.06 258);
+  --fa-grille: oklch(0.984 0.003 247.858 / 8%);
+  --fa-courbe: oklch(0.72 0.155 249);
+  --fa-chute: oklch(0.76 0.18 43);
+  --fa-chute-halo: oklch(0.76 0.18 43 / 45%);
+  --fa-cloche: oklch(0.88 0.13 85);
+  --fa-enveloppe: oklch(0.984 0.003 247.858);
+  --fa-enveloppe-bord: oklch(0.72 0.155 249);
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);
@@ -893,6 +911,301 @@
     fill: var(--fa-ballon-bleu-2);
   }
 
+  /* --- Alertes : veille de prix ------------------------------------------ */
+
+  /*
+   * Cycle de 12 s, tout en pourcentages du cycle : la courbe se trace de 0 à
+   * 42 % (5 s), la chute va de 26 à 32,5 % (sa part de la longueur du tracé,
+   * voir FondAnime.tsx), le point, la cloche et l'enveloppe s'enchaînent
+   * juste après, et tout s'efface de 82 à 90 % pour recommencer. Décaler la
+   * chute ici sans décaler la cloche ferait sonner avant la baisse.
+   */
+  .fond-anime-alertes {
+    background-image: linear-gradient(180deg, var(--fa-alerte-ciel-1), var(--fa-alerte-ciel-2));
+  }
+
+  /* Lignes de graphique, fondues à gauche pour laisser le titre sur fond uni. */
+  .fond-grille {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--fa-grille) 0 1px,
+      transparent 1px 28px
+    );
+    -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000 70%);
+    mask-image: linear-gradient(90deg, transparent 30%, #000 70%);
+  }
+
+  .fond-veille {
+    position: absolute;
+    right: 4%;
+    top: 50%;
+    width: 440px;
+    height: 200px;
+    overflow: visible;
+    transform: translateY(-50%);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 30%);
+    mask-image: linear-gradient(90deg, transparent, #000 30%);
+  }
+
+  /* Même exception que les trajets des guides : le tracé se dessine en
+     `stroke-dashoffset`, seule façon de faire courir une ligne. */
+  .fond-courbe,
+  .fond-chute {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: 12s linear infinite;
+  }
+
+  .fond-courbe {
+    stroke: var(--fa-courbe);
+    stroke-width: 2.5;
+    animation-name: fond-courbe;
+  }
+
+  .fond-chute {
+    stroke: var(--fa-chute);
+    stroke-width: 3.5;
+    animation-name: fond-chute;
+  }
+
+  @keyframes fond-courbe {
+    0% {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+    42%,
+    82% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    90% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+    90.1%,
+    100% {
+      stroke-dashoffset: 1;
+      opacity: 0;
+    }
+  }
+
+  @keyframes fond-chute {
+    0%,
+    26% {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+    32.5%,
+    82% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    90% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+    90.1%,
+    100% {
+      stroke-dashoffset: 1;
+      opacity: 0;
+    }
+  }
+
+  .fond-point-chute,
+  .fond-onde,
+  .fond-baisse,
+  .fond-cloche-corps,
+  .fond-enveloppe {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 12s ease-in-out infinite;
+  }
+
+  .fond-point-chute {
+    fill: var(--fa-chute);
+    opacity: 0;
+    animation-name: fond-point-chute;
+  }
+
+  @keyframes fond-point-chute {
+    0%,
+    32% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    35% {
+      opacity: 1;
+      transform: scale(1.4);
+    }
+    38%,
+    82% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    90%,
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+
+  .fond-onde {
+    fill: none;
+    stroke: var(--fa-chute-halo);
+    stroke-width: 2;
+    opacity: 0;
+    animation-name: fond-onde;
+    animation-timing-function: ease-out;
+  }
+
+  .fond-onde-2 {
+    animation-delay: 0.9s;
+  }
+
+  @keyframes fond-onde {
+    0%,
+    33% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    34% {
+      opacity: 0.9;
+      transform: scale(0.5);
+    }
+    50%,
+    100% {
+      opacity: 0;
+      transform: scale(4);
+    }
+  }
+
+  .fond-baisse {
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--fa-chute);
+    opacity: 0;
+    animation-name: fond-baisse;
+  }
+
+  @keyframes fond-baisse {
+    0%,
+    34% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    38%,
+    82% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    90%,
+    100% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+  }
+
+  /* La cloche pivote depuis son anneau, comme une vraie. */
+  .fond-cloche-corps {
+    fill: var(--fa-cloche);
+    transform-origin: 50% 0;
+    animation-name: fond-cloche;
+  }
+
+  @keyframes fond-cloche {
+    0%,
+    33% {
+      transform: rotate(0);
+    }
+    35% {
+      transform: rotate(-16deg);
+    }
+    37% {
+      transform: rotate(14deg);
+    }
+    39% {
+      transform: rotate(-10deg);
+    }
+    41% {
+      transform: rotate(7deg);
+    }
+    43% {
+      transform: rotate(-4deg);
+    }
+    45%,
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  .fond-sonnerie {
+    fill: none;
+    stroke: var(--fa-cloche);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: fond-sonnerie 12s linear infinite;
+  }
+
+  @keyframes fond-sonnerie {
+    0%,
+    33% {
+      opacity: 0;
+    }
+    35% {
+      opacity: 1;
+    }
+    37% {
+      opacity: 0;
+    }
+    39% {
+      opacity: 1;
+    }
+    42%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .fond-enveloppe {
+    opacity: 0;
+    animation-name: fond-enveloppe;
+    animation-timing-function: ease-out;
+  }
+  .fond-enveloppe rect {
+    fill: var(--fa-enveloppe);
+    stroke: var(--fa-enveloppe-bord);
+    stroke-width: 1.5;
+  }
+  .fond-enveloppe path {
+    fill: none;
+    stroke: var(--fa-enveloppe-bord);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  @keyframes fond-enveloppe {
+    0%,
+    44% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.6);
+    }
+    48% {
+      opacity: 1;
+      transform: translate(8px, -18px) scale(1);
+    }
+    62%,
+    100% {
+      opacity: 0;
+      transform: translate(80px, -90px) scale(1);
+    }
+  }
+
   /*
    * Voile bas réservé au mobile. Sur une seule colonne, le texte descend
    * jusqu'au bas du héros, là où la montgolfière monte : du gris sur une
@@ -959,6 +1272,23 @@
         transform: translateY(14px) rotate(-2deg);
       }
     }
+    /*
+     * Veille de prix : sur une colonne, le texte occupe toute la largeur. La
+     * scène se réduit et se range dans la bande basse du héros (le `pb-36` de
+     * la page), la grille se fond vers le haut plutôt que vers la gauche.
+     */
+    .fond-veille {
+      right: 4%;
+      top: auto;
+      bottom: 6px;
+      width: 300px;
+      height: 136px;
+      transform: none;
+    }
+    .fond-grille {
+      -webkit-mask-image: linear-gradient(180deg, transparent 45%, #000 80%);
+      mask-image: linear-gradient(180deg, transparent 45%, #000 80%);
+    }
     /* Assez pour que le gris du dernier paragraphe reste lisible s'il croise
        l'enveloppe, pas assez pour effacer la montgolfière. */
     .fond-voile-mobile {
@@ -972,6 +1302,248 @@
         transparent
       );
     }
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Démo alerte (voir src/components/site/DemoAlerte.tsx)                    */
+  /*                                                                          */
+  /* Vignette de la page /tiktok. Cycle de 10 s : la courbe se trace de 0 à   */
+  /* 30 %, la chute occupe 21 à 27 % (sa part de la longueur du tracé), la    */
+  /* notification glisse à 30 %, tient, et tout s'efface de 88 à 94 %.        */
+  /* ---------------------------------------------------------------------- */
+
+  .demo-alerte {
+    position: relative;
+    /* 100 et non 120 : à 120, le bouton de /tiktok tombait sous la ligne de
+       flottaison d un 390x700. */
+    height: 100px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    /* Lignes de graphique discrètes sur le ciel des alertes. */
+    background-image:
+      repeating-linear-gradient(to bottom, var(--fa-grille) 0 1px, transparent 1px 20px),
+      linear-gradient(180deg, var(--fa-alerte-ciel-1), var(--fa-alerte-ciel-2));
+  }
+
+  .demo-courbe-svg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .demo-courbe,
+  .demo-chute {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: 10s linear infinite;
+  }
+  .demo-courbe {
+    stroke: var(--fa-courbe);
+    stroke-width: 2.5;
+    animation-name: demo-courbe;
+  }
+  .demo-chute {
+    stroke: var(--fa-chute);
+    stroke-width: 3.5;
+    animation-name: demo-chute;
+  }
+
+  @keyframes demo-courbe {
+    0% {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+    30%,
+    88% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    94% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+    94.1%,
+    100% {
+      stroke-dashoffset: 1;
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-chute {
+    0%,
+    21% {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+    27%,
+    88% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    94% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+    94.1%,
+    100% {
+      stroke-dashoffset: 1;
+      opacity: 0;
+    }
+  }
+
+  .demo-point,
+  .demo-onde {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    animation: 10s ease-out infinite;
+  }
+  .demo-point {
+    fill: var(--fa-chute);
+    animation-name: demo-point;
+  }
+  .demo-onde {
+    fill: none;
+    stroke: var(--fa-chute-halo);
+    stroke-width: 2;
+    animation-name: demo-onde;
+  }
+
+  @keyframes demo-point {
+    0%,
+    26% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    29% {
+      opacity: 1;
+      transform: scale(1.5);
+    }
+    32%,
+    88% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    94%,
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes demo-onde {
+    0%,
+    27% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    28% {
+      opacity: 0.9;
+      transform: scale(0.5);
+    }
+    42%,
+    100% {
+      opacity: 0;
+      transform: scale(4);
+    }
+  }
+
+  /* La notification, comme sur un écran verrouillé : elle descend du haut
+     avec un léger dépassement, tient, puis remonte. */
+  .demo-notif {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 14px;
+    background-color: color-mix(in oklab, var(--color-card) 92%, transparent);
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 8%),
+      0 8px 24px oklch(0 0 0 / 14%);
+    opacity: 0;
+    transform: translateY(-72px);
+    animation: demo-notif 10s cubic-bezier(0.22, 1.2, 0.36, 1) infinite;
+  }
+
+  @keyframes demo-notif {
+    0%,
+    30% {
+      opacity: 0;
+      transform: translateY(-72px);
+    }
+    36%,
+    86% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    92%,
+    100% {
+      opacity: 0;
+      transform: translateY(-72px);
+    }
+  }
+
+  .demo-notif-icone {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background-color: color-mix(in oklab, var(--color-primary) 12%, transparent);
+  }
+
+  .demo-notif-texte {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .demo-notif-entete {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    line-height: 1;
+    color: var(--color-muted-foreground);
+  }
+
+  .demo-notif-corps {
+    font-size: 14px;
+    line-height: 1.2;
+    color: var(--color-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .demo-notif-corps strong {
+    font-weight: 700;
+  }
+
+  .demo-notif-baisse {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.3;
+    vertical-align: 1px;
+    color: var(--fa-chute);
+    background-color: var(--fa-chute-halo);
   }
 
   /*
@@ -1018,6 +1590,44 @@
     /* Les repères vivent dans leur animation : à l'arrêt, sans ça, la carte des
        guides perdrait ses huit villes. */
     .fond-repere {
+      opacity: 1;
+      transform: none;
+    }
+    /* Veille de prix à l'arrêt : courbe tracée, chute et point visibles, cloche
+       immobile ; ondes, sonnerie et enveloppe n'existent qu'en mouvement. */
+    .fond-courbe,
+    .fond-chute,
+    .fond-point-chute,
+    .fond-baisse,
+    .fond-cloche-corps,
+    .fond-onde,
+    .fond-sonnerie,
+    .fond-enveloppe {
+      animation: none;
+    }
+    .fond-courbe,
+    .fond-chute {
+      stroke-dashoffset: 0;
+    }
+    .fond-point-chute,
+    .fond-baisse {
+      opacity: 1;
+      transform: none;
+    }
+    /* Démo alerte à l'arrêt : état final, notification affichée. */
+    .demo-courbe,
+    .demo-chute,
+    .demo-point,
+    .demo-onde,
+    .demo-notif {
+      animation: none;
+    }
+    .demo-courbe,
+    .demo-chute {
+      stroke-dashoffset: 0;
+    }
+    .demo-point,
+    .demo-notif {
       opacity: 1;
       transform: none;
     }
