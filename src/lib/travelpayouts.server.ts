@@ -78,7 +78,7 @@ const AIRLINE_NAMES: Record<string, string> = {
   TU: "Tunisair",
 };
 
-function airlineName(code: string): string {
+export function airlineName(code: string): string {
   if (!code) return "Compagnie non communiquée";
   return AIRLINE_NAMES[code.toUpperCase()] ?? code.toUpperCase();
 }

@@ -19,6 +19,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as HebergementRouteImport } from './routes/hebergement'
 import { Route as IndemnisationRouteImport } from './routes/indemnisation'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as MethodologieRouteImport } from './routes/methodologie'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -86,6 +87,11 @@ const IndemnisationRoute = IndemnisationRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MethodologieRoute = MethodologieRouteImport.update({
+  id: '/methodologie',
+  path: '/methodologie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModeBudgetRoute = ModeBudgetRouteImport.update({
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/hebergement': typeof HebergementRoute
   '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/hebergement': typeof HebergementRoute
   '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/hebergement': typeof HebergementRoute
   '/indemnisation': typeof IndemnisationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/hebergement'
     | '/indemnisation'
     | '/mentions-legales'
+    | '/methodologie'
     | '/mode-budget'
     | '/recherche'
     | '/sitemap.xml'
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/hebergement'
     | '/indemnisation'
     | '/mentions-legales'
+    | '/methodologie'
     | '/mode-budget'
     | '/recherche'
     | '/sitemap.xml'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/hebergement'
     | '/indemnisation'
     | '/mentions-legales'
+    | '/methodologie'
     | '/mode-budget'
     | '/recherche'
     | '/sitemap.xml'
@@ -378,6 +390,7 @@ export interface RootRouteChildren {
   HebergementRoute: typeof HebergementRoute
   IndemnisationRoute: typeof IndemnisationRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  MethodologieRoute: typeof MethodologieRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -468,6 +481,13 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/methodologie': {
+      id: '/methodologie'
+      path: '/methodologie'
+      fullPath: '/methodologie'
+      preLoaderRoute: typeof MethodologieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mode-budget': {
@@ -610,6 +630,7 @@ const rootRouteChildren: RootRouteChildren = {
   HebergementRoute: HebergementRoute,
   IndemnisationRoute: IndemnisationRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  MethodologieRoute: MethodologieRoute,
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

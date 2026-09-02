@@ -121,6 +121,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/methodologie" className={linkClass}>
+                Comment nous comparons les prix
+              </Link>
+            </li>
+            <li>
               <Link to="/indemnisation" className={linkClass}>
                 Vol retardé ou annulé
               </Link>

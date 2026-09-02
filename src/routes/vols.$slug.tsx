@@ -393,6 +393,19 @@ function DestinationPage() {
             </Reveal>
           ))}
 
+          {/* Le fonctionnement du comparateur (source des prix, bagages, alertes,
+              rémunération) n'est plus répété sur chaque page de liaison : il est
+              expliqué une fois sur /methodologie. */}
+          <p className="mt-6 rounded-lg border border-border bg-secondary/40 px-4 py-3 text-xs text-muted-foreground">
+            Prix relevés automatiquement, taxes incluses, vendeur affiché sur chaque résultat.{" "}
+            <Link
+              to="/methodologie"
+              className="font-medium text-primary underline-offset-2 hover:underline"
+            >
+              Comment nous relevons et comparons les prix
+            </Link>
+          </p>
+
           {saison && (
             <Reveal className="mt-10">
               <section>
