@@ -1,8 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-import logo from "@/assets/logo-64.png";
-import logoWebp from "@/assets/logo-64.webp";
-import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { Logo } from "@/components/site/Logo";
 import { DESTINATIONS } from "@/data/destinations";
 import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { routesFrom } from "@/data/route-whitelist";
@@ -27,15 +25,7 @@ export function Footer() {
       <div className="container-page grid gap-10 py-12 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
-            <ResponsivePicture
-              src={logo}
-              webp={logoWebp}
-              alt="TrouveMonVol"
-              width={32}
-              height={32}
-              loading="lazy"
-              className="size-8 shrink-0"
-            />
+            <Logo className="size-8 shrink-0 text-primary" />
             <p className="font-display text-lg font-semibold">TrouveMonVol</p>
           </div>
           <p className="mt-2 text-sm font-medium">Le comparateur de vols transparent</p>

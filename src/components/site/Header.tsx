@@ -2,10 +2,8 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { BedDouble, Bell, BookOpen, Compass, Plane } from "lucide-react";
 import { type ReactNode, useCallback } from "react";
 
-import logo from "@/assets/logo-64.png";
-import logoWebp from "@/assets/logo-64.webp";
 import { CurrencySelect } from "@/components/site/CurrencySelect";
-import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { Logo } from "@/components/site/Logo";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
@@ -183,14 +181,7 @@ export function Header() {
             to="/"
             className="flex shrink-0 items-center gap-1.5 whitespace-nowrap font-display text-base font-semibold sm:gap-2 sm:text-lg"
           >
-            <ResponsivePicture
-              src={logo}
-              webp={logoWebp}
-              alt="TrouveMonVol"
-              width={40}
-              height={40}
-              className="size-9 shrink-0 rounded-lg object-contain dark:drop-shadow-[0_0_8px_rgba(59,130,246,0.45)] sm:size-10"
-            />
+            <Logo className="size-9 shrink-0 text-primary sm:size-10" />
             TrouveMonVol
           </Link>
 
