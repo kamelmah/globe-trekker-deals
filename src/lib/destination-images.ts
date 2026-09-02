@@ -42,6 +42,10 @@ import genericCoast from "@/assets/dest/generic/coast.jpg";
 import genericCoastWebp from "@/assets/dest/generic/coast.webp";
 import genericCoastThumb from "@/assets/dest/generic/coast-thumb.jpg";
 import genericCoastThumbWebp from "@/assets/dest/generic/coast-thumb.webp";
+import genericDesert from "@/assets/dest/generic/desert.jpg";
+import genericDesertWebp from "@/assets/dest/generic/desert.webp";
+import genericDesertThumb from "@/assets/dest/generic/desert-thumb.jpg";
+import genericDesertThumbWebp from "@/assets/dest/generic/desert-thumb.webp";
 import genericHarbour from "@/assets/dest/generic/harbour.jpg";
 import genericHarbourWebp from "@/assets/dest/generic/harbour.webp";
 import genericHarbourThumb from "@/assets/dest/generic/harbour-thumb.jpg";
@@ -54,6 +58,10 @@ import genericMedina from "@/assets/dest/generic/medina.jpg";
 import genericMedinaWebp from "@/assets/dest/generic/medina.webp";
 import genericMedinaThumb from "@/assets/dest/generic/medina-thumb.jpg";
 import genericMedinaThumbWebp from "@/assets/dest/generic/medina-thumb.webp";
+import genericMedina2 from "@/assets/dest/generic/medina2.jpg";
+import genericMedina2Webp from "@/assets/dest/generic/medina2.webp";
+import genericMedina2Thumb from "@/assets/dest/generic/medina2-thumb.jpg";
+import genericMedina2ThumbWebp from "@/assets/dest/generic/medina2-thumb.webp";
 import genericMountain from "@/assets/dest/generic/mountain.jpg";
 import genericMountainWebp from "@/assets/dest/generic/mountain.webp";
 import genericMountainThumb from "@/assets/dest/generic/mountain-thumb.jpg";
@@ -62,6 +70,10 @@ import genericNightCity from "@/assets/dest/generic/nightcity.jpg";
 import genericNightCityWebp from "@/assets/dest/generic/nightcity.webp";
 import genericNightCityThumb from "@/assets/dest/generic/nightcity-thumb.jpg";
 import genericNightCityThumbWebp from "@/assets/dest/generic/nightcity-thumb.webp";
+import genericNorthCoast from "@/assets/dest/generic/northcoast.jpg";
+import genericNorthCoastWebp from "@/assets/dest/generic/northcoast.webp";
+import genericNorthCoastThumb from "@/assets/dest/generic/northcoast-thumb.jpg";
+import genericNorthCoastThumbWebp from "@/assets/dest/generic/northcoast-thumb.webp";
 import genericOldTown from "@/assets/dest/generic/oldtown.jpg";
 import genericOldTownWebp from "@/assets/dest/generic/oldtown.webp";
 import genericOldTownThumb from "@/assets/dest/generic/oldtown-thumb.jpg";
@@ -413,6 +425,40 @@ const SCENES: Record<string, Scene> = {
     thumbWebp: genericMedinaThumbWebp,
     description: "ruelle voûtée aux murs ocre éclairée par des lanternes",
   },
+  /*
+   * Les trois ambiances qui suivent existent pour le Maghreb et le Proche-Orient,
+   * dont « medina » était jusqu'ici la seule image utilisable — quinze villes s'y
+   * partageaient une photo unique.
+   *
+   * Elles ne sont jamais tirées pour l'Europe : elles n'apparaissent que dans le
+   * bassin de « medina », et jamais dans SCENES_NEUTRES.
+   *
+   * Sources, licence Unsplash (usage commercial autorisé, crédit non obligatoire) :
+   *   medina2    https://unsplash.com/fr/photos/FvaiA2QPgzI
+   *   northcoast https://unsplash.com/fr/photos/FImbftN5DZQ
+   *   desert     https://unsplash.com/fr/photos/pdzQ1cAdftk
+   */
+  medina2: {
+    src: genericMedina2,
+    webp: genericMedina2Webp,
+    thumb: genericMedina2Thumb,
+    thumbWebp: genericMedina2ThumbWebp,
+    description: "ruelle en escalier aux murs peints en bleu, portes sculptées et bougainvilliers",
+  },
+  northcoast: {
+    src: genericNorthCoast,
+    webp: genericNorthCoastWebp,
+    thumb: genericNorthCoastThumb,
+    thumbWebp: genericNorthCoastThumbWebp,
+    description: "cap rocheux surmonté d'un phare blanc, palmiers et mer turquoise",
+  },
+  desert: {
+    src: genericDesert,
+    webp: genericDesertWebp,
+    thumb: genericDesertThumb,
+    thumbWebp: genericDesertThumbWebp,
+    description: "dunes de sable ocre parsemées de touffes d'herbe sèche",
+  },
   tropical: {
     src: genericTropical,
     webp: genericTropicalWebp,
@@ -448,20 +494,25 @@ const SCENE_VARIANTS: Record<string, string[]> = {
   lake: ["mountain", "oldtown"],
   skyline: ["nightcity"],
   /**
-   * Aucune variante, volontairement.
+   * Bassin de quatre, et pas un de moins.
    *
-   * Les huit autres ambiances sont visiblement européennes ou asiatiques : la
-   * place pavée d'« oldtown » est bohémienne, le port de « coast » est grec,
-   * « harbour » est un canal néerlandais et « mountain » un village alpin.
-   * Emprunter l'une d'elles envoyait Annaba et Tlemcen sur une place de Bohême,
-   * Constantine, Sétif et Djerba dans un port grec.
+   * Aucune ambiance européenne n'y figure : la place pavée d'« oldtown » est
+   * bohémienne, le port de « coast » est grec, « harbour » est un canal
+   * néerlandais et « mountain » un village alpin. Les emprunter envoyait Annaba
+   * et Tlemcen sur une place de Bohême, Constantine et Sétif dans un port grec.
    *
-   * Douze villes se partagent donc une seule image, et c'est le moindre mal :
-   * une photo répétée se remarque moins qu'une photo fausse. La sortie n'est
-   * pas dans le code mais dans la photothèque — trois images non européennes
-   * suffiraient à porter ce bassin à quatre, la taille qui sépare Agadir d'Oran.
+   * La taille quatre n'est pas un chiffre rond : mesurée sur les empreintes des
+   * villes, c'est la seule qui sépare Agadir d'Oran, qui tombaient dans le même
+   * groupe à un, deux et trois.
+   *
+   * RÉSERVE. SCENE_BY_COUNTRY range aussi la Turquie et l'Inde sous « medina » :
+   * elles peuvent donc tirer une dune saharienne, ce qui serait faux. Aucune
+   * ville concernée ne le fait aujourd'hui — Antalya sort sur « medina », et
+   * l'Inde n'a pas de destination — mais un bassin par scène ne sait pas
+   * distinguer ces pays. Les en sortir demanderait de leur donner leurs propres
+   * images, pas de bricoler ce tableau.
    */
-  medina: [],
+  medina: ["medina2", "northcoast", "desert"],
   tropical: ["coast"],
   nightcity: ["skyline"],
 };
