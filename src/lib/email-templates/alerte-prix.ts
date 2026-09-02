@@ -22,7 +22,8 @@ export type AlertePrixInput = {
   airline?: string | undefined;
   stops?: number | undefined;
   durationMinutes?: number | undefined;
-  bookingUrl: string;
+  /** Page du site pour ce trajet — jamais un lien externe (voir alerts.server). */
+  offerUrl: string;
   unsubscribeUrl: string;
   siteUrl: string;
 };
@@ -161,7 +162,7 @@ export function buildAlertePrixEmail(input: AlertePrixInput): {
         <tr><td style="padding:24px 32px 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0">
             <tr><td style="background:${BLEU};border-radius:10px;">
-              <a href="${escapeHtml(input.bookingUrl)}" style="display:inline-block;padding:14px 26px;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;">Voir l'offre</a>
+              <a href="${escapeHtml(input.offerUrl)}" style="display:inline-block;padding:14px 26px;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;">Voir les vols</a>
             </td></tr>
           </table>
         </td></tr>
@@ -197,7 +198,7 @@ export function buildAlertePrixEmail(input: AlertePrixInput): {
     ``,
     ...details.map(([label, value]) => `${label} : ${value}`),
     details.length ? `` : null,
-    `Voir l'offre : ${input.bookingUrl}`,
+    `Voir les vols : ${input.offerUrl}`,
     ``,
     `Prix relevé au moment de la vérification, il peut évoluer rapidement. La réservation se fait chez le vendeur, sans commission ajoutée par TrouveMonVol.`,
     ``,

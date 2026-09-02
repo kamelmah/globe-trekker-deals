@@ -154,7 +154,7 @@ async function sendDropEmail(params: {
   stops?: number;
   durationMinutes?: number;
   unsubscribeToken: string;
-  bookingUrl: string;
+  offerUrl: string;
   siteUrl: string;
 }): Promise<boolean> {
   const unsubscribeUrl = `${params.siteUrl}/alertes/desinscription?token=${params.unsubscribeToken}`;
@@ -168,7 +168,7 @@ async function sendDropEmail(params: {
     airline: params.airline,
     stops: params.stops,
     durationMinutes: params.durationMinutes,
-    bookingUrl: params.bookingUrl,
+    offerUrl: params.offerUrl,
     unsubscribeUrl,
     siteUrl: params.siteUrl,
   });
@@ -294,7 +294,13 @@ export async function runAlertCheck(siteUrl: string): Promise<{
         stops: cheapest.stops,
         durationMinutes: cheapest.durationMinutes,
         unsubscribeToken: alert.unsubscribe_token,
-        bookingUrl: cheapest.bookingUrl,
+        offerUrl: offerPageUrl(
+          siteUrl,
+          alert.origin,
+          alert.destination,
+          cheapest.departureAt || departureAt,
+          cheapest.returnAt ?? alert.return_date,
+        ),
         siteUrl,
       });
       if (sent) notified++;
@@ -314,6 +320,30 @@ export async function runAlertCheck(siteUrl: string): Promise<{
   }
 
   return { checked: alerts?.length ?? 0, notified };
+}
+
+/**
+ * Page de résultats du site pour ce trajet, avec les dates de l'offre.
+ *
+ * L'email ne pointe volontairement PAS vers le lien de réservation Aviasales :
+ * un email dont les liens sortent du domaine d'envoi est un signal de spam
+ * classique (c'est le premier point que Resend remonte dans ses « insights »).
+ * Le lecteur arrive sur trouvemonvol.fr, voit les offres à jour et clique
+ * « Réserver » depuis le site, où l'affiliation est déjà en place.
+ */
+function offerPageUrl(
+  siteUrl: string,
+  origin: string,
+  destination: string,
+  departureAt: string,
+  returnAt: string | null,
+): string {
+  const url = new URL("/recherche", siteUrl);
+  url.searchParams.set("origin", origin);
+  url.searchParams.set("destination", destination);
+  url.searchParams.set("depart", departureAt.slice(0, 10));
+  if (returnAt) url.searchParams.set("retour", returnAt.slice(0, 10));
+  return url.toString();
 }
 
 function defaultDepartureDate(): string {
