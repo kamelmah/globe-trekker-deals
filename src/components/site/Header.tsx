@@ -50,8 +50,13 @@ const ONGLETS: Record<Onglet["id"], Onglet> = {
     actif: (c) => c === "/" || c.startsWith("/vols"),
   },
   budget: { id: "budget", label: "Budget", Icone: Compass, actif: (c) => c === "/mode-budget" },
-  // L'alerte n'a pas de page à elle : elle vit dans la page d'un trajet.
-  alertes: { id: "alertes", label: "Alertes", Icone: Bell, actif: () => false },
+  alertes: {
+    id: "alertes",
+    label: "Alertes",
+    Icone: Bell,
+    // Couvre /alertes et /alertes/desinscription, qui est la même histoire.
+    actif: (c) => c.startsWith("/alertes"),
+  },
   hotels: { id: "hotels", label: "Hôtels", Icone: BedDouble, actif: (c) => c === "/hebergement" },
   guides: {
     id: "guides",
@@ -113,25 +118,13 @@ export function Header() {
     void navigate({ to: "/hebergement" });
   }, [navigate]);
 
-  /**
-   * Une alerte porte toujours sur un trajet précis : le formulaire n'existe que
-   * sur /recherche et /vols/*, jamais sur l'accueil. Quand il est sur la page,
-   * on y va ; sinon on renvoie vers la recherche, seul chemin qui mène à un
-   * trajet. Un lien vers /#alertes tomberait sur une ancre inexistante.
-   */
-  const onAlertesClick = useCallback(() => {
-    if (allerVers("alertes")) return;
-    onVolsClick();
-  }, [onVolsClick]);
-
   const actionDe = useCallback(
     (id: Onglet["id"]) => {
       if (id === "vols") return onVolsClick;
       if (id === "hotels") return onHotelsClick;
-      if (id === "alertes") return onAlertesClick;
       return undefined;
     },
-    [onVolsClick, onHotelsClick, onAlertesClick],
+    [onVolsClick, onHotelsClick],
   );
 
   /**
@@ -164,6 +157,13 @@ export function Header() {
     if (id === "guides") {
       return (
         <Link key={id} to="/conseils/destinations" {...commun}>
+          {contenu}
+        </Link>
+      );
+    }
+    if (id === "alertes") {
+      return (
+        <Link key={id} to="/alertes" {...commun}>
           {contenu}
         </Link>
       );
@@ -216,13 +216,23 @@ export function Header() {
             rendrait le sélecteur de devise illisible.
           */}
           <div className="flex shrink-0 items-center gap-1.5 [&_button]:h-8 sm:gap-2 lg:[&_button]:h-9">
-            <Button
-              variant="outline"
-              onClick={onAlertesClick}
-              className="ml-1 hidden gap-1.5 whitespace-nowrap lg:inline-flex"
-            >
-              <Bell className="size-4" aria-hidden />
-              Alertes prix
+            {/*
+              Même état actif que les onglets, sur un bouton : sans lui, la
+              barre du haut ne dirait pas qu'on est sur /alertes, alors que la
+              barre du bas le dit.
+            */}
+            <Button asChild variant="outline" className="ml-1 hidden lg:inline-flex">
+              <Link
+                to="/alertes"
+                className={
+                  "gap-1.5 whitespace-nowrap" +
+                  (ONGLETS.alertes.actif(pathname) ? " border-primary/60 text-primary" : "")
+                }
+                {...(ONGLETS.alertes.actif(pathname) ? { "aria-current": "page" as const } : {})}
+              >
+                <Bell className="size-4" aria-hidden />
+                Alertes prix
+              </Link>
             </Button>
             <ThemeToggle />
             <CurrencySelect />

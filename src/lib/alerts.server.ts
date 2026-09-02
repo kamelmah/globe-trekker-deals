@@ -1,6 +1,7 @@
 import { fetchOffers } from "@/lib/travelpayouts.server";
 import { logOps } from "@/lib/ops-log.server";
 import { buildAlertePrixEmail } from "@/lib/email-templates/alerte-prix";
+import { buildMesAlertesEmail } from "@/lib/email-templates/mes-alertes";
 import { isEmailConfigured, sendEmail } from "@/lib/resend.server";
 
 export type AlertInput = {
@@ -140,6 +141,153 @@ export async function deactivateAlert(token: string): Promise<boolean> {
     console.error("Base de données indisponible (désinscription alerte)", error);
     return false;
   }
+}
+
+/**
+ * Réponse unique de `sendAlertsSummary`, quoi qu'il arrive.
+ *
+ * Répondre « aucune alerte » à une adresse inconnue et « email envoyé » à une
+ * adresse connue transformerait le formulaire en oracle : n'importe qui
+ * pourrait vérifier si telle personne utilise le site. Le message est donc le
+ * même dans les quatre cas — adresse inconnue, alertes trouvées, quota atteint,
+ * envoi en échec.
+ */
+const REPONSE_RESUME = "Si des alertes existent pour cette adresse, un email vient de partir.";
+
+/** Trois envois par heure et par adresse. */
+const RESUMES_PAR_HEURE = 3;
+const FENETRE_RESUME_MS = 3_600_000;
+
+/**
+ * Compteur en mémoire d'isolat, comme la limite par IP de job-auth.server.
+ *
+ * Il ne survit ni à un redémarrage ni à un second isolat, et ce n'est pas un
+ * pare-feu : il empêche seulement qu'un formulaire public serve de robinet à
+ * emails. Un vrai plafond vivrait en base, au prix d'un aller-retour sur une
+ * page qui n'en fait aucun aujourd'hui.
+ */
+const resumesParEmail = new Map<string, number[]>();
+
+function quotaResumeDepasse(email: string): boolean {
+  const maintenant = Date.now();
+  const recents = (resumesParEmail.get(email) ?? []).filter(
+    (t) => maintenant - t < FENETRE_RESUME_MS,
+  );
+  recents.push(maintenant);
+  resumesParEmail.set(email, recents);
+  // La table ne doit pas grossir indéfiniment sur un isolat de longue vie.
+  if (resumesParEmail.size > 5000) {
+    for (const [cle, dates] of resumesParEmail) {
+      if (dates.every((t) => maintenant - t >= FENETRE_RESUME_MS)) resumesParEmail.delete(cle);
+    }
+  }
+  return recents.length > RESUMES_PAR_HEURE;
+}
+
+/**
+ * Envoie à une adresse la liste de ses alertes actives.
+ *
+ * Sans compte ni mot de passe, la boîte mail est la seule preuve de propriété :
+ * la liste part par email et n'est jamais rendue au navigateur, et les jetons de
+ * suppression ne transitent que par ce message.
+ */
+export async function sendAlertsSummary(
+  email: string,
+  siteUrl: string,
+): Promise<{ ok: boolean; message: string }> {
+  const adresse = email.trim().toLowerCase();
+  const debut = Date.now();
+
+  if (quotaResumeDepasse(adresse)) {
+    logOps({
+      kind: "alerte",
+      label: "résumé refusé (quota)",
+      ok: false,
+      message: `Plus de ${RESUMES_PAR_HEURE} demandes en une heure`,
+    });
+    return { ok: true, message: REPONSE_RESUME };
+  }
+
+  let alertes: Array<Record<string, unknown>> = [];
+  try {
+    const db = await admin();
+    const { data, error } = await db
+      .from("price_alerts")
+      .select(
+        "origin,destination,depart_date,return_date,last_price,last_checked_at,unsubscribe_token",
+      )
+      .eq("email", adresse)
+      .eq("active", true)
+      .order("created_at", { ascending: true })
+      .limit(50);
+    if (error) throw new Error(error.message);
+    alertes = (data ?? []) as Array<Record<string, unknown>>;
+  } catch (error) {
+    logOps({
+      kind: "alerte",
+      label: "résumé impossible",
+      ok: false,
+      durationMs: Date.now() - debut,
+      message: error instanceof Error ? error.message : "lecture des alertes impossible",
+    });
+    return { ok: true, message: REPONSE_RESUME };
+  }
+
+  // Adresse sans alerte : on s'arrête là, sans le dire.
+  if (alertes.length === 0) {
+    logOps({ kind: "alerte", label: "résumé sans alerte", durationMs: Date.now() - debut });
+    return { ok: true, message: REPONSE_RESUME };
+  }
+
+  if (!isEmailConfigured()) {
+    logOps({
+      kind: "alerte",
+      label: "résumé non envoyé",
+      ok: false,
+      message: "RESEND_API_KEY ou ALERTS_FROM_EMAIL manquante",
+      context: { alertes: alertes.length },
+    });
+    return { ok: true, message: REPONSE_RESUME };
+  }
+
+  const { subject, html, text } = buildMesAlertesEmail({
+    siteUrl,
+    alertes: alertes.map((ligne) => ({
+      origin: String(ligne["origin"] ?? ""),
+      destination: String(ligne["destination"] ?? ""),
+      departDate: (ligne["depart_date"] as string | null) ?? null,
+      returnDate: (ligne["return_date"] as string | null) ?? null,
+      lastPrice: Number(ligne["last_price"] ?? 0),
+      lastCheckedAt: (ligne["last_checked_at"] as string | null) ?? null,
+      unsubscribeToken: String(ligne["unsubscribe_token"] ?? ""),
+    })),
+  });
+
+  try {
+    const result = await sendEmail({ to: adresse, subject, html, text });
+    // `status` et `message` n'existent que sur la branche en échec, et
+    // exactOptionalPropertyTypes interdit de les passer à undefined : on les
+    // ajoute seulement quand ils existent.
+    logOps({
+      kind: "alerte",
+      label: result.sent ? "résumé envoyé" : "résumé refusé",
+      ok: result.sent,
+      ...(result.sent ? {} : { status: result.status, message: result.message }),
+      durationMs: Date.now() - debut,
+      context: { alertes: alertes.length },
+    });
+  } catch (error) {
+    logOps({
+      kind: "alerte",
+      label: "résumé en échec",
+      ok: false,
+      durationMs: Date.now() - debut,
+      message: error instanceof Error ? error.message : "envoi impossible",
+      context: { alertes: alertes.length },
+    });
+  }
+
+  return { ok: true, message: REPONSE_RESUME };
 }
 
 async function sendDropEmail(params: {

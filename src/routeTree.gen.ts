@@ -24,6 +24,7 @@ import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminJournalRouteImport } from './routes/admin.journal'
+import { Route as AlertesIndexRouteImport } from './routes/alertes.index'
 import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
 import { Route as ComparatifsIndexRouteImport } from './routes/comparatifs.index'
 import { Route as ComparatifsSlugRouteImport } from './routes/comparatifs.$slug'
@@ -112,6 +113,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const AdminJournalRoute = AdminJournalRouteImport.update({
   id: '/admin/journal',
   path: '/admin/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertesIndexRoute = AlertesIndexRouteImport.update({
+  id: '/alertes/',
+  path: '/alertes/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlertesDesinscriptionRoute = AlertesDesinscriptionRouteImport.update({
@@ -210,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
+  '/alertes/': typeof AlertesIndexRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
+  '/alertes': typeof AlertesIndexRoute
   '/comparatifs': typeof ComparatifsIndexRoute
   '/conseils': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
+  '/alertes/': typeof AlertesIndexRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/api/public/rafraichir-prix': typeof ApiPublicRafraichirPrixRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
+    | '/alertes/'
     | '/comparatifs/'
     | '/conseils/'
     | '/api/public/rafraichir-prix'
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
+    | '/alertes'
     | '/comparatifs'
     | '/conseils'
     | '/api/public/rafraichir-prix'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/conseils/$slug'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
+    | '/alertes/'
     | '/comparatifs/'
     | '/conseils/'
     | '/api/public/rafraichir-prix'
@@ -400,6 +412,7 @@ export interface RootRouteChildren {
   ConseilsSlugRoute: typeof ConseilsSlugRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
   VolsSlugRoute: typeof VolsSlugRoute
+  AlertesIndexRoute: typeof AlertesIndexRoute
   ComparatifsIndexRoute: typeof ComparatifsIndexRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
   ApiPublicRafraichirPrixRoute: typeof ApiPublicRafraichirPrixRoute
@@ -516,6 +529,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/journal'
       fullPath: '/admin/journal'
       preLoaderRoute: typeof AdminJournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alertes/': {
+      id: '/alertes/'
+      path: '/alertes'
+      fullPath: '/alertes/'
+      preLoaderRoute: typeof AlertesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/alertes/desinscription': {
@@ -640,6 +660,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConseilsSlugRoute: ConseilsSlugRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
   VolsSlugRoute: VolsSlugRoute,
+  AlertesIndexRoute: AlertesIndexRoute,
   ComparatifsIndexRoute: ComparatifsIndexRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
   ApiPublicRafraichirPrixRoute: ApiPublicRafraichirPrixRoute,

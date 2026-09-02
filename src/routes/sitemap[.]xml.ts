@@ -53,6 +53,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         const staticPages = [
           "/",
           "/mode-budget",
+          "/alertes",
           "/conseils",
           "/conseils/destinations",
           "/comparatifs",

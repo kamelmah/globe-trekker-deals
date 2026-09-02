@@ -501,9 +501,7 @@ function DestinationPage() {
         </div>
 
         <aside className="space-y-6">
-          {/* Seule instance du site à porter l'ancre : cible de l'onglet « Alertes ». */}
           <AlertForm
-            id="alertes"
             origin={route.origin}
             destination={route.destination}
             referencePrice={lowestObserved}

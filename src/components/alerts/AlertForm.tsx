@@ -14,20 +14,12 @@ export function AlertForm({
   departDate,
   returnDate,
   referencePrice,
-  id,
 }: {
   origin: string;
   destination: string;
   departDate?: string;
   returnDate?: string;
   referencePrice?: number | null;
-  /**
-   * Ancre de navigation, posée par l'appelant plutôt qu'écrite en dur ici :
-   * /recherche rend ce formulaire deux fois — colonne latérale et tiroir de
-   * filtres — et un id fixe y serait dupliqué. Une seule instance par page doit
-   * le porter, et seulement si elle est réellement affichée.
-   */
-  id?: string;
 }) {
   const subscribe = useServerFn(subscribeToAlert);
   const [email, setEmail] = useState("");
@@ -69,7 +61,6 @@ export function AlertForm({
 
   return (
     <form
-      {...(id ? { id } : {})}
       onSubmit={submit}
       className="rounded-xl border border-border bg-card p-5"
       aria-label="Alerte prix par email"

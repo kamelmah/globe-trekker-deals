@@ -1,7 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { createAlert, deactivateAlert } from "@/lib/alerts.server";
+// Alias : la server fn exposee porte le meme nom que la fonction serveur.
+import {
+  createAlert,
+  deactivateAlert,
+  sendAlertsSummary as envoyerResumeAlertes,
+} from "@/lib/alerts.server";
+import { SITE_URL } from "@/lib/site";
 import type { ApiDebugInfo } from "@/lib/flights.types";
 import { totalPriceForPassengers, type PassengerCounts } from "@/lib/passenger-price";
 import { addDaysIso as addDays, nightsBetween } from "@/lib/trip-duration";
@@ -81,7 +87,7 @@ export const searchFlights = createServerFn({ method: "GET" })
             destination: data.destination,
             departureAt,
             // Avec un raccourci de durée, le retour suit chaque date de départ testée.
-            returnAt: nights > 0 ? addDays(departureAt, nights) : data.returnAt ?? null,
+            returnAt: nights > 0 ? addDays(departureAt, nights) : (data.returnAt ?? null),
             currency: data.currency ?? "EUR",
             adults: passengers.adults,
             children: passengers.children,
@@ -110,7 +116,8 @@ export const searchFlights = createServerFn({ method: "GET" })
       // réelle du séjour vient de l'écart départ/retour, sinon les suggestions
       // seraient calculées en aller simple et un clic dessus produirait un
       // aller-retour arbitraire (l'API refuse un écart de plus de 30 jours).
-      const actualNights = nights > 0 ? nights : nightsBetween(data.departureAt, data.returnAt ?? "");
+      const actualNights =
+        nights > 0 ? nights : nightsBetween(data.departureAt, data.returnAt ?? "");
       let alternatives: { date: string; priceEur: number }[] = [];
       if (offers.length === 0) {
         try {
@@ -150,7 +157,6 @@ export const searchFlights = createServerFn({ method: "GET" })
         debug: debugOf(batches[0]?.raw ?? null),
         configured: hasApiCredentials(),
       };
-
     } catch (error) {
       return {
         offers: [],
@@ -161,8 +167,6 @@ export const searchFlights = createServerFn({ method: "GET" })
         configured: hasApiCredentials(),
       };
     }
-
-
   });
 
 export const cheapestDestinations = createServerFn({ method: "GET" })
@@ -170,7 +174,10 @@ export const cheapestDestinations = createServerFn({ method: "GET" })
     z
       .object({
         origin: iata,
-        month: z.string().regex(/^\d{4}-\d{2}$/).nullish(),
+        month: z
+          .string()
+          .regex(/^\d{4}-\d{2}$/)
+          .nullish(),
         destinations: z.array(iata).min(1).max(80).optional(),
         world: z.boolean().optional(),
         currency,
@@ -234,7 +241,11 @@ export const calendarPrices = createServerFn({ method: "GET" })
     try {
       // Même règle que cheapestDestinations : le cache calendrier est partagé
       // entre recherches, la multiplication ne doit jamais y être écrite.
-      const { days: refDays, raw, cached } = await fetchCalendarPrices({
+      const {
+        days: refDays,
+        raw,
+        cached,
+      } = await fetchCalendarPrices({
         origin: data.origin,
         destination: data.destination,
         month: data.month,
@@ -283,6 +294,18 @@ export const subscribeToAlert = createServerFn({ method: "POST" })
       referencePrice: data.referencePrice ?? null,
     }),
   );
+
+/**
+ * Envoie a une adresse la liste de ses alertes actives.
+ *
+ * Les alertes ne sont jamais renvoyees au navigateur : sans compte, la boite
+ * mail est la seule preuve de propriete de ladresse. La reponse est identique
+ * que ladresse soit connue ou non, pour que le formulaire ne serve pas a
+ * tester lexistence dun compte.
+ */
+export const sendAlertsSummary = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.object({ email: z.string().trim().email().max(180) }).parse(data))
+  .handler(async ({ data }) => envoyerResumeAlertes(data.email, SITE_URL));
 
 export const unsubscribeAlert = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ token: z.string().trim().min(8).max(128) }).parse(data))

@@ -96,6 +96,11 @@ export function Footer() {
             {/* Le bouton du header n'apparaît qu'à partir de xl : sans ce lien,
                 l'hébergement n'aurait plus de point d'entrée entre lg et xl. */}
             <li>
+              <Link to="/alertes" className={linkClass}>
+                Alertes prix
+              </Link>
+            </li>
+            <li>
               <Link to="/hebergement" className={linkClass}>
                 Trouver un hébergement
               </Link>
