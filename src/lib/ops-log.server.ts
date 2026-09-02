@@ -5,7 +5,7 @@
  * sans le jeton d'administration.
  */
 
-export type OpsLogKind = "travelpayouts" | "alerte" | "contact" | "newsletter";
+export type OpsLogKind = "travelpayouts" | "alerte" | "contact" | "newsletter" | "redaction";
 
 export type OpsLogEntry = {
   kind: OpsLogKind;
@@ -106,8 +106,7 @@ export async function readOpsLogs(params: {
 
   const byKind = new Map<string, OpsLogStats>();
   for (const row of raw) {
-    const stat =
-      byKind.get(row.kind) ?? { kind: row.kind, total: 0, failures: 0, emptyResults: 0 };
+    const stat = byKind.get(row.kind) ?? { kind: row.kind, total: 0, failures: 0, emptyResults: 0 };
     stat.total += 1;
     if (!row.ok) stat.failures += 1;
     if (row.result_count === 0) stat.emptyResults += 1;

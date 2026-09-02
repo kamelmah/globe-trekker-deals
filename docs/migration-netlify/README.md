@@ -87,6 +87,25 @@ sont pas appelables par URL : **il n'y a plus rien à authentifier.**
 
 ---
 
+## 2 bis. Tâches planifiées
+
+Déclarées dans chaque fonction (`export const config`) et rappelées dans
+`netlify.toml`. Elles ne s’exécutent que sur le déploiement **publié**.
+
+| Fonction               | Horaire      | Rôle                                                      |
+| ---------------------- | ------------ | --------------------------------------------------------- |
+| `rafraichir-prix`      | `7 * * * *`  | prix de référence, alimente `price_cache`                 |
+| `rediger-routes`       | `23 * * * *` | 3 textes éditoriaux par passage, table `route_editorials` |
+| `verifier-alertes`     | `37 * * * *` | compare les alertes et envoie les emails                  |
+| `relever-saisonnalite` | `0 3 * * *`  | 24 routes par nuit, table `price_observations`            |
+
+`route_editorials` porte un texte rédigé par l’API Anthropic à partir des
+données réelles de chaque trajet — c’est ce qui distingue deux destinations
+d’une même origine. `source_snapshot` conserve ce qui a été transmis au
+modèle, pour vérifier après coup qu’aucun chiffre n’a été inventé.
+
+---
+
 ## 3. Remplir la base neuve
 
 Une base vierge donne un site sans aucun prix, et les fonctions planifiées **ne

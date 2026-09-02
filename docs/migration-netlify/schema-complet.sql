@@ -115,6 +115,49 @@ GRANT SELECT ON public.price_observations TO anon, authenticated;
 GRANT ALL ON public.price_observations TO service_role;
 ALTER TABLE public.price_observations ENABLE ROW LEVEL SECURITY;
 
+-- ----------------------------------------------------------------------------
+-- Textes éditoriaux propres à chaque page de liaison générée : ce qui empêche
+-- deux destinations d'une même origine de se ressembler mot pour mot.
+-- `source_snapshot` garde les données transmises au modèle, pour vérifier après
+-- coup qu'aucun chiffre du texte n'a été inventé.
+
+CREATE TABLE IF NOT EXISTS public.route_editorials (
+  route_slug text PRIMARY KEY,
+  origin text NOT NULL,
+  destination text NOT NULL,
+  meta_description text NOT NULL,
+  intro text NOT NULL,
+  sections jsonb NOT NULL,
+  model text NOT NULL,
+  input_tokens integer,
+  output_tokens integer,
+  source_snapshot jsonb,
+  published boolean NOT NULL DEFAULT true,
+  generated_at timestamp with time zone NOT NULL DEFAULT now(),
+  error_message text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS route_editorials_generated_at_idx
+  ON public.route_editorials (generated_at ASC);
+
+GRANT SELECT ON public.route_editorials TO anon, authenticated;
+GRANT ALL ON public.route_editorials TO service_role;
+ALTER TABLE public.route_editorials ENABLE ROW LEVEL SECURITY;
+
+CREATE OR REPLACE FUNCTION public.set_route_editorials_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SET search_path = public;
+
+CREATE OR REPLACE TRIGGER route_editorials_updated_at
+  BEFORE UPDATE ON public.route_editorials
+  FOR EACH ROW EXECUTE FUNCTION public.set_route_editorials_updated_at();
+
 -- ============================================================================
 -- 2. Exploitation : journal, contact, newsletter
 -- ============================================================================
@@ -222,6 +265,7 @@ BEGIN
     SELECT * FROM (VALUES
       ('price_history',          'Price history is publicly readable',        'SELECT', 'true'),
       ('price_observations',     'Lecture publique des releves de prix',      'SELECT', 'true'),
+      ('route_editorials',       'Lecture publique des textes publies',       'SELECT', 'published = true'),
       ('price_alerts',           'Aucun acces public aux alertes prix',       'ALL',    'false'),
       ('price_cache',            'Aucun acces public au cache de prix',       'ALL',    'false'),
       ('ops_logs',               'Aucun acces public au journal',             'ALL',    'false'),
@@ -280,4 +324,4 @@ $$;
 --      WHERE table_schema = 'public') AS tables,
 --   (SELECT count(*) FROM pg_policies WHERE schemaname = 'public') AS politiques,
 --   (SELECT count(*) FROM pg_indexes  WHERE schemaname = 'public') AS index;
--- Attendu : 8 tables, 8 politiques, 14 index (clés primaires comprises).
+-- Attendu : 9 tables, 9 politiques, 20 index (clés primaires comprises).

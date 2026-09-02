@@ -10,7 +10,7 @@ export const fetchOpsLogs = createServerFn({ method: "POST" })
     z
       .object({
         token: z.string().trim().min(8).max(200),
-        kind: z.enum(["tous", "travelpayouts", "alerte"]).optional(),
+        kind: z.enum(["tous", "travelpayouts", "alerte", "redaction"]).optional(),
         onlyProblems: z.boolean().optional(),
       })
       .parse(data),

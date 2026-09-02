@@ -33,11 +33,11 @@ let slugIndexPromise: Promise<SlugIndex> | null = null;
  * connaissons, sinon celui du référentiel. C'est ce dernier qui produisait
  * « Ville de Madrid », « Buda » ou « dème de Thera » dans les URL et les titres.
  */
-function displayCity(record: CityRecord): string {
+export function displayCity(record: CityRecord): string {
   return frenchName(record.code) ?? record.city;
 }
 
-function displayCountry(record: CityRecord): string {
+export function displayCountry(record: CityRecord): string {
   return COUNTRY_NAMES_FR[record.code.toUpperCase()] ?? record.country;
 }
 
@@ -232,7 +232,7 @@ type ObservedPrice = {
 };
 
 /** Prix le plus bas déjà relevé sur ce trajet (cache mondial, puis historique). */
-async function readObservedPrice(
+export async function readObservedPrice(
   origin: string,
   destination: string,
   cached: CachedEntry | null,
@@ -269,7 +269,7 @@ async function readObservedPrice(
   return best;
 }
 
-function distanceKm(a: CityRecord, b: CityRecord): number {
+export function distanceKm(a: CityRecord, b: CityRecord): number {
   const toRad = (v: number) => (v * Math.PI) / 180;
   const R = 6371;
   const dLat = toRad(b.lat - a.lat);
@@ -280,7 +280,7 @@ function distanceKm(a: CityRecord, b: CityRecord): number {
   return Math.round(2 * R * Math.asin(Math.min(1, Math.sqrt(h))));
 }
 
-function durationLabel(km: number): string {
+export function durationLabel(km: number): string {
   // Estimation transparente : distance orthodromique / 800 km/h + 30 min de manœuvres.
   const hours = km / 800 + 0.5;
   const h = Math.floor(hours);
@@ -375,6 +375,13 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     },
   ];
 
+  // Texte rédigé pour ce trajet précis, quand il existe : il s'intercale entre
+  // le prix relevé et les compagnies. Import dynamique pour ne pas créer de
+  // cycle — le module de rédaction s'appuie lui-même sur ce fichier.
+  const { readRouteEditorial } = await import("@/lib/route-editorial.server");
+  const editorial = await readRouteEditorial(slug);
+  if (editorial) sections.push(...editorial.sections);
+
   const airlines = buildAirlinesSection({
     originCity: origin.city,
     destinationCity: destination.city,
@@ -411,8 +418,9 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     destination: destination.code,
     destinationCity: destination.city,
     country: destination.country,
-    metaDescription,
-    intro,
+    // Le texte rédigé prime quand il existe ; sinon le gabarit, inchangé.
+    metaDescription: editorial?.metaDescription ?? metaDescription,
+    intro: editorial?.intro ?? intro,
     sections,
     averageDuration: durationLabel(km),
     faq,
