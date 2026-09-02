@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -175,29 +176,58 @@ function RootShell({ children }: { children: ReactNode }) {
 // désormais chargé par <Stay22Map>, donc uniquement là où une carte existe et
 // seulement quand elle entre dans le champ de vision.
 
+/**
+ * Pages servies sans habillage : ni en-tête, ni barre d'onglets, ni pied de page.
+ *
+ * Une page d'atterrissage payée au clic n'a qu'une action, et chaque élément de
+ * navigation autour est une façon de ne pas la faire. Ces pages dessinent donc
+ * leur écran en entier, y compris leur logo.
+ */
+const PAGES_NUES = new Set(["/tiktok"]);
+
+/** Insensible au « / » final : /tiktok et /tiktok/ sont la même page. */
+function estPageNue(chemin: string): boolean {
+  const sansSlash = chemin.length > 1 && chemin.endsWith("/") ? chemin.slice(0, -1) : chemin;
+  return PAGES_NUES.has(sansSlash);
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const nue = useRouterState({ select: (s) => estPageNue(s.location.pathname) });
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <CurrencyProvider>
           <CookieConsentProvider>
+            {nue ? (
+              /* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */
+              <Outlet />
+            ) : (
+              /*
+                La barre d'onglets du bas est en position fixe sous lg : sans
+                cette marge, elle recouvre la fin de page, pied de page compris.
+                57px = 56 de zone tactile + 1 de bordure haute. La valeur ronde
+                laissait le pied de page passer d'un pixel sous la barre,
+                mesure à l'appui.
+              */
+              <div className="flex min-h-screen flex-col pb-[calc(57px+env(safe-area-inset-bottom))] lg:pb-0">
+                <Header />
+                <main className="flex-1">
+                  {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                  <Outlet />
+                </main>
+                <Footer />
+              </div>
+            )}
             {/*
-              La barre d'onglets du bas est en position fixe sous lg : sans cette
-              marge, elle recouvre la fin de page, pied de page compris. 57px =
-              56 de zone tactile + 1 de bordure haute. La valeur ronde laissait
-              le pied de page passer d'un pixel sous la barre, mesure à l'appui.
+              Pas de bandeau cookies sur une page nue : il ne porte que le
+              consentement aux cartes Stay22, qui ne s'y chargent pas. Demander
+              un accord pour un tiers absent mangerait le seul écran disponible
+              sans rien protéger. Le choix reste à faire, et le bandeau
+              réapparaît à la première page qui en dépose vraiment.
             */}
-            <div className="flex min-h-screen flex-col pb-[calc(57px+env(safe-area-inset-bottom))] lg:pb-0">
-              <Header />
-              <main className="flex-1">
-                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-                <Outlet />
-              </main>
-              <Footer />
-            </div>
-            <CookieBanner />
+            {!nue && <CookieBanner />}
             <Toaster />
           </CookieConsentProvider>
         </CurrencyProvider>

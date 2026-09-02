@@ -12,6 +12,10 @@ export type AlertInput = {
   returnDate?: string | null;
   /** Prix de référence connu côté page ; résolu via l'API quand il est absent. */
   referencePrice?: number | null;
+  /** Canal d'où vient la personne (utm_source), pour les pages de campagne. */
+  source?: string | null;
+  /** Variante du canal (utm_content) : quelle vidéo, quel lien. */
+  sourceContent?: string | null;
 };
 
 async function admin() {
@@ -51,6 +55,8 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
     departDate: input.departDate ?? null,
     returnDate: input.returnDate ?? null,
     hasReferencePrice: typeof input.referencePrice === "number",
+    source: input.source ?? null,
+    sourceContent: input.sourceContent ?? null,
   };
   if (referencePrice === null) {
     logOps({
@@ -67,6 +73,17 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
         "Aucun prix n'est disponible pour ce trajet en ce moment : impossible de fixer un point de comparaison. Réessayez avec une date de départ.",
     };
   }
+  /**
+   * Clés absentes plutôt que mises à null quand rien n'est fourni : l'upsert
+   * n'écrit que les colonnes présentes dans la charge utile. Une alerte créée
+   * depuis /alertes ne doit pas effacer la provenance d'une alerte identique
+   * créée la veille depuis une page de campagne.
+   */
+  const provenance = {
+    ...(input.source ? { source: input.source } : {}),
+    ...(input.sourceContent ? { source_content: input.sourceContent } : {}),
+  };
+
   try {
     const db = await admin();
 
@@ -80,6 +97,7 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
         initial_price: referencePrice,
         last_price: referencePrice,
         active: true,
+        ...provenance,
       },
       { onConflict: "email,origin,destination,depart_date" },
     );
@@ -94,6 +112,7 @@ export async function createAlert(input: AlertInput): Promise<{ ok: boolean; mes
         return_date: input.returnDate ?? null,
         initial_price: referencePrice,
         last_price: referencePrice,
+        ...provenance,
       });
       if (retry.error && !retry.error.message.includes("duplicate")) {
         logOps({

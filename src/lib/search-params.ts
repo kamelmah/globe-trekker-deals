@@ -33,6 +33,24 @@ export function numberOr(value: unknown, fallback: number): number {
 }
 
 /**
+ * Paramètre de campagne (utm_source, utm_content) recopié depuis l'URL.
+ *
+ * Le contenu vient de l'extérieur — n'importe qui peut ouvrir une page de
+ * campagne avec n'importe quel paramètre — et finit dans une colonne relue plus
+ * tard à la main ou dans un export. On le réduit donc à ce qu'une campagne a
+ * réellement besoin d'écrire : lettres, chiffres, tiret, souligné, point, 64
+ * caractères au plus. Le reste est retiré plutôt que refusé, pour qu'une URL
+ * mal formée laisse quand même créer l'alerte.
+ */
+export function utmOr(value: unknown, fallback: string): string {
+  const propre = asString(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9_.-]/g, "")
+    .slice(0, 64);
+  return propre || fallback;
+}
+
+/**
  * Date du jour décalée de `days`, au format AAAA-MM-JJ.
  *
  * `toISOString()` convertissait en UTC : entre minuit et 2 h du matin heure de

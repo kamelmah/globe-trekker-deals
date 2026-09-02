@@ -8,6 +8,7 @@ import {
   sendAlertsSummary as envoyerResumeAlertes,
 } from "@/lib/alerts.server";
 import { SITE_URL } from "@/lib/site";
+import { utmOr } from "@/lib/search-params";
 import type { ApiDebugInfo } from "@/lib/flights.types";
 import { totalPriceForPassengers, type PassengerCounts } from "@/lib/passenger-price";
 import { addDaysIso as addDays, nightsBetween } from "@/lib/trip-duration";
@@ -25,6 +26,16 @@ import {
 const iata = z.string().trim().min(3).max(3).toUpperCase();
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const currency = z.enum(["EUR", "USD", "GBP", "CHF", "CAD"]).optional();
+
+/**
+ * Provenance de campagne. Le nettoyage est celui de `utmOr`, partagé avec la
+ * page qui lit ces paramètres dans l'URL : une seule définition de ce qui est
+ * acceptable, appliquée des deux côtés.
+ */
+const utm = z
+  .string()
+  .max(200)
+  .transform((v) => utmOr(v, ""));
 
 /** La réponse brute n'est exposée qu'en développement. */
 function debugOf(raw: RawApiCall | null): ApiDebugInfo | null {
@@ -281,6 +292,8 @@ export const subscribeToAlert = createServerFn({ method: "POST" })
         departDate: isoDate.nullish(),
         returnDate: isoDate.nullish(),
         referencePrice: z.number().positive().max(100000).nullish(),
+        source: utm.nullish(),
+        sourceContent: utm.nullish(),
       })
       .parse(data),
   )
@@ -292,6 +305,10 @@ export const subscribeToAlert = createServerFn({ method: "POST" })
       departDate: data.departDate ?? null,
       returnDate: data.returnDate ?? null,
       referencePrice: data.referencePrice ?? null,
+      // Une chaîne vide après nettoyage vaut « pas de provenance » : la colonne
+      // reste NULL plutôt que de porter un marqueur vide.
+      source: data.source || null,
+      sourceContent: data.sourceContent || null,
     }),
   );
 

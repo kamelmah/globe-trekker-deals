@@ -22,6 +22,7 @@ import { Route as MethodologieRouteImport } from './routes/methodologie'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TiktokRouteImport } from './routes/tiktok'
 import { Route as AdminJournalRouteImport } from './routes/admin.journal'
 import { Route as AlertesIndexRouteImport } from './routes/alertes.index'
 import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
@@ -104,6 +105,11 @@ const RechercheRoute = RechercheRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TiktokRoute = TiktokRouteImport.update({
+  id: '/tiktok',
+  path: '/tiktok',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminJournalRoute = AdminJournalRouteImport.update({
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
@@ -248,6 +255,7 @@ export interface FileRoutesByTo {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/mode-budget': typeof ModeBudgetRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/sitemap.xml'
+    | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
     | '/comparatifs/$slug'
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/sitemap.xml'
+    | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
     | '/comparatifs/$slug'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/mode-budget'
     | '/recherche'
     | '/sitemap.xml'
+    | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
     | '/comparatifs/$slug'
@@ -417,6 +429,7 @@ export interface RootRouteChildren {
   ModeBudgetRoute: typeof ModeBudgetRoute
   RechercheRoute: typeof RechercheRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TiktokRoute: typeof TiktokRoute
   AdminJournalRoute: typeof AdminJournalRoute
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
   ComparatifsSlugRoute: typeof ComparatifsSlugRoute
@@ -528,6 +541,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tiktok': {
+      id: '/tiktok'
+      path: '/tiktok'
+      fullPath: '/tiktok'
+      preLoaderRoute: typeof TiktokRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/journal': {
@@ -673,6 +693,7 @@ const rootRouteChildren: RootRouteChildren = {
   ModeBudgetRoute: ModeBudgetRoute,
   RechercheRoute: RechercheRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TiktokRoute: TiktokRoute,
   AdminJournalRoute: AdminJournalRoute,
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
   ComparatifsSlugRoute: ComparatifsSlugRoute,

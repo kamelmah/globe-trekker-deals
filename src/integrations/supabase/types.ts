@@ -181,6 +181,8 @@ export type Database = {
           last_price: number;
           origin: string;
           return_date: string | null;
+          source: string | null;
+          source_content: string | null;
           unsubscribe_token: string;
         };
         Insert: {
@@ -196,6 +198,8 @@ export type Database = {
           last_price: number;
           origin: string;
           return_date?: string | null;
+          source?: string | null;
+          source_content?: string | null;
           unsubscribe_token?: string;
         };
         Update: {
@@ -211,6 +215,8 @@ export type Database = {
           last_price?: number;
           origin?: string;
           return_date?: string | null;
+          source?: string | null;
+          source_content?: string | null;
           unsubscribe_token?: string;
         };
         Relationships: [];
