@@ -28,7 +28,7 @@ import {
   WHITELIST_VALIDATED_AT,
 } from "@/data/route-whitelist";
 import { formatDateMedium, formatMonthLong } from "@/lib/dates";
-import { logOps } from "@/lib/ops-log.server";
+import { flushOpsLogs, logOps } from "@/lib/ops-log.server";
 import {
   displayCity,
   displayCountry,
@@ -239,15 +239,21 @@ const OUTIL_REDACTION = {
     properties: {
       metaDescription: {
         type: "string",
+        minLength: 120,
+        maxLength: 160,
         description:
           "Description meta de la page, entre 120 et 160 caractères. Au-delà, elle est tronquée dans les résultats de recherche.",
       },
       intro: {
         type: "string",
+        minLength: 200,
+        maxLength: 350,
         description: "Paragraphe d'introduction, entre 200 et 350 caractères.",
       },
       sections: {
         type: "array",
+        minItems: 2,
+        maxItems: 2,
         description: "Exactement 2 sections, dans cet ordre.",
         items: {
           type: "object",
@@ -260,8 +266,10 @@ const OUTIL_REDACTION = {
             },
             paragraphs: {
               type: "array",
+              minItems: 2,
+              maxItems: 2,
               description: "Exactement 2 paragraphes, entre 200 et 400 caractères chacun.",
-              items: { type: "string" },
+              items: { type: "string", minLength: 200, maxLength: 400 },
             },
           },
         },
@@ -317,6 +325,63 @@ function promptPour(contexte: EditorialContext): string {
     "paragraphe. Intro de 200 à 350 caractères. Ces bornes ne sont pas indicatives.",
     "Les titres de section doivent être propres à ce trajet, pas des intitulés génériques.",
   ].join("\n");
+}
+
+/**
+ * Coupe au dernier espace, en signalant la coupe.
+ *
+ * Couper au caractère près laisserait un mot tranché au milieu, visible tel quel
+ * dans les résultats de recherche. On recule donc jusqu'à l'espace précédent,
+ * sauf s'il est si tôt qu'il ne resterait qu'un fragment.
+ */
+function couper(texte: string, maxTotal: number): string {
+  if (texte.length <= maxTotal) return texte;
+  const brut = texte.slice(0, maxTotal - 1);
+  const espace = brut.lastIndexOf(" ");
+  const base = espace > maxTotal / 2 ? brut.slice(0, espace) : brut;
+  return base.trimEnd() + "…";
+}
+
+/**
+ * Ramène la description meta dans ses bornes plutôt que de jeter tout le texte.
+ *
+ * Un trajet a été refusé en entier pour quelques caractères de trop sur ce seul
+ * champ, alors que le reste était bon et que la génération avait coûté vingt
+ * secondes. Trop longue, on la coupe ; trop courte, on la complète par la
+ * première phrase de l'intro, qui parle du même trajet. Le rejet par zod ne sert
+ * plus qu'aux cas que ça ne rattrape pas.
+ */
+function normaliserMeta(meta: string, intro: string): string {
+  let sortie = meta.trim();
+  if (sortie.length > 160) sortie = couper(sortie, 158);
+  if (sortie.length < 120) {
+    const premierePhrase = (/^[^.!?]+[.!?]/.exec(intro)?.[0] ?? intro).trim();
+    sortie = couper((sortie + " " + premierePhrase).trim(), 158);
+    // Mesuré : une meta de 34 caractères complétée d’une phrase de 47 en fait 82,
+    // toujours sous le seuil. Une seule phrase ne suffit donc pas dans le cas
+    // courant ; on puise plus loin dans l’intro plutôt que de laisser zod rejeter
+    // un texte par ailleurs correct.
+    if (sortie.length < 120) sortie = couper((meta.trim() + " " + intro.trim()).trim(), 158);
+  }
+  return sortie;
+}
+
+/** Longueur de chaque champ reçu, pour le journal d'un échec de validation. */
+function longueursRecues(recu: unknown): Record<string, unknown> {
+  const objet = (recu ?? {}) as Record<string, unknown>;
+  const sections = Array.isArray(objet["sections"]) ? objet["sections"] : [];
+  return {
+    metaDescription:
+      typeof objet["metaDescription"] === "string" ? objet["metaDescription"].length : null,
+    intro: typeof objet["intro"] === "string" ? objet["intro"].length : null,
+    sections: sections.length,
+    paragraphes: sections.flatMap((section) => {
+      const paragraphes = (section as Record<string, unknown>)?.["paragraphs"];
+      return Array.isArray(paragraphes)
+        ? paragraphes.map((p) => (typeof p === "string" ? p.length : null))
+        : [];
+    }),
+  };
 }
 
 type Rapport =
@@ -436,11 +501,22 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
     return echouer("Le modèle n'a pas appelé l'outil de rédaction.");
   }
 
-  const candidat = editorialSchema.safeParse(appel.input);
+  // La description meta est ramenée dans ses bornes avant validation : un champ
+  // trop long ne doit pas faire perdre un texte entier déjà payé.
+  const brut = appel.input as Record<string, unknown>;
+  const aValider =
+    typeof brut["metaDescription"] === "string" && typeof brut["intro"] === "string"
+      ? { ...brut, metaDescription: normaliserMeta(brut["metaDescription"], brut["intro"]) }
+      : brut;
+
+  const candidat = editorialSchema.safeParse(aValider);
   if (!candidat.success) {
     const souci = candidat.error.issues[0];
     return echouer(
       `Format refusé : ${souci ? `${souci.path.join(".")} — ${souci.message}` : "schéma non respecté"}`,
+      // Les longueurs reçues disent tout de suite quel champ a dérapé et de
+      // combien — sans elles, il faudrait relancer pour le savoir.
+      longueursRecues(aValider),
     );
   }
   const parsed: RouteEditorial = candidat.data;
@@ -572,6 +648,11 @@ export async function redigerRoutes(params: { routes: number }): Promise<Redacti
       console.error(`[rediger-routes] ${slug} : ${rapport.message}`);
     }
   }
+
+  // Une fonction planifiée s'arrête dès la réponse rendue : sans cette attente,
+  // les écritures de journal partent dans le vide et les échecs n'apparaissent
+  // jamais dans /admin/journal — exactement là où on les cherche.
+  await flushOpsLogs();
 
   return { traitees, echecs, restantes, tokens, inputTokens, outputTokens, dureesMs };
 }

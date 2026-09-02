@@ -38,6 +38,25 @@ async function admin() {
   return supabaseAdmin;
 }
 
+/**
+ * Écritures de journal en vol.
+ *
+ * `logOps` reste volontairement « pose et oublie » : ses vingt-quatre appelants
+ * ne doivent ni attendre le journal ni échouer à cause de lui. Mais une fonction
+ * planifiée s'arrête dès la réponse rendue, et l'écriture partait alors dans le
+ * vide — « fetch failed » après la fin de la fonction, et aucune trace dans
+ * /admin/journal, précisément pour les échecs qu'on voulait y voir.
+ *
+ * D'où ce registre, que `flushOpsLogs` permet d'attendre en fin de passage, sans
+ * changer la signature de `logOps` ni toucher à ses appelants.
+ */
+const ecrituresEnVol = new Set<Promise<void>>();
+
+/** Attend les écritures de journal en cours. À appeler avant de rendre la main. */
+export async function flushOpsLogs(): Promise<void> {
+  await Promise.allSettled([...ecrituresEnVol]);
+}
+
 /** Écrit une ligne de journal sans jamais bloquer ni faire échouer l'appel métier. */
 export function logOps(entry: OpsLogEntry): void {
   const row = {
@@ -60,7 +79,7 @@ export function logOps(entry: OpsLogEntry): void {
   );
 
   // … puis persistance best-effort pour la page d'administration.
-  void (async () => {
+  const ecriture = (async () => {
     try {
       const db = await admin();
       const { error } = await db.from("ops_logs").insert(row as never);
@@ -69,6 +88,8 @@ export function logOps(entry: OpsLogEntry): void {
       console.error("Journalisation impossible", error);
     }
   })();
+  ecrituresEnVol.add(ecriture);
+  void ecriture.finally(() => ecrituresEnVol.delete(ecriture));
 }
 
 export type OpsLogStats = {
