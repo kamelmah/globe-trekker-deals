@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { formatDateMedium } from "@/lib/dates";
 
+import { FondAnime } from "@/components/site/FondAnime";
 import { POSTS } from "@/data/posts";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
@@ -51,15 +52,20 @@ function BlogIndex() {
   const generalPosts = POSTS.filter((post) => !post.seasonal);
 
   return (
-    <div className="container-page py-10">
-      <h1 className="font-display text-3xl font-semibold">Conseils voyage</h1>
-      <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-        Articles courts et concrets, sans jargon, pour comprendre comment se forment les prix des
-        billets d'avion et payer le vôtre moins cher.
-      </p>
+    <div className="pb-10">
+      <section className="relative isolate overflow-hidden border-b border-border">
+        <FondAnime variante="guides" />
+        <div className="container-page py-14 lg:py-20">
+          <h1 className="font-display text-3xl font-semibold">Conseils voyage</h1>
+          <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+            Articles courts et concrets, sans jargon, pour comprendre comment se forment les prix
+            des billets d'avion et payer le vôtre moins cher.
+          </p>
+        </div>
+      </section>
 
       {seasonalPosts.length > 0 && (
-        <section className="mt-10">
+        <section className="container-page mt-10">
           <h2 className="font-display">Bons plans saisonniers</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Vacances scolaires, périodes de forte demande : ce qui change sur ces dates précises et
@@ -86,7 +92,7 @@ function BlogIndex() {
         </section>
       )}
 
-      <section className="mt-10">
+      <section className="container-page mt-10">
         <h2 className="font-display">Conseils généraux</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Quand réserver, comment fonctionnent les prix des compagnies, comment éviter les frais
@@ -112,7 +118,7 @@ function BlogIndex() {
         </ul>
       </section>
 
-      <div className="mt-10 rounded-xl border border-border bg-secondary/40 p-5 text-sm text-muted-foreground">
+      <div className="container-page mt-10 rounded-xl border border-border bg-secondary/40 p-5 text-sm text-muted-foreground">
         Prêt à passer à la pratique ? Testez le{" "}
         <Link
           to="/mode-budget"

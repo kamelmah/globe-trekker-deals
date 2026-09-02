@@ -270,6 +270,38 @@
   /* Traînée de condensation : blanche sur fond sombre, teintée sur fond clair
      où le blanc ne se verrait pas. Même rôle, deux valeurs. */
   --avion-trainee: oklch(0.35 0.04 250 / 32%);
+  /*
+   * Fonds animés des héros Hôtels / Guides / Budget (voir FondAnime.tsx).
+   *
+   * Les valeurs de référence sont celles du thème SOMBRE, plus bas : skyline de
+   * nuit, ciel bleu nuit. Reprises telles quelles en thème clair, elles
+   * poseraient un décor nocturne sous un texte foncé — illisible. Ici, mêmes
+   * formes, ciel de jour et accents assombris.
+   */
+  --fa-hotel-ciel-1: oklch(0.93 0.035 250);
+  --fa-hotel-ciel-2: oklch(0.985 0.012 245);
+  --fa-astre-1: oklch(0.97 0.08 90);
+  --fa-astre-2: oklch(0.86 0.14 78);
+  --fa-astre-halo: oklch(0.86 0.14 78 / 30%);
+  --fa-immeuble: oklch(0.72 0.035 258);
+  --fa-immeuble-bord: oklch(0.24 0.035 250 / 12%);
+  --fa-fenetre: oklch(0.55 0.13 80);
+  --fa-skyline-opacite: 0.5;
+  --fa-point: oklch(0.24 0.035 250 / 14%);
+  --fa-repere: oklch(0.45 0.17 251);
+  --fa-repere-halo: oklch(0.45 0.17 251 / 25%);
+  --fa-trajet: oklch(0.58 0.19 41);
+  --fa-budget-ciel-1: oklch(0.95 0.03 250);
+  --fa-budget-ciel-2: oklch(0.9 0.06 245);
+  --fa-budget-ciel-3: oklch(0.86 0.1 45 / 45%);
+  --fa-nuage: oklch(1 0 0 / 55%);
+  --fa-ballon-1: oklch(0.62 0.19 41);
+  --fa-ballon-2: oklch(0.75 0.15 60);
+  --fa-ballon-meridien: oklch(0.48 0.16 40);
+  --fa-suspentes: oklch(0.45 0.02 90);
+  --fa-nacelle: oklch(0.42 0.1 60);
+  --fa-ballon-bleu-1: oklch(0.5 0.17 251);
+  --fa-ballon-bleu-2: oklch(0.65 0.1 235);
   --chart-1: oklch(0.55 0.155 249);
   --chart-2: oklch(0.68 0.11 200);
   --chart-3: oklch(0.6 0.13 155);
@@ -297,6 +329,31 @@
   --avion-corps: oklch(0.984 0.003 247.858);
   --avion-hublots: oklch(0.85 0.02 250);
   --avion-trainee: oklch(1 0 0 / 55%);
+  /* Fonds animés — valeurs de référence (voir le bloc clair pour le pourquoi). */
+  --fa-hotel-ciel-1: oklch(0.11 0.04 265);
+  --fa-hotel-ciel-2: oklch(0.16 0.05 262);
+  --fa-astre-1: oklch(0.98 0.02 90);
+  --fa-astre-2: oklch(0.85 0.04 90);
+  --fa-astre-halo: oklch(0.9 0.05 90 / 35%);
+  --fa-immeuble: oklch(0.2 0.045 262);
+  --fa-immeuble-bord: oklch(1 0 0 / 6%);
+  --fa-fenetre: oklch(0.9 0.12 85);
+  --fa-skyline-opacite: 0.55;
+  --fa-point: oklch(0.984 0.003 247.858 / 12%);
+  --fa-repere: oklch(0.72 0.155 249);
+  --fa-repere-halo: oklch(0.72 0.155 249 / 25%);
+  --fa-trajet: oklch(0.76 0.18 43);
+  --fa-budget-ciel-1: oklch(0.13 0.045 265);
+  --fa-budget-ciel-2: oklch(0.24 0.08 250);
+  --fa-budget-ciel-3: oklch(0.45 0.12 45 / 35%);
+  --fa-nuage: oklch(0.984 0.003 247.858 / 7%);
+  --fa-ballon-1: oklch(0.76 0.18 43);
+  --fa-ballon-2: oklch(0.9 0.14 60);
+  --fa-ballon-meridien: oklch(0.6 0.16 40);
+  --fa-suspentes: oklch(0.9 0.02 90);
+  --fa-nacelle: oklch(0.55 0.1 60);
+  --fa-ballon-bleu-1: oklch(0.72 0.155 249);
+  --fa-ballon-bleu-2: oklch(0.85 0.09 235);
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);
@@ -507,6 +564,382 @@
     }
   }
 
+  /* ---------------------------------------------------------------------- */
+  /* Fonds animés (voir src/components/site/FondAnime.tsx)                    */
+  /*                                                                          */
+  /* Décors des héros Hôtels, Guides et Budget. Aucune image : uniquement des  */
+  /* formes CSS et deux petits SVG en ligne, animés en `transform` et          */
+  /* `opacity` — jamais en géométrie — pour qu'aucune de ces couches ne        */
+  /* provoque de recalcul de mise en page ni de décalage visuel.              */
+  /* ---------------------------------------------------------------------- */
+
+  .fond-anime {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* --- Hôtels : skyline de nuit ------------------------------------------ */
+
+  .fond-anime-hotels {
+    background-image: linear-gradient(180deg, var(--fa-hotel-ciel-1), var(--fa-hotel-ciel-2) 70%);
+  }
+
+  .fond-lune {
+    position: absolute;
+    right: 12%;
+    top: 40px;
+    width: 90px;
+    height: 90px;
+    border-radius: 999px;
+    background-image: radial-gradient(circle at 40% 40%, var(--fa-astre-1), var(--fa-astre-2));
+    box-shadow: 0 0 60px var(--fa-astre-halo);
+    animation: fond-lune 30s ease-in-out infinite alternate;
+  }
+
+  @keyframes fond-lune {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-20px);
+    }
+  }
+
+  .fond-skyline {
+    position: absolute;
+    inset: 0;
+    opacity: var(--fa-skyline-opacite);
+  }
+
+  .fond-immeuble {
+    position: absolute;
+    bottom: 0;
+    overflow: hidden;
+    background-color: var(--fa-immeuble);
+    border: 1px solid var(--fa-immeuble-bord);
+    border-bottom: 0;
+    border-radius: 4px 4px 0 0;
+  }
+
+  /*
+   * Grille complète des fenêtres, sans un seul nœud : des colonnes rayées
+   * (dégradé répété horizontalement), découpées en lignes par le masque. Un
+   * élément par fenêtre aurait ajouté plus de mille nœuds animés à la page.
+   * Les marges (6 px, 12 px) doivent rester celles de FondAnime.tsx, qui place
+   * les fenêtres allumées sur cette même grille.
+   */
+  .fond-fenetres {
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--fa-fenetre) 0 8px,
+      transparent 8px 14px
+    );
+    background-position: 6px 0;
+    -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 10px, transparent 10px 16px);
+    mask-image: repeating-linear-gradient(to bottom, #000 0 10px, transparent 10px 16px);
+    -webkit-mask-position: 0 12px;
+    mask-position: 0 12px;
+  }
+
+  .fond-fenetre {
+    position: absolute;
+    width: 8px;
+    height: 10px;
+    background-color: var(--fa-fenetre);
+    opacity: 0.08;
+    animation-name: fond-fenetre;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes fond-fenetre {
+    0%,
+    100% {
+      opacity: 0.08;
+    }
+    12% {
+      opacity: 0.85;
+    }
+    60% {
+      opacity: 0.7;
+    }
+    80% {
+      opacity: 0.1;
+    }
+  }
+
+  /* Voile bas : sans lui, le formulaire posé sur la skyline perdrait en
+     lisibilité là où les immeubles sont les plus clairs. */
+  .fond-voile {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+      180deg,
+      transparent 40%,
+      color-mix(in oklab, var(--background) 85%, transparent)
+    );
+  }
+
+  /* --- Guides : destinations qui s'allument ------------------------------- */
+
+  .fond-points {
+    position: absolute;
+    inset: 0;
+  }
+
+  .fond-point {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 999px;
+    background-color: var(--fa-point);
+  }
+
+  .fond-trajets {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+  }
+
+  /*
+   * Seule animation du lot qui ne porte pas sur `transform` ou `opacity` :
+   * `stroke-dashoffset` repeint son tracé. Deux courbes fines, le coût est
+   * négligeable, et c'est la seule façon de faire courir des pointillés.
+   */
+  .fond-trajet {
+    fill: none;
+    stroke: var(--fa-trajet);
+    stroke-width: 2;
+    stroke-dasharray: 6 8;
+    animation: fond-trajet 4s linear infinite;
+  }
+
+  .fond-trajet-2 {
+    animation-delay: -2s;
+  }
+
+  @keyframes fond-trajet {
+    to {
+      stroke-dashoffset: -28;
+    }
+  }
+
+  .fond-repere {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    opacity: 0;
+    animation: fond-repere 12s ease-in-out infinite;
+  }
+
+  .fond-goutte {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px 999px 999px 0;
+    transform: rotate(-45deg);
+    background-color: var(--fa-repere);
+    box-shadow: 0 0 0 4px var(--fa-repere-halo);
+  }
+
+  .fond-repere-nom {
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--color-muted-foreground);
+  }
+
+  @keyframes fond-repere {
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    5% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    75% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    85%,
+    100% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  /* --- Budget : montgolfière --------------------------------------------- */
+
+  .fond-anime-budget {
+    background-image: linear-gradient(
+      180deg,
+      var(--fa-budget-ciel-1),
+      var(--fa-budget-ciel-2) 75%,
+      var(--fa-budget-ciel-3)
+    );
+  }
+
+  /*
+   * Les nuages traversent en unités de viewport, pas en pourcentage : un
+   * pourcentage de `translateX` se rapporte à la largeur du nuage lui-même, si
+   * bien qu'il dériverait de trois cents pixels au lieu de traverser. Les héros
+   * occupent toute la largeur de l'écran, `vw` est donc la bonne mesure.
+   */
+  .fond-nuage {
+    position: absolute;
+    left: 0;
+    border-radius: 999px;
+    background-color: var(--fa-nuage);
+    filter: blur(14px);
+    animation-name: fond-nuage;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  .fond-nuage-1 {
+    top: 18%;
+    width: 220px;
+    height: 46px;
+    animation-duration: 70s;
+  }
+
+  .fond-nuage-2 {
+    top: 52%;
+    width: 300px;
+    height: 60px;
+    animation-duration: 95s;
+    animation-delay: -30s;
+  }
+
+  @keyframes fond-nuage {
+    from {
+      transform: translateX(-25vw);
+    }
+    to {
+      transform: translateX(105vw);
+    }
+  }
+
+  .fond-ballon {
+    position: absolute;
+    height: auto;
+    filter: drop-shadow(0 8px 16px oklch(0 0 0 / 25%));
+    animation-name: fond-ballon;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
+  .fond-ballon-1 {
+    right: 14%;
+    bottom: 10px;
+    width: 150px;
+    animation-duration: 22s;
+  }
+
+  .fond-ballon-2 {
+    right: 30%;
+    bottom: 60px;
+    width: 70px;
+    opacity: 0.45;
+    animation-duration: 30s;
+    animation-direction: reverse;
+  }
+
+  @keyframes fond-ballon {
+    0% {
+      transform: translateY(80px) rotate(-2deg);
+    }
+    50% {
+      transform: translateY(-120px) rotate(2deg);
+    }
+    100% {
+      transform: translateY(80px) rotate(-2deg);
+    }
+  }
+
+  .fond-enveloppe {
+    fill: var(--fa-ballon-1);
+  }
+  .fond-bande {
+    fill: var(--fa-ballon-2);
+  }
+  .fond-meridien {
+    fill: none;
+    stroke: var(--fa-ballon-meridien);
+    stroke-width: 2;
+  }
+  .fond-suspentes {
+    fill: none;
+    stroke: var(--fa-suspentes);
+    stroke-width: 2;
+  }
+  .fond-nacelle {
+    fill: var(--fa-nacelle);
+  }
+  .fond-ballon-2 .fond-enveloppe {
+    fill: var(--fa-ballon-bleu-1);
+  }
+  .fond-ballon-2 .fond-bande {
+    fill: var(--fa-ballon-bleu-2);
+  }
+
+  /*
+   * Voile bas réservé au mobile. Sur une seule colonne, le texte descend
+   * jusqu'au bas du héros, là où la montgolfière monte : du gris sur une
+   * enveloppe orange ne se lit plus. Sur grand écran le texte s'arrête avant,
+   * et la scène reste nette.
+   */
+  .fond-voile-mobile {
+    display: none;
+  }
+
+  /*
+   * Sur un écran de téléphone, le décor se réduit : cinq immeubles, quatre
+   * repères, une trajectoire, une seule montgolfière. `display: none` plutôt
+   * qu'un rendu conditionnel — le serveur ne connaît pas la largeur de l'écran,
+   * et un élément masqué n'exécute aucune animation.
+   */
+  @media (max-width: 40rem) {
+    .fond-immeuble[data-mobile="non"],
+    .fond-repere[data-mobile="non"],
+    .fond-trajet-2,
+    .fond-ballon-2 {
+      display: none;
+    }
+    .fond-ballon-1 {
+      right: 6%;
+      width: 100px;
+    }
+    /* Sur une colonne, le titre monte jusqu'en haut du héros : l'astre se range
+       plus haut et plus petit, sinon il passe derrière la première ligne. */
+    .fond-lune {
+      right: 6%;
+      top: 12px;
+      width: 64px;
+      height: 64px;
+    }
+    .fond-voile-mobile {
+      display: block;
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        180deg,
+        transparent 45%,
+        color-mix(in oklab, var(--background) 72%, transparent)
+      );
+    }
+  }
+
   /*
    * Apparition au scroll (sections destinations/guides) : plus discrète que le
    * hero, déclenchée section par section via Intersection Observer plutôt que
@@ -539,6 +972,20 @@
        de la courbe, et seul le halo subsiste. */
     .avion-anime {
       animation: none;
+    }
+    .fond-lune,
+    .fond-fenetre,
+    .fond-repere,
+    .fond-trajet,
+    .fond-nuage,
+    .fond-ballon {
+      animation: none;
+    }
+    /* Les repères vivent dans leur animation : à l'arrêt, sans ça, la carte des
+       guides perdrait ses huit villes. */
+    .fond-repere {
+      opacity: 1;
+      transform: none;
     }
     .reveal {
       opacity: 1;

@@ -3,6 +3,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
 import { PRUNED_GUIDE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { listPublishedGuides } from "@/lib/published-guides.functions";
+import { FondAnime } from "@/components/site/FondAnime";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { getDestinationImage } from "@/lib/destination-images";
 import { withPreposition } from "@/lib/french-grammar";
@@ -60,21 +61,27 @@ export const Route = createFileRoute("/conseils/destinations/")({
 function CityGuidesIndex() {
   const { guides } = Route.useLoaderData();
   return (
-    <div className="container-page py-10">
-      <nav className="text-xs text-muted-foreground" aria-label="Fil d'ariane">
-        <Link to="/conseils" className="hover:text-foreground">
-          Conseils
-        </Link>{" "}
-        / Guides destinations
-      </nav>
+    <div>
+      <section className="relative isolate overflow-hidden border-b border-border">
+        <FondAnime variante="guides" />
+        <div className="container-page py-14 lg:py-20">
+          <nav className="text-xs text-muted-foreground" aria-label="Fil d'ariane">
+            <Link to="/conseils" className="hover:text-foreground">
+              Conseils
+            </Link>{" "}
+            / Guides destinations
+          </nav>
 
-      <h1 className="mt-3 font-display">Guides destinations</h1>
-      <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-        Pour chaque ville desservie sur le site, un guide pratique : quand partir, quels quartiers
-        voir, quel budget prévoir sur place, comment se déplacer et quelles formalités anticiper.
-      </p>
+          <h1 className="mt-3 font-display">Guides destinations</h1>
+          <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+            Pour chaque ville desservie sur le site, un guide pratique : quand partir, quels
+            quartiers voir, quel budget prévoir sur place, comment se déplacer et quelles formalités
+            anticiper.
+          </p>
+        </div>
+      </section>
 
-      <ul className="mt-8 grid gap-4 md:grid-cols-2">
+      <ul className="container-page mt-8 grid gap-4 pb-10 md:grid-cols-2">
         {guides.map((guide) => {
           const image = getDestinationImage(guide.destination, guide.city, guide.country);
           return (

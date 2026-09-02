@@ -3,6 +3,7 @@ import { BedDouble, Map as MapIcon, Plane, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { PriceDatePicker } from "@/components/search/DepartureDatePicker";
+import { FondAnime } from "@/components/site/FondAnime";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { LienHotelsCom } from "@/components/stay/LienHotelsCom";
 import { Stay22Map } from "@/components/stay/Stay22Map";
@@ -109,10 +110,10 @@ export function HebergementView({
 
   return (
     <div>
-      {/* Même fond que l'accueil — le halo seul : un avion qui traverse une page
-          d'hôtels raconterait la mauvaise histoire. */}
+      {/* Skyline de nuit plutôt que l'avion de l'accueil : ici on cherche une
+          ville où dormir, pas un vol. */}
       <section className="relative isolate overflow-hidden border-b border-border bg-background">
-        <div className="hero-halo pointer-events-none absolute inset-0 -z-10" aria-hidden />
+        <FondAnime variante="hotels" />
 
         <div className="container-page grid gap-8 py-10 lg:grid-cols-2 lg:items-start lg:py-14">
           <div>

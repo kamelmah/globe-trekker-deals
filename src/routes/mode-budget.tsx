@@ -7,6 +7,7 @@ import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
 import { MonthPicker } from "@/components/search/MonthPicker";
 import { PassengerSelector, type Passengers } from "@/components/search/PassengerSelector";
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
+import { FondAnime } from "@/components/site/FondAnime";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -159,68 +160,78 @@ function BudgetPage() {
 
   return (
     <div>
-      <div className="container-page py-10">
-        <h1 className="font-display">
-          Mode budget : où partir de {originAirport?.city ?? search.origin} avec{" "}
-          {format(search["budget"])}
-        </h1>
-        <p className="mt-4 max-w-3xl text-sm text-muted-foreground">
-          Dites-nous votre budget, on vous montre le monde qui rentre dedans. Chaque point de la
-          carte correspond à une ville accessible avec le prix le plus bas relevé récemment, taxes
-          incluses. Les destinations au-dessus de votre budget restent visibles, simplement
-          estompées, pour vous laisser explorer. Aujourd'hui, {affordable.length} destinations sur{" "}
-          {prices.length} tiennent dans votre budget.
-        </p>
+      {/* Montgolfière : le mode budget est le seul endroit du site où l'on part
+          sans destination choisie. Le décor le dit avant le texte. */}
+      <section className="relative isolate overflow-hidden border-b border-border">
+        <FondAnime variante="budget" />
+        <div className="container-page py-10">
+          <h1 className="font-display">
+            Mode budget : où partir de {originAirport?.city ?? search.origin} avec{" "}
+            {format(search["budget"])}
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm text-muted-foreground">
+            Dites-nous votre budget, on vous montre le monde qui rentre dedans. Chaque point de la
+            carte correspond à une ville accessible avec le prix le plus bas relevé récemment, taxes
+            incluses. Les destinations au-dessus de votre budget restent visibles, simplement
+            estompées, pour vous laisser explorer. Aujourd'hui, {affordable.length} destinations sur{" "}
+            {prices.length} tiennent dans votre budget.
+          </p>
 
-        <form
-          className="mt-5 grid gap-3 rounded-xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end"
-          onSubmit={(event) => {
-            event.preventDefault();
-            navigate({
-              search: (prev) => ({
-                ...prev,
-                budget: Math.max(20, Number(budgetInput) || 400),
-                month: monthOr(monthInput, ""),
-                adultes: passengers.adults,
-                enfants: passengers.children,
-                bebes: passengers.infants,
-              }),
-            });
-          }}
-        >
-          <PlaceAutocomplete
-            id="budget-origin"
-            label="Ville ou aéroport de départ"
-            value={search.origin}
-            onChange={(code) => code && navigate({ search: (prev) => ({ ...prev, origin: code }) })}
-            placeholder="Ex. Paris, Lyon, CDG…"
-          />
-
-          <MonthPicker id="budget-month" value={monthInput} onChange={setMonthInput} />
-
-          <div className="space-y-1.5">
-            <Label htmlFor="budget-amount">Budget maximum (€)</Label>
-            <Input
-              id="budget-amount"
-              type="number"
-              min={20}
-              inputMode="numeric"
-              value={budgetInput}
-              onChange={(e) => setBudgetInput(e.target.value)}
+          <form
+            className="mt-5 grid gap-3 rounded-xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end"
+            onSubmit={(event) => {
+              event.preventDefault();
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  budget: Math.max(20, Number(budgetInput) || 400),
+                  month: monthOr(monthInput, ""),
+                  adultes: passengers.adults,
+                  enfants: passengers.children,
+                  bebes: passengers.infants,
+                }),
+              });
+            }}
+          >
+            <PlaceAutocomplete
+              id="budget-origin"
+              label="Ville ou aéroport de départ"
+              value={search.origin}
+              onChange={(code) =>
+                code && navigate({ search: (prev) => ({ ...prev, origin: code }) })
+              }
+              placeholder="Ex. Paris, Lyon, CDG…"
             />
-          </div>
 
-          <PassengerSelector value={passengers} onChange={setPassengers} />
+            <MonthPicker id="budget-month" value={monthInput} onChange={setMonthInput} />
 
-          <Button type="submit">Mettre à jour la carte</Button>
-        </form>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Le mode budget compare un aller simple sur l'ensemble du mois choisi (ou toute l'année si
-          aucun mois n'est précisé) : pas de date de retour ni de dates flexibles ici, contrairement
-          à la recherche classique — utile pour repérer une destination avant d'affiner les dates
-          exactes.
-        </p>
-      </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="budget-amount">Budget maximum (€)</Label>
+              <Input
+                id="budget-amount"
+                type="number"
+                min={20}
+                inputMode="numeric"
+                value={budgetInput}
+                onChange={(e) => setBudgetInput(e.target.value)}
+              />
+            </div>
+
+            <PassengerSelector value={passengers} onChange={setPassengers} />
+
+            <Button type="submit">Mettre à jour la carte</Button>
+          </form>
+          {/* `max-w-3xl` comme le paragraphe d'introduction : sur toute la
+              largeur, cette ligne passait devant les montgolfières, et un texte
+              gris sur une enveloppe orange ne se lit plus. */}
+          <p className="mt-2 max-w-3xl text-xs text-muted-foreground">
+            Le mode budget compare un aller simple sur l'ensemble du mois choisi (ou toute l'année
+            si aucun mois n'est précisé) : pas de date de retour ni de dates flexibles ici,
+            contrairement à la recherche classique — utile pour repérer une destination avant
+            d'affiner les dates exactes.
+          </p>
+        </div>
+      </section>
 
       <div className="container-page mt-6 grid gap-4 pb-12 lg:grid-cols-[1fr_360px]">
         {/*
