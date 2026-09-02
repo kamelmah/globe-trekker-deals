@@ -447,7 +447,21 @@ const SCENE_VARIANTS: Record<string, string[]> = {
   mountain: ["lake", "oldtown"],
   lake: ["mountain", "oldtown"],
   skyline: ["nightcity"],
-  medina: ["coast", "oldtown"],
+  /**
+   * Aucune variante, volontairement.
+   *
+   * Les huit autres ambiances sont visiblement européennes ou asiatiques : la
+   * place pavée d'« oldtown » est bohémienne, le port de « coast » est grec,
+   * « harbour » est un canal néerlandais et « mountain » un village alpin.
+   * Emprunter l'une d'elles envoyait Annaba et Tlemcen sur une place de Bohême,
+   * Constantine, Sétif et Djerba dans un port grec.
+   *
+   * Douze villes se partagent donc une seule image, et c'est le moindre mal :
+   * une photo répétée se remarque moins qu'une photo fausse. La sortie n'est
+   * pas dans le code mais dans la photothèque — trois images non européennes
+   * suffiraient à porter ce bassin à quatre, la taille qui sépare Agadir d'Oran.
+   */
+  medina: [],
   tropical: ["coast"],
   nightcity: ["skyline"],
 };
