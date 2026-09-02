@@ -211,7 +211,9 @@ function TikTokPage() {
         </>
       )}
 
-      <main className="flex flex-1 flex-col pt-2 pb-4">
+      {/* Une section, pas un <main> : la racine en fournit déjà un autour de
+          l'Outlet, et deux <main> imbriqués sont du HTML invalide. */}
+      <div className="flex flex-1 flex-col pt-2 pb-4">
         {creee ? (
           <div role="status" aria-live="polite">
             <h1 className="font-display text-2xl font-semibold leading-tight tracking-tight">
@@ -403,7 +405,7 @@ function TikTokPage() {
             </form>
           </>
         )}
-      </main>
+      </div>
     </div>
   );
 }

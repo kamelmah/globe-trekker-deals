@@ -226,26 +226,32 @@ function Habillage() {
 
   return (
     <>
-      {nue ? (
-        /* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */
-        <Outlet />
-      ) : (
-        /*
-                La barre d'onglets du bas est en position fixe sous lg : sans
-                cette marge, elle recouvre la fin de page, pied de page compris.
-                57px = 56 de zone tactile + 1 de bordure haute. La valeur ronde
-                laissait le pied de page passer d'un pixel sous la barre,
-                mesure à l'appui.
-              */
-        <div className="flex min-h-screen flex-col pb-[calc(57px+env(safe-area-inset-bottom))] lg:pb-0">
-          <Header />
-          <main className="flex-1">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </main>
-          <Footer />
-        </div>
-      )}
+      {/*
+        L'<Outlet /> garde la MÊME position quel que soit l'habillage, et c'est
+        vital : en le déplaçant d'une branche à l'autre, React démontait la page
+        au moment même où elle demandait l'habillage. L'état qui l'avait demandé
+        partait avec elle, et la confirmation d'alerte s'effaçait aussitôt
+        affichée. Seuls l'en-tête, le pied de page et la marge apparaissent.
+
+        Cette marge : la barre d'onglets du bas est en position fixe sous lg, et
+        sans elle la barre recouvre la fin de page, pied de page compris. 57px =
+        56 de zone tactile + 1 de bordure haute. La valeur ronde laissait le
+        pied de page passer d'un pixel sous la barre, mesure à l'appui.
+      */}
+      <div
+        className={
+          nue
+            ? "flex min-h-screen flex-col"
+            : "flex min-h-screen flex-col pb-[calc(57px+env(safe-area-inset-bottom))] lg:pb-0"
+        }
+      >
+        {!nue && <Header />}
+        <main className="flex-1">
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </main>
+        {!nue && <Footer />}
+      </div>
       {/*
               Pas de bandeau cookies sur une page nue : il ne porte que le
               consentement aux cartes Stay22, qui ne s'y chargent pas. Demander
