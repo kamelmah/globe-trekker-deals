@@ -1,120 +1,58 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { BadgeEuro, EyeOff, Map as MapIcon, ShieldCheck, Store } from "lucide-react";
+import { BellRing, Check, Compass, Map as MapIcon } from "lucide-react";
 
-import heroSky from "@/assets/hero-sky.jpg";
-import heroSkyWebp from "@/assets/hero-sky.webp";
-import heroSky640 from "@/assets/hero-sky-640.jpg";
-import heroSky640Webp from "@/assets/hero-sky-640.webp";
-import heroSky960 from "@/assets/hero-sky-960.jpg";
-import heroSky960Webp from "@/assets/hero-sky-960.webp";
-import heroSky1280 from "@/assets/hero-sky-1280.jpg";
-import heroSky1280Webp from "@/assets/hero-sky-1280.webp";
-
-// Le hero occupe toujours 100 % de la largeur d'écran : un mobile ne doit
-// jamais télécharger la version 1920px destinée au grand écran.
-const HERO_SRCSET = `${heroSky640} 640w, ${heroSky960} 960w, ${heroSky1280} 1280w, ${heroSky} 1920w`;
-const HERO_WEBP_SRCSET = `${heroSky640Webp} 640w, ${heroSky960Webp} 960w, ${heroSky1280Webp} 1280w, ${heroSkyWebp} 1920w`;
-
+import { HomeAlertForm } from "@/components/alerts/HomeAlertForm";
 import { SearchForm } from "@/components/search/SearchForm";
-import { DestinationPriceGrid } from "@/components/flights/DestinationPriceGrid";
-import { PriceRefreshStatus } from "@/components/flights/PriceRefreshStatus";
-import { HOME_DESTINATION_CODES } from "@/lib/price-refresh.shared";
-import { FaqAccordion, type FaqItem } from "@/components/site/FaqAccordion";
+import { AvionAnime } from "@/components/site/AvionAnime";
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
-import { DESTINATIONS } from "@/data/destinations";
-import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
-import { routesFrom, type RouteFamily } from "@/data/route-whitelist";
+import { Button } from "@/components/ui/button";
+import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
+import { PRUNED_GUIDE_SLUGS, withoutPruned } from "@/data/pruned-pages";
+import { routesFrom } from "@/data/route-whitelist";
+import { useCurrency } from "@/lib/currency-context";
+import { formatDateMedium } from "@/lib/dates";
 import { getDestinationImage } from "@/lib/destination-images";
+import { withPreposition } from "@/lib/french-grammar";
 import { hreflangLinks } from "@/lib/hreflang";
-import { cheapestDestinations } from "@/lib/flights.functions";
+import { listPublishedGuides } from "@/lib/published-guides.functions";
+import { cheapestWhitelistedRoutes } from "@/lib/route-pages.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
-const HOME_CODES = HOME_DESTINATION_CODES;
-
-/** Marseille est le départ de référence du site : il est mis en avant sur l'accueil. */
-const MARSEILLE_ROUTES = [...routesFrom("MRS")].sort((a, b) =>
-  a.destinationCity.localeCompare(b.destinationCity, "fr"),
-);
-
-const MARSEILLE_FAMILIES: [RouteFamily, string][] = [
-  ["maghreb", "Maghreb"],
-  ["europe-sud", "Europe du Sud et îles"],
-  ["france-corse", "France et Corse"],
-  ["turquie-orient", "Turquie, Égypte et Proche-Orient"],
-  ["europe-nord-est", "Europe du Nord et de l'Est"],
-];
-
-const TITLE = "TrouveMonVol — comparateur de vols transparent, prix total et vendeur affiché";
-const DESCRIPTION =
-  "Comparez les vols au prix total taxes incluses, avec le nom du vendeur réel sur chaque résultat. Recherche par budget, dates flexibles ± 3 jours, alertes prix gratuites.";
-
-/** Le parcours réel, écrit en clair : ce que fait le site, dans l'ordre. */
-const HOME_STEPS = [
-  {
-    title: "Vous dites ce que vous cherchez",
-    text: "Une destination précise, ou seulement un budget et une période. Les dates flexibles à ± 3 jours suffisent souvent à faire varier le prix du simple au double sur un même trajet.",
-  },
-  {
-    title: "Nous interrogeons les vendeurs",
-    text: "Compagnies et agences en ligne remontent leurs tarifs. Chaque offre arrive avec son prix total, taxes et frais obligatoires compris, et le nom du vendeur qui la propose.",
-  },
-  {
-    title: "Chaque prix arrive daté",
-    text: "Un tarif relevé il y a moins d'une heure est signalé comme tel. Au-delà de 24 h, il est présenté comme une estimation et non comme un prix ferme : c'est le vendeur qui l'a daté, pas nous.",
-  },
-  {
-    title: "Vous réservez chez le vendeur",
-    text: "Le bouton ouvre la page du vendeur nommé sur l'offre. Nous ne vendons pas de billets et n'encaissons aucun paiement : notre commission vient du vendeur, sans surcoût pour vous ni effet sur le classement.",
-  },
-];
+/** Départ proposé par défaut dans les formulaires : le plus recherché. */
+const DEFAULT_ORIGIN = "PAR";
 
 /**
- * FAQ de l'accueil.
+ * Départ des liaisons mises en avant.
  *
- * Elle porte sur le fonctionnement du service, là où celle des pages
- * destinations porte sur un trajet : aucune question n'est dupliquée d'une
- * page à l'autre. Le même tableau alimente l'affichage et le balisage JSON-LD,
- * pour qu'ils ne puissent pas diverger.
+ * La liste blanche — seule source de pages /vols indexables — part très
+ * majoritairement de Marseille, aéroport de référence du site. Une carte de
+ * l'accueil doit mener à une page qui existe et qui est indexable : c'est donc
+ * ce départ-là qu'elle montre, pas celui du formulaire.
  */
-const HOME_FAQ: FaqItem[] = [
-  {
-    question: "TrouveMonVol est-il gratuit ?",
-    answer:
-      "Oui. Nous ne prenons aucun frais de service et n'ajoutons rien au tarif du vendeur. Notre rémunération est une commission d'affiliation versée par le vendeur lorsqu'une réservation aboutit, sans surcoût pour vous. Elle ne modifie jamais l'ordre des résultats, classés par prix.",
-  },
-  {
-    question: "Le prix affiché est-il vraiment le prix final ?",
-    answer:
-      "C'est le prix total : taxes et frais obligatoires sont déjà inclus, sans tarif d'appel qui gonfle au paiement. Deux réserves que nous préférons écrire plutôt que taire — certains revendeurs ajoutent des frais de service au moment de payer, et le bagage en soute n'est presque jamais compris dans les tarifs les plus bas.",
-  },
-  {
-    question: "À quelle fréquence les prix sont-ils mis à jour ?",
-    answer:
-      "Environ une fois par heure en journée, avec des intervalles plus longs la nuit ; la cadence réellement mesurée est affichée en bas de la page de résultats. Mais la date qui compte est celle du vendeur : c'est lui qui a daté son tarif, et aucune actualisation de notre côté ne peut la rajeunir. C'est cette date-là que porte chaque prix.",
-  },
-  {
-    question: "Les bagages sont-ils inclus dans le prix ?",
-    answer:
-      "Rarement sur les tarifs les plus bas. Quand la compagnie publie son barème, nous affichons deux prix : le tarif de base et le tarif avec bagage en soute. Quand elle ne le publie pas, nous le disons au lieu de deviner. Un filtre en tête des résultats permet de ne garder que les offres dont le bagage est documenté.",
-  },
-  {
-    question: "Chez qui est-ce que je réserve ?",
-    answer:
-      "Jamais chez nous : nous ne vendons pas de billets. Chaque offre porte le nom du vendeur et sa nature — vente directe par la compagnie, ou agence en ligne — avec un lien pour consulter les avis le concernant avant de réserver. Dans les faits, la grande majorité des tarifs les plus bas passent par des agences.",
-  },
-  {
-    question: "Pourquoi certains vols « Paris » partent-ils de Beauvais ?",
-    answer:
-      "Parce que les compagnies à bas coût vendent Beauvais sous le libellé Paris, alors que l'aéroport est à 85 km du centre et impose une navette, en temps comme en budget. Nous affichons l'aéroport réel sur chaque offre et signalons ces aéroports secondaires, à Paris comme à Milan, Bruxelles ou Barcelone. Un filtre permet de s'en tenir à Roissy et Orly.",
-  },
-  {
-    question: "Puis-je être prévenu quand le prix baisse ?",
-    answer:
-      "Oui, gratuitement. Vous créez une alerte sur un trajet et une date, et vous recevez un e-mail dès qu'un tarif passe sous celui relevé au moment de la création. Chaque message contient un lien de désinscription en un clic.",
-  },
+const ROUTES_ORIGIN = "MRS";
+const ROUTES_ORIGIN_CITY = routesFrom(ROUTES_ORIGIN)[0]?.originCity ?? "Marseille";
+
+/** Paliers de budget proposés en pastilles vers la carte du mode budget. */
+const BUDGETS = [50, 100, 150, 250];
+
+/** Search complet attendu par /mode-budget, qui exige ses six clés. */
+function budgetSearch(budget: number) {
+  return { origin: DEFAULT_ORIGIN, budget, month: "", adultes: 1, enfants: 0, bebes: 0 };
+}
+
+/** Les quatre promesses réellement tenables, sous le formulaire. */
+const CONFIANCE = [
+  "Prix total, taxes incluses",
+  "Vendeur identifié avant de cliquer",
+  "Aucun faux compte à rebours",
+  "Alerte prix sans compte",
 ];
+
+const TITLE = "TrouveMonVol — le prix total d'un vol, taxes incluses et vendeur affiché";
+const DESCRIPTION =
+  "Le prix total avant de cliquer : taxes incluses et nom du vendeur sur chaque offre. Recherche par budget, dates flexibles ± 3 jours, alertes prix gratuites sans compte.";
 
 type HomeSearch = {
   origin?: string;
@@ -147,7 +85,7 @@ export const Route = createFileRoute("/")({
       const n = Math.round(numberOr(v, fallback));
       return Math.min(max, Math.max(min, n));
     };
-    const origin = search["origin"] ? iataOr(search["origin"], "PAR") : "";
+    const origin = search["origin"] ? iataOr(search["origin"], DEFAULT_ORIGIN) : "";
     const destination = search["destination"] ? iataOr(search["destination"], "") : "";
     const depart = dateOr(search["depart"], "");
     const retour = dateOr(search["retour"], "");
@@ -166,18 +104,28 @@ export const Route = createFileRoute("/")({
       ...(search["bebes"] === undefined ? {} : { bebes: clamp(search["bebes"], 0, 8, 0) }),
     };
   },
+  /**
+   * Aucun appel à l'API tarifaire : les deux sources sont déjà en base (relevés
+   * enregistrés, guides publiés). L'accueil ne consomme plus de quota et ne
+   * dépend plus d'un aller-retour Travelpayouts pour s'afficher.
+   */
   loader: async () => {
-    try {
-      const { prices, error } = await cheapestDestinations({
-        data: { origin: "PAR", destinations: HOME_CODES },
-      });
-      return { prices, error };
-    } catch {
-      return {
-        prices: [],
-        error: "Les prix ne sont pas disponibles pour le moment. Réessayez dans quelques instants.",
-      };
-    }
+    const [cheapest, publies] = await Promise.all([
+      cheapestWhitelistedRoutes({ data: { origin: ROUTES_ORIGIN, limit: 4 } }).catch(() => ({
+        routes: [],
+      })),
+      listPublishedGuides().catch(() => ({ guides: [] as CityGuide[] })),
+    ]);
+    // Guides rédigés en dur + fiches publiées depuis /destinations-proposes,
+    // les plus récemment mis à jour en premier.
+    const connus = new Set(CITY_GUIDES.map((guide) => guide.slug));
+    const guides = [
+      ...withoutPruned(CITY_GUIDES, PRUNED_GUIDE_SLUGS),
+      ...publies.guides.filter((guide) => !connus.has(guide.slug)),
+    ]
+      .sort((a, b) => b.updated.localeCompare(a.updated))
+      .slice(0, 3);
+    return { cheapest: cheapest.routes, guides };
   },
   head: () => ({
     meta: [
@@ -190,6 +138,8 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
     links: [{ rel: "canonical", href: `${SITE_URL}/` }, ...hreflangLinks(`${SITE_URL}/`)],
+    // Le balisage FAQPage a suivi la FAQ elle-même sur /faq : décrire des
+    // questions qui ne sont plus visibles ici serait un balisage mensonger.
     scripts: [
       {
         type: "application/ld+json",
@@ -210,122 +160,43 @@ export const Route = createFileRoute("/")({
           },
         }),
       },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          url: `${SITE_URL}/`,
-          inLanguage: "fr",
-          mainEntity: HOME_FAQ.map((item) => ({
-            "@type": "Question",
-            name: item.question,
-            acceptedAnswer: { "@type": "Answer", text: item.answer },
-          })),
-        }),
-      },
     ],
   }),
   component: HomePage,
 });
 
-const REASONS = [
-  {
-    icon: BadgeEuro,
-    // Même raison que pour le H1 : ne pas reformuler ailleurs la garantie de
-    // prix qu'on vient de retirer du titre.
-    title: "Le montant affiché est le total",
-    text: "Taxes et frais obligatoires sont déjà inclus dans le prix affiché : pas de tarif d'appel qui gonfle au moment de payer. Chaque prix porte sa date de relevé, et au-delà de 24 h il est présenté comme une estimation, pas comme un prix ferme.",
-  },
-  {
-    icon: Store,
-    title: "Vous savez toujours à qui vous parlez",
-    text: "Chaque résultat indique le vendeur réel — la compagnie ou l'agence nommée — et le bouton ouvre son lien de réservation en un clic, sans comparateur intermédiaire caché ni page de captation.",
-  },
-  {
-    icon: EyeOff,
-    title: "On ne vous met jamais la pression",
-    text: "Aucun faux compte à rebours, aucun « plus que 2 places à ce prix », aucune mise en avant payante dans le classement. Vous décidez à votre rythme.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Notre commission ? Écrite noir sur blanc",
-    text: "Nous touchons une commission d'affiliation si vous réservez, sans surcoût pour vous.",
-  },
-];
-
 function HomePage() {
-  const { prices, error } = Route.useLoaderData();
+  const { cheapest, guides } = Route.useLoaderData();
   const prefill = Route.useSearch();
+  const { format } = useCurrency();
 
   return (
     <div>
-      <section className="relative isolate overflow-hidden border-b border-border bg-sky-soft">
-        <ResponsivePicture
-          src={heroSky}
-          webp={heroSkyWebp}
-          srcSet={HERO_SRCSET}
-          webpSrcSet={HERO_WEBP_SRCSET}
-          sizes="100vw"
-          alt="Aile d'avion au-dessus d'une mer de nuages au lever du soleil"
-          width={1920}
-          height={1080}
-          className="hero-parallax-img absolute inset-0 -z-10 size-full object-cover"
-        />
-        <div
-          className="absolute inset-0 -z-10 bg-gradient-to-b from-background/35 via-background/15 to-background/45"
-          aria-hidden
-        />
-        <div className="container-page grid gap-10 py-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-16">
-          <div className="rounded-2xl bg-gradient-to-br from-background/95 via-background/90 to-background/70 p-6 lg:p-8 shadow-sm">
-            {/*
-              L'ancien titre — « Le prix que vous voyez est celui que vous
-              payez » — promettait une garantie de prix que notre source
-              tarifaire ne permet pas de tenir : les tarifs viennent des
-              vendeurs et peuvent bouger entre le relevé et le clic. Ce que nous
-              pouvons réellement garantir, c'est ce que le titre décrit
-              maintenant : le montant affiché est le total taxes comprises, et
-              le vendeur est nommé.
-            */}
-            <h1 className="hero-in hero-in-1 font-display leading-tight">
-              Prix total, taxes incluses, vendeur affiché
-            </h1>
-            <div className="hero-in hero-in-2">
-              <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-                Pas de tarif d'appel ni de frais découverts au paiement : le montant que nous
-                affichons est le total, et vous savez chez qui vous réservez. Chaque prix porte sa
-                date de relevé — ou partez de votre budget et découvrez toutes les destinations
-                accessibles depuis votre ville.
-              </p>
-              <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
-                <li>• Dates flexibles ± 3 jours pour repérer le jour le moins cher</li>
-                <li>• Vue calendrier des prix du mois, en un coup d'œil</li>
-                <li>• Alerte email gratuite quand le prix baisse, sans créer de compte</li>
-              </ul>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  to="/mode-budget"
-                  search={{
-                    origin: "PAR",
-                    budget: 400,
-                    month: "",
-                    adultes: 1,
-                    enfants: 0,
-                    bebes: 0,
-                  }}
-                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
-                >
-                  <MapIcon className="size-4 text-primary" aria-hidden />
-                  Explorer la carte du monde par budget
-                </Link>
-              </div>
-            </div>
-          </div>
+      {/*
+        Héros « recherche d'abord » : pas de photo, un fond entièrement en CSS.
+        Le titre et le formulaire restent les deux seuls éléments lourds au
+        chargement, donc le LCP est forcément l'un des deux.
+      */}
+      <section className="relative isolate overflow-hidden border-b border-border bg-background">
+        <div className="hero-halo pointer-events-none absolute inset-0 -z-10" aria-hidden />
+        <AvionAnime />
 
-          <div id="recherche" className="hero-in hero-in-3 scroll-mt-24">
+        <div className="container-page py-12 text-center lg:py-16">
+          <h1 className="hero-in hero-in-1 mx-auto max-w-3xl font-display text-[1.875rem] leading-tight sm:text-[2.5rem] lg:text-[3.25rem]">
+            Le prix total, avant de cliquer.
+          </h1>
+          <p className="hero-in hero-in-2 mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
+            Départ, destination, dates : nous comparons les offres réelles des vendeurs et affichons
+            le montant taxes incluses, avec le nom du vendeur.
+          </p>
+
+          <div
+            id="recherche"
+            className="hero-in hero-in-3 mx-auto mt-8 max-w-[880px] scroll-mt-24 text-left"
+          >
             <SearchForm
               key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
-              initialOrigin={prefill.origin || "PAR"}
+              initialOrigin={prefill.origin || DEFAULT_ORIGIN}
               initialDestination={prefill.destination ?? ""}
               {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
               initialRetour={prefill.retour ?? ""}
@@ -338,160 +209,220 @@ function HomePage() {
               }}
             />
           </div>
+
+          <ul className="mt-7 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground sm:text-sm">
+            {CONFIANCE.map((point) => (
+              <li key={point} className="inline-flex items-center gap-1.5">
+                <Check className="size-4 shrink-0 text-primary" aria-hidden />
+                {point}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      <Reveal>
-        <section className="container-page py-14">
-          <h2 className="font-display">Où partir au départ de Paris, du moins cher au plus cher</h2>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Prix les plus bas relevés récemment pour un aller simple, taxes incluses. Cliquez sur
-            une destination pour voir les vols et le vendeur de chaque billet.
-          </p>
-          <div className="mt-6">
-            <DestinationPriceGrid prices={prices} origin="PAR" error={error} />
-            <PriceRefreshStatus />
-          </div>
-        </section>
-      </Reveal>
+      {/*
+        Sur mobile, la bande budget entière serait un mur à faire défiler avant
+        d'atteindre les liaisons : elle s'y réduit à cette ligne, sa version
+        complète restant aux écrans plus larges.
+      */}
+      <Link
+        to="/mode-budget"
+        search={budgetSearch(100)}
+        className="flex items-center justify-center gap-2 border-b border-border bg-secondary/40 px-4 py-3 text-sm font-medium sm:hidden"
+      >
+        <Compass className="size-4 text-highlight" aria-hidden />
+        Où partir avec 100 € ?
+      </Link>
 
-      <Reveal>
-        <section className="border-y border-border bg-secondary/40 py-14">
-          <div className="container-page">
-            <h2 className="font-display">Pourquoi passer par nous</h2>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              La plupart des comparateurs vivent de l'urgence artificielle et du classement payant.
-              Nous avons fait le choix inverse : une information complète, vérifiable, et un chemin
-              de réservation le plus court possible.
-            </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {REASONS.map((reason) => (
-                <div key={reason.title} className="rounded-xl border border-border bg-card p-5">
-                  <reason.icon className="size-5 text-primary" aria-hidden />
-                  <h3 className="mt-3">{reason.title}</h3>
-                  <p className="mt-1.5 text-sm text-muted-foreground">{reason.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </Reveal>
-
-      {/* Marseille est l'aéroport de référence du site : il passe avant le reste. */}
-      <Reveal>
-        <section className="container-page py-14">
-          <h2 className="font-display">Comment ça marche</h2>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Quatre étapes, sans compte à créer et sans paiement chez nous.
-          </p>
-          <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {HOME_STEPS.map((step, index) => (
-              <li key={step.title} className="rounded-xl border border-border bg-card p-5">
-                <span className="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                  {index + 1}
-                </span>
-                <h3 className="mt-3 text-sm font-semibold">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.text}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </Reveal>
-
-      <Reveal>
-        <section className="container-page py-14">
-          <h2 className="font-display">Vols au départ de Marseille</h2>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            {MARSEILLE_ROUTES.length} liaisons au départ de Marseille Provence, toutes vérifiées
-            comme réellement desservies — en vol direct, sauf mention d'escale. Prix total taxes
-            incluses et vendeur affiché, comme partout sur le site.
-          </p>
-          {MARSEILLE_FAMILIES.map(([family, label]) => {
-            const routes = MARSEILLE_ROUTES.filter((route) => route.family === family);
-            if (routes.length === 0) return null;
-            return (
-              <div key={family} className="mt-6">
-                <h3 className="text-sm font-semibold text-muted-foreground">{label}</h3>
-                <ul className="mt-2 flex flex-wrap gap-2">
-                  {routes.map((route) => (
-                    <li key={route.slug}>
-                      <Link
-                        to="/vols/$slug"
-                        params={{ slug: route.slug }}
-                        className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-secondary"
-                      >
-                        <span className="font-medium">{route.destinationCity}</span>
-                        {!route.nonstop && (
-                          <span className="text-xs text-muted-foreground">avec escale</span>
-                        )}
-                        {route.validation.minPriceEur !== null && (
-                          <span className="text-xs text-primary">
-                            dès {route.validation.minPriceEur} €
-                          </span>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+      {cheapest.length > 0 && (
+        <Reveal>
+          <section className="container-page py-14">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="font-display">
+                  Les moins chers depuis {ROUTES_ORIGIN_CITY} cette semaine
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                  Les prix les plus bas déjà relevés sur nos liaisons vérifiées, pour un aller
+                  simple taxes incluses. Chaque montant porte la date de son relevé : c'est un prix
+                  observé, pas un prix garanti.
+                </p>
               </div>
-            );
-          })}
-        </section>
-      </Reveal>
+              {/* Même destination que « Toutes les destinations depuis
+                  Marseille » en pied de page : la carte du mode budget est le
+                  seul index complet des liaisons d'un départ. */}
+              <Link
+                to="/mode-budget"
+                search={{ ...budgetSearch(400), origin: ROUTES_ORIGIN }}
+                className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+              >
+                Toutes les liaisons →
+              </Link>
+            </div>
+
+            <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {cheapest.map((route) => {
+                const image = getDestinationImage(route.destination, route.city, route.country);
+                const details = [
+                  // `observedAt` est un instant complet ; formatDateMedium
+                  // attend une date nue, comme partout ailleurs sur le site.
+                  route.observedAt
+                    ? `relevé le ${formatDateMedium(route.observedAt.slice(0, 10))}`
+                    : null,
+                  route.airline,
+                  route.nonstop ? "direct" : "avec escale",
+                ].filter((part): part is string => Boolean(part));
+                return (
+                  <li key={route.slug}>
+                    <Link
+                      to="/vols/$slug"
+                      params={{ slug: route.slug }}
+                      className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-secondary"
+                    >
+                      <ResponsivePicture
+                        src={image.thumb}
+                        webp={image.thumbWebp}
+                        alt={image.alt}
+                        loading="lazy"
+                        width={256}
+                        height={192}
+                        className="h-24 w-full object-cover sm:h-32"
+                      />
+                      <span className="flex flex-1 flex-col p-3 sm:p-4">
+                        <span className="text-sm font-semibold">{route.city}</span>
+                        <span className="mt-1 font-display text-lg font-semibold text-primary">
+                          dès {format(route.priceEur)}
+                        </span>
+                        <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                          {details.join(" · ")}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        </Reveal>
+      )}
 
       <Reveal>
-        <section className="container-page py-14">
-          <h2 className="font-display">Nos pages destinations</h2>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Chaque page détaille la meilleure période pour partir, l'évolution des prix sur douze
-            mois et les questions les plus fréquentes sur le trajet.
-          </p>
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {withoutPruned(DESTINATIONS, PRUNED_ROUTE_SLUGS).map((d) => {
-              const image = getDestinationImage(d.destination, d.destinationCity, d.country);
-              return (
-                <li key={d.slug}>
+        <section className="hidden border-y border-border bg-secondary/40 py-14 sm:block">
+          <div className="container-page">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-highlight">
+              <Compass className="size-4" aria-hidden />
+              Pas encore de destination ?
+            </p>
+            <h2 className="mt-2 font-display">Où partir avec…</h2>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+              Indiquez seulement un budget : la carte affiche les destinations réellement
+              accessibles à ce prix depuis votre ville de départ.
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-3">
+              {BUDGETS.map((budget) => (
+                <li key={budget}>
                   <Link
-                    to="/vols/$slug"
-                    params={{ slug: d.slug }}
-                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-5 transition-colors hover:bg-secondary"
+                    to="/mode-budget"
+                    search={budgetSearch(budget)}
+                    className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2 font-display text-base font-semibold transition-colors hover:border-highlight/60 hover:bg-background"
                   >
-                    <ResponsivePicture
-                      src={image.thumb}
-                      webp={image.thumbWebp}
-                      alt={image.alt}
-                      loading="lazy"
-                      width={128}
-                      height={96}
-                      className="size-16 shrink-0 rounded-lg object-cover"
-                    />
-                    <span className="min-w-0">
-                      <span className="block text-sm font-semibold">
-                        Vols pas chers {d.originCity} — {d.destinationCity}
-                      </span>
-                      <span className="mt-1 block text-xs text-muted-foreground">
-                        {d.country} · {d.bestMonths}
-                      </span>
-                    </span>
+                    {budget} €
                   </Link>
                 </li>
-              );
-            })}
-          </ul>
-        </section>
-      </Reveal>
-      <Reveal>
-        <section className="container-page pb-14">
-          <h2 className="font-display">Questions fréquentes</h2>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Ce qu'on nous demande le plus souvent sur le fonctionnement du comparateur. Les
-            questions propres à un trajet sont traitées sur chaque page destination.
-          </p>
-          <div className="mt-6 max-w-3xl">
-            <FaqAccordion items={HOME_FAQ} />
+              ))}
+            </ul>
+            <Button asChild className="mt-6">
+              <Link to="/mode-budget" search={budgetSearch(400)} className="gap-2">
+                <MapIcon className="size-4" aria-hidden />
+                Voir la carte des destinations
+              </Link>
+            </Button>
           </div>
         </section>
       </Reveal>
+
+      <Reveal>
+        <section className="border-b border-border bg-primary/7 py-14">
+          <div className="container-page grid gap-8 lg:grid-cols-2 lg:items-start">
+            <div>
+              <p className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                <BellRing className="size-4" aria-hidden />
+                Alerte prix gratuite
+              </p>
+              <h2 className="mt-2 font-display">Pas pressé ? On vous prévient quand ça baisse.</h2>
+              <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+                Votre email suffit, aucun compte à créer. Nous vérifions le prix du trajet et ne
+                vous écrivons que s'il passe sous le dernier tarif relevé. Désinscription en un
+                clic.
+              </p>
+              <Link
+                to="/alertes"
+                className="mt-4 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
+              >
+                Gérer mes alertes →
+              </Link>
+            </div>
+            <HomeAlertForm initialOrigin={DEFAULT_ORIGIN} />
+          </div>
+        </section>
+      </Reveal>
+
+      {guides.length > 0 && (
+        <Reveal>
+          <section className="container-page py-14">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="font-display">Guides destinations</h2>
+                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                  Quand partir, quels quartiers voir, quel budget prévoir sur place : nos guides les
+                  plus récents, ville par ville.
+                </p>
+              </div>
+              <Link
+                to="/conseils/destinations"
+                className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+              >
+                Tous les guides →
+              </Link>
+            </div>
+
+            <ul className="mt-6 grid gap-4 sm:grid-cols-3">
+              {guides.map((guide) => {
+                const image = getDestinationImage(guide.destination, guide.city, guide.country);
+                return (
+                  <li key={guide.slug}>
+                    <Link
+                      to="/conseils/destinations/$city"
+                      params={{ city: guide.slug }}
+                      className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-secondary"
+                    >
+                      <ResponsivePicture
+                        src={image.thumb}
+                        webp={image.thumbWebp}
+                        alt={image.alt}
+                        loading="lazy"
+                        width={256}
+                        height={192}
+                        className="h-32 w-full object-cover"
+                      />
+                      <span className="flex flex-1 flex-col p-5">
+                        <span className="font-display text-base font-semibold">
+                          Que faire {withPreposition("à", guide.city)}
+                        </span>
+                        <span className="mt-1 text-xs text-muted-foreground">{guide.country}</span>
+                        <span className="mt-2 text-sm text-muted-foreground">
+                          {guide.description}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        </Reveal>
+      )}
     </div>
   );
 }

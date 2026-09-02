@@ -43,6 +43,23 @@ const FAQ = [
     answer:
       "Le prix affiché est le prix total taxes et frais obligatoires inclus, hors bagages. Notre source de prix ne précise pas de façon fiable ce qui est inclus en cabine ou en soute pour chaque résultat : plutôt que d'afficher une estimation qui pourrait être fausse, nous vous renvoyons vers la page du vendeur pour vérifier les conditions exactes avant de réserver. Sur les compagnies à bas coût, une valise en soute peut ajouter plusieurs dizaines d'euros et changer le classement des offres.",
   },
+  // Ces trois questions viennent de l'ancienne FAQ de la page d'accueil,
+  // retirée lors de sa refonte : elles n'existaient nulle part ailleurs.
+  {
+    question: "Le prix affiché est-il vraiment le prix final ?",
+    answer:
+      "C'est le prix total : taxes et frais obligatoires sont déjà inclus, sans tarif d'appel qui gonfle au paiement. Deux réserves que nous préférons écrire plutôt que taire — certains revendeurs ajoutent des frais de service au moment de payer, et le bagage en soute n'est presque jamais compris dans les tarifs les plus bas.",
+  },
+  {
+    question: "À quelle fréquence les prix sont-ils mis à jour ?",
+    answer:
+      "Environ une fois par heure en journée, avec des intervalles plus longs la nuit ; la cadence réellement mesurée est affichée en bas de la page de résultats. Mais la date qui compte est celle du vendeur : c'est lui qui a daté son tarif, et aucune actualisation de notre côté ne peut la rajeunir. C'est cette date-là que porte chaque prix.",
+  },
+  {
+    question: "Pourquoi certains vols « Paris » partent-ils de Beauvais ?",
+    answer:
+      "Parce que les compagnies à bas coût vendent Beauvais sous le libellé Paris, alors que l'aéroport est à 85 km du centre et impose une navette, en temps comme en budget. Nous affichons l'aéroport réel sur chaque offre et signalons ces aéroports secondaires, à Paris comme à Milan, Bruxelles ou Barcelone. Un filtre permet de s'en tenir à Roissy et Orly.",
+  },
   {
     question: "Comment est calculée l'estimation CO₂ ?",
     answer:
@@ -104,9 +121,12 @@ function FaqPage() {
     <div className="container-page py-10">
       <h1 className="font-display text-3xl font-semibold">Questions fréquentes</h1>
       <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-        Tout ce qu'il faut savoir sur le fonctionnement du site, la formation des prix et notre modèle
-        économique. Pour les conseils de réservation, rendez-vous dans nos{" "}
-        <Link to="/conseils" className="font-medium text-primary underline-offset-2 hover:underline">
+        Tout ce qu'il faut savoir sur le fonctionnement du site, la formation des prix et notre
+        modèle économique. Pour les conseils de réservation, rendez-vous dans nos{" "}
+        <Link
+          to="/conseils"
+          className="font-medium text-primary underline-offset-2 hover:underline"
+        >
           articles
         </Link>
         . Vol retardé ou annulé ?{" "}

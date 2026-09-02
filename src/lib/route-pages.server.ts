@@ -509,3 +509,105 @@ export async function listRelatedRoutes(params: {
     .sort((a, b) => (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity))
     .slice(0, limit);
 }
+
+export type CheapestWhitelistedRoute = {
+  slug: string;
+  destination: string;
+  city: string;
+  country: string;
+  /** Liaison desservie sans escale, telle que vérifiée dans la liste blanche. */
+  nonstop: boolean;
+  priceEur: number;
+  /** Compagnie du relevé en cache, null quand la source ne la porte pas. */
+  airline: string | null;
+  /** Date du relevé, null quand elle est inconnue — jamais remplacée par « maintenant ». */
+  observedAt: string | null;
+};
+
+/**
+ * Liaisons les moins chères au départ d'une ville, pour la page d'accueil.
+ *
+ * Ne fait AUCUN appel à l'API tarifaire : comme le reste de ce module, elle
+ * relit les relevés déjà enregistrés (cache du balayage mondial + price_history).
+ * Une ville sans aucun relevé renvoie une liste vide, et l'accueil masque alors
+ * la section plutôt que d'afficher un prix inventé.
+ *
+ * Le périmètre est la LISTE BLANCHE : chaque carte pointe vers une page /vols
+ * indexable, jamais vers une liaison générée dont nous ne voulons pas de lien
+ * interne.
+ */
+export async function listCheapestWhitelistedRoutes(params: {
+  origin: string;
+  limit?: number | undefined;
+}): Promise<CheapestWhitelistedRoute[]> {
+  const origin = params.origin.toUpperCase();
+  const limit = params.limit ?? 4;
+  const routes = routesFrom(origin);
+  if (routes.length === 0) return [];
+
+  // 1) Balayage mondial en cache : seule source qui porte le nom de la
+  //    compagnie, mais qui ne conserve pas la date du relevé.
+  const cached = new Map<string, { priceEur: number; airline: string | null }>();
+  for (const entry of await readWorldCache(origin)) {
+    const price = Math.round(Number(entry.priceEur));
+    if (!Number.isFinite(price) || price <= 0) continue;
+    const current = cached.get(entry.destination);
+    if (!current || price < current.priceEur) {
+      cached.set(entry.destination, { priceEur: price, airline: entry.airline ?? null });
+    }
+  }
+
+  // 2) Historique daté : une seule requête pour toutes les destinations, au
+  //    lieu d'une par carte.
+  const history = new Map<string, { priceEur: number; observedAt: string | null }>();
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("price_history")
+      .select("destination,lowest_price,updated_at")
+      .eq("origin", origin)
+      .in(
+        "destination",
+        routes.map((route) => route.destination),
+      )
+      .order("lowest_price", { ascending: true });
+    if (error) throw error;
+    for (const row of data ?? []) {
+      const price = Math.round(Number(row.lowest_price));
+      if (!Number.isFinite(price) || price <= 0) continue;
+      const current = history.get(row.destination);
+      if (!current || price < current.priceEur) {
+        history.set(row.destination, { priceEur: price, observedAt: row.updated_at ?? null });
+      }
+    }
+  } catch (error) {
+    console.error("Lecture de l'historique des liaisons impossible", error);
+  }
+
+  // Même arbitrage que readObservedPrice : le plus bas des deux l'emporte, la
+  // compagnie connue est conservée, la date ne vient que de l'historique.
+  const cheapest: CheapestWhitelistedRoute[] = [];
+  for (const route of routes) {
+    const fromCache = cached.get(route.destination) ?? null;
+    const fromHistory = history.get(route.destination) ?? null;
+    const retenu =
+      fromHistory && (!fromCache || fromHistory.priceEur < fromCache.priceEur)
+        ? { priceEur: fromHistory.priceEur, observedAt: fromHistory.observedAt }
+        : fromCache
+          ? { priceEur: fromCache.priceEur, observedAt: null }
+          : null;
+    if (!retenu) continue;
+    cheapest.push({
+      slug: route.slug,
+      destination: route.destination,
+      city: route.destinationCity,
+      country: route.country,
+      nonstop: route.nonstop,
+      priceEur: retenu.priceEur,
+      airline: fromCache?.airline ?? null,
+      observedAt: retenu.observedAt,
+    });
+  }
+
+  return cheapest.sort((a, b) => a.priceEur - b.priceEur).slice(0, limit);
+}

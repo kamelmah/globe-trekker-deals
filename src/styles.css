@@ -259,6 +259,17 @@
   --input: oklch(0.915 0.014 240);
   --ring: oklch(0.62 0.13 249);
   --sky-soft: oklch(0.97 0.025 230);
+  /*
+   * Fond animé du héros : aucune image, seulement un halo et une silhouette
+   * d'avion en CSS. En thème clair le halo s'éclaircit et l'avion s'assombrit,
+   * sinon la silhouette blanche pensée pour le fond sombre serait invisible.
+   */
+  --hero-halo: oklch(0.9 0.04 250);
+  --avion-corps: oklch(0.35 0.04 250);
+  --avion-hublots: oklch(0.55 0.03 250);
+  /* Traînée de condensation : blanche sur fond sombre, teintée sur fond clair
+     où le blanc ne se verrait pas. Même rôle, deux valeurs. */
+  --avion-trainee: oklch(0.35 0.04 250 / 32%);
   --chart-1: oklch(0.55 0.155 249);
   --chart-2: oklch(0.68 0.11 200);
   --chart-3: oklch(0.6 0.13 155);
@@ -282,6 +293,10 @@
   --highlight: oklch(0.76 0.18 43);
   --highlight-foreground: oklch(0.16 0.03 40);
   --sky-soft: oklch(0.28 0.04 240);
+  --hero-halo: oklch(0.3 0.08 255);
+  --avion-corps: oklch(0.984 0.003 247.858);
+  --avion-hublots: oklch(0.85 0.02 250);
+  --avion-trainee: oklch(1 0 0 / 55%);
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);
@@ -426,22 +441,69 @@
     }
   }
 
-  /* Parallax léger sur l'image de fond du hero : pure CSS, dégrade proprement
-     (image simplement fixe) sur les navigateurs sans animation-timeline. */
-  @supports (animation-timeline: view()) {
-    .hero-parallax-img {
-      animation: hero-parallax linear both;
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
+  /*
+   * Fond du héros : halo + avion, entièrement en CSS.
+   *
+   * Aucune image n'est chargée — l'ancien ciel photographique pesait plus lourd
+   * que tout le reste de la page et disputait le LCP au titre. Ces deux couches
+   * sont purement décoratives (aria-hidden côté React) et ne reçoivent aucun
+   * clic.
+   */
+  .hero-halo {
+    background-image: radial-gradient(ellipse at 70% 30%, var(--hero-halo), transparent 55%);
+  }
+
+  /*
+   * L'avion suit une courbe douce de gauche à droite en 14 s, en boucle.
+   * `offset-rotate: auto` oriente la silhouette ET ses traînées le long de la
+   * trajectoire : le nez pointe toujours dans le sens de la marche.
+   */
+  .avion-anime {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 72px;
+    height: 72px;
+    offset-path: path("M -260 420 C 300 320, 700 280, 1000 180 S 1500 60, 1700 40");
+    offset-rotate: auto;
+    animation: avion-traverse 14s linear infinite;
+  }
+
+  @keyframes avion-traverse {
+    from {
+      offset-distance: 0%;
+    }
+    to {
+      offset-distance: 100%;
     }
   }
 
-  @keyframes hero-parallax {
-    from {
-      transform: scale(1.08) translateY(-2%);
-    }
-    to {
-      transform: scale(1.08) translateY(2%);
+  /*
+   * Deux traînées de condensation, dans le référentiel de l'avion : elles
+   * partent des réacteurs et s'effacent vers l'arrière (la queue est à gauche,
+   * le nez à droite).
+   */
+  .avion-trainee {
+    position: absolute;
+    right: 38px;
+    width: 380px;
+    height: 3px;
+    border-radius: 999px;
+    background-image: linear-gradient(to right, transparent, var(--avion-trainee));
+    filter: blur(1.5px);
+  }
+  .avion-trainee-haute {
+    top: 17px;
+  }
+  .avion-trainee-basse {
+    top: 52px;
+  }
+
+  /* Sur mobile, l'ensemble (avion + traînées) tombe à 60 % : la même courbe
+     traverse un écran quatre fois plus étroit. */
+  @media (max-width: 40rem) {
+    .avion-anime {
+      scale: 0.6;
     }
   }
 
@@ -473,8 +535,10 @@
       opacity: 1;
       transform: none;
     }
-    .hero-parallax-img {
-      animation: none !important;
+    /* L'avion s'arrête net : à l'arrêt il reste hors cadre, à gauche du départ
+       de la courbe, et seul le halo subsiste. */
+    .avion-anime {
+      animation: none;
     }
     .reveal {
       opacity: 1;
