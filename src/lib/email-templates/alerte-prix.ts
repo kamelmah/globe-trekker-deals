@@ -17,11 +17,11 @@ export type AlertePrixInput = {
   destination: string;
   oldPrice: number;
   newPrice: number;
-  departureAt?: string | null;
-  returnAt?: string | null;
-  airline?: string;
-  stops?: number;
-  durationMinutes?: number;
+  departureAt?: string | null | undefined;
+  returnAt?: string | null | undefined;
+  airline?: string | undefined;
+  stops?: number | undefined;
+  durationMinutes?: number | undefined;
   bookingUrl: string;
   unsubscribeUrl: string;
   siteUrl: string;
@@ -79,7 +79,9 @@ export function buildAlertePrixEmail(input: AlertePrixInput): {
     .join(" · ");
   if (trajet) details.push(["Trajet", trajet]);
 
-  const tripLabel = input.returnAt ? "Aller-retour par personne, taxes incluses." : "Aller simple par personne, taxes incluses.";
+  const tripLabel = input.returnAt
+    ? "Aller-retour par personne, taxes incluses."
+    : "Aller simple par personne, taxes incluses.";
   const subject = `${route} à ${newPrice} : le prix a baissé`;
 
   const detailRows = details
