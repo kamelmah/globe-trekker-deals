@@ -111,13 +111,13 @@ function Skyline() {
  * derrière un mot le rend illisible.
  */
 const REPERES = [
-  { nom: "Porto", x: 3, y: 28, mobile: false },
-  { nom: "Lisbonne", x: 9, y: 86, mobile: false },
-  { nom: "Marrakech", x: 24, y: 90, mobile: true },
-  { nom: "Marseille", x: 44, y: 82, mobile: true },
-  { nom: "Alger", x: 60, y: 88, mobile: true },
+  { nom: "Porto", x: 3, y: 26, mobile: false },
+  { nom: "Lisbonne", x: 9, y: 82, mobile: false },
+  { nom: "Marrakech", x: 24, y: 84, mobile: true },
+  { nom: "Marseille", x: 44, y: 80, mobile: true },
+  { nom: "Alger", x: 60, y: 84, mobile: true },
   { nom: "Tunis", x: 72, y: 10, mobile: true },
-  { nom: "Istanbul", x: 84, y: 74, mobile: false },
+  { nom: "Istanbul", x: 84, y: 72, mobile: false },
   { nom: "Le Caire", x: 90, y: 24, mobile: false },
 ];
 
@@ -151,12 +151,12 @@ function CarteGuides() {
         preserveAspectRatio="none"
         focusable="false"
       >
-        {/* Marseille (634, 385) vers Tunis puis Istanbul : les coordonnées sont
+        {/* Marseille (634, 376) vers Tunis puis Istanbul : les coordonnées sont
             celles des repères ci-dessus, ramenées au viewBox (x % × 14,4 ;
             y % × 4,7). Les déplacer ici sans les déplacer là-haut ferait partir
             les courbes de nulle part. */}
-        <path className="fond-trajet" d="M634 385 Q800 150 1037 47" />
-        <path className="fond-trajet fond-trajet-2" d="M634 385 Q950 480 1267 348" />
+        <path className="fond-trajet" d="M634 376 Q800 150 1037 47" />
+        <path className="fond-trajet fond-trajet-2" d="M634 376 Q950 470 1267 338" />
       </svg>
 
       {REPERES.map((repere, index) => (
@@ -167,7 +167,12 @@ function CarteGuides() {
           style={{
             left: `${repere.x}%`,
             top: `${repere.y}%`,
-            animationDelay: `${index * 1.4}s`,
+            // Délai NÉGATIF : l'animation démarre déjà engagée, chaque repère
+            // à une phase différente. Avec des délais positifs, le premier
+            // n'apparaissait qu'après 2,8 s — et sur mobile, où seuls quatre
+            // repères restent, la carte était vide plusieurs secondes : on
+            // croyait qu'il n'y avait pas d'animation du tout.
+            animationDelay: `-${index * 1.2}s`,
           }}
         >
           <span className="fond-goutte" />

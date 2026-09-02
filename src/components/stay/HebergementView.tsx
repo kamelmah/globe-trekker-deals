@@ -115,7 +115,12 @@ export function HebergementView({
       <section className="relative isolate overflow-hidden border-b border-border bg-background">
         <FondAnime variante="hotels" />
 
-        <div className="container-page grid gap-8 py-10 lg:grid-cols-2 lg:items-start lg:py-14">
+        {/*
+          `pb-40 sm:pb-10` : sur une colonne, le formulaire opaque descend
+          jusqu'au bas du héros et masquait toute la skyline. Cette bande lui
+          rend une ligne d'horizon visible sous la carte.
+        */}
+        <div className="container-page grid gap-8 py-10 pb-40 sm:pb-10 lg:grid-cols-2 lg:items-start lg:py-14">
           <div>
             <nav className="text-xs text-muted-foreground" aria-label="Fil d'ariane">
               <Link to="/" className="hover:text-foreground">

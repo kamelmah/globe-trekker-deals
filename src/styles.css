@@ -916,10 +916,6 @@
     .fond-ballon-2 {
       display: none;
     }
-    .fond-ballon-1 {
-      right: 6%;
-      width: 100px;
-    }
     /* Sur une colonne, le titre monte jusqu'en haut du héros : l'astre se range
        plus haut et plus petit, sinon il passe derrière la première ligne. */
     .fond-lune {
@@ -928,14 +924,52 @@
       width: 64px;
       height: 64px;
     }
+    /*
+     * Le voile bas était réglé pour le héros à deux colonnes, où la skyline
+     * s'étend sous le texte. Sur une colonne, le formulaire opaque couvre déjà
+     * tout le milieu : à 85 % de fond, le voile effaçait la bande d'immeubles
+     * qui dépasse sous la carte — le décor devenait invisible.
+     */
+    .fond-voile {
+      background-image: linear-gradient(
+        180deg,
+        transparent 60%,
+        color-mix(in oklab, var(--background) 35%, transparent)
+      );
+    }
+    /*
+     * Montgolfière : même contrainte. Elle monte de 200 px sur grand écran, où
+     * le héros est large et dégagé ; sur téléphone elle sortait par le bas du
+     * cadre et passait derrière le formulaire. Course réduite à sa bande.
+     */
+    .fond-ballon-1 {
+      right: 6%;
+      bottom: 16px;
+      width: 100px;
+      animation-name: fond-ballon-mobile;
+    }
+    @keyframes fond-ballon-mobile {
+      0% {
+        transform: translateY(14px) rotate(-2deg);
+      }
+      50% {
+        transform: translateY(-42px) rotate(2deg);
+      }
+      100% {
+        transform: translateY(14px) rotate(-2deg);
+      }
+    }
+    /* Assez pour que le gris du dernier paragraphe reste lisible s'il croise
+       l'enveloppe, pas assez pour effacer la montgolfière. */
     .fond-voile-mobile {
       display: block;
       position: absolute;
       inset: 0;
       background-image: linear-gradient(
         180deg,
-        transparent 45%,
-        color-mix(in oklab, var(--background) 72%, transparent)
+        transparent 55%,
+        color-mix(in oklab, var(--background) 38%, transparent) 80%,
+        transparent
       );
     }
   }

@@ -164,7 +164,9 @@ function BudgetPage() {
           sans destination choisie. Le décor le dit avant le texte. */}
       <section className="relative isolate overflow-hidden border-b border-border">
         <FondAnime variante="budget" />
-        <div className="container-page py-10">
+        {/* `pb-40 sm:pb-10` : sur une colonne, la montgolfière n'avait plus
+            que quelques pixels sous le dernier paragraphe et sortait du cadre. */}
+        <div className="container-page py-10 pb-40 sm:pb-10">
           <h1 className="font-display">
             Mode budget : où partir de {originAirport?.city ?? search.origin} avec{" "}
             {format(search["budget"])}
