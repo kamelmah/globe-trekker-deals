@@ -5,7 +5,7 @@
  * n'existe plus depuis la migration vers Netlify. Deux variables suffisent :
  *
  *   RESEND_API_KEY     clé `re_…` créée sur resend.com
- *   ALERTS_FROM_EMAIL  expéditeur sur le domaine vérifié (alertes@trouvemonvol.fr)
+ *   ALERTS_FROM_EMAIL  expéditeur sur le domaine vérifié chez Resend
  *
  * Server-only : ne jamais importer depuis un composant client.
  */
