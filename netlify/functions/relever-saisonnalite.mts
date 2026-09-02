@@ -17,9 +17,13 @@
  * Le plafond de sous-requêtes de Cloudflare, qui limitait à 3 routes, n'existe
  * pas ici. C'est le gain principal du déménagement pour cette tâche.
  *
- * COUVERTURE. 128 routes ÷ 24 = 6 passages. La planification en prévoit 7, de
- * minuit à 6 h le 1er du mois : 168 créneaux pour 128 routes, soit une marge
- * d'un passage entier en cas d'échec. Environ 2 000 appels tarifaires par mois.
+ * COUVERTURE. 128 routes ÷ 24 = 6 passages. Un passage par nuit, à 3 h : la
+ * totalité des routes est relevée tous les six jours, et chaque page /vols
+ * affiche une saisonnalité datée de moins d'une semaine. C'est cette section,
+ * calculée depuis les relevés du trajet, qui distingue réellement deux pages
+ * d'une même origine — l'ancienne planification (7 passages le 1er du mois)
+ * laissait les pages sans donnée jusqu'à un mois après leur création.
+ * Environ 8 600 appels tarifaires par mois (24 routes × 12 mois × 30 nuits).
  *
  * REPRISE. Les routes sont choisies par ancienneté de relevé, sans curseur : un
  * passage interrompu ne laisse aucun état à réparer, le suivant reprend les
@@ -58,5 +62,5 @@ export default async () => {
 
 export const config = {
   name: "relever-saisonnalite",
-  schedule: "0 0-6 1 * *",
+  schedule: "0 3 * * *",
 };
