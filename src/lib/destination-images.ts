@@ -135,34 +135,184 @@ import vieWebp from "@/assets/dest/vie.webp";
 import vieThumb from "@/assets/dest/vie-thumb.jpg";
 import vieThumbWebp from "@/assets/dest/vie-thumb.webp";
 
-export type DestinationImage = { src: string; webp: string; thumb: string; thumbWebp: string; alt: string };
+export type DestinationImage = {
+  src: string;
+  webp: string;
+  thumb: string;
+  thumbWebp: string;
+  alt: string;
+};
 
 /** Visuels curés par code IATA de ville. Fallback générique sinon. */
 const BY_CODE: Record<string, DestinationImage> = {
-  RAK: { src: rak, webp: rakWebp, thumb: rakThumb, thumbWebp: rakThumbWebp, alt: "Minaret de la Koutoubia et toits ocre de la médina de Marrakech au coucher du soleil" },
-  LIS: { src: lis, webp: lisWebp, thumb: lisThumb, thumbWebp: lisThumbWebp, alt: "Tramway jaune dans une rue en pente de Lisbonne avec vue sur le Tage" },
-  BCN: { src: bcn, webp: bcnWebp, thumb: bcnThumb, thumbWebp: bcnThumbWebp, alt: "Sagrada Familia et toits de Barcelone face à la mer Méditerranée" },
-  NYC: { src: nyc, webp: nycWebp, thumb: nycThumb, thumbWebp: nycThumbWebp, alt: "Skyline de Manhattan à New York au coucher du soleil depuis Brooklyn" },
-  IST: { src: ist, webp: istWebp, thumb: istThumb, thumbWebp: istThumbWebp, alt: "Mosquées et bateaux sur le Bosphore à Istanbul au crépuscule" },
-  ROM: { src: rom, webp: romWebp, thumb: romThumb, thumbWebp: romThumbWebp, alt: "Colisée de Rome illuminé par la lumière dorée du soir" },
-  ATH: { src: ath, webp: athWebp, thumb: athThumb, thumbWebp: athThumbWebp, alt: "Acropole et Parthénon surplombant les maisons blanches d'Athènes" },
-  MAD: { src: mad, webp: madWebp, thumb: madThumb, thumbWebp: madThumbWebp, alt: "Architecture historique du centre de Madrid sous un ciel bleu" },
-  PRG: { src: prg, webp: prgWebp, thumb: prgThumb, thumbWebp: prgThumbWebp, alt: "Château de Prague et pont sur la Vltava à l'aube" },
-  BUD: { src: bud, webp: budWebp, thumb: budThumb, thumbWebp: budThumbWebp, alt: "Parlement de Budapest illuminé au bord du Danube" },
-  OPO: { src: opo, webp: opoWebp, thumb: opoThumb, thumbWebp: opoThumbWebp, alt: "Maisons colorées du quartier de la Ribeira à Porto au bord du Douro" },
-  CMN: { src: cmn, webp: cmnWebp, thumb: cmnThumb, thumbWebp: cmnThumbWebp, alt: "Mosquée Hassan II de Casablanca au bord de l'océan Atlantique" },
-  BKK: { src: bkk, webp: bkkWebp, thumb: bkkThumb, thumbWebp: bkkThumbWebp, alt: "Temple Wat Arun de Bangkok au coucher du soleil sur le fleuve Chao Phraya" },
-  DXB: { src: dxb, webp: dxbWebp, thumb: dxbThumb, thumbWebp: dxbThumbWebp, alt: "Burj Khalifa et gratte-ciels de Dubaï à l'heure dorée" },
-  TYO: { src: tyo, webp: tyoWebp, thumb: tyoThumb, thumbWebp: tyoThumbWebp, alt: "Temple japonais, cerisiers en fleurs et mont Fuji au-dessus de Tokyo" },
-  ALG: { src: alg, webp: algWebp, thumb: algThumb, thumbWebp: algThumbWebp, alt: "Front de mer blanc de la baie d'Alger sur la Méditerranée" },
-  LON: { src: lon, webp: lonWebp, thumb: lonThumb, thumbWebp: lonThumbWebp, alt: "Tower Bridge enjambant la Tamise à Londres à l'heure dorée" },
-  AMS: { src: ams, webp: amsWebp, thumb: amsThumb, thumbWebp: amsThumbWebp, alt: "Canal d'Amsterdam bordé de maisons à pignons et vélos sur un pont" },
-  MIL: { src: mil, webp: milWebp, thumb: milThumb, thumbWebp: milThumbWebp, alt: "Façade de marbre du Duomo de Milan et sa piazza au coucher du soleil" },
-  BER: { src: ber, webp: berWebp, thumb: berThumb, thumbWebp: berThumbWebp, alt: "Porte de Brandebourg illuminée et tour de télévision de Berlin au crépuscule" },
-  VIE: { src: vie, webp: vieWebp, thumb: vieThumb, thumbWebp: vieThumbWebp, alt: "Palais de Schönbrunn à Vienne et ses jardins baroques fleuris" },
-  SVQ: { src: svq, webp: svqWebp, thumb: svqThumb, thumbWebp: svqThumbWebp, alt: "Arcades et ponts de céramique de la Plaza de España à Séville au soleil du soir" },
-  CPH: { src: cph, webp: cphWebp, thumb: cphThumb, thumbWebp: cphThumbWebp, alt: "Maisons colorées et voiliers en bois du port de Nyhavn à Copenhague" },
-  TUN: { src: tun, webp: tunWebp, thumb: tunThumb, thumbWebp: tunThumbWebp, alt: "Maisons blanches et bleues de Sidi Bou Saïd près de Tunis face à la mer" },
+  RAK: {
+    src: rak,
+    webp: rakWebp,
+    thumb: rakThumb,
+    thumbWebp: rakThumbWebp,
+    alt: "Minaret de la Koutoubia et toits ocre de la médina de Marrakech au coucher du soleil",
+  },
+  LIS: {
+    src: lis,
+    webp: lisWebp,
+    thumb: lisThumb,
+    thumbWebp: lisThumbWebp,
+    alt: "Tramway jaune dans une rue en pente de Lisbonne avec vue sur le Tage",
+  },
+  BCN: {
+    src: bcn,
+    webp: bcnWebp,
+    thumb: bcnThumb,
+    thumbWebp: bcnThumbWebp,
+    alt: "Sagrada Familia et toits de Barcelone face à la mer Méditerranée",
+  },
+  NYC: {
+    src: nyc,
+    webp: nycWebp,
+    thumb: nycThumb,
+    thumbWebp: nycThumbWebp,
+    alt: "Skyline de Manhattan à New York au coucher du soleil depuis Brooklyn",
+  },
+  IST: {
+    src: ist,
+    webp: istWebp,
+    thumb: istThumb,
+    thumbWebp: istThumbWebp,
+    alt: "Mosquées et bateaux sur le Bosphore à Istanbul au crépuscule",
+  },
+  ROM: {
+    src: rom,
+    webp: romWebp,
+    thumb: romThumb,
+    thumbWebp: romThumbWebp,
+    alt: "Colisée de Rome illuminé par la lumière dorée du soir",
+  },
+  ATH: {
+    src: ath,
+    webp: athWebp,
+    thumb: athThumb,
+    thumbWebp: athThumbWebp,
+    alt: "Acropole et Parthénon surplombant les maisons blanches d'Athènes",
+  },
+  MAD: {
+    src: mad,
+    webp: madWebp,
+    thumb: madThumb,
+    thumbWebp: madThumbWebp,
+    alt: "Architecture historique du centre de Madrid sous un ciel bleu",
+  },
+  PRG: {
+    src: prg,
+    webp: prgWebp,
+    thumb: prgThumb,
+    thumbWebp: prgThumbWebp,
+    alt: "Château de Prague et pont sur la Vltava à l'aube",
+  },
+  BUD: {
+    src: bud,
+    webp: budWebp,
+    thumb: budThumb,
+    thumbWebp: budThumbWebp,
+    alt: "Parlement de Budapest illuminé au bord du Danube",
+  },
+  OPO: {
+    src: opo,
+    webp: opoWebp,
+    thumb: opoThumb,
+    thumbWebp: opoThumbWebp,
+    alt: "Maisons colorées du quartier de la Ribeira à Porto au bord du Douro",
+  },
+  CMN: {
+    src: cmn,
+    webp: cmnWebp,
+    thumb: cmnThumb,
+    thumbWebp: cmnThumbWebp,
+    alt: "Mosquée Hassan II de Casablanca au bord de l'océan Atlantique",
+  },
+  BKK: {
+    src: bkk,
+    webp: bkkWebp,
+    thumb: bkkThumb,
+    thumbWebp: bkkThumbWebp,
+    alt: "Temple Wat Arun de Bangkok au coucher du soleil sur le fleuve Chao Phraya",
+  },
+  DXB: {
+    src: dxb,
+    webp: dxbWebp,
+    thumb: dxbThumb,
+    thumbWebp: dxbThumbWebp,
+    alt: "Burj Khalifa et gratte-ciels de Dubaï à l'heure dorée",
+  },
+  TYO: {
+    src: tyo,
+    webp: tyoWebp,
+    thumb: tyoThumb,
+    thumbWebp: tyoThumbWebp,
+    alt: "Temple japonais, cerisiers en fleurs et mont Fuji au-dessus de Tokyo",
+  },
+  ALG: {
+    src: alg,
+    webp: algWebp,
+    thumb: algThumb,
+    thumbWebp: algThumbWebp,
+    alt: "Front de mer blanc de la baie d'Alger sur la Méditerranée",
+  },
+  LON: {
+    src: lon,
+    webp: lonWebp,
+    thumb: lonThumb,
+    thumbWebp: lonThumbWebp,
+    alt: "Tower Bridge enjambant la Tamise à Londres à l'heure dorée",
+  },
+  AMS: {
+    src: ams,
+    webp: amsWebp,
+    thumb: amsThumb,
+    thumbWebp: amsThumbWebp,
+    alt: "Canal d'Amsterdam bordé de maisons à pignons et vélos sur un pont",
+  },
+  MIL: {
+    src: mil,
+    webp: milWebp,
+    thumb: milThumb,
+    thumbWebp: milThumbWebp,
+    alt: "Façade de marbre du Duomo de Milan et sa piazza au coucher du soleil",
+  },
+  BER: {
+    src: ber,
+    webp: berWebp,
+    thumb: berThumb,
+    thumbWebp: berThumbWebp,
+    alt: "Porte de Brandebourg illuminée et tour de télévision de Berlin au crépuscule",
+  },
+  VIE: {
+    src: vie,
+    webp: vieWebp,
+    thumb: vieThumb,
+    thumbWebp: vieThumbWebp,
+    alt: "Palais de Schönbrunn à Vienne et ses jardins baroques fleuris",
+  },
+  SVQ: {
+    src: svq,
+    webp: svqWebp,
+    thumb: svqThumb,
+    thumbWebp: svqThumbWebp,
+    alt: "Arcades et ponts de céramique de la Plaza de España à Séville au soleil du soir",
+  },
+  CPH: {
+    src: cph,
+    webp: cphWebp,
+    thumb: cphThumb,
+    thumbWebp: cphThumbWebp,
+    alt: "Maisons colorées et voiliers en bois du port de Nyhavn à Copenhague",
+  },
+  TUN: {
+    src: tun,
+    webp: tunWebp,
+    thumb: tunThumb,
+    thumbWebp: tunThumbWebp,
+    alt: "Maisons blanches et bleues de Sidi Bou Saïd près de Tunis face à la mer",
+  },
 };
 
 const BY_CITY: Record<string, DestinationImage> = {
@@ -202,11 +352,7 @@ const BY_CITY: Record<string, DestinationImage> = {
 };
 
 function normalize(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .trim()
-    .toLowerCase();
+  return value.normalize("NFD").replace(/[̀-ͯ]/g, "").trim().toLowerCase();
 }
 
 /**
@@ -218,18 +364,80 @@ function normalize(value: string): string {
 type Scene = { src: string; webp: string; thumb: string; thumbWebp: string; description: string };
 
 const SCENES: Record<string, Scene> = {
-  oldtown: { src: genericOldTown, webp: genericOldTownWebp, thumb: genericOldTownThumb, thumbWebp: genericOldTownThumbWebp, description: "ruelle pavée bordée de façades colorées d'un centre historique européen" },
-  coast: { src: genericCoast, webp: genericCoastWebp, thumb: genericCoastThumb, thumbWebp: genericCoastThumbWebp, description: "port méditerranéen aux eaux turquoise et aux toits de tuiles" },
-  harbour: { src: genericHarbour, webp: genericHarbourWebp, thumb: genericHarbourThumb, thumbWebp: genericHarbourThumbWebp, description: "quartier portuaire d'Europe du Nord, canal et bateaux amarrés" },
-  mountain: { src: genericMountain, webp: genericMountainWebp, thumb: genericMountainThumb, thumbWebp: genericMountainThumbWebp, description: "vallée verdoyante dominée par des sommets enneigés" },
-  lake: { src: genericLake, webp: genericLakeWebp, thumb: genericLakeThumb, thumbWebp: genericLakeThumbWebp, description: "lac au lever du soleil au milieu de collines" },
-  skyline: { src: genericSkyline, webp: genericSkylineWebp, thumb: genericSkylineThumb, thumbWebp: genericSkylineThumbWebp, description: "skyline de gratte-ciels au crépuscule au bord de l'eau" },
-  medina: { src: genericMedina, webp: genericMedinaWebp, thumb: genericMedinaThumb, thumbWebp: genericMedinaThumbWebp, description: "ruelle voûtée aux murs ocre éclairée par des lanternes" },
-  tropical: { src: genericTropical, webp: genericTropicalWebp, thumb: genericTropicalThumb, thumbWebp: genericTropicalThumbWebp, description: "plage de sable blanc bordée de cocotiers et de lagon turquoise" },
-  nightcity: { src: genericNightCity, webp: genericNightCityWebp, thumb: genericNightCityThumb, thumbWebp: genericNightCityThumbWebp, description: "avenue animée d'une grande ville asiatique illuminée de néons" },
+  oldtown: {
+    src: genericOldTown,
+    webp: genericOldTownWebp,
+    thumb: genericOldTownThumb,
+    thumbWebp: genericOldTownThumbWebp,
+    description: "ruelle pavée bordée de façades colorées d'un centre historique européen",
+  },
+  coast: {
+    src: genericCoast,
+    webp: genericCoastWebp,
+    thumb: genericCoastThumb,
+    thumbWebp: genericCoastThumbWebp,
+    description: "port méditerranéen aux eaux turquoise et aux toits de tuiles",
+  },
+  harbour: {
+    src: genericHarbour,
+    webp: genericHarbourWebp,
+    thumb: genericHarbourThumb,
+    thumbWebp: genericHarbourThumbWebp,
+    description: "quartier portuaire d'Europe du Nord, canal et bateaux amarrés",
+  },
+  mountain: {
+    src: genericMountain,
+    webp: genericMountainWebp,
+    thumb: genericMountainThumb,
+    thumbWebp: genericMountainThumbWebp,
+    description: "vallée verdoyante dominée par des sommets enneigés",
+  },
+  lake: {
+    src: genericLake,
+    webp: genericLakeWebp,
+    thumb: genericLakeThumb,
+    thumbWebp: genericLakeThumbWebp,
+    description: "lac au lever du soleil au milieu de collines",
+  },
+  skyline: {
+    src: genericSkyline,
+    webp: genericSkylineWebp,
+    thumb: genericSkylineThumb,
+    thumbWebp: genericSkylineThumbWebp,
+    description: "skyline de gratte-ciels au crépuscule au bord de l'eau",
+  },
+  medina: {
+    src: genericMedina,
+    webp: genericMedinaWebp,
+    thumb: genericMedinaThumb,
+    thumbWebp: genericMedinaThumbWebp,
+    description: "ruelle voûtée aux murs ocre éclairée par des lanternes",
+  },
+  tropical: {
+    src: genericTropical,
+    webp: genericTropicalWebp,
+    thumb: genericTropicalThumb,
+    thumbWebp: genericTropicalThumbWebp,
+    description: "plage de sable blanc bordée de cocotiers et de lagon turquoise",
+  },
+  nightcity: {
+    src: genericNightCity,
+    webp: genericNightCityWebp,
+    thumb: genericNightCityThumb,
+    thumbWebp: genericNightCityThumbWebp,
+    description: "avenue animée d'une grande ville asiatique illuminée de néons",
+  },
 };
 
-const SCENE_KEYS = Object.keys(SCENES);
+/**
+ * Ambiances utilisables quand le pays est inconnu.
+ *
+ * « nightcity », « tropical » et « medina » sont trop marquees geographiquement
+ * pour etre attribuees au hasard : une page Marseille - Annaba affichait une
+ * avenue asiatique aux neons parce que le pays n etait pas transmis. Ces trois
+ * scenes ne sortent donc que d une correspondance explicite avec le pays.
+ */
+const SCENES_NEUTRES = ["oldtown", "coast", "harbour", "lake", "mountain"];
 
 /** Ambiances alternatives cohérentes avec une ambiance régionale donnée. */
 const SCENE_VARIANTS: Record<string, string[]> = {
@@ -247,52 +455,142 @@ const SCENE_VARIANTS: Record<string, string[]> = {
 /** Scène privilégiée selon le pays (français ou anglais, sans accents). */
 const SCENE_BY_COUNTRY: Record<string, string> = {
   // Bassin méditerranéen
-  espagne: "coast", spain: "coast", italie: "coast", italy: "coast",
-  grece: "coast", greece: "coast", portugal: "coast", croatie: "coast",
-  croatia: "coast", chypre: "coast", cyprus: "coast", malte: "coast", malta: "coast",
+  espagne: "coast",
+  spain: "coast",
+  italie: "coast",
+  italy: "coast",
+  grece: "coast",
+  greece: "coast",
+  portugal: "coast",
+  croatie: "coast",
+  croatia: "coast",
+  chypre: "coast",
+  cyprus: "coast",
+  malte: "coast",
+  malta: "coast",
   // Villes historiques d'Europe centrale et de l'Ouest
-  france: "oldtown", allemagne: "oldtown", germany: "oldtown",
-  autriche: "oldtown", austria: "oldtown", "republique tcheque": "oldtown",
-  hongrie: "oldtown", hungary: "oldtown", pologne: "oldtown", poland: "oldtown",
-  roumanie: "oldtown", romania: "oldtown", bulgarie: "oldtown", bulgaria: "oldtown",
-  serbie: "oldtown", slovaquie: "oldtown", slovenie: "oldtown", belgique: "oldtown",
-  belgium: "oldtown", luxembourg: "oldtown",
+  france: "oldtown",
+  allemagne: "oldtown",
+  germany: "oldtown",
+  autriche: "oldtown",
+  austria: "oldtown",
+  "republique tcheque": "oldtown",
+  hongrie: "oldtown",
+  hungary: "oldtown",
+  pologne: "oldtown",
+  poland: "oldtown",
+  roumanie: "oldtown",
+  romania: "oldtown",
+  bulgarie: "oldtown",
+  bulgaria: "oldtown",
+  serbie: "oldtown",
+  slovaquie: "oldtown",
+  slovenie: "oldtown",
+  belgique: "oldtown",
+  belgium: "oldtown",
+  luxembourg: "oldtown",
   // Europe du Nord
-  "royaume-uni": "harbour", "united kingdom": "harbour", irlande: "harbour",
-  ireland: "harbour", "pays-bas": "harbour", netherlands: "harbour",
-  danemark: "harbour", denmark: "harbour", suede: "harbour", sweden: "harbour",
-  norvege: "harbour", norway: "harbour", finlande: "harbour", finland: "harbour",
-  estonie: "harbour", lettonie: "harbour", lituanie: "harbour", islande: "harbour",
+  "royaume-uni": "harbour",
+  "united kingdom": "harbour",
+  irlande: "harbour",
+  ireland: "harbour",
+  "pays-bas": "harbour",
+  netherlands: "harbour",
+  danemark: "harbour",
+  denmark: "harbour",
+  suede: "harbour",
+  sweden: "harbour",
+  norvege: "harbour",
+  norway: "harbour",
+  finlande: "harbour",
+  finland: "harbour",
+  estonie: "harbour",
+  lettonie: "harbour",
+  lituanie: "harbour",
+  islande: "harbour",
   // Montagnes
-  suisse: "mountain", switzerland: "mountain",
+  suisse: "mountain",
+  switzerland: "mountain",
   // Afrique du Nord et Moyen-Orient
-  maroc: "medina", morocco: "medina", tunisie: "medina", tunisia: "medina",
-  algerie: "medina", algeria: "medina", egypte: "medina", egypt: "medina",
-  jordanie: "medina", jordan: "medina", turquie: "medina", turkey: "medina",
-  israel: "medina", liban: "medina",
-  "emirats arabes unis": "skyline", "united arab emirates": "skyline",
-  qatar: "skyline", "arabie saoudite": "skyline", oman: "medina", bahrein: "skyline",
+  maroc: "medina",
+  morocco: "medina",
+  tunisie: "medina",
+  tunisia: "medina",
+  algerie: "medina",
+  algeria: "medina",
+  egypte: "medina",
+  egypt: "medina",
+  jordanie: "medina",
+  jordan: "medina",
+  turquie: "medina",
+  turkey: "medina",
+  israel: "medina",
+  liban: "medina",
+  "emirats arabes unis": "skyline",
+  "united arab emirates": "skyline",
+  qatar: "skyline",
+  "arabie saoudite": "skyline",
+  oman: "medina",
+  bahrein: "skyline",
   // Amériques
-  "etats-unis": "skyline", "united states": "skyline", canada: "skyline",
-  mexique: "tropical", mexico: "tropical", bresil: "tropical", brazil: "tropical",
-  cuba: "tropical", "republique dominicaine": "tropical",
-  argentine: "skyline", argentina: "skyline", chili: "mountain", chile: "mountain",
-  perou: "mountain", peru: "mountain", colombie: "mountain", colombia: "mountain",
+  "etats-unis": "skyline",
+  "united states": "skyline",
+  canada: "skyline",
+  mexique: "tropical",
+  mexico: "tropical",
+  bresil: "tropical",
+  brazil: "tropical",
+  cuba: "tropical",
+  "republique dominicaine": "tropical",
+  argentine: "skyline",
+  argentina: "skyline",
+  chili: "mountain",
+  chile: "mountain",
+  perou: "mountain",
+  peru: "mountain",
+  colombie: "mountain",
+  colombia: "mountain",
   // Asie / Océanie
-  japon: "nightcity", japan: "nightcity", "coree du sud": "nightcity",
-  "south korea": "nightcity", chine: "nightcity", china: "nightcity",
-  "hong kong": "nightcity", taiwan: "nightcity", singapour: "skyline",
-  singapore: "skyline", thailande: "tropical", thailand: "tropical",
-  vietnam: "tropical", indonesie: "tropical", indonesia: "tropical",
-  malaisie: "tropical", malaysia: "tropical", philippines: "tropical",
-  maldives: "tropical", "sri lanka": "tropical", inde: "medina", india: "medina",
-  nepal: "mountain", australie: "coast", australia: "coast",
-  "nouvelle-zelande": "mountain", "new zealand": "mountain",
+  japon: "nightcity",
+  japan: "nightcity",
+  "coree du sud": "nightcity",
+  "south korea": "nightcity",
+  chine: "nightcity",
+  china: "nightcity",
+  "hong kong": "nightcity",
+  taiwan: "nightcity",
+  singapour: "skyline",
+  singapore: "skyline",
+  thailande: "tropical",
+  thailand: "tropical",
+  vietnam: "tropical",
+  indonesie: "tropical",
+  indonesia: "tropical",
+  malaisie: "tropical",
+  malaysia: "tropical",
+  philippines: "tropical",
+  maldives: "tropical",
+  "sri lanka": "tropical",
+  inde: "medina",
+  india: "medina",
+  nepal: "mountain",
+  australie: "coast",
+  australia: "coast",
+  "nouvelle-zelande": "mountain",
+  "new zealand": "mountain",
   // Afrique subsaharienne
-  senegal: "coast", "afrique du sud": "coast", "south africa": "coast",
-  kenya: "lake", tanzanie: "lake", tanzania: "lake", ethiopie: "lake",
-  maurice: "tropical", mauritius: "tropical", seychelles: "tropical",
-  "cap-vert": "tropical", reunion: "tropical",
+  senegal: "coast",
+  "afrique du sud": "coast",
+  "south africa": "coast",
+  kenya: "lake",
+  tanzanie: "lake",
+  tanzania: "lake",
+  ethiopie: "lake",
+  maurice: "tropical",
+  mauritius: "tropical",
+  seychelles: "tropical",
+  "cap-vert": "tropical",
+  reunion: "tropical",
 };
 
 /** Hachage stable d'une chaîne, pour répartir les villes sans pays connu. */
@@ -306,11 +604,17 @@ function genericImage(city?: string | null, country?: string | null): Destinatio
   const hash = hashOf(normalize(city ?? "destination"));
   const regional = country ? SCENE_BY_COUNTRY[normalize(country)] : undefined;
   // Deux ambiances possibles par région : deux villes voisines n'ont pas le même visuel.
-  const pool = regional ? [regional, ...(SCENE_VARIANTS[regional] ?? [])] : SCENE_KEYS;
+  const pool = regional ? [regional, ...(SCENE_VARIANTS[regional] ?? [])] : SCENES_NEUTRES;
   const key = pool[hash % pool.length]!;
   const scene = SCENES[key] ?? SCENES["oldtown"]!;
   const label = city ? `Ambiance de voyage évoquant ${city}` : "Ambiance de voyage";
-  return { src: scene.src, webp: scene.webp, thumb: scene.thumb, thumbWebp: scene.thumbWebp, alt: `${label} : ${scene.description}` };
+  return {
+    src: scene.src,
+    webp: scene.webp,
+    thumb: scene.thumb,
+    thumbWebp: scene.thumbWebp,
+    alt: `${label} : ${scene.description}`,
+  };
 }
 
 /** Retourne un visuel pour une destination (code IATA, nom de ville, pays). */
@@ -328,5 +632,11 @@ export function getDestinationImage(
     if (hit) return hit;
   }
   if (city || country) return genericImage(city, country);
-  return { src: defaultImg, webp: defaultImgWebp, thumb: defaultImgThumb, thumbWebp: defaultImgThumbWebp, alt: "Destination de voyage — panorama urbain à l'heure dorée" };
+  return {
+    src: defaultImg,
+    webp: defaultImgWebp,
+    thumb: defaultImgThumb,
+    thumbWebp: defaultImgThumbWebp,
+    alt: "Destination de voyage — panorama urbain à l'heure dorée",
+  };
 }

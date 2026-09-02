@@ -131,7 +131,7 @@ function CitySidePanel({
   destination: DestinationRoute;
   price: GuidePriceSnapshot;
 }) {
-  const image = getDestinationImage(destination.destination, guide.city);
+  const image = getDestinationImage(destination.destination, guide.city, destination.country);
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <ResponsivePicture

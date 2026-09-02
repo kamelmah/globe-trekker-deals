@@ -244,7 +244,7 @@ const formatObservedDate = formatDateTimeLong;
 
 function DestinationPage() {
   const { route, lowestObserved, lowestObservedAt, related, saison } = Route.useLoaderData();
-  const banner = getDestinationImage(route.destination, route.destinationCity);
+  const banner = getDestinationImage(route.destination, route.destinationCity, route.country);
   const guide = guideForRoutePage(route.slug, route.destination);
   // Le graphique et la phrase de saisonnalité partagent la même donnée : ce
   // sont deux vues d'un seul relevé, pas deux fonctionnalités.
