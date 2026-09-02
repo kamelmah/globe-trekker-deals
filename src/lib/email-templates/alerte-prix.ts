@@ -84,6 +84,9 @@ export function buildAlertePrixEmail(input: AlertePrixInput): {
     ? "Aller-retour par personne, taxes incluses."
     : "Aller simple par personne, taxes incluses.";
   const subject = `${route} à ${newPrice} : le prix a baissé`;
+  // Image servie par le site lui-même (public/email/), jamais par un CDN tiers :
+  // une image hébergée hors du domaine d'envoi est un signal de spam.
+  const logoUrl = `${input.siteUrl.replace(/\/$/, "")}/email/logo-160.png`;
 
   const detailRows = details
     .map(
@@ -111,10 +114,19 @@ export function buildAlertePrixEmail(input: AlertePrixInput): {
 <tr><td align="center" style="padding:32px 16px;">
   <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
 
-    <!-- En-tête -->
+    <!-- En-tête : logo + nom, hébergés sur le domaine d'envoi -->
     <tr><td style="padding:0 8px 16px;">
       <a href="${escapeHtml(input.siteUrl)}" style="text-decoration:none;">
-        <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:20px;font-weight:800;color:${BLEU};letter-spacing:-0.3px;">TrouveMonVol</span>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="vertical-align:middle;padding-right:10px;">
+              <img src="${escapeHtml(logoUrl)}" width="40" height="40" alt="TrouveMonVol" style="display:block;width:40px;height:40px;border:0;">
+            </td>
+            <td style="vertical-align:middle;">
+              <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:20px;font-weight:800;color:${BLEU};letter-spacing:-0.3px;">TrouveMonVol</span>
+            </td>
+          </tr>
+        </table>
       </a>
     </td></tr>
 
