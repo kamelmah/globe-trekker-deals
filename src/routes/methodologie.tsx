@@ -217,7 +217,16 @@ function MethodologiePage() {
           <p className="mt-3">
             Quand vous réservez chez un vendeur après être passé par TrouveMonVol, il nous verse une
             commission d'affiliation, prélevée sur sa marge. Elle ne s'ajoute pas à votre facture et
-            n'influence pas l'ordre des résultats. Une question sur tout cela ?{" "}
+            n'influence pas l'ordre des résultats.
+          </p>
+          <p className="mt-3">
+            Certains liens vers Hotels.com sont des liens partenaires : si vous réservez,
+            TrouveMonVol perçoit une commission de la plateforme, sans modification du prix affiché.
+            Ils sont signalés comme tels partout où ils apparaissent, et n'ouvrent jamais autre
+            chose que la recherche d'hôtels de la ville que vous consultiez.
+          </p>
+          <p className="mt-3">
+            Une question sur tout cela ?{" "}
             <Link to="/contact" className={linkClass}>
               Écrivez-nous
             </Link>

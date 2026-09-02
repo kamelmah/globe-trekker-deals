@@ -4,6 +4,7 @@ import { isGuidePruned } from "@/data/pruned-pages";
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
+import { LienHotelsCom } from "@/components/stay/LienHotelsCom";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { Button } from "@/components/ui/button";
 import { getCityGuide } from "@/data/city-guides";
@@ -281,6 +282,29 @@ function CityGuidePage() {
               className="mt-3 block text-sm font-medium text-primary underline-offset-2 hover:underline"
             >
               Voir la fiche prix {guide.originCity} — {guide.city}
+            </Link>
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-5">
+            <h2 className="font-display text-base font-semibold">Hôtels à {guide.city}</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Le guide dit quels quartiers viser ; nos partenaires de réservation affichent ce
+              qu'une nuit y coûte. Aucune date n'est supposée ici : vous choisissez les vôtres chez
+              eux.
+            </p>
+            <LienHotelsCom
+              className="mt-4"
+              ville={guide.city}
+              sid={`guide-${guide.slug}`}
+              libelle={`Voir les hôtels à ${guide.city}`}
+              mention
+            />
+            <Link
+              to="/hebergement"
+              search={{ ville: guide.city }}
+              className="mt-3 block text-sm font-medium text-primary underline-offset-2 hover:underline"
+            >
+              Voir la carte des hébergements →
             </Link>
           </div>
 

@@ -1,4 +1,6 @@
 import { Link, createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
+
 import { formatDateMedium, formatDateTimeLong } from "@/lib/dates";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
@@ -7,6 +9,7 @@ import { PriceHistoryChart } from "@/components/flights/PriceHistoryChart";
 import { FaqAccordion } from "@/components/site/FaqAccordion";
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { LienHotelsCom } from "@/components/stay/LienHotelsCom";
 import { Stay22Map } from "@/components/stay/Stay22Map";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { Button } from "@/components/ui/button";
@@ -26,7 +29,7 @@ import { formatPrice } from "@/lib/currency";
 import { withPreposition } from "@/lib/french-grammar";
 import { guideForRoutePage } from "@/data/city-guides";
 import { getDestinationImage } from "@/lib/destination-images";
-import { todayPlus } from "@/lib/search-params";
+import { saveLastFlightSearch, todayPlus } from "@/lib/search-params";
 import { SITE_URL, absoluteUrl, destinationOgImage } from "@/lib/site";
 
 export const Route = createFileRoute("/vols/$slug")({
@@ -262,6 +265,26 @@ function DestinationPage() {
   const aeroportEloigne =
     secondaryAirport(route.observedOriginAirport) ??
     secondaryAirport(route.observedDestinationAirport);
+  /** Date de départ du vol relevé — la seule date de séjour que nous connaissions. */
+  const dateSejour = route.observedDepartureAt ? route.observedDepartureAt.slice(0, 10) : "";
+
+  /**
+   * Le trajet consulté devient la « dernière recherche » proposée sur la page
+   * hébergement. Consulter une liaison est une intention de voyage aussi nette
+   * qu'une recherche : sans ça, un visiteur venu de Google sur cette page
+   * arriverait sur /hebergement sans rien de prérempli.
+   */
+  useEffect(() => {
+    saveLastFlightSearch({
+      origin: route.origin,
+      destination: route.destination,
+      depart: dateSejour,
+      retour: "",
+      adultes: 1,
+      enfants: 0,
+      bebes: 0,
+    });
+  }, [route.origin, route.destination, dateSejour]);
 
   return (
     <article className="container-page py-10">
@@ -319,6 +342,47 @@ function DestinationPage() {
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Durée de vol</p>
           <p className="mt-1 text-base font-semibold">{route.averageDuration}</p>
+        </div>
+      </div>
+
+      {/*
+        Hébergement, juste sous le prix du vol : c'est là que la question se
+        pose. Le relevé ne porte qu'une date de DÉPART — un séjour n'a donc pas
+        de fin connue, et Hotels.com ignore une date d'arrivée seule (il
+        retomberait sur la nuit prochaine). Le lien part sans dates, et celui
+        vers notre page hébergement emporte la date connue pour que le visiteur
+        choisisse la seconde chez nous.
+      */}
+      <div className="mt-4 rounded-xl border border-border bg-card p-4">
+        <h2 className="font-display text-base font-semibold">
+          Hôtels à {route.destinationCity}
+          {dateSejour ? `, pour un départ le ${formatDateMedium(dateSejour)}` : ""}
+        </h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Prix par nuit affichés par nos partenaires de réservation, chez qui vous réservez
+          directement.
+        </p>
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
+          <LienHotelsCom
+            className="sm:w-auto sm:min-w-64"
+            ville={route.destinationCity}
+            sid={`vols-${route.slug}`}
+            libelle={`Voir les hôtels à ${route.destinationCity}`}
+            mention
+          />
+          <Button asChild variant="outline" className="sm:mt-0">
+            {/* Rien d'inutile dans l'URL : un paramètre vide serait réécrit par
+                le routeur et coûterait une redirection à chaque clic. */}
+            <Link
+              to="/hebergement"
+              search={{
+                ville: route.destinationCity,
+                ...(dateSejour ? { arrivee: dateSejour } : {}),
+              }}
+            >
+              Voir la carte des hébergements
+            </Link>
+          </Button>
         </div>
       </div>
 
