@@ -223,7 +223,14 @@ function BudgetPage() {
       </div>
 
       <div className="container-page mt-6 grid gap-4 pb-12 lg:grid-cols-[1fr_360px]">
-        <div className="h-[520px] overflow-hidden rounded-xl border border-border bg-card lg:h-[640px]">
+        {/*
+          `isolate` n'est pas décoratif. Sans lui, ce conteneur ne crée aucun
+          contexte d'empilement : les calques Leaflet, qui montent jusqu'à
+          z-index 400, sont alors comparés directement à l'en-tête du site, à 40,
+          et la carte lui passe par-dessus. Isolé, l'empilement interne de la
+          carte reste chez elle et le conteneur reprend sa place dans le flux.
+        */}
+        <div className="isolate h-[520px] overflow-hidden rounded-xl border border-border bg-card lg:h-[640px]">
           <ClientOnly fallback={<Skeleton className="h-full w-full" />}>
             <Suspense fallback={<Skeleton className="h-full w-full" />}>
               <BudgetMap
