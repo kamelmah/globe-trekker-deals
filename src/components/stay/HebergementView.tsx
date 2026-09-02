@@ -63,7 +63,6 @@ export function HebergementView({
   const [arrivee, setArrivee] = useState(search.arrivee ?? "");
   const [depart, setDepart] = useState(search.depart ?? "");
   const [voyageurs, setVoyageurs] = useState(search.voyageurs ?? 1);
-  const [budget, setBudget] = useState("");
 
   /** Ce que la carte montre réellement : mis à jour à la soumission, pas à la frappe. */
   const [carte, setCarte] = useState({
@@ -229,7 +228,13 @@ export function HebergementView({
                 hint="Choisissez le jour où vous libérez la chambre."
               />
 
-              <div className="space-y-1.5">
+              {/*
+                Pas de champ « budget par nuit » : ni la carte ni la recherche
+                du partenaire n'acceptent de plafond de prix que nous puissions
+                leur transmettre. Un champ qui ne filtre rien promet un tri qui
+                n'existe pas.
+              */}
+              <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="voyageurs">Voyageurs</Label>
                 <Input
                   id="voyageurs"
@@ -237,23 +242,11 @@ export function HebergementView({
                   min={1}
                   max={9}
                   inputMode="numeric"
+                  className="sm:max-w-40"
                   value={voyageurs}
                   onChange={(event) =>
                     setVoyageurs(Math.min(9, Math.max(1, Number(event.target.value) || 1)))
                   }
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="budget-nuit">Budget par nuit (facultatif, en €)</Label>
-                <Input
-                  id="budget-nuit"
-                  type="number"
-                  min={0}
-                  inputMode="numeric"
-                  placeholder="Ex. 80"
-                  value={budget}
-                  onChange={(event) => setBudget(event.target.value)}
                 />
               </div>
             </div>
@@ -300,12 +293,6 @@ export function HebergementView({
             title={`Hôtels à ${carte.ville}${titreDates}`}
             description="Prix par nuit affichés par nos partenaires de réservation."
           />
-          {budget.trim() !== "" && Number(budget) > 0 && (
-            <p className="text-xs text-muted-foreground">
-              Votre repère de budget : {format(Number(budget))} par nuit. La carte affiche tous les
-              tarifs de nos partenaires — nous ne filtrons pas leur liste, à vous de comparer.
-            </p>
-          )}
         </div>
       </div>
 
