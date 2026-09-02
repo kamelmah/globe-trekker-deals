@@ -2,6 +2,7 @@ import { fetchOffers } from "@/lib/travelpayouts.server";
 import { logOps } from "@/lib/ops-log.server";
 import { cityLabel } from "@/data/airports";
 import { formatPrice } from "@/lib/currency";
+import { isEmailConfigured, sendEmail } from "@/lib/resend.server";
 
 export type AlertInput = {
   email: string;
@@ -26,7 +27,8 @@ async function resolveReferencePrice(input: AlertInput): Promise<number | null> 
   if (typeof input.referencePrice === "number" && input.referencePrice > 0) {
     return input.referencePrice;
   }
-  const departureAt = input.departDate ?? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
+  const departureAt =
+    input.departDate ?? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
   try {
     const { offers } = await fetchOffers({
       origin: input.origin.toUpperCase(),
@@ -150,39 +152,83 @@ async function sendDropEmail(params: {
   unsubscribeToken: string;
   bookingUrl: string;
   siteUrl: string;
-}): Promise<void> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  const from = process.env["ALERTS_FROM_EMAIL"];
+}): Promise<boolean> {
   const route = `${cityLabel(params.origin)} — ${cityLabel(params.destination)}`;
   const subject = `Le prix baisse sur ${route} : ${formatPrice(params.newPrice)}`;
+  const unsubscribeUrl = `${params.siteUrl}/alertes/desinscription?token=${params.unsubscribeToken}`;
   const html = `
     <div style="font-family:system-ui,sans-serif;color:#0f172a;max-width:520px">
       <h1 style="font-size:20px">Bonne nouvelle : le prix a baissé</h1>
       <p>Sur le trajet <strong>${route}</strong>, le prix le plus bas est passé de
         ${formatPrice(params.oldPrice)} à <strong>${formatPrice(params.newPrice)}</strong>.</p>
-      <p><a href="${params.bookingUrl}" style="background:#0b6bcb;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Voir l'offre</a></p>
+      <p><a href="${params.bookingUrl}" style="background:#1B6FD0;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Voir l'offre</a></p>
       <p style="font-size:12px;color:#64748b">Prix indicatif au moment de la vérification, taxes incluses.
         Nous ne prenons aucune commission supplémentaire sur votre réservation.</p>
       <p style="font-size:12px;color:#64748b">
-        <a href="${params.siteUrl}/alertes/desinscription?token=${params.unsubscribeToken}">Ne plus recevoir d'alerte sur ce trajet</a>
+        <a href="${unsubscribeUrl}">Ne plus recevoir d'alerte sur ce trajet</a>
       </p>
     </div>`;
+  const text =
+    `Bonne nouvelle : le prix a baissé sur ${route}.\n` +
+    `Le prix le plus bas est passé de ${formatPrice(params.oldPrice)} à ${formatPrice(params.newPrice)}.\n\n` +
+    `Voir l'offre : ${params.bookingUrl}\n\n` +
+    `Prix indicatif au moment de la vérification, taxes incluses.\n` +
+    `Ne plus recevoir d'alerte sur ce trajet : ${unsubscribeUrl}`;
 
-  if (!apiKey || !from) {
-    console.log(`[alerte prix] ${params.email} — ${subject} (envoi d'email non configuré)`);
-    return;
+  const logContext = {
+    origin: params.origin,
+    destination: params.destination,
+    oldPrice: params.oldPrice,
+    newPrice: params.newPrice,
+  };
+
+  if (!isEmailConfigured()) {
+    // Sans configuration, on le dit clairement dans les journaux : une alerte
+    // « envoyée » qui n'est jamais partie est le pire des silences.
+    logOps({
+      kind: "alerte",
+      label: "envoi impossible",
+      ok: false,
+      message: "RESEND_API_KEY ou ALERTS_FROM_EMAIL manquante",
+      context: logContext,
+    });
+    return false;
   }
 
-  const res = await fetch("https://api.lovable.dev/v1/emails/send", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({ from, to: [params.email], subject, html }),
-  });
-  if (!res.ok) {
-    console.error(`Envoi d'email en échec [${res.status}]: ${await res.text()}`);
+  const debut = Date.now();
+  try {
+    const result = await sendEmail({ to: params.email, subject, html, text });
+    if (!result.sent) {
+      logOps({
+        kind: "alerte",
+        label: "envoi refusé",
+        ok: false,
+        status: result.status,
+        durationMs: Date.now() - debut,
+        message: result.message,
+        context: logContext,
+      });
+      return false;
+    }
+    logOps({
+      kind: "alerte",
+      label: "envoi réussi",
+      ok: true,
+      resultCount: 1,
+      durationMs: Date.now() - debut,
+      context: { ...logContext, emailId: result.id },
+    });
+    return true;
+  } catch (error) {
+    logOps({
+      kind: "alerte",
+      label: "envoi en échec",
+      ok: false,
+      durationMs: Date.now() - debut,
+      message: error instanceof Error ? error.message : "erreur inconnue",
+      context: logContext,
+    });
+    return false;
   }
 }
 
@@ -228,8 +274,9 @@ export async function runAlertCheck(siteUrl: string): Promise<{
     if (!cheapest) continue;
 
     const previous = Number(alert.last_price);
+    let sent = false;
     if (cheapest.priceEur < previous - 1) {
-      await sendDropEmail({
+      sent = await sendDropEmail({
         email: alert.email,
         origin: alert.origin,
         destination: alert.destination,
@@ -239,13 +286,17 @@ export async function runAlertCheck(siteUrl: string): Promise<{
         bookingUrl: cheapest.bookingUrl,
         siteUrl,
       });
-      notified++;
+      if (sent) notified++;
     }
 
+    // Si l'envoi a échoué, on ne baisse pas le prix de référence : la baisse
+    // sera détectée à nouveau au prochain passage et l'email retenté.
+    const nextPrice =
+      sent || cheapest.priceEur >= previous - 1 ? Math.min(previous, cheapest.priceEur) : previous;
     await db
       .from("price_alerts")
       .update({
-        last_price: Math.min(previous, cheapest.priceEur),
+        last_price: nextPrice,
         last_checked_at: new Date().toISOString(),
       })
       .eq("id", alert.id);
