@@ -252,8 +252,8 @@ const OUTIL_REDACTION = {
       },
       sections: {
         type: "array",
-        minItems: 2,
-        maxItems: 2,
+        // minItems / maxItems retires : l’API les refuse au-dela de 1 sous
+        // strict. Le nombre attendu vit dans la description, et zod le verifie.
         description: "Exactement 2 sections, dans cet ordre.",
         items: {
           type: "object",
@@ -266,8 +266,6 @@ const OUTIL_REDACTION = {
             },
             paragraphs: {
               type: "array",
-              minItems: 2,
-              maxItems: 2,
               description: "Exactement 2 paragraphes, entre 200 et 400 caractères chacun.",
               items: { type: "string", minLength: 200, maxLength: 400 },
             },
