@@ -41,7 +41,8 @@ export default async () => {
     const parTexte = rapport.dureesMs.map((ms) => `${(ms / 1000).toFixed(1)} s`).join(", ");
     console.log(
       `[rediger-routes] ${rapport.traitees} routes · ${rapport.echecs} échecs · ` +
-        `${rapport.restantes} restantes · ${rapport.tokens.toLocaleString("fr-FR")} tokens · ` +
+        `${rapport.restantes} restantes · ${rapport.inputTokens.toLocaleString("fr-FR")} entrée + ` +
+        `${rapport.outputTokens.toLocaleString("fr-FR")} sortie tokens · ` +
         `${parTexte || "aucun texte"} par texte · ${Math.round((Date.now() - debut) / 1000)}s`,
     );
     return new Response(JSON.stringify(rapport), {

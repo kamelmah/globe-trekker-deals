@@ -217,6 +217,63 @@ const editorialSchema = z.object({
 
 export type RouteEditorial = z.infer<typeof editorialSchema>;
 
+/**
+ * Sortie contrainte par un outil plutôt que demandée en texte libre.
+ *
+ * Le format était jusqu'ici décrit dans le prompt, et le modèle ne le
+ * respectait pas : marseille-constantine a été tronqué à 2 500 tokens pour un
+ * JSON attendu autour de 800. Une consigne de longueur en langue naturelle est
+ * une suggestion ; un schéma d'outil est une contrainte que l'API fait
+ * respecter à la génération.
+ *
+ * Les longueurs restent dans les `description` : le schéma impose la forme,
+ * les descriptions guident la rédaction, et zod tranche à l'arrivée.
+ */
+const OUTIL_REDACTION = {
+  name: "rediger_texte",
+  description: "Enregistre le texte éditorial de la page de ce trajet.",
+  input_schema: {
+    type: "object",
+    additionalProperties: false,
+    required: ["metaDescription", "intro", "sections"],
+    properties: {
+      metaDescription: {
+        type: "string",
+        description:
+          "Description meta de la page, entre 120 et 160 caractères. Au-delà, elle est tronquée dans les résultats de recherche.",
+      },
+      intro: {
+        type: "string",
+        description: "Paragraphe d'introduction, entre 200 et 350 caractères.",
+      },
+      sections: {
+        type: "array",
+        description: "Exactement 2 sections, dans cet ordre.",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["heading", "paragraphs"],
+          properties: {
+            heading: {
+              type: "string",
+              description: "Titre de section propre à ce trajet, pas un intitulé générique.",
+            },
+            paragraphs: {
+              type: "array",
+              description: "Exactement 2 paragraphes, entre 200 et 400 caractères chacun.",
+              items: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+  },
+  // Garantit que les arguments reçus valident le schéma. Les prérequis sont
+  // réunis (additionalProperties: false et required à chaque niveau). Si l'API
+  // devait un jour refuser ce champ, le retirer suffit : zod valide déjà.
+  strict: true,
+};
+
 const SYSTEME = [
   "Tu es rédacteur voyage pour un comparateur de vols français.",
   "Ton factuel et concret. Aucun superlatif, aucune formule promotionnelle, aucune exclamation.",
@@ -262,7 +319,9 @@ function promptPour(contexte: EditorialContext): string {
   ].join("\n");
 }
 
-type Rapport = { ok: true; tokens: number; dureeMs: number } | { ok: false; message: string };
+type Rapport =
+  | { ok: true; tokens: number; inputTokens: number; outputTokens: number; dureeMs: number }
+  | { ok: false; message: string };
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -298,7 +357,10 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
     return { ok: false, message: "Trajet non résolu." };
   }
 
-  const echouer = async (message: string): Promise<Rapport> => {
+  const echouer = async (
+    message: string,
+    diagnostic: Record<string, unknown> = {},
+  ): Promise<Rapport> => {
     await noterEchec(slug, message);
     logOps({
       kind: "redaction",
@@ -306,7 +368,7 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
       ok: false,
       durationMs: Date.now() - debut,
       message,
-      context: { model },
+      context: { model, ...diagnostic },
     });
     return { ok: false, message };
   };
@@ -329,6 +391,10 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
         max_tokens: 2500,
         system: SYSTEME,
         messages: [{ role: "user", content: promptPour(contexte) }],
+        tools: [OUTIL_REDACTION],
+        // Choix forcé : le modèle ne peut pas répondre autre chose qu'un appel
+        // à cet outil, donc pas de texte hors JSON ni de balise de code.
+        tool_choice: { type: "tool", name: OUTIL_REDACTION.name },
       }),
     });
   } catch (error) {
@@ -342,38 +408,46 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
   }
 
   const payload = (await response.json()) as {
-    content?: { type?: string; text?: string }[];
+    content?: { type?: string; text?: string; name?: string; input?: unknown }[];
     usage?: { input_tokens?: number; output_tokens?: number };
     stop_reason?: string;
   };
 
-  // Une réponse coupée à max_tokens produit un JSON incomplet : sans ce test, on
-  // la confondrait avec un modèle qui répond mal, et on relancerait à l'identique.
+  // Une réponse coupée à max_tokens produit des arguments incomplets : sans ce
+  // test, on la confondrait avec un modèle qui répond mal, et on relancerait à
+  // l'identique. Le choix forcé devrait rendre le cas très rare — s'il revient,
+  // les extraits ci-dessous diront ce que le modèle fabriquait de si long.
   if (payload.stop_reason === "max_tokens") {
-    return echouer("Réponse tronquée à max_tokens (2500).");
+    const recu = JSON.stringify(payload.content ?? []);
+    return echouer("Réponse tronquée à max_tokens (2500).", {
+      longueurBrute: recu.length,
+      debut: recu.slice(0, 300),
+      fin: recu.slice(-300),
+    });
   }
 
-  const raw = (payload.content ?? [])
-    .filter((bloc) => bloc.type === "text")
-    .map((bloc) => bloc.text ?? "")
-    .join("");
-  const json = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
-
-  let parsed: RouteEditorial;
-  try {
-    const candidat = editorialSchema.safeParse(JSON.parse(json));
-    if (!candidat.success) {
-      const souci = candidat.error.issues[0];
-      return echouer(
-        `Format refusé : ${souci ? `${souci.path.join(".")} — ${souci.message}` : "schéma non respecté"}`,
-      );
-    }
-    parsed = candidat.data;
-  } catch {
-    return echouer("Réponse illisible : JSON invalide.");
+  // Les arguments de l'outil sont déjà un objet : plus de découpe du texte au
+  // premier { et au dernier }, qui échouait dès qu'une accolade traînait dans
+  // une phrase ou qu'une balise de code encadrait la réponse.
+  const appel = (payload.content ?? []).find(
+    (bloc) => bloc.type === "tool_use" && bloc.name === OUTIL_REDACTION.name,
+  );
+  if (!appel || appel.input === undefined) {
+    return echouer("Le modèle n'a pas appelé l'outil de rédaction.");
   }
 
-  const tokens = (payload.usage?.input_tokens ?? 0) + (payload.usage?.output_tokens ?? 0);
+  const candidat = editorialSchema.safeParse(appel.input);
+  if (!candidat.success) {
+    const souci = candidat.error.issues[0];
+    return echouer(
+      `Format refusé : ${souci ? `${souci.path.join(".")} — ${souci.message}` : "schéma non respecté"}`,
+    );
+  }
+  const parsed: RouteEditorial = candidat.data;
+
+  const inputTokens = payload.usage?.input_tokens ?? 0;
+  const outputTokens = payload.usage?.output_tokens ?? 0;
+  const tokens = inputTokens + outputTokens;
   try {
     const db = await admin();
     const { error } = await db.from("route_editorials").upsert(
@@ -411,7 +485,7 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
       outputTokens: payload.usage?.output_tokens ?? 0,
     },
   });
-  return { ok: true, tokens, dureeMs: Date.now() - debut };
+  return { ok: true, tokens, inputTokens, outputTokens, dureeMs: Date.now() - debut };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -463,6 +537,9 @@ export type RedactionReport = {
   echecs: number;
   restantes: number;
   tokens: number;
+  /** Détaillés : c'est la sortie qui coûte cinq fois l'entrée, et qui dérape. */
+  inputTokens: number;
+  outputTokens: number;
   /** Durée de chaque génération réussie, en ms : c'est elle qui décide du
    *  nombre de trajets tenable par passage. */
   dureesMs: number[];
@@ -478,6 +555,8 @@ export async function redigerRoutes(params: { routes: number }): Promise<Redacti
   let traitees = 0;
   let echecs = 0;
   let tokens = 0;
+  let inputTokens = 0;
+  let outputTokens = 0;
   const dureesMs: number[] = [];
 
   for (const slug of routes) {
@@ -485,6 +564,8 @@ export async function redigerRoutes(params: { routes: number }): Promise<Redacti
     if (rapport.ok) {
       traitees += 1;
       tokens += rapport.tokens;
+      inputTokens += rapport.inputTokens;
+      outputTokens += rapport.outputTokens;
       dureesMs.push(rapport.dureeMs);
     } else {
       echecs += 1;
@@ -492,7 +573,7 @@ export async function redigerRoutes(params: { routes: number }): Promise<Redacti
     }
   }
 
-  return { traitees, echecs, restantes, tokens, dureesMs };
+  return { traitees, echecs, restantes, tokens, inputTokens, outputTokens, dureesMs };
 }
 
 /* -------------------------------------------------------------------------- */
