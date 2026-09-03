@@ -574,11 +574,28 @@
     top: 52px;
   }
 
-  /* Sur mobile, l'ensemble (avion + traînées) tombe à 60 % : la même courbe
-     traverse un écran quatre fois plus étroit. */
   @media (max-width: 40rem) {
+    /*
+     * Sur une colonne, l'avion ne traverse plus : il disparaît.
+     *
+     * La courbe du grand écran descend de y=420 à y=40 dans le repère du
+     * héros ; à 390 px elle coupait le chapô — mesuré, 50 x 31 px de
+     * recouvrement sur « Départ, destination, dates… ». Un décor ne passe pas
+     * devant le texte qu'il accompagne.
+     *
+     * Le reloger était la première idée, elle ne tient pas à la mesure : à
+     * 390 px le héros ne laisse que deux bandes libres, 48 px au-dessus du
+     * titre et 32 px entre le chapô et le formulaire, pour un appareil qui
+     * mesure 46 px une fois réduit. Le rapetisser encore n'en ferait qu'une
+     * poussière illisible.
+     *
+     * `display: none` plutôt qu'un rendu conditionnel, comme pour les autres
+     * décors mobiles de ce fichier : le serveur ne connaît pas la largeur de
+     * l'écran, et un élément masqué n'exécute aucune animation — une boucle
+     * infinie de 14 s en moins sur l'appareil qui a le moins de batterie.
+     */
     .avion-anime {
-      scale: 0.6;
+      display: none;
     }
   }
 
@@ -1575,6 +1592,37 @@
     background-color: var(--fa-chute-halo);
   }
 
+  /* ---------------------------------------------------------------------- */
+  /* Confort tactile du formulaire de recherche                              */
+  /*                                                                          */
+  /* Les champs héritent du `h-9` (36 px) des composants partagés. Sur le      */
+  /* formulaire qui EST le produit, et sur un trafic majoritairement mobile,   */
+  /* 36 px est sous le seuil de confort des deux plateformes (44 pt iOS,       */
+  /* 48 dp Android) — la règle WCAG web (24 px) est tenue, mais elle n'est pas */
+  /* le bon repère ici. Relevé à 44 px sous 640 px seulement : le rendu        */
+  /* desktop, lui, ne bouge pas. La case à cocher est exclue, une case de      */
+  /* 44 px paraîtrait cassée.                                                 */
+  /* ---------------------------------------------------------------------- */
+
+  @media (max-width: 40rem) {
+    .form-recherche :is(input:not([type="checkbox"]), button, [role="combobox"]) {
+      min-height: 44px;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Pastilles de confiance du héros                                          */
+  /*                                                                          */
+  /* Elles arrivent après le formulaire, en cascade de gauche à droite, pour   */
+  /* que l'œil les lise dans l'ordre plutôt que d'un bloc. `--rang` est posé   */
+  /* sur chaque pastille par la page ; le retard se calcule ici.               */
+  /* ---------------------------------------------------------------------- */
+
+  .confiance > li {
+    animation: hero-fade-up 420ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(220ms + var(--rang) * 70ms);
+  }
+
   /*
    * Apparition au scroll (sections destinations/guides) : plus discrète que le
    * hero, déclenchée section par section via Intersection Observer plutôt que
@@ -1672,6 +1720,12 @@
       opacity: 1;
       transform: none;
       transition: none;
+    }
+    /* Les pastilles existent hors de leur animation : `backwards` les
+       masquerait avant le retard, il faut donc couper l'animation, pas
+       seulement la durée. */
+    .confiance > li {
+      animation: none;
     }
     .card-in {
       animation: none;

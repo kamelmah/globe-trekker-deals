@@ -133,7 +133,7 @@ export function SearchForm({
   return (
     <form
       onSubmit={(event) => void submit(event)}
-      className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5"
+      className="form-recherche rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5"
       aria-label="Recherche de vols"
     >
       <div className="grid gap-4 md:grid-cols-2">

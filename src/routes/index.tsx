@@ -232,9 +232,20 @@ function HomePage() {
             />
           </div>
 
-          <ul className="mt-7 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground sm:text-sm">
-            {CONFIANCE.map((point) => (
-              <li key={point} className="inline-flex items-center gap-1.5">
+          {/*
+            Ces quatre points sont l'argument de vente face aux gros
+            comparateurs. Ils étaient rendus dans la plus petite et la plus
+            pâle des typographies de la page : la promesse qui différencie le
+            site était l'élément le moins visible du héros. Passés en
+            pastilles, sur la couleur de texte courante.
+          */}
+          <ul className="confiance mt-7 flex flex-wrap justify-center gap-2">
+            {CONFIANCE.map((point, i) => (
+              <li
+                key={point}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/70 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm sm:text-sm"
+                style={{ '--rang': i } as React.CSSProperties}
+              >
                 <Check className="size-4 shrink-0 text-primary" aria-hidden />
                 {point}
               </li>
