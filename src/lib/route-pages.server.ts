@@ -467,7 +467,11 @@ export async function listRelatedRoutes(params: {
   origin: string;
   originCity: string;
   exclude?: string | undefined;
-  /** Pays de la destination affichée : c'est lui qui donne la priorité 1. */
+  /**
+   * Pays de la destination affichée : c'est lui qui donne la priorité 1.
+   * Le code IATA de cette destination, lui, arrive par `exclude` — c'est la
+   * ville dont on mesure la proximité, et celle qu'on retire de la liste.
+   */
   country?: string | undefined;
   limit?: number | undefined;
 }): Promise<RelatedRoute[]> {
@@ -513,7 +517,7 @@ export async function listRelatedRoutes(params: {
       country: route.country,
       priceEur: observed.get(route.destination) ?? null,
     })),
-    { destinationCountry: params.country ?? null, limit },
+    { destinationCountry: params.country ?? null, destinationCode: params.exclude ?? null, limit },
   );
 }
 

@@ -147,6 +147,8 @@ import vieWebp from "@/assets/dest/vie.webp";
 import vieThumb from "@/assets/dest/vie-thumb.jpg";
 import vieThumbWebp from "@/assets/dest/vie-thumb.webp";
 
+import { cityPhotoAlt } from "@/data/city-photo-alt";
+
 export type DestinationImage = {
   src: string;
   webp: string;
@@ -372,6 +374,11 @@ function normalize(value: string): string {
  * destinations du catalogue, on choisit une scène cohérente avec la région
  * (ou, à défaut, de façon déterministe) au lieu d'afficher la même image
  * pour toutes les villes.
+ */
+/**
+ * `description` ne sort plus dans l'alt : elle documente ce que la photo montre,
+ * ce qui est la seule façon de rattacher correctement une scène à un pays dans
+ * `SCENE_BY_COUNTRY`. C'est de la documentation, pas du texte affiché.
  */
 type Scene = { src: string; webp: string; thumb: string; thumbWebp: string; description: string };
 
@@ -665,20 +672,28 @@ function hashOf(value: string): number {
   return hash;
 }
 
-function genericImage(city?: string | null, country?: string | null): DestinationImage {
+function genericImage(
+  code?: string | null,
+  city?: string | null,
+  country?: string | null,
+): DestinationImage {
   const hash = hashOf(normalize(city ?? "destination"));
   const regional = country ? SCENE_BY_COUNTRY[normalize(country)] : undefined;
   // Deux ambiances possibles par région : deux villes voisines n'ont pas le même visuel.
   const pool = regional ? [regional, ...(SCENE_VARIANTS[regional] ?? [])] : SCENES_NEUTRES;
   const key = pool[hash % pool.length]!;
   const scene = SCENES[key] ?? SCENES["oldtown"]!;
-  const label = city ? `Ambiance de voyage évoquant ${city}` : "Ambiance de voyage";
   return {
     src: scene.src,
     webp: scene.webp,
     thumb: scene.thumb,
     thumbWebp: scene.thumbWebp,
-    alt: `${label} : ${scene.description}`,
+    // L'alt est celui écrit pour la ville, pas la description de la scène.
+    // « Ambiance de voyage évoquant Ibiza : quartier portuaire d'Europe du Nord,
+    // canal et bateaux amarrés » faisait trente mots recyclés d'une ville à
+    // l'autre, et faux : Ibiza n'a pas de canal nordique. La description de la
+    // scène reste au-dessus, en commentaire de ce qu'elle sert à choisir.
+    alt: cityPhotoAlt(code, city, country),
   };
 }
 
@@ -696,7 +711,7 @@ export function getDestinationImage(
     const hit = BY_CITY[normalize(city)];
     if (hit) return hit;
   }
-  if (city || country) return genericImage(city, country);
+  if (city || country) return genericImage(code, city, country);
   return {
     src: defaultImg,
     webp: defaultImgWebp,

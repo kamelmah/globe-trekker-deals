@@ -524,7 +524,10 @@ function DestinationPage() {
                   {related.map((item) => {
                     // Le code IATA passe désormais en premier argument : sans lui,
                     // Rome ou Barcelone tombaient sur une image d'ambiance alors
-                    // qu'un visuel curé existe.
+                    // qu'un visuel curé existe. L'alt, lui, reste celui de la
+                    // ville et non `thumb.alt` : les visuels curés portent une
+                    // description longue, juste pour un grand visuel mais hors
+                    // de propos sur une vignette de 48 px dans une liste.
                     const thumb = getDestinationImage(item.destination, item.city, item.country);
                     return (
                       <li key={item.slug}>
