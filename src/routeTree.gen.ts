@@ -20,6 +20,7 @@ import { Route as IndemnisationRouteImport } from './routes/indemnisation'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MethodologieRouteImport } from './routes/methodologie'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
+import { Route as MoinsCherRouteImport } from './routes/moins-cher'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TiktokRouteImport } from './routes/tiktok'
@@ -97,6 +98,11 @@ const MethodologieRoute = MethodologieRouteImport.update({
 const ModeBudgetRoute = ModeBudgetRouteImport.update({
   id: '/mode-budget',
   path: '/mode-budget',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoinsCherRoute = MoinsCherRouteImport.update({
+  id: '/moins-cher',
+  path: '/moins-cher',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RechercheRoute = RechercheRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
+  '/moins-cher': typeof MoinsCherRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiktok': typeof TiktokRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
+  '/moins-cher': typeof MoinsCherRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiktok': typeof TiktokRoute
@@ -304,6 +312,7 @@ export interface FileRoutesById {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
+  '/moins-cher': typeof MoinsCherRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiktok': typeof TiktokRoute
@@ -342,6 +351,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/methodologie'
     | '/mode-budget'
+    | '/moins-cher'
     | '/recherche'
     | '/sitemap.xml'
     | '/tiktok'
@@ -378,6 +388,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/methodologie'
     | '/mode-budget'
+    | '/moins-cher'
     | '/recherche'
     | '/sitemap.xml'
     | '/tiktok'
@@ -414,6 +425,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/methodologie'
     | '/mode-budget'
+    | '/moins-cher'
     | '/recherche'
     | '/sitemap.xml'
     | '/tiktok'
@@ -451,6 +463,7 @@ export interface RootRouteChildren {
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MethodologieRoute: typeof MethodologieRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
+  MoinsCherRoute: typeof MoinsCherRoute
   RechercheRoute: typeof RechercheRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TiktokRoute: typeof TiktokRoute
@@ -553,6 +566,13 @@ declare module '@tanstack/react-router' {
       path: '/mode-budget'
       fullPath: '/mode-budget'
       preLoaderRoute: typeof ModeBudgetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/moins-cher': {
+      id: '/moins-cher'
+      path: '/moins-cher'
+      fullPath: '/moins-cher'
+      preLoaderRoute: typeof MoinsCherRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recherche': {
@@ -731,6 +751,7 @@ const rootRouteChildren: RootRouteChildren = {
   MentionsLegalesRoute: MentionsLegalesRoute,
   MethodologieRoute: MethodologieRoute,
   ModeBudgetRoute: ModeBudgetRoute,
+  MoinsCherRoute: MoinsCherRoute,
   RechercheRoute: RechercheRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TiktokRoute: TiktokRoute,

@@ -55,6 +55,13 @@ export function Footer() {
                 Toutes les destinations depuis Marseille
               </Link>
             </li>
+            {/* Le seul point d'entrée « vol pas cher » sans destination en tête :
+                l'accueil demande une recherche, le mode budget une origine. */}
+            <li>
+              <Link to="/moins-cher" className={`${linkClass} font-medium`}>
+                Les vols les moins chers relevés
+              </Link>
+            </li>
           </ul>
 
           <p className="mt-6 text-sm font-semibold">Au départ de Paris</p>
