@@ -610,7 +610,36 @@ export async function listCheapestWhitelistedRoutes(params: {
 }): Promise<CheapestWhitelistedRoute[]> {
   const origin = params.origin.toUpperCase();
   const limit = params.limit ?? 4;
-  const routes = routesFrom(origin);
+  /*
+   * Liste blanche d'abord, pages éditoriales en repli — même règle que
+   * `listRelatedRoutes`.
+   *
+   * Sans ce repli, l'accueil vu depuis Paris affichait une seule carte : PAR n'a
+   * qu'une liaison en liste blanche, mais trente-sept pages éditoriales, toutes
+   * indexables. Le bloc n'a rien à gagner à ignorer les secondes.
+   */
+  const whitelisted = routesFrom(origin);
+  const routes =
+    whitelisted.length >= limit
+      ? whitelisted
+      : [
+          ...whitelisted,
+          ...withoutPruned(DESTINATIONS, PRUNED_ROUTE_SLUGS)
+            .filter(
+              (d) =>
+                d.origin.toUpperCase() === origin &&
+                !whitelisted.some((w) => w.destination === d.destination),
+            )
+            .map((d) => ({
+              slug: d.slug,
+              origin: d.origin,
+              originCity: d.originCity,
+              destination: d.destination,
+              destinationCity: d.destinationCity,
+              country: d.country,
+              nonstop: true,
+            })),
+        ];
   if (routes.length === 0) return [];
 
   // 1) Balayage mondial en cache : seule source qui porte le nom de la
