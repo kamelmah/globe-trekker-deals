@@ -19,7 +19,7 @@ import { secondaryAirport } from "@/data/airports";
 import { isRoutePruned } from "@/data/pruned-pages";
 import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { hreflangLinks } from "@/lib/hreflang";
-import { computeSeasonality } from "@/lib/seasonality";
+import { cheapestMonthLine, computeSeasonality } from "@/lib/seasonality";
 import { routeSeasonality } from "@/lib/seasonality.functions";
 import { routeOgImage } from "@/lib/og-image";
 import { isIndexableRoute } from "@/data/route-whitelist";
@@ -91,6 +91,10 @@ export const Route = createFileRoute("/vols/$slug")({
     // tarifaire au chargement d'une page. Les relevés viennent de la tâche
     // planifiée. Une lecture qui échoue rend la section absente, pas fausse.
     let saison = null;
+    // Une ligne sous le titre nomme le mois le moins cher. Elle sort des mêmes
+    // relevés que la section « Quand partir », d'un seuil plus bas : deux mois
+    // ne font pas une saisonnalité, mais suffisent à désigner le moins cher.
+    let moisLeMoinsCher: string | null = null;
     try {
       const { points } = await routeSeasonality({
         data: { origin: route.origin, destination: route.destination },
@@ -99,6 +103,7 @@ export const Route = createFileRoute("/vols/$slug")({
         originCity: route.originCity,
         destinationCity: route.destinationCity,
       });
+      moisLeMoinsCher = cheapestMonthLine(points);
     } catch (error) {
       console.error("Saisonnalité indisponible", error);
     }
@@ -110,6 +115,7 @@ export const Route = createFileRoute("/vols/$slug")({
       related,
       indexable,
       saison,
+      moisLeMoinsCher,
     };
   },
 
@@ -255,7 +261,8 @@ export const Route = createFileRoute("/vols/$slug")({
 const formatObservedDate = formatDateTimeLong;
 
 function DestinationPage() {
-  const { route, lowestObserved, lowestObservedAt, related, saison } = Route.useLoaderData();
+  const { route, lowestObserved, lowestObservedAt, related, saison, moisLeMoinsCher } =
+    Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity, route.country);
   const guide = guideForRoutePage(route.slug, route.destination);
   // Le graphique et la phrase de saisonnalité partagent la même donnée : ce
@@ -321,6 +328,10 @@ function DestinationPage() {
           {heading}
         </h1>
       </div>
+
+      {moisLeMoinsCher && (
+        <p className="mt-3 text-sm font-medium text-primary">{moisLeMoinsCher}</p>
+      )}
 
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
 
