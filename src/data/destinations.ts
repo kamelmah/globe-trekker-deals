@@ -12,7 +12,19 @@ export type DestinationRoute = {
   metaDescription: string;
   /** Résumé court affiché en tête de page. */
   intro: string;
-  sections: { heading: string; paragraphs: string[] }[];
+  sections: {
+    heading: string;
+    paragraphs: string[];
+    /**
+     * Lien « pour aller plus loin » rendu sous les paragraphes de CETTE section.
+     *
+     * Existe pour que la section « Compagnies et bagages » renvoie vers les
+     * grilles tarifaires détaillées, qui ne sont plus recopiées sur chaque page.
+     * Les paragraphes sont des chaînes : sans ce champ, un lien ne peut pas y
+     * être rendu. Optionnel — aucune autre section n'en pose.
+     */
+    moreLink?: { to: "/bagages"; label: string };
+  }[];
   /** Ecrit a la main sur les pages editoriales. Absent des pages generees :
    * la saisonnalite y est calculee a partir des releves, pas affirmee. */
   bestMonths?: string;

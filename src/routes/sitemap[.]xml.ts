@@ -61,6 +61,9 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/conseils/formalites",
           "/faq",
           "/methodologie",
+          // Les grilles tarifaires bagages, retirées des 126 pages de liaison
+          // où elles étaient recopiées à l'identique. Indexée une fois, ici.
+          "/bagages",
           "/contact",
           "/indemnisation",
           "/hebergement",

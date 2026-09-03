@@ -393,7 +393,12 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     whitelisted,
     validatedAt: WHITELIST_VALIDATED_AT,
     airlineName,
-    observedLowestEur: observed?.priceEur ?? null,
+    // Le plancher du trajet, dans l'ordre de fraîcheur : celui que la page
+    // affiche, sinon celui que l'API a renvoyé lors de la validation de la
+    // liaison (daté, lui aussi, et annoncé comme tel dans la section). Sans ce
+    // repli, une liaison sans relevé en base perdait toute la synthèse bagages
+    // — c'est-à-dire le seul contenu de la section qui lui soit propre.
+    observedLowestEur: observed?.priceEur ?? whitelisted?.validation.minPriceEur ?? null,
   });
   if (airlines) sections.push(airlines.section);
 
