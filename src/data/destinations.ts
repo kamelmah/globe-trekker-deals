@@ -23,7 +23,9 @@ export type DestinationRoute = {
      * Les paragraphes sont des chaînes : sans ce champ, un lien ne peut pas y
      * être rendu. Optionnel — aucune autre section n'en pose.
      */
-    moreLink?: { to: "/bagages"; label: string };
+    moreLink?:
+      | { to: "/bagages"; label: string }
+      | { to: "/bagages/$compagnie"; params: { compagnie: string }; label: string };
   }[];
   /** Ecrit a la main sur les pages editoriales. Absent des pages generees :
    * la saisonnalite y est calculee a partir des releves, pas affirmee. */

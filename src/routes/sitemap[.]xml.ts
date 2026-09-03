@@ -1,6 +1,7 @@
 import { SITE_URL } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AIRLINE_BAGGAGE } from "@/data/baggage-fees";
 import { CITY_GUIDES } from "@/data/city-guides";
 import { COMPARISONS } from "@/data/comparisons";
 import { DESTINATIONS } from "@/data/destinations";
@@ -61,9 +62,11 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/conseils/formalites",
           "/faq",
           "/methodologie",
-          // Les grilles tarifaires bagages, retirées des 126 pages de liaison
-          // où elles étaient recopiées à l'identique. Indexée une fois, ici.
+          // Aiguillage bagages, plus la page de chaque compagnie documentée.
+          // Ces grilles étaient recopiées sur les 126 pages de liaison ; elles
+          // sont désormais indexées une fois, là où elles sont cherchées.
           "/bagages",
+          ...AIRLINE_BAGGAGE.map((policy) => `/bagages/${policy.slug}`),
           "/contact",
           "/indemnisation",
           "/hebergement",

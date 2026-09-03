@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BagagesRouteImport } from './routes/bagages'
 import { Route as CguRouteImport } from './routes/cgu'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -27,6 +26,8 @@ import { Route as TiktokRouteImport } from './routes/tiktok'
 import { Route as AdminJournalRouteImport } from './routes/admin.journal'
 import { Route as AlertesIndexRouteImport } from './routes/alertes.index'
 import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
+import { Route as BagagesIndexRouteImport } from './routes/bagages.index'
+import { Route as BagagesCompagnieRouteImport } from './routes/bagages.$compagnie'
 import { Route as ComparatifsIndexRouteImport } from './routes/comparatifs.index'
 import { Route as ComparatifsSlugRouteImport } from './routes/comparatifs.$slug'
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
@@ -46,11 +47,6 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BagagesRoute = BagagesRouteImport.update({
-  id: '/bagages',
-  path: '/bagages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CguRoute = CguRouteImport.update({
@@ -131,6 +127,16 @@ const AlertesIndexRoute = AlertesIndexRouteImport.update({
 const AlertesDesinscriptionRoute = AlertesDesinscriptionRouteImport.update({
   id: '/alertes/desinscription',
   path: '/alertes/desinscription',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BagagesIndexRoute = BagagesIndexRouteImport.update({
+  id: '/bagages/',
+  path: '/bagages/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BagagesCompagnieRoute = BagagesCompagnieRouteImport.update({
+  id: '/bagages/$compagnie',
+  path: '/bagages/$compagnie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComparatifsIndexRoute = ComparatifsIndexRouteImport.update({
@@ -215,7 +221,6 @@ const LovableEmailTransactionalPreviewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/bagages': typeof BagagesRoute
   '/cgu': typeof CguRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
@@ -231,12 +236,14 @@ export interface FileRoutesByFullPath {
   '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/bagages/$compagnie': typeof BagagesCompagnieRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes/': typeof AlertesIndexRoute
+  '/bagages/': typeof BagagesIndexRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/hebergement/': typeof HebergementIndexRoute
@@ -250,7 +257,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/bagages': typeof BagagesRoute
   '/cgu': typeof CguRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
@@ -266,12 +272,14 @@ export interface FileRoutesByTo {
   '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/bagages/$compagnie': typeof BagagesCompagnieRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes': typeof AlertesIndexRoute
+  '/bagages': typeof BagagesIndexRoute
   '/comparatifs': typeof ComparatifsIndexRoute
   '/conseils': typeof ConseilsIndexRoute
   '/hebergement': typeof HebergementIndexRoute
@@ -286,7 +294,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/bagages': typeof BagagesRoute
   '/cgu': typeof CguRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
@@ -302,12 +309,14 @@ export interface FileRoutesById {
   '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/bagages/$compagnie': typeof BagagesCompagnieRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes/': typeof AlertesIndexRoute
+  '/bagages/': typeof BagagesIndexRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/hebergement/': typeof HebergementIndexRoute
@@ -323,7 +332,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/bagages'
     | '/cgu'
     | '/confidentialite'
     | '/contact'
@@ -339,12 +347,14 @@ export interface FileRouteTypes {
     | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/bagages/$compagnie'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes/'
+    | '/bagages/'
     | '/comparatifs/'
     | '/conseils/'
     | '/hebergement/'
@@ -358,7 +368,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/bagages'
     | '/cgu'
     | '/confidentialite'
     | '/contact'
@@ -374,12 +383,14 @@ export interface FileRouteTypes {
     | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/bagages/$compagnie'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes'
+    | '/bagages'
     | '/comparatifs'
     | '/conseils'
     | '/hebergement'
@@ -393,7 +404,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/bagages'
     | '/cgu'
     | '/confidentialite'
     | '/contact'
@@ -409,12 +419,14 @@ export interface FileRouteTypes {
     | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/bagages/$compagnie'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes/'
+    | '/bagages/'
     | '/comparatifs/'
     | '/conseils/'
     | '/hebergement/'
@@ -429,7 +441,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BagagesRoute: typeof BagagesRoute
   CguRoute: typeof CguRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ContactRoute: typeof ContactRoute
@@ -445,12 +456,14 @@ export interface RootRouteChildren {
   TiktokRoute: typeof TiktokRoute
   AdminJournalRoute: typeof AdminJournalRoute
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
+  BagagesCompagnieRoute: typeof BagagesCompagnieRoute
   ComparatifsSlugRoute: typeof ComparatifsSlugRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
   HebergementVilleRoute: typeof HebergementVilleRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
   VolsSlugRoute: typeof VolsSlugRoute
   AlertesIndexRoute: typeof AlertesIndexRoute
+  BagagesIndexRoute: typeof BagagesIndexRoute
   ComparatifsIndexRoute: typeof ComparatifsIndexRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
   HebergementIndexRoute: typeof HebergementIndexRoute
@@ -470,13 +483,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bagages': {
-      id: '/bagages'
-      path: '/bagages'
-      fullPath: '/bagages'
-      preLoaderRoute: typeof BagagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cgu': {
@@ -591,6 +597,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlertesDesinscriptionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bagages/': {
+      id: '/bagages/'
+      path: '/bagages'
+      fullPath: '/bagages/'
+      preLoaderRoute: typeof BagagesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bagages/$compagnie': {
+      id: '/bagages/$compagnie'
+      path: '/bagages/$compagnie'
+      fullPath: '/bagages/$compagnie'
+      preLoaderRoute: typeof BagagesCompagnieRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/comparatifs/': {
       id: '/comparatifs/'
       path: '/comparatifs'
@@ -701,7 +721,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BagagesRoute: BagagesRoute,
   CguRoute: CguRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
   ContactRoute: ContactRoute,
@@ -717,12 +736,14 @@ const rootRouteChildren: RootRouteChildren = {
   TiktokRoute: TiktokRoute,
   AdminJournalRoute: AdminJournalRoute,
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
+  BagagesCompagnieRoute: BagagesCompagnieRoute,
   ComparatifsSlugRoute: ComparatifsSlugRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
   HebergementVilleRoute: HebergementVilleRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
   VolsSlugRoute: VolsSlugRoute,
   AlertesIndexRoute: AlertesIndexRoute,
+  BagagesIndexRoute: BagagesIndexRoute,
   ComparatifsIndexRoute: ComparatifsIndexRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
   HebergementIndexRoute: HebergementIndexRoute,
