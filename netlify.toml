@@ -33,7 +33,8 @@
 # ce qui garde l'horaire à côté du code qu'il déclenche. Elle est répétée ici
 # pour rester lisible d'un coup d'œil.
 #
-#   rafraichir-prix       "7 * * * *"     toutes les heures
+#   rafraichir-prix       "7 * * * *"     toutes les heures, liaisons courantes
+#   rafraichir-prix-top   "29 */3 * * *"  toutes les 3 h, liaisons prioritaires
 #   relever-saisonnalite  "0 3 * * *"     chaque nuit à 3 h, 24 routes par passage
 #   rediger-routes        "23 * * * *"    toutes les heures, 3 trajets redigés par passage
 #   verifier-alertes      "37 * * * *"    toutes les heures

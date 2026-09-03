@@ -1,5 +1,9 @@
 /**
- * Rafraîchissement horaire des prix — tâche planifiée Netlify.
+ * Rafraîchissement horaire des prix COURANTS — tâche planifiée Netlify.
+ *
+ * Ne traite que les liaisons non prioritaires. Les prioritaires ont leur propre
+ * tâche, `rafraichir-prix-top`, à une cadence plus serrée. Aucune liaison n'est
+ * traitée par les deux : `priorite` les partage exactement en deux.
  *
  * Remplace l'endpoint POST /api/public/rafraichir-prix et le secret qui le
  * protégeait. Une fonction planifiée n'est pas appelable par URL : elle
@@ -16,7 +20,7 @@ import { refreshFlightPrices } from "../../src/lib/price-refresh.server";
 export default async () => {
   const debut = Date.now();
   try {
-    const etat = await refreshFlightPrices("cron");
+    const etat = await refreshFlightPrices("cron", { priorite: false });
     console.log(
       `[rafraichir-prix] ${etat.priceCount ?? 0} prix · ${Math.round((Date.now() - debut) / 1000)}s`,
     );

@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 
 import { co2Label } from "@/lib/co2";
+import { computeFreshness, type Freshness, type FreshnessTone } from "@/lib/freshness";
 import { useCurrency } from "@/lib/currency-context";
 import type { FlightOffer } from "@/lib/flights.types";
 import { Badge } from "@/components/ui/badge";
@@ -37,49 +38,6 @@ function formatDuration(minutes: number): string {
 }
 
 const formatTime = formatDateTimeCompact;
-
-/**
- * Seuil de fermeté du prix.
- *
- * Au-delà de 24 h, le montant n'est plus présenté comme un prix : il devient
- * explicitement une estimation, et le bouton de réservation perd son style
- * principal. Un tarif de plusieurs jours peut avoir dérivé de 30 % ou plus chez
- * le vendeur au moment du clic — l'annoncer comme ferme serait une pratique
- * commerciale trompeuse.
- *
- * La date de relevé vient du vendeur (`found_at` / `search_date` renvoyés par
- * l'API), pas de notre propre rafraîchissement : nous constatons l'âge du prix,
- * nous ne le maîtrisons pas.
- */
-const ESTIMATE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
-
-/** En deçà, le relevé est assez récent pour être signalé en vert. */
-const FRESH_THRESHOLD_MS = 60 * 60 * 1000;
-
-type FreshnessTone = "frais" | "neutre" | "ancien";
-type Freshness = { label: string; tone: FreshnessTone; estimate: boolean };
-
-/** Fraîcheur du relevé de prix, calculée côté client pour éviter tout écart SSR. */
-function computeFreshness(iso: string | null): Freshness {
-  const d = iso ? new Date(iso) : null;
-  if (!d || Number.isNaN(d.getTime())) {
-    // Âge inconnu : on ne peut pas affirmer que le prix est ferme.
-    return { label: "date de relevé inconnue", tone: "ancien", estimate: true };
-  }
-  const ageMs = Date.now() - d.getTime();
-  const minutes = Math.max(0, Math.round(ageMs / 60000));
-  let label: string;
-  if (minutes < 1) label = "relevé à l'instant";
-  else if (minutes < 60) label = `relevé il y a ${minutes} min`;
-  else {
-    const hours = Math.round(minutes / 60);
-    label =
-      hours < 24 ? `relevé il y a ${hours} h` : `relevé le ${formatDateTimeShort(d.toISOString())}`;
-  }
-  const tone: FreshnessTone =
-    ageMs < FRESH_THRESHOLD_MS ? "frais" : ageMs <= ESTIMATE_THRESHOLD_MS ? "neutre" : "ancien";
-  return { label, tone, estimate: ageMs > ESTIMATE_THRESHOLD_MS };
-}
 
 /**
  * `--warning` seul ne passe en texte dans aucun des deux thèmes : trop clair sur
@@ -144,6 +102,10 @@ export function FlightCard({
   baggageLevel?: BaggageLevel;
 }) {
   const { formatApi: format } = useCurrency();
+  // Ici, la date de relevé vient du VENDEUR (`found_at` / `search_date` renvoyés
+  // par l'API), pas de notre propre rafraîchissement : nous constatons l'âge du
+  // prix, nous ne le maîtrisons pas. Les pages de liaison, elles, datent leurs
+  // propres relevés.
   const freshness = useFreshness(offer.observedAt);
   const policy = baggagePolicy(offer.airlineCode);
   const vendeur = sellerNature(offer.seller, offer.airline);

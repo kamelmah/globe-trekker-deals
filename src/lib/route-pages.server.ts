@@ -342,9 +342,23 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
   // calculés au rendu depuis le gabarit unique (`routeHeading`,
   // `routeMetaTitle`), pour les pages générées comme pour les éditoriales.
 
-  const metaDescription = priceLabel
-    ? `Prix le plus bas relevé sur ${trajet} (${destination.country}) : ${priceLabel}, taxes incluses, vendeur affiché. Comparez sans frais cachés ni faux compte à rebours.`
-    : `Comparez les vols ${trajet} (${destination.country}) : prix total taxes incluses, vendeur réel identifié et lien direct, sans frais cachés.`;
+  /*
+   * AUCUN MONTANT ICI, et une seule forme.
+   *
+   * La description portait le plancher relevé (« … : 40 €, taxes incluses »).
+   * Un prix change tous les jours quand Google ne recrawle la page que toutes
+   * les quelques semaines : le montant affiché en SERP était périmé la plupart
+   * du temps, et donnait un extrait qui ne correspondait plus à la page. Même
+   * raison que pour la balise title, qui n'en porte pas non plus.
+   *
+   * Le montant n'a pas disparu du site : il est dans la page, daté, à côté de
+   * sa méthode. La description annonce ce que la page contient — prix relevés,
+   * saisonnalité, bagages — au lieu d'en extraire un chiffre hors contexte.
+   *
+   * Les deux variantes n'ont plus lieu d'être : sans montant, la présence ou
+   * l'absence de relevé ne change plus rien à la phrase.
+   */
+  const metaDescription = `Vols ${trajet} (${destination.country}) : prix relevés et datés, meilleure période, frais de bagages par compagnie. Vendeur affiché, sans frais cachés.`;
 
   // Un prix affirmé sans date n'est pas vérifiable : quand nous connaissons la
   // date du relevé, elle accompagne le montant.

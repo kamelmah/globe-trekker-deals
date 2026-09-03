@@ -21,6 +21,11 @@ import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { hreflangLinks } from "@/lib/hreflang";
 import { cheapestMonthLine, computeSeasonality } from "@/lib/seasonality";
 import { routePriceTrend } from "@/lib/price-trend.functions";
+import {
+  REFERENCE_PRICE_MAX_AGE_MS,
+  computeFreshness,
+  referencePriceIsFresh,
+} from "@/lib/freshness";
 import { activeAlertCount } from "@/lib/alert-count.functions";
 import { routeSeasonality } from "@/lib/seasonality.functions";
 import { routeOgImage } from "@/lib/og-image";
@@ -138,6 +143,21 @@ export const Route = createFileRoute("/vols/$slug")({
       moisLeMoinsCher,
       trend,
       followerCount,
+      /*
+       * Âge du relevé, calculé ICI et non au rendu.
+       *
+       * La page est rendue côté serveur à chaque requête : l'instant du loader
+       * est donc celui du rendu. Calculer « il y a 5 h » dans le composant
+       * demanderait `Date.now()` au client, avec l'écart d'hydratation que cela
+       * suppose — et surtout laisserait le bloc périmé dans le HTML servi aux
+       * robots avant que le client ne le retire.
+       */
+      lowestObservedFreshness: computeFreshness(
+        lowestObservedAt,
+        Date.now(),
+        REFERENCE_PRICE_MAX_AGE_MS / 3_600_000,
+      ),
+      referencePriceFresh: referencePriceIsFresh(lowestObservedAt),
     };
   },
 
@@ -297,6 +317,8 @@ function DestinationPage() {
     moisLeMoinsCher,
     trend,
     followerCount,
+    lowestObservedFreshness,
+    referencePriceFresh,
   } = Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity, route.country);
   const guide = guideForRoutePage(route.slug, route.destination);
@@ -370,52 +392,77 @@ function DestinationPage() {
 
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">Prix de référence</p>
-          <p className="mt-1 font-display text-2xl font-semibold text-primary">
-            {lowestObserved
-              ? route.simulatedLowestPrice
-                ? `Dès ${route.simulatedLowestPrice}€`
-                : `Dès ${formatPrice(lowestObserved)}`
-              : "Historique en constitution"}
-          </p>
-          {trend && (
-            <p
-              className={`mt-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${
-                trend.direction === "baisse"
-                  ? "bg-success/15 text-success"
-                  : "bg-warning text-warning-foreground"
-              }`}
-            >
-              <span aria-hidden>{trend.direction === "baisse" ? "↓" : "↑"}</span>
-              {trend.direction === "baisse" ? "En baisse de" : "En hausse de"}{" "}
-              {formatPrice(Math.abs(trend.deltaEur))} ({Math.abs(trend.deltaPct)} %) depuis le{" "}
-              {formatDateMedium(trend.previousObservedOn)}
+      {/*
+        `sm:grid-cols-2` seulement quand les deux encarts sont là : passé 48 h
+        sans relevé, le prix de référence disparaît et la durée de vol occuperait
+        une demi-largeur en laissant l'autre vide.
+      */}
+      <div className={`mt-6 grid gap-4 ${referencePriceFresh ? "sm:grid-cols-2" : ""}`}>
+        {referencePriceFresh && (
+          <div className="rounded-xl border border-border bg-card p-4">
+            <p className="text-xs text-muted-foreground">Prix de référence</p>
+            <p className="mt-1 font-display text-2xl font-semibold text-primary">
+              {lowestObserved
+                ? route.simulatedLowestPrice
+                  ? `Dès ${route.simulatedLowestPrice}€`
+                  : `Dès ${formatPrice(lowestObserved)}`
+                : "Historique en constitution"}
             </p>
-          )}
-          <p className="mt-1 text-xs text-muted-foreground">
-            {lowestObservedAt
-              ? `Relevé le ${formatObservedDate(lowestObservedAt)}, taxes incluses. Repère indicatif, distinct de l'historique mesuré ci-dessous.`
-              : "Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous"}
-          </p>
-          {trend && (
+            {trend && (
+              <p
+                className={`mt-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${
+                  trend.direction === "baisse"
+                    ? "bg-success/15 text-success"
+                    : "bg-warning text-warning-foreground"
+                }`}
+              >
+                <span aria-hidden>{trend.direction === "baisse" ? "↓" : "↑"}</span>
+                {trend.direction === "baisse" ? "En baisse de" : "En hausse de"}{" "}
+                {formatPrice(Math.abs(trend.deltaEur))} ({Math.abs(trend.deltaPct)} %) depuis le{" "}
+                {formatDateMedium(trend.previousObservedOn)}
+              </p>
+            )}
             <p className="mt-1 text-xs text-muted-foreground">
-              {formatPrice(trend.previousEur)} au relevé du{" "}
-              {formatDateMedium(trend.previousObservedOn)}, {formatPrice(trend.currentEur)} à celui
-              du {formatDateMedium(trend.observedOn)}, sur les {trend.monthsCompared} mois de départ
-              présents dans les deux.
+              {/*
+              « relevé il y a 5 h » plutôt que l'horodatage : ce qui compte pour
+              juger d'un prix est son ÂGE, pas la date à laquelle il a été pris.
+              Un lecteur qui voit « 2 septembre 2026 à 03:07 » doit faire le
+              calcul lui-même. La date exacte reste dans l'infobulle.
+            */}
+              {lowestObservedAt ? (
+                <>
+                  Prix{" "}
+                  <time
+                    dateTime={lowestObservedAt}
+                    title={formatObservedDate(lowestObservedAt)}
+                    className="font-medium text-foreground"
+                  >
+                    {lowestObservedFreshness.label}
+                  </time>
+                  , taxes incluses. Repère indicatif, distinct de l'historique mesuré ci-dessous.
+                </>
+              ) : (
+                "Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous"
+              )}
             </p>
-          )}
-          {aeroportEloigne && (
-            <p className="mt-1.5 inline-flex items-start gap-1 text-xs text-warning-foreground">
-              <span className="rounded bg-warning px-1.5 py-0.5">
-                Ce tarif part de {aeroportEloigne.code}, à {aeroportEloigne.distanceKm} km de{" "}
-                {aeroportEloigne.city} — {aeroportEloigne.access} à prévoir.
-              </span>
-            </p>
-          )}
-        </div>
+            {trend && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {formatPrice(trend.previousEur)} au relevé du{" "}
+                {formatDateMedium(trend.previousObservedOn)}, {formatPrice(trend.currentEur)} à
+                celui du {formatDateMedium(trend.observedOn)}, sur les {trend.monthsCompared} mois
+                de départ présents dans les deux.
+              </p>
+            )}
+            {aeroportEloigne && (
+              <p className="mt-1.5 inline-flex items-start gap-1 text-xs text-warning-foreground">
+                <span className="rounded bg-warning px-1.5 py-0.5">
+                  Ce tarif part de {aeroportEloigne.code}, à {aeroportEloigne.distanceKm} km de{" "}
+                  {aeroportEloigne.city} — {aeroportEloigne.access} à prévoir.
+                </span>
+              </p>
+            )}
+          </div>
+        )}
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Durée de vol</p>
           <p className="mt-1 text-base font-semibold">{route.averageDuration}</p>
