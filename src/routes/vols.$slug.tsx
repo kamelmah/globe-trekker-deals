@@ -462,6 +462,16 @@ function DestinationPage() {
                     {paragraph}
                   </p>
                 ))}
+                {section.moreLink && (
+                  <p className="mt-3 text-sm">
+                    <Link
+                      to={section.moreLink.to}
+                      className="font-medium text-primary underline-offset-2 hover:underline"
+                    >
+                      {section.moreLink.label}
+                    </Link>
+                  </p>
+                )}
               </section>
             </Reveal>
           ))}
