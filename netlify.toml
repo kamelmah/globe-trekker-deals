@@ -80,8 +80,12 @@
 # ---------------------------------------------------------------------------
 
 [[redirects]]
-  from = "/stats/js/script.js"
-  to = "https://plausible.io/js/script.js"
+  # Joker sur le nom de fichier, et non sur un nom en dur : le script actuel
+  # porte l'identité du site dans son nom (`pa-….js`), qui est configuré côté
+  # application (VITE_PLAUSIBLE_SCRIPT_ID). Changer de compte de mesure ne doit
+  # pas obliger à retoucher l'infrastructure.
+  from = "/stats/js/*"
+  to = "https://plausible.io/js/:splat"
   status = 200
   force = true
 
@@ -94,6 +98,6 @@
 [[headers]]
   # Le script de mesure change rarement ; sans cet en-tête il serait redemandé
   # à chaque page vue, proxy oblige.
-  for = "/stats/js/script.js"
+  for = "/stats/js/*"
   [headers.values]
     cache-control = "public, max-age=86400"

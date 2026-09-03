@@ -11,12 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import {
-  ANALYTICS_API_URL,
-  ANALYTICS_BOOTSTRAP,
-  ANALYTICS_SCRIPT_SRC,
-  analyticsDomain,
-} from "@/lib/analytics";
+import { ANALYTICS_BOOTSTRAP, analyticsScriptSrc } from "@/lib/analytics";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { CookieBanner } from "@/components/site/CookieBanner";
@@ -191,24 +186,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       /*
        * Mesure d'audience, seulement si elle est configurée.
        *
-       * Deux balises et pas une : l'amorce d'abord (elle met les événements en
-       * file d'attente), le script `defer` ensuite. Inverser les deux ferait
-       * perdre les clics survenus avant la fin de l'analyse du document,
-       * c'est-à-dire précisément ceux des visiteurs les plus décidés.
+       * Deux balises, dans l'ordre exact du fragment fourni par Plausible : le
+       * script `async` d'abord, l'amorce ensuite. L'ordre est en réalité
+       * indifférent — les `||` de l'amorce couvrent les deux cas, voir
+       * src/lib/analytics.ts — mais s'écarter du fragment officiel sans raison
+       * revient à devoir le rejustifier à chaque mise à jour de l'outil.
        *
-       * `src` et `data-api` pointent tous deux sur notre domaine : voir
-       * src/lib/analytics.ts pour le pourquoi, et netlify.toml pour le proxy.
+       * Le script est chargé depuis notre domaine et l'amorce y renvoie aussi
+       * la collecte : voir netlify.toml pour le proxy.
        */
-      ...(analyticsDomain()
-        ? [
-            { children: ANALYTICS_BOOTSTRAP },
-            {
-              src: ANALYTICS_SCRIPT_SRC,
-              defer: true,
-              "data-domain": analyticsDomain() as string,
-              "data-api": ANALYTICS_API_URL,
-            },
-          ]
+      ...(analyticsScriptSrc()
+        ? [{ src: analyticsScriptSrc() as string, async: true }, { children: ANALYTICS_BOOTSTRAP }]
         : []),
       {
         type: "application/ld+json",
