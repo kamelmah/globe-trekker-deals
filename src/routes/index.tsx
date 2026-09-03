@@ -18,7 +18,7 @@ import { getDestinationImage } from "@/lib/destination-images";
 import { withPreposition } from "@/lib/french-grammar";
 import { hreflangLinks } from "@/lib/hreflang";
 import { listPublishedGuides } from "@/lib/published-guides.functions";
-import { cheapestWhitelistedRoutes } from "@/lib/route-pages.functions";
+import { homeRoutes } from "@/lib/route-pages.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
@@ -122,7 +122,7 @@ export const Route = createFileRoute("/")({
      */
     const origin = context.origin;
     const [cheapest, publies] = await Promise.all([
-      cheapestWhitelistedRoutes({ data: { origin, limit: 4 } }).catch(() => ({
+      homeRoutes({ data: { origin, limit: 4 } }).catch(() => ({
         routes: [],
       })),
       listPublishedGuides().catch(() => ({ guides: [] as CityGuide[] })),
@@ -262,11 +262,11 @@ function HomePage() {
           <section className="container-page py-14">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <h2 className="font-display">Les moins chers depuis {originCity} cette semaine</h2>
+                <h2 className="font-display">Envies de départ depuis {originCity}</h2>
                 <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                  Les prix les plus bas déjà relevés sur nos liaisons vérifiées, pour un aller
-                  simple taxes incluses. Chaque montant porte la date de son relevé : c'est un prix
-                  observé, pas un prix garanti.
+                  Les deux liaisons les moins chères déjà relevées, puis deux idées de séjour
+                  relevées cette semaine. Aller simple taxes incluses, chaque montant portant la
+                  date de son relevé : ce sont des prix observés, pas des prix garantis.
                 </p>
               </div>
               {/* Même destination que « Toutes les destinations depuis

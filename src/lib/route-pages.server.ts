@@ -19,6 +19,7 @@ import {
   frenchName,
   routesFrom,
 } from "@/data/route-whitelist";
+import { hotelPertinent } from "@/data/hotel-relevance";
 import { getCityIndex, type CityRecord } from "@/lib/geo.server";
 import {
   RELATED_ROUTES_LIMIT,
@@ -687,4 +688,56 @@ export async function listCheapestWhitelistedRoutes(params: {
   }
 
   return cheapest.sort((a, b) => a.priceEur - b.priceEur).slice(0, limit);
+}
+
+/** Au-delà, un relevé ne dit plus rien de ce que coûte un séjour aujourd'hui. */
+export const ENVIE_MAX_AGE_DAYS = 7;
+
+/**
+ * Quatre liaisons pour l'accueil : deux « moins chères », deux « envies ».
+ *
+ * Les deux premières sont les moins chères, toutes destinations confondues.
+ * Les deux suivantes sont tirées parmi les liaisons où l'hébergement est une
+ * question pertinente — donc où le lecteur part en séjour et pas en visite
+ * familiale — et dont le relevé a moins de sept jours.
+ *
+ * Le second groupe COMPLÈTE le premier sans le recouper : une liaison déjà
+ * retenue comme « moins chère » n'y revient pas, sinon l'accueil afficherait
+ * deux fois la même carte.
+ *
+ * Le bloc reste rempli si le second groupe manque : les moins chères prennent
+ * les places libres. Quatre cartes valent mieux que deux, et une liaison sans
+ * relevé récent reste une vraie liaison.
+ */
+export async function listHomeRoutes(params: {
+  origin: string;
+  limit?: number | undefined;
+}): Promise<CheapestWhitelistedRoute[]> {
+  const limit = params.limit ?? 4;
+  const moitie = Math.floor(limit / 2);
+  // On demande large : le tri par prix est fait ici, sur l'ensemble.
+  const toutes = await listCheapestWhitelistedRoutes({ origin: params.origin, limit: 40 });
+  if (toutes.length === 0) return [];
+
+  const lesMoinsChers = toutes.slice(0, moitie);
+  const dejaPris = new Set(lesMoinsChers.map((r) => r.slug));
+
+  const limite = Date.now() - ENVIE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+  const envies = toutes.filter((route) => {
+    if (dejaPris.has(route.slug)) return false;
+    if (!hotelPertinent(route.destination, route.country)) return false;
+    // Un relevé sans date n'est pas un relevé récent : on ne le suppose pas.
+    if (!route.observedAt) return false;
+    const time = Date.parse(route.observedAt);
+    return Number.isFinite(time) && time >= limite;
+  });
+
+  const retenues = [...lesMoinsChers, ...envies.slice(0, limit - moitie)];
+  // Complément par les moins chères quand les envies ne suffisent pas.
+  for (const route of toutes) {
+    if (retenues.length >= limit) break;
+    if (retenues.some((r) => r.slug === route.slug)) continue;
+    retenues.push(route);
+  }
+  return retenues;
 }

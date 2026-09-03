@@ -27,6 +27,7 @@ export function LienHotelsCom({
   variant = "default",
   size = "default",
   mention = false,
+  precision,
   className,
 }: {
   /** Nom de ville tel qu'il sera cherché chez le partenaire (jamais un code IATA). */
@@ -42,6 +43,14 @@ export function LienHotelsCom({
   size?: "default" | "sm" | "lg";
   /** Affiche la mention de transparence sous le bouton. */
   mention?: boolean;
+  /**
+   * Précision affichée sous le bouton, avant la mention partenaire.
+   *
+   * Sert à dater un montant annoncé dans le libellé : un prix sans date de
+   * relevé n'est pas vérifiable, et le site ne s'autorise nulle part ailleurs à
+   * en afficher un.
+   */
+  precision?: string;
   className?: string;
 }) {
   const href = lienHotelsVille(ville, {
@@ -64,6 +73,7 @@ export function LienHotelsCom({
           {libelle ?? `Voir les hôtels sur Hotels.com`}
         </a>
       </Button>
+      {precision && <p className="mt-2 text-xs text-muted-foreground">{precision}</p>}
       {mention && (
         <p className="mt-2 text-xs text-muted-foreground">
           Lien partenaire : la commission ne change pas votre prix.

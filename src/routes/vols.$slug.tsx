@@ -35,6 +35,8 @@ import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions
 import { formatPrice } from "@/lib/currency";
 import { withPreposition } from "@/lib/french-grammar";
 import { guideForRoutePage } from "@/data/city-guides";
+import { hotelPertinent } from "@/data/hotel-relevance";
+import { NUITS_ANNONCEES, prixNuit, totalNuits } from "@/data/hotel-night-prices";
 import { getDestinationImage } from "@/lib/destination-images";
 import { cityPhotoAlt } from "@/data/city-photo-alt";
 import {
@@ -341,6 +343,75 @@ function DestinationPage() {
   /** Date de départ du vol relevé — la seule date de séjour que nous connaissions. */
   const dateSejour = route.observedDepartureAt ? route.observedDepartureAt.slice(0, 10) : "";
 
+  /*
+   * Place du bloc hôtel : en tête quand la question se pose, en pied sinon.
+   *
+   * Il n'est JAMAIS retiré — une minorité cherche bien un hôtel à Alger, et le
+   * lui supprimer serait aussi faux que de le mettre en avant. Un seul JSX,
+   * rendu à l'un ou l'autre endroit : deux copies auraient divergé.
+   */
+  const hotelEnTete = hotelPertinent(route.destination, route.country);
+  // Prix indicatif de la nuit, quand il a été relevé. Absent aujourd'hui pour
+  // toutes les villes : aucune source hôtelière ne remonte jusqu'à nous.
+  const prixHotel = prixNuit(route.destination);
+  /*
+   * Le relevé ne porte qu'une date de DÉPART — un séjour n'a donc pas de fin
+   * connue, et Hotels.com ignore une date d'arrivée seule (il retomberait sur
+   * la nuit prochaine). Le lien part sans dates, et celui vers notre page
+   * hébergement emporte la date connue pour que le visiteur choisisse la
+   * seconde chez nous.
+   */
+  const blocHotel = (
+    <div className="mt-4 rounded-xl border border-border bg-card p-4">
+      <h2 className="font-display text-base font-semibold">
+        Hôtels à {route.destinationCity}
+        {dateSejour ? `, pour un départ le ${formatDateMedium(dateSejour)}` : ""}
+      </h2>
+      <p className="mt-1.5 text-sm text-muted-foreground">
+        Prix par nuit affichés par nos partenaires de réservation, chez qui vous réservez
+        directement.
+      </p>
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
+        {/*
+          Un montant plutôt qu'une invitation, QUAND il existe. Le libellé
+          annonce le total de trois nuits et non le prix d'une : c'est l'ordre
+          de grandeur d'un séjour, et c'est ce qu'un lecteur compare. Sans
+          relevé, le libellé d'origine reste — ce n'est pas une dégradation,
+          c'est le comportement actuel.
+        */}
+        <LienHotelsCom
+          className="sm:w-auto sm:min-w-64"
+          ville={route.destinationCity}
+          sid={`vols-${route.slug}`}
+          libelle={
+            prixHotel
+              ? `${route.destinationCity} : ${NUITS_ANNONCEES} nuits à partir de ${formatPrice(totalNuits(prixHotel))}`
+              : `Voir les hôtels à ${route.destinationCity}`
+          }
+          mention
+          {...(prixHotel
+            ? {
+                precision: `Prix indicatif relevé le ${formatDateMedium(prixHotel.releveLe)}, hors disponibilité.`,
+              }
+            : {})}
+        />
+        <Button asChild variant="outline" className="sm:mt-0">
+          {/* Rien d'inutile dans l'URL : un paramètre vide serait réécrit par
+              le routeur et coûterait une redirection à chaque clic. */}
+          <Link
+            to="/hebergement"
+            search={{
+              ville: route.destinationCity,
+              ...(dateSejour ? { arrivee: dateSejour } : {}),
+            }}
+          >
+            Voir la carte des hébergements
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+
   /**
    * Le trajet consulté devient la « dernière recherche » proposée sur la page
    * hébergement. Consulter une liaison est une intention de voyage aussi nette
@@ -469,46 +540,7 @@ function DestinationPage() {
         </div>
       </div>
 
-      {/*
-        Hébergement, juste sous le prix du vol : c'est là que la question se
-        pose. Le relevé ne porte qu'une date de DÉPART — un séjour n'a donc pas
-        de fin connue, et Hotels.com ignore une date d'arrivée seule (il
-        retomberait sur la nuit prochaine). Le lien part sans dates, et celui
-        vers notre page hébergement emporte la date connue pour que le visiteur
-        choisisse la seconde chez nous.
-      */}
-      <div className="mt-4 rounded-xl border border-border bg-card p-4">
-        <h2 className="font-display text-base font-semibold">
-          Hôtels à {route.destinationCity}
-          {dateSejour ? `, pour un départ le ${formatDateMedium(dateSejour)}` : ""}
-        </h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          Prix par nuit affichés par nos partenaires de réservation, chez qui vous réservez
-          directement.
-        </p>
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
-          <LienHotelsCom
-            className="sm:w-auto sm:min-w-64"
-            ville={route.destinationCity}
-            sid={`vols-${route.slug}`}
-            libelle={`Voir les hôtels à ${route.destinationCity}`}
-            mention
-          />
-          <Button asChild variant="outline" className="sm:mt-0">
-            {/* Rien d'inutile dans l'URL : un paramètre vide serait réécrit par
-                le routeur et coûterait une redirection à chaque clic. */}
-            <Link
-              to="/hebergement"
-              search={{
-                ville: route.destinationCity,
-                ...(dateSejour ? { arrivee: dateSejour } : {}),
-              }}
-            >
-              Voir la carte des hébergements
-            </Link>
-          </Button>
-        </div>
-      </div>
+      {hotelEnTete && blocHotel}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <LivePriceButton
@@ -754,6 +786,15 @@ function DestinationPage() {
           </div>
         </aside>
       </div>
+
+      {/*
+        Sur les liaisons où l'hébergement n'est pas la question — visites
+        familiales du Maghreb —, l'encart hôtel vit ici, après le formulaire
+        d'alerte, plutôt qu'en tête de page. Il n'est pas supprimé : une
+        minorité cherche bien un hôtel à Alger, et le lui retirer serait aussi
+        faux que de le lui mettre sous les yeux en premier.
+      */}
+      {!hotelEnTete && blocHotel}
     </article>
   );
 }

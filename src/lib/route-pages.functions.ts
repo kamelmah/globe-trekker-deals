@@ -48,6 +48,24 @@ export const cheapestWhitelistedRoutes = createServerFn({ method: "GET" })
   });
 
 /**
+ * Les quatre liaisons de l'accueil : deux moins chères, deux « envies ».
+ * Même contrat que ci-dessus — lecture en base uniquement, aucun appel API.
+ */
+export const homeRoutes = createServerFn({ method: "GET" })
+  .inputValidator((data) =>
+    z
+      .object({
+        origin: z.string().trim().min(3).max(3),
+        limit: z.number().int().min(1).max(12).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { listHomeRoutes } = await import("@/lib/route-pages.server");
+    return { routes: await listHomeRoutes(data) };
+  });
+
+/**
  * Plancher déjà relevé pour une poignée de destinations depuis une même
  * origine. Aucun appel à l'API tarifaire : sans relevé, la valeur est absente
  * et l'appelant n'affiche rien plutôt qu'un prix inventé.
