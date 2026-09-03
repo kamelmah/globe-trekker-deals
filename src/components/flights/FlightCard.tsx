@@ -116,8 +116,9 @@ function allowanceLabel(supplement: BaggageSupplement): string {
     return supplement.weightKg ? `compris (${supplement.weightKg} kg)` : "compris";
   }
   const poids = supplement.weightKg ? ` (${supplement.weightKg} kg)` : "";
+  // Sans plafond publié, « à partir de » — jamais un maximum reconstitué.
   const fourchette =
-    supplement.minEur === supplement.maxEur
+    supplement.maxEur === undefined || supplement.maxEur === supplement.minEur
       ? `${supplement.minEur} €`
       : `${supplement.minEur} à ${supplement.maxEur} €`;
   return `+${fourchette}${poids}`;

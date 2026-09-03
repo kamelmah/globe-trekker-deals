@@ -53,6 +53,8 @@ function checkedBagSupplement(policy: AirlineBaggagePolicy): number | null {
 
 type SouteParCompagnie = {
   name: string;
+  /** Poids qu'achète ce supplément, quand la compagnie le publie. */
+  weightKg: number | undefined;
   /** Supplément soute au tarif publié le moins cher. */
   supplementEur: number;
   /** Prix du billet soute comprise, à partir du plancher de ce trajet. */
@@ -129,6 +131,11 @@ export function buildAirlinesSection(params: {
           if (supplementEur === null) return null;
           return {
             name: policy.name,
+            // Depuis les grilles officielles, les planchers n'achètent plus le
+            // même poids d'une compagnie à l'autre : 9 € pour 10 kg chez
+            // Volotea, 29,99 € pour 15 kg chez Transavia. Comparer les montants
+            // sans dire le poids serait une fausse équivalence.
+            weightKg: policy.checkedBag.kind === "inconnu" ? undefined : policy.checkedBag.weightKg,
             supplementEur,
             totalEur: Math.round(plancher + supplementEur),
             partPourcent: Math.round((supplementEur / plancher) * 100),
@@ -140,11 +147,12 @@ export function buildAirlinesSection(params: {
 
   if (plancher && soutes.length > 0) {
     // « à 55 € chez Volotea (+38 %) », ou « à 40 € chez Air Algérie, qui la comprend ».
-    const parCompagnie = soutes.map((s) =>
-      s.supplementEur === 0
-        ? `${euros(s.totalEur)} chez ${s.name} (soute comprise)`
-        : `${euros(s.totalEur)} chez ${s.name} (+${s.partPourcent} %)`,
-    );
+    const parCompagnie = soutes.map((s) => {
+      const poids = s.weightKg ? `${s.weightKg} kg, ` : "";
+      return s.supplementEur === 0
+        ? `${euros(s.totalEur)} chez ${s.name} (${poids}soute comprise)`
+        : `${euros(s.totalEur)} chez ${s.name} (${poids}+${s.partPourcent} %)`;
+    });
 
     // La compagnie la moins chère soute comprise est dite DANS la même phrase,
     // pas dans une seconde : l'écart en euros entre deux compagnies ne dépend

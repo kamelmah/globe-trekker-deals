@@ -1,6 +1,11 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
-import { AIRLINE_BAGGAGE, type BaggageAllowance } from "@/data/baggage-fees";
+import {
+  AIRLINE_BAGGAGE,
+  formatBaggageFee,
+  type BaggageAllowance,
+  type BaggageTier,
+} from "@/data/baggage-fees";
 import { airlineBySlug, routesForAirline } from "@/lib/baggage-routes";
 import { formatDateMedium } from "@/lib/dates";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -81,28 +86,75 @@ export const Route = createFileRoute("/bagages/$compagnie")({
   component: CompagnieBagagesPage,
 });
 
-const euros = (value: number) => `${Math.round(value)} €`;
+/** Tarif publié, centimes compris quand la compagnie en affiche. */
+const euros = formatBaggageFee;
 
-/** Une franchise en clair. Le poids n'est affiché que si la source le donne. */
+/**
+ * Une franchise en clair. Poids, dimensions et plafond ne sont affichés que si
+ * la source les donne : « à partir de 9 € » quand la compagnie ne publie pas de
+ * plafond, jamais un maximum reconstitué.
+ */
 function allowanceText(allowance: BaggageAllowance): string {
-  const poids =
-    "weightKg" in allowance && allowance.weightKg ? ` jusqu'à ${allowance.weightKg} kg` : "";
-  if (allowance.kind === "inclus") return `Compris dans le tarif de base${poids}`;
-  if (allowance.kind === "payant") {
-    const fourchette =
-      allowance.minEur === allowance.maxEur
+  if (allowance.kind === "inconnu") {
+    return allowance.tiers && allowance.tiers.length > 0
+      ? `Vendue en ${allowance.tiers.map((t) => `${t.weightKg} kg`).join(", ")} — tarifs non publiés sur la page relevée`
+      : "Non documenté chez nous";
+  }
+  const detail = [
+    allowance.weightKg ? `${allowance.weightKg} kg` : null,
+    allowance.dimensionsCm ?? null,
+  ].filter(Boolean);
+  const precisions = detail.length > 0 ? ` (${detail.join(", ")})` : "";
+  if (allowance.kind === "inclus") return `Compris dans le tarif de base${precisions}`;
+  const tarif =
+    allowance.maxEur === undefined
+      ? `à partir de ${euros(allowance.minEur)}`
+      : allowance.maxEur === allowance.minEur
         ? euros(allowance.minEur)
         : `de ${euros(allowance.minEur)} à ${euros(allowance.maxEur)}`;
-    return `Payant, ${fourchette} à l'achat en ligne${poids}`;
-  }
-  return "Non documenté chez nous";
+  const surPlace = [
+    allowance.atAirportEur ? `${euros(allowance.atAirportEur)} sur place` : null,
+    allowance.atGateEur ? `${euros(allowance.atGateEur)} à la porte` : null,
+  ].filter(Boolean);
+  const fin = surPlace.length > 0 ? `, ${surPlace.join(", ")}` : "";
+  return `Payant, ${tarif} à l'achat en ligne${precisions}${fin}`;
+}
+
+/** La grille de la compagnie, quand elle en publie une. */
+function tiersOf(allowance: BaggageAllowance): BaggageTier[] {
+  if (allowance.kind === "inclus") return [];
+  return allowance.tiers ?? [];
 }
 
 function CompagnieBagagesPage() {
   const { policy, routes } = Route.useLoaderData();
   const verifie = formatDateMedium(policy.verifiedAt) || policy.verifiedAt;
-  const comptoir = policy.checkedBag.kind === "payant" ? policy.checkedBag.atAirportEur : undefined;
-  const enLigne = policy.checkedBag.kind === "payant" ? policy.checkedBag.minEur : undefined;
+  const tiersSoute = tiersOf(policy.checkedBag);
+  const tarifsConnus = tiersSoute.some(
+    (t) => t.onlineEur !== undefined || t.airportEur !== undefined,
+  );
+  const excedent =
+    policy.checkedBag.kind === "payant" ? policy.checkedBag.excessPerKgEur : undefined;
+  // Le poids que le plancher achète : sans lui, « 9 € » et « 29,99 € » se
+  // comparent comme s'ils achetaient la même valise.
+  const poidsPlancher =
+    policy.checkedBag.kind === "payant" && policy.checkedBag.weightKg
+      ? ` (${policy.checkedBag.weightKg} kg)`
+      : "";
+  // Les champs dont la source diffère de celle de l'entrée : on ne laisse pas
+  // une correction officielle couvrir un chiffre qui, lui, ne l'est pas.
+  // Une mise en garde ne vaut que pour ce qui manque vraiment : depuis la
+  // correction Volotea, certaines franchises portent leurs dimensions.
+  const dimensionsConnues = [policy.personalItem, policy.cabinBag, policy.checkedBag].some(
+    (a) => a.kind !== "inconnu" && a.dimensionsCm,
+  );
+  const sourcesParChamp = (
+    [
+      ["Objet personnel", policy.sources?.personalItem],
+      ["Bagage cabine", policy.sources?.cabinBag],
+      ["Valise en soute", policy.sources?.checkedBag],
+    ] as const
+  ).flatMap(([label, source]) => (source ? [{ label, source }] : []));
 
   return (
     <article className="container-page py-10">
@@ -148,23 +200,73 @@ function CompagnieBagagesPage() {
           </dl>
           {policy.note && <p className="mt-4">{policy.note}</p>}
           <p className="mt-4 rounded-lg border border-border bg-secondary/40 px-4 py-3 text-xs">
-            Nous ne publions ni les dimensions en centimètres, ni les paliers de prix par tranche de
-            poids : notre barème ne les contient pas, et nous ne les estimons pas. Vérifiez-les sur
-            la page de la compagnie avant de réserver.
+            {dimensionsConnues
+              ? "Nous ne publions pas les paliers de prix par tranche de poids : notre barème ne les contient pas, et nous ne les estimons pas."
+              : "Nous ne publions ni les dimensions en centimètres, ni les paliers de prix par tranche de poids : notre barème ne les contient pas, et nous ne les estimons pas."}{" "}
+            Vérifiez-les sur la page de la compagnie avant de réserver.
           </p>
         </section>
 
-        {enLigne !== undefined && (
+        {tiersSoute.length > 0 && (
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">
-              En ligne ou au comptoir
+              {tarifsConnus ? "Tarifs de la soute, palier par palier" : "Formats de soute vendus"}
             </h2>
             <p className="mt-3">
-              Acheté en même temps que le billet, le bagage en soute démarre à {euros(enLigne)}.
-              {comptoir !== undefined
-                ? ` Ajouté au comptoir de l'aéroport, ${policy.name} le facture ${euros(comptoir)}, soit ${Math.round(comptoir / enLigne)} fois son prix en ligne — c'est le prix d'un oubli, pas d'un service différent.`
-                : ` Le tarif au comptoir n'est pas publié par ${policy.name} dans notre source : nous ne l'affichons pas plutôt que de l'estimer.`}
+              {tarifsConnus
+                ? `Acheté avec le billet ou ajouté sur place, ce n'est pas le même prix. ${policy.name} publie la grille suivante, par trajet.`
+                : `${policy.name} publie les formats vendus, pas leurs tarifs : les poids sont ceux de la compagnie, les prix restent absents plutôt qu'estimés.`}
             </p>
+            {tarifsConnus && (
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full min-w-[24rem] border-collapse text-left text-sm">
+                  <caption className="sr-only">
+                    Tarifs du bagage en soute {policy.name} par palier de poids
+                  </caption>
+                  <thead>
+                    <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
+                      <th scope="col" className="py-2 pr-4 font-medium">
+                        Poids
+                      </th>
+                      <th scope="col" className="py-2 pr-4 font-medium">
+                        En ligne
+                      </th>
+                      <th scope="col" className="py-2 font-medium">
+                        Sur place
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tiersSoute.map((tier) => (
+                      <tr key={tier.weightKg} className="border-b border-border/60">
+                        <th scope="row" className="py-3 pr-4 font-normal">
+                          {tier.weightKg} kg
+                        </th>
+                        <td className="py-3 pr-4">
+                          {tier.onlineEur === undefined ? "—" : euros(tier.onlineEur)}
+                        </td>
+                        <td className="py-3">
+                          {tier.airportEur === undefined ? "—" : euros(tier.airportEur)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {tarifsConnus && (
+              <p className="mt-3 text-xs">
+                Ces montants sont des <strong className="text-foreground">planchers</strong> : le
+                tarif dépend de la destination, du vol et du moment de la réservation. Un tiret
+                signale un palier que {policy.name} ne vend pas par ce canal.
+              </p>
+            )}
+            {excedent !== undefined && (
+              <p className="mt-3">
+                Au-delà du palier acheté, l'excédent est facturé à partir de {euros(excedent)} par
+                kilo.
+              </p>
+            )}
           </section>
         )}
 
@@ -178,7 +280,7 @@ function CompagnieBagagesPage() {
             <p className="mt-3">
               {routes[0]!.supplementEur === null
                 ? `Nous n'avons pas de tarif soute pour ${policy.name} : les liaisons et leurs planchers sont réels, la colonne du surcoût reste vide plutôt qu'estimée.`
-                : `Le supplément de ${euros(routes[0]!.supplementEur)} est le même partout ; ce qu'il pèse ne l'est pas. Sur chacune des liaisons ci-dessous, il est rapporté au plancher que nous avons relevé sur cette route précise.`}
+                : `Le supplément de ${euros(routes[0]!.supplementEur)}${poidsPlancher} est le même partout ; ce qu'il pèse ne l'est pas. Sur chacune des liaisons ci-dessous, il est rapporté au plancher que nous avons relevé sur cette route précise.`}
             </p>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
@@ -252,6 +354,25 @@ function CompagnieBagagesPage() {
             </a>
             .
           </p>
+          {sourcesParChamp.length > 0 && (
+            <ul className="mt-3 space-y-2">
+              {sourcesParChamp.map(({ label, source }) => (
+                <li key={label}>
+                  {label} —{" "}
+                  {source.officielle ? "source officielle" : "source secondaire, à revérifier"},{" "}
+                  {formatDateMedium(source.verifiedAt) || source.verifiedAt} :{" "}
+                  <a
+                    href={source.url}
+                    className={linkClass}
+                    rel="nofollow noopener noreferrer"
+                    target="_blank"
+                  >
+                    {new URL(source.url).hostname}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
           <p className="mt-3">
             Barème revérifié tous les six mois. Le comparatif des sept compagnies est sur la page{" "}
             <Link to="/bagages" className={linkClass}>
