@@ -19,7 +19,6 @@ import {
 } from "@/data/route-whitelist";
 import { pageLastmod } from "@/data/page-lastmod";
 import { TRAVEL_DOCUMENTS } from "@/data/travel-documents";
-import { HOTEL_CITIES } from "@/lib/hotel-cities";
 import { urlsetXml, xmlResponse, type SitemapEntry } from "@/lib/sitemap-xml";
 
 /**
@@ -99,9 +98,11 @@ export const Route = createFileRoute("/sitemap.xml")({
             dated(`/comparatifs/${c.slug}`, c.updated),
           ),
           ...TRAVEL_DOCUMENTS.map((d) => dated(`/conseils/formalites/${d.slug}`, d.updated)),
-          // Pages hébergement par ville : leur contenu suit la liste blanche,
-          // qui les date.
-          ...HOTEL_CITIES.map((v) => dated(`/hebergement/${v.slug}`, WHITELIST_VALIDATED_AT)),
+          // Les pages /hebergement/<ville> NE FIGURENT PLUS ICI : elles sont
+          // passées en `noindex, follow`. Un sitemap ne déclare que des pages
+          // dont on demande l'indexation — y laisser une page en noindex envoie
+          // deux consignes contradictoires, comme le dit déjà le commentaire des
+          // pages de service plus haut. Seule /hebergement reste déclarée.
         ];
 
         // Une page éditoriale peut aussi figurer dans la liste blanche : on ne

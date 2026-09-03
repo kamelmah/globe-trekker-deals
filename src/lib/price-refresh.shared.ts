@@ -48,6 +48,54 @@ export const REFRESH_DESTINATION_CODES = Array.from(
 /** Villes de départ rafraîchies automatiquement chaque heure. */
 export const REFRESH_ORIGINS = ["PAR", "LYS", "MRS", "NCE", "TLS"];
 
+/**
+ * Une liaison suivie par le rafraîchissement, et sa priorité.
+ *
+ * `priorite` sépare les deux tâches planifiées : `rafraichir-prix-top` toutes
+ * les trois heures sur les liaisons prioritaires, `rafraichir-prix` chaque heure
+ * sur les autres. Une liaison n'est jamais traitée par les deux.
+ */
+export type RefreshRoute = { origin: string; destination: string; priorite: boolean };
+
+/**
+ * Le périmètre suivi, liaison par liaison.
+ *
+ * Sont PRIORITAIRES les destinations mises en avant sur la page d'accueil :
+ * c'est la surface où un prix périmé se voit le plus, et la seule dont le
+ * contenu n'est pas déjà daté à côté du montant. Les destinations qui
+ * n'alimentent que les guides restent sur la cadence normale.
+ *
+ * C'est un point de réglage, pas une vérité : basculer une liaison d'un groupe
+ * à l'autre se fait en changeant `HOME_DESTINATION_CODES`, ou en écrivant la
+ * liste à la main ici si les deux notions divergent un jour.
+ */
+export const REFRESH_ROUTES: readonly RefreshRoute[] = REFRESH_ORIGINS.flatMap((origin) =>
+  REFRESH_DESTINATION_CODES.map((destination) => ({
+    origin,
+    destination,
+    priorite: HOME_DESTINATION_CODES.includes(destination),
+  })),
+);
+
+/**
+ * Le périmètre d'une tâche, regroupé par ville de départ.
+ *
+ * Le regroupement n'est pas cosmétique : la source tarifaire ne sait interroger
+ * qu'une VILLE DE DÉPART à la fois — `destinations` ne filtre que le résultat.
+ * Une requête par origine, et non par liaison, est donc le minimum d'appels
+ * possible pour un périmètre donné.
+ */
+export function refreshScope(priorite: boolean): { origin: string; destinations: string[] }[] {
+  const parOrigine = new Map<string, string[]>();
+  for (const route of REFRESH_ROUTES) {
+    if (route.priorite !== priorite) continue;
+    const liste = parOrigine.get(route.origin) ?? [];
+    liste.push(route.destination);
+    parOrigine.set(route.origin, liste);
+  }
+  return [...parOrigine].map(([origin, destinations]) => ({ origin, destinations }));
+}
+
 /** Cadence du rafraîchissement automatique. */
 export const REFRESH_INTERVAL_MS = 60 * 60 * 1000;
 

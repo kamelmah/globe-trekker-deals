@@ -19,6 +19,7 @@ import {
   frenchName,
   routesFrom,
 } from "@/data/route-whitelist";
+import { hotelPertinent } from "@/data/hotel-relevance";
 import { getCityIndex, type CityRecord } from "@/lib/geo.server";
 import {
   RELATED_ROUTES_LIMIT,
@@ -342,9 +343,23 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
   // calculés au rendu depuis le gabarit unique (`routeHeading`,
   // `routeMetaTitle`), pour les pages générées comme pour les éditoriales.
 
-  const metaDescription = priceLabel
-    ? `Prix le plus bas relevé sur ${trajet} (${destination.country}) : ${priceLabel}, taxes incluses, vendeur affiché. Comparez sans frais cachés ni faux compte à rebours.`
-    : `Comparez les vols ${trajet} (${destination.country}) : prix total taxes incluses, vendeur réel identifié et lien direct, sans frais cachés.`;
+  /*
+   * AUCUN MONTANT ICI, et une seule forme.
+   *
+   * La description portait le plancher relevé (« … : 40 €, taxes incluses »).
+   * Un prix change tous les jours quand Google ne recrawle la page que toutes
+   * les quelques semaines : le montant affiché en SERP était périmé la plupart
+   * du temps, et donnait un extrait qui ne correspondait plus à la page. Même
+   * raison que pour la balise title, qui n'en porte pas non plus.
+   *
+   * Le montant n'a pas disparu du site : il est dans la page, daté, à côté de
+   * sa méthode. La description annonce ce que la page contient — prix relevés,
+   * saisonnalité, bagages — au lieu d'en extraire un chiffre hors contexte.
+   *
+   * Les deux variantes n'ont plus lieu d'être : sans montant, la présence ou
+   * l'absence de relevé ne change plus rien à la phrase.
+   */
+  const metaDescription = `Vols ${trajet} (${destination.country}) : prix relevés et datés, meilleure période, frais de bagages par compagnie. Vendeur affiché, sans frais cachés.`;
 
   // Un prix affirmé sans date n'est pas vérifiable : quand nous connaissons la
   // date du relevé, elle accompagne le montant.
@@ -596,7 +611,36 @@ export async function listCheapestWhitelistedRoutes(params: {
 }): Promise<CheapestWhitelistedRoute[]> {
   const origin = params.origin.toUpperCase();
   const limit = params.limit ?? 4;
-  const routes = routesFrom(origin);
+  /*
+   * Liste blanche d'abord, pages éditoriales en repli — même règle que
+   * `listRelatedRoutes`.
+   *
+   * Sans ce repli, l'accueil vu depuis Paris affichait une seule carte : PAR n'a
+   * qu'une liaison en liste blanche, mais trente-sept pages éditoriales, toutes
+   * indexables. Le bloc n'a rien à gagner à ignorer les secondes.
+   */
+  const whitelisted = routesFrom(origin);
+  const routes =
+    whitelisted.length >= limit
+      ? whitelisted
+      : [
+          ...whitelisted,
+          ...withoutPruned(DESTINATIONS, PRUNED_ROUTE_SLUGS)
+            .filter(
+              (d) =>
+                d.origin.toUpperCase() === origin &&
+                !whitelisted.some((w) => w.destination === d.destination),
+            )
+            .map((d) => ({
+              slug: d.slug,
+              origin: d.origin,
+              originCity: d.originCity,
+              destination: d.destination,
+              destinationCity: d.destinationCity,
+              country: d.country,
+              nonstop: true,
+            })),
+        ];
   if (routes.length === 0) return [];
 
   // 1) Balayage mondial en cache : seule source qui porte le nom de la
@@ -644,4 +688,56 @@ export async function listCheapestWhitelistedRoutes(params: {
   }
 
   return cheapest.sort((a, b) => a.priceEur - b.priceEur).slice(0, limit);
+}
+
+/** Au-delà, un relevé ne dit plus rien de ce que coûte un séjour aujourd'hui. */
+export const ENVIE_MAX_AGE_DAYS = 7;
+
+/**
+ * Quatre liaisons pour l'accueil : deux « moins chères », deux « envies ».
+ *
+ * Les deux premières sont les moins chères, toutes destinations confondues.
+ * Les deux suivantes sont tirées parmi les liaisons où l'hébergement est une
+ * question pertinente — donc où le lecteur part en séjour et pas en visite
+ * familiale — et dont le relevé a moins de sept jours.
+ *
+ * Le second groupe COMPLÈTE le premier sans le recouper : une liaison déjà
+ * retenue comme « moins chère » n'y revient pas, sinon l'accueil afficherait
+ * deux fois la même carte.
+ *
+ * Le bloc reste rempli si le second groupe manque : les moins chères prennent
+ * les places libres. Quatre cartes valent mieux que deux, et une liaison sans
+ * relevé récent reste une vraie liaison.
+ */
+export async function listHomeRoutes(params: {
+  origin: string;
+  limit?: number | undefined;
+}): Promise<CheapestWhitelistedRoute[]> {
+  const limit = params.limit ?? 4;
+  const moitie = Math.floor(limit / 2);
+  // On demande large : le tri par prix est fait ici, sur l'ensemble.
+  const toutes = await listCheapestWhitelistedRoutes({ origin: params.origin, limit: 40 });
+  if (toutes.length === 0) return [];
+
+  const lesMoinsChers = toutes.slice(0, moitie);
+  const dejaPris = new Set(lesMoinsChers.map((r) => r.slug));
+
+  const limite = Date.now() - ENVIE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+  const envies = toutes.filter((route) => {
+    if (dejaPris.has(route.slug)) return false;
+    if (!hotelPertinent(route.destination, route.country)) return false;
+    // Un relevé sans date n'est pas un relevé récent : on ne le suppose pas.
+    if (!route.observedAt) return false;
+    const time = Date.parse(route.observedAt);
+    return Number.isFinite(time) && time >= limite;
+  });
+
+  const retenues = [...lesMoinsChers, ...envies.slice(0, limit - moitie)];
+  // Complément par les moins chères quand les envies ne suffisent pas.
+  for (const route of toutes) {
+    if (retenues.length >= limit) break;
+    if (retenues.some((r) => r.slug === route.slug)) continue;
+    retenues.push(route);
+  }
+  return retenues;
 }

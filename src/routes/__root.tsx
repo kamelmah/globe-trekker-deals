@@ -11,16 +11,49 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { ANALYTICS_BOOTSTRAP, analyticsScriptSrc } from "@/lib/analytics";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { CookieBanner } from "@/components/site/CookieBanner";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieConsentProvider } from "@/lib/cookie-consent-context";
+import { detectedOrigin } from "@/lib/geo-origin.functions";
+import { FALLBACK_ORIGIN } from "@/lib/geo-origin";
 import { HabillageProvider, useHabillage } from "@/lib/habillage-context";
 import { CurrencyProvider } from "@/lib/currency-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+
+/**
+ * L'origine de la session.
+ *
+ * `beforeLoad` s'exécute à chaque navigation : sans mémoïsation, chaque clic
+ * déclencherait un aller-retour serveur pour redemander une position qui n'a
+ * pas bougé.
+ *
+ * MAIS LE CACHE EST STRICTEMENT CÔTÉ CLIENT. Une variable de module vit dans le
+ * processus, pas dans la requête : côté serveur, elle aurait servi la ville du
+ * premier visiteur à tous les suivants — une réponse fausse pour presque tout le
+ * monde, et la position d'un visiteur donnée à un autre. Le rendu serveur
+ * recalcule donc à chaque requête ; seule la navigation client, où le document
+ * appartient déjà à un visiteur unique, réutilise la valeur.
+ */
+let originPromiseClient: Promise<string> | null = null;
+
+function originDeLaSession(): Promise<string> {
+  const calcul = () =>
+    detectedOrigin()
+      .then(({ origin }) => origin)
+      .catch((error: unknown) => {
+        console.error("Origine par défaut indisponible", error);
+        return FALLBACK_ORIGIN;
+      });
+
+  if (typeof window === "undefined") return calcul();
+  originPromiseClient ??= calcul();
+  return originPromiseClient;
+}
 
 function NotFoundComponent() {
   return (
@@ -96,6 +129,20 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  /*
+   * L'origine déduite de la requête, une fois pour toute l'application.
+   *
+   * Dans `beforeLoad` et non dans un loader : c'est ce qui la met dans le
+   * CONTEXTE, donc à disposition de toutes les routes filles — l'accueil s'en
+   * sert pour son bloc « les moins chers », le pied de page pour son lien mode
+   * budget. Deux détections indépendantes finiraient par diverger, ce qui est
+   * exactement le défaut qu'on corrige.
+   *
+   * Elle est calculée au rendu SERVEUR : le HTML servi porte déjà la bonne
+   * ville, rien ne change sous les yeux du lecteur après affichage.
+   */
+  beforeLoad: async () => ({ origin: await originDeLaSession() }),
+
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -136,6 +183,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children:
           "(function(){try{var t=localStorage.getItem('tmv-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();",
       },
+      /*
+       * Mesure d'audience, seulement si elle est configurée.
+       *
+       * Deux balises, dans l'ordre exact du fragment fourni par Plausible : le
+       * script `async` d'abord, l'amorce ensuite. L'ordre est en réalité
+       * indifférent — les `||` de l'amorce couvrent les deux cas, voir
+       * src/lib/analytics.ts — mais s'écarter du fragment officiel sans raison
+       * revient à devoir le rejustifier à chaque mise à jour de l'outil.
+       *
+       * Le script est chargé depuis notre domaine et l'amorce y renvoie aussi
+       * la collecte : voir netlify.toml pour le proxy.
+       */
+      ...(analyticsScriptSrc()
+        ? [{ src: analyticsScriptSrc() as string, async: true }, { children: ANALYTICS_BOOTSTRAP }]
+        : []),
       {
         type: "application/ld+json",
         children: JSON.stringify({

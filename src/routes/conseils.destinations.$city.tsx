@@ -112,7 +112,7 @@ function formatMonthLabel(month: string): string {
 
 function CityGuidePage() {
   const { guide, price } = Route.useLoaderData();
-  const image = getDestinationImage(guide.destination, guide.city, guide.country);
+  const image = getDestinationImage(guide.destination, guide.city);
   const travelDocument = getTravelDocumentForGuide(guide.slug);
 
   const practical: { label: string; value: string }[] = [

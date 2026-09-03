@@ -1,4 +1,5 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouteContext, useRouterState } from "@tanstack/react-router";
+import { FALLBACK_ORIGIN } from "@/lib/geo-origin";
 import { BedDouble, Bell, BookOpen, Compass, Plane } from "lucide-react";
 import { type ReactNode, useCallback } from "react";
 
@@ -15,6 +16,8 @@ import { Button } from "@/components/ui/button";
  * `validateSearch` applique par défaut, donc la destination est inchangée.
  */
 const RECHERCHE_BUDGET = {
+  // `origin` est écrasée au rendu par l'origine détectée : cette constante ne
+  // sert plus que de gabarit pour les cinq autres clés que la route exige.
   origin: "PAR",
   budget: 400,
   month: "",
@@ -84,6 +87,10 @@ function allerVers(id: string): boolean {
 
 export function Header() {
   const navigate = useNavigate();
+  // Même origine que le pied de page et l'accueil : elle vient du contexte
+  // racine, déduite de la requête. Le header portait « PAR » en dur, ce qui
+  // envoyait un Marseillais sur la carte parisienne depuis la barre du bas.
+  const originDetectee = useRouteContext({ from: "__root__" })?.origin ?? FALLBACK_ORIGIN;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   /** Scroll vers le formulaire de recherche et focus sur le champ départ. */
@@ -147,7 +154,12 @@ export function Header() {
 
     if (id === "budget") {
       return (
-        <Link key={id} to="/mode-budget" search={RECHERCHE_BUDGET} {...commun}>
+        <Link
+          key={id}
+          to="/mode-budget"
+          search={{ ...RECHERCHE_BUDGET, origin: originDetectee }}
+          {...commun}
+        >
           {contenu}
         </Link>
       );

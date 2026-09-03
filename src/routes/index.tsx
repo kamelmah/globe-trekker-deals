@@ -10,13 +10,15 @@ import { Button } from "@/components/ui/button";
 import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
 import { PRUNED_GUIDE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { routesFrom } from "@/data/route-whitelist";
+import { DESTINATIONS } from "@/data/destinations";
+import { cityLabel } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
 import { formatDateMedium } from "@/lib/dates";
 import { getDestinationImage } from "@/lib/destination-images";
 import { withPreposition } from "@/lib/french-grammar";
 import { hreflangLinks } from "@/lib/hreflang";
 import { listPublishedGuides } from "@/lib/published-guides.functions";
-import { cheapestWhitelistedRoutes } from "@/lib/route-pages.functions";
+import { homeRoutes } from "@/lib/route-pages.functions";
 import { dateOr, iataOr, numberOr } from "@/lib/search-params";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
@@ -24,22 +26,25 @@ import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 const DEFAULT_ORIGIN = "PAR";
 
 /**
- * Départ des liaisons mises en avant.
+ * Nom de la ville d'une origine, pour le titre du bloc.
  *
- * La liste blanche — seule source de pages /vols indexables — part très
- * majoritairement de Marseille, aéroport de référence du site. Une carte de
- * l'accueil doit mener à une page qui existe et qui est indexable : c'est donc
- * ce départ-là qu'elle montre, pas celui du formulaire.
+ * `ROUTES_ORIGIN = "MRS"` et `DEFAULT_ORIGIN = "PAR"` se contredisaient à
+ * l'écran : « Les moins chers depuis Marseille » sous un formulaire pré-rempli
+ * « Paris ». Une seule origine, détectée, remplace les deux.
  */
-const ROUTES_ORIGIN = "MRS";
-const ROUTES_ORIGIN_CITY = routesFrom(ROUTES_ORIGIN)[0]?.originCity ?? "Marseille";
+function originCityOf(code: string): string {
+  const parLaListe = routesFrom(code)[0]?.originCity;
+  if (parLaListe) return parLaListe;
+  const editoriale = DESTINATIONS.find((d) => d.origin.toUpperCase() === code.toUpperCase());
+  return editoriale?.originCity ?? cityLabel(code);
+}
 
 /** Paliers de budget proposés en pastilles vers la carte du mode budget. */
 const BUDGETS = [50, 100, 150, 250];
 
 /** Search complet attendu par /mode-budget, qui exige ses six clés. */
-function budgetSearch(budget: number) {
-  return { origin: DEFAULT_ORIGIN, budget, month: "", adultes: 1, enfants: 0, bebes: 0 };
+function budgetSearch(budget: number, origin: string) {
+  return { origin, budget, month: "", adultes: 1, enfants: 0, bebes: 0 };
 }
 
 /** Les quatre promesses réellement tenables, sous le formulaire. */
@@ -109,9 +114,15 @@ export const Route = createFileRoute("/")({
    * enregistrés, guides publiés). L'accueil ne consomme plus de quota et ne
    * dépend plus d'un aller-retour Travelpayouts pour s'afficher.
    */
-  loader: async () => {
+  loader: async ({ context }) => {
+    /*
+     * L'origine vient de la racine, qui l'a déduite de l'en-tête `x-nf-geo`.
+     * Elle remplace les deux constantes qui se contredisaient : « Les moins
+     * chers depuis Marseille » sous un formulaire pré-rempli « Paris ».
+     */
+    const origin = context.origin;
     const [cheapest, publies] = await Promise.all([
-      cheapestWhitelistedRoutes({ data: { origin: ROUTES_ORIGIN, limit: 4 } }).catch(() => ({
+      homeRoutes({ data: { origin, limit: 4 } }).catch(() => ({
         routes: [],
       })),
       listPublishedGuides().catch(() => ({ guides: [] as CityGuide[] })),
@@ -125,7 +136,14 @@ export const Route = createFileRoute("/")({
     ]
       .sort((a, b) => b.updated.localeCompare(a.updated))
       .slice(0, 3);
-    return { cheapest: cheapest.routes, guides };
+    return {
+      cheapest: cheapest.routes,
+      guides,
+      origin,
+      // Nom de la ville tel qu'il apparaîtra dans le titre du bloc. Pris sur
+      // une route réelle de cette origine, jamais reconstitué depuis le code.
+      originCity: originCityOf(origin),
+    };
   },
   head: () => ({
     meta: [
@@ -170,7 +188,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { cheapest, guides } = Route.useLoaderData();
+  const { cheapest, guides, origin, originCity } = Route.useLoaderData();
   const prefill = Route.useSearch();
   const { format } = useCurrency();
 
@@ -200,7 +218,7 @@ function HomePage() {
           >
             <SearchForm
               key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
-              initialOrigin={prefill.origin || DEFAULT_ORIGIN}
+              initialOrigin={prefill.origin || origin}
               initialDestination={prefill.destination ?? ""}
               {...(prefill.depart ? { initialDepart: prefill.depart } : {})}
               initialRetour={prefill.retour ?? ""}
@@ -232,7 +250,7 @@ function HomePage() {
       */}
       <Link
         to="/mode-budget"
-        search={budgetSearch(100)}
+        search={budgetSearch(100, origin)}
         className="flex items-center justify-center gap-2 border-b border-border bg-secondary/40 px-4 py-3 text-sm font-medium sm:hidden"
       >
         <Compass className="size-4 text-highlight" aria-hidden />
@@ -244,13 +262,11 @@ function HomePage() {
           <section className="container-page py-14">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <h2 className="font-display">
-                  Les moins chers depuis {ROUTES_ORIGIN_CITY} cette semaine
-                </h2>
+                <h2 className="font-display">Envies de départ depuis {originCity}</h2>
                 <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                  Les prix les plus bas déjà relevés sur nos liaisons vérifiées, pour un aller
-                  simple taxes incluses. Chaque montant porte la date de son relevé : c'est un prix
-                  observé, pas un prix garanti.
+                  Les deux liaisons les moins chères déjà relevées, puis deux idées de séjour
+                  relevées cette semaine. Aller simple taxes incluses, chaque montant portant la
+                  date de son relevé : ce sont des prix observés, pas des prix garantis.
                 </p>
               </div>
               {/* Même destination que « Toutes les destinations depuis
@@ -258,7 +274,7 @@ function HomePage() {
                   seul index complet des liaisons d'un départ. */}
               <Link
                 to="/mode-budget"
-                search={{ ...budgetSearch(400), origin: ROUTES_ORIGIN }}
+                search={budgetSearch(400, origin)}
                 className="text-sm font-medium text-primary underline-offset-2 hover:underline"
               >
                 Toutes les liaisons →
@@ -267,7 +283,7 @@ function HomePage() {
 
             <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
               {cheapest.map((route) => {
-                const image = getDestinationImage(route.destination, route.city, route.country);
+                const image = getDestinationImage(route.destination, route.city);
                 const details = [
                   // `observedAt` est un instant complet ; formatDateMedium
                   // attend une date nue, comme partout ailleurs sur le site.
@@ -328,7 +344,7 @@ function HomePage() {
                 <li key={budget}>
                   <Link
                     to="/mode-budget"
-                    search={budgetSearch(budget)}
+                    search={budgetSearch(budget, origin)}
                     className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2 font-display text-base font-semibold transition-colors hover:border-highlight/60 hover:bg-background"
                   >
                     {budget} €
@@ -337,7 +353,7 @@ function HomePage() {
               ))}
             </ul>
             <Button asChild className="mt-6">
-              <Link to="/mode-budget" search={budgetSearch(400)} className="gap-2">
+              <Link to="/mode-budget" search={budgetSearch(400, origin)} className="gap-2">
                 <MapIcon className="size-4" aria-hidden />
                 Voir la carte des destinations
               </Link>
@@ -367,7 +383,7 @@ function HomePage() {
                 Gérer mes alertes →
               </Link>
             </div>
-            <HomeAlertForm initialOrigin={DEFAULT_ORIGIN} />
+            <HomeAlertForm initialOrigin={origin} />
           </div>
         </section>
       </Reveal>
@@ -393,7 +409,7 @@ function HomePage() {
 
             <ul className="mt-6 grid gap-4 sm:grid-cols-3">
               {guides.map((guide) => {
-                const image = getDestinationImage(guide.destination, guide.city, guide.country);
+                const image = getDestinationImage(guide.destination, guide.city);
                 return (
                   <li key={guide.slug}>
                     <Link

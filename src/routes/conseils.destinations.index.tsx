@@ -83,7 +83,7 @@ function CityGuidesIndex() {
 
       <ul className="container-page mt-8 grid gap-4 pb-10 md:grid-cols-2">
         {guides.map((guide) => {
-          const image = getDestinationImage(guide.destination, guide.city, guide.country);
+          const image = getDestinationImage(guide.destination, guide.city);
           return (
             <li
               key={guide.slug}

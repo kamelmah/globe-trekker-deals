@@ -21,6 +21,11 @@ import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { hreflangLinks } from "@/lib/hreflang";
 import { cheapestMonthLine, computeSeasonality } from "@/lib/seasonality";
 import { routePriceTrend } from "@/lib/price-trend.functions";
+import {
+  REFERENCE_PRICE_MAX_AGE_MS,
+  computeFreshness,
+  referencePriceIsFresh,
+} from "@/lib/freshness";
 import { activeAlertCount } from "@/lib/alert-count.functions";
 import { routeSeasonality } from "@/lib/seasonality.functions";
 import { routeOgImage } from "@/lib/og-image";
@@ -30,8 +35,9 @@ import { dynamicRoutePage, relatedRoutePages } from "@/lib/route-pages.functions
 import { formatPrice } from "@/lib/currency";
 import { withPreposition } from "@/lib/french-grammar";
 import { guideForRoutePage } from "@/data/city-guides";
+import { hotelPertinent } from "@/data/hotel-relevance";
+import { NUITS_ANNONCEES, prixNuit, totalNuits } from "@/data/hotel-night-prices";
 import { getDestinationImage } from "@/lib/destination-images";
-import { cityPhotoAlt } from "@/data/city-photo-alt";
 import {
   RELATED_ROUTES_LIMIT,
   relatedRoutesHeading,
@@ -138,6 +144,21 @@ export const Route = createFileRoute("/vols/$slug")({
       moisLeMoinsCher,
       trend,
       followerCount,
+      /*
+       * Âge du relevé, calculé ICI et non au rendu.
+       *
+       * La page est rendue côté serveur à chaque requête : l'instant du loader
+       * est donc celui du rendu. Calculer « il y a 5 h » dans le composant
+       * demanderait `Date.now()` au client, avec l'écart d'hydratation que cela
+       * suppose — et surtout laisserait le bloc périmé dans le HTML servi aux
+       * robots avant que le client ne le retire.
+       */
+      lowestObservedFreshness: computeFreshness(
+        lowestObservedAt,
+        Date.now(),
+        REFERENCE_PRICE_MAX_AGE_MS / 3_600_000,
+      ),
+      referencePriceFresh: referencePriceIsFresh(lowestObservedAt),
     };
   },
 
@@ -168,9 +189,7 @@ export const Route = createFileRoute("/vols/$slug")({
       routeOgImage(route.slug) ??
       (getDestination(route.slug)
         ? destinationOgImage(route.slug)
-        : absoluteUrl(
-            getDestinationImage(route.destination, route.destinationCity, route.country).src,
-          ));
+        : absoluteUrl(getDestinationImage(route.destination, route.destinationCity).src));
     return {
       meta: [
         { title: metaTitle },
@@ -297,8 +316,10 @@ function DestinationPage() {
     moisLeMoinsCher,
     trend,
     followerCount,
+    lowestObservedFreshness,
+    referencePriceFresh,
   } = Route.useLoaderData();
-  const banner = getDestinationImage(route.destination, route.destinationCity, route.country);
+  const banner = getDestinationImage(route.destination, route.destinationCity);
   const guide = guideForRoutePage(route.slug, route.destination);
   // Le graphique et la phrase de saisonnalité partagent la même donnée : ce
   // sont deux vues d'un seul relevé, pas deux fonctionnalités.
@@ -318,6 +339,75 @@ function DestinationPage() {
     secondaryAirport(route.observedDestinationAirport);
   /** Date de départ du vol relevé — la seule date de séjour que nous connaissions. */
   const dateSejour = route.observedDepartureAt ? route.observedDepartureAt.slice(0, 10) : "";
+
+  /*
+   * Place du bloc hôtel : en tête quand la question se pose, en pied sinon.
+   *
+   * Il n'est JAMAIS retiré — une minorité cherche bien un hôtel à Alger, et le
+   * lui supprimer serait aussi faux que de le mettre en avant. Un seul JSX,
+   * rendu à l'un ou l'autre endroit : deux copies auraient divergé.
+   */
+  const hotelEnTete = hotelPertinent(route.destination, route.country);
+  // Prix indicatif de la nuit, quand il a été relevé. Absent aujourd'hui pour
+  // toutes les villes : aucune source hôtelière ne remonte jusqu'à nous.
+  const prixHotel = prixNuit(route.destination);
+  /*
+   * Le relevé ne porte qu'une date de DÉPART — un séjour n'a donc pas de fin
+   * connue, et Hotels.com ignore une date d'arrivée seule (il retomberait sur
+   * la nuit prochaine). Le lien part sans dates, et celui vers notre page
+   * hébergement emporte la date connue pour que le visiteur choisisse la
+   * seconde chez nous.
+   */
+  const blocHotel = (
+    <div className="mt-4 rounded-xl border border-border bg-card p-4">
+      <h2 className="font-display text-base font-semibold">
+        Hôtels à {route.destinationCity}
+        {dateSejour ? `, pour un départ le ${formatDateMedium(dateSejour)}` : ""}
+      </h2>
+      <p className="mt-1.5 text-sm text-muted-foreground">
+        Prix par nuit affichés par nos partenaires de réservation, chez qui vous réservez
+        directement.
+      </p>
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
+        {/*
+          Un montant plutôt qu'une invitation, QUAND il existe. Le libellé
+          annonce le total de trois nuits et non le prix d'une : c'est l'ordre
+          de grandeur d'un séjour, et c'est ce qu'un lecteur compare. Sans
+          relevé, le libellé d'origine reste — ce n'est pas une dégradation,
+          c'est le comportement actuel.
+        */}
+        <LienHotelsCom
+          className="sm:w-auto sm:min-w-64"
+          ville={route.destinationCity}
+          sid={`vols-${route.slug}`}
+          libelle={
+            prixHotel
+              ? `${route.destinationCity} : ${NUITS_ANNONCEES} nuits à partir de ${formatPrice(totalNuits(prixHotel))}`
+              : `Voir les hôtels à ${route.destinationCity}`
+          }
+          mention
+          {...(prixHotel
+            ? {
+                precision: `Prix indicatif relevé le ${formatDateMedium(prixHotel.releveLe)}, hors disponibilité.`,
+              }
+            : {})}
+        />
+        <Button asChild variant="outline" className="sm:mt-0">
+          {/* Rien d'inutile dans l'URL : un paramètre vide serait réécrit par
+              le routeur et coûterait une redirection à chaque clic. */}
+          <Link
+            to="/hebergement"
+            search={{
+              ville: route.destinationCity,
+              ...(dateSejour ? { arrivee: dateSejour } : {}),
+            }}
+          >
+            Voir la carte des hébergements
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
 
   /**
    * Le trajet consulté devient la « dernière recherche » proposée sur la page
@@ -370,98 +460,84 @@ function DestinationPage() {
 
       <p className="mt-4 max-w-3xl text-base text-muted-foreground">{route.intro}</p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">Prix de référence</p>
-          <p className="mt-1 font-display text-2xl font-semibold text-primary">
-            {lowestObserved
-              ? route.simulatedLowestPrice
-                ? `Dès ${route.simulatedLowestPrice}€`
-                : `Dès ${formatPrice(lowestObserved)}`
-              : "Historique en constitution"}
-          </p>
-          {trend && (
-            <p
-              className={`mt-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${
-                trend.direction === "baisse"
-                  ? "bg-success/15 text-success"
-                  : "bg-warning text-warning-foreground"
-              }`}
-            >
-              <span aria-hidden>{trend.direction === "baisse" ? "↓" : "↑"}</span>
-              {trend.direction === "baisse" ? "En baisse de" : "En hausse de"}{" "}
-              {formatPrice(Math.abs(trend.deltaEur))} ({Math.abs(trend.deltaPct)} %) depuis le{" "}
-              {formatDateMedium(trend.previousObservedOn)}
+      {/*
+        `sm:grid-cols-2` seulement quand les deux encarts sont là : passé 48 h
+        sans relevé, le prix de référence disparaît et la durée de vol occuperait
+        une demi-largeur en laissant l'autre vide.
+      */}
+      <div className={`mt-6 grid gap-4 ${referencePriceFresh ? "sm:grid-cols-2" : ""}`}>
+        {referencePriceFresh && (
+          <div className="rounded-xl border border-border bg-card p-4">
+            <p className="text-xs text-muted-foreground">Prix de référence</p>
+            <p className="mt-1 font-display text-2xl font-semibold text-primary">
+              {lowestObserved
+                ? route.simulatedLowestPrice
+                  ? `Dès ${route.simulatedLowestPrice}€`
+                  : `Dès ${formatPrice(lowestObserved)}`
+                : "Historique en constitution"}
             </p>
-          )}
-          <p className="mt-1 text-xs text-muted-foreground">
-            {lowestObservedAt
-              ? `Relevé le ${formatObservedDate(lowestObservedAt)}, taxes incluses. Repère indicatif, distinct de l'historique mesuré ci-dessous.`
-              : "Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous"}
-          </p>
-          {trend && (
+            {trend && (
+              <p
+                className={`mt-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${
+                  trend.direction === "baisse"
+                    ? "bg-success/15 text-success"
+                    : "bg-warning text-warning-foreground"
+                }`}
+              >
+                <span aria-hidden>{trend.direction === "baisse" ? "↓" : "↑"}</span>
+                {trend.direction === "baisse" ? "En baisse de" : "En hausse de"}{" "}
+                {formatPrice(Math.abs(trend.deltaEur))} ({Math.abs(trend.deltaPct)} %) depuis le{" "}
+                {formatDateMedium(trend.previousObservedOn)}
+              </p>
+            )}
             <p className="mt-1 text-xs text-muted-foreground">
-              {formatPrice(trend.previousEur)} au relevé du{" "}
-              {formatDateMedium(trend.previousObservedOn)}, {formatPrice(trend.currentEur)} à celui
-              du {formatDateMedium(trend.observedOn)}, sur les {trend.monthsCompared} mois de départ
-              présents dans les deux.
+              {/*
+              « relevé il y a 5 h » plutôt que l'horodatage : ce qui compte pour
+              juger d'un prix est son ÂGE, pas la date à laquelle il a été pris.
+              Un lecteur qui voit « 2 septembre 2026 à 03:07 » doit faire le
+              calcul lui-même. La date exacte reste dans l'infobulle.
+            */}
+              {lowestObservedAt ? (
+                <>
+                  Prix{" "}
+                  <time
+                    dateTime={lowestObservedAt}
+                    title={formatObservedDate(lowestObservedAt)}
+                    className="font-medium text-foreground"
+                  >
+                    {lowestObservedFreshness.label}
+                  </time>
+                  , taxes incluses. Repère indicatif, distinct de l'historique mesuré ci-dessous.
+                </>
+              ) : (
+                "Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous"
+              )}
             </p>
-          )}
-          {aeroportEloigne && (
-            <p className="mt-1.5 inline-flex items-start gap-1 text-xs text-warning-foreground">
-              <span className="rounded bg-warning px-1.5 py-0.5">
-                Ce tarif part de {aeroportEloigne.code}, à {aeroportEloigne.distanceKm} km de{" "}
-                {aeroportEloigne.city} — {aeroportEloigne.access} à prévoir.
-              </span>
-            </p>
-          )}
-        </div>
+            {trend && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {formatPrice(trend.previousEur)} au relevé du{" "}
+                {formatDateMedium(trend.previousObservedOn)}, {formatPrice(trend.currentEur)} à
+                celui du {formatDateMedium(trend.observedOn)}, sur les {trend.monthsCompared} mois
+                de départ présents dans les deux.
+              </p>
+            )}
+            {aeroportEloigne && (
+              <p className="mt-1.5 inline-flex items-start gap-1 text-xs text-warning-foreground">
+                <span className="rounded bg-warning px-1.5 py-0.5">
+                  Ce tarif part de {aeroportEloigne.code}, à {aeroportEloigne.distanceKm} km de{" "}
+                  {aeroportEloigne.city} — {aeroportEloigne.access} à prévoir.
+                </span>
+              </p>
+            )}
+          </div>
+        )}
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Durée de vol</p>
           <p className="mt-1 text-base font-semibold">{route.averageDuration}</p>
         </div>
       </div>
 
-      {/*
-        Hébergement, juste sous le prix du vol : c'est là que la question se
-        pose. Le relevé ne porte qu'une date de DÉPART — un séjour n'a donc pas
-        de fin connue, et Hotels.com ignore une date d'arrivée seule (il
-        retomberait sur la nuit prochaine). Le lien part sans dates, et celui
-        vers notre page hébergement emporte la date connue pour que le visiteur
-        choisisse la seconde chez nous.
-      */}
-      <div className="mt-4 rounded-xl border border-border bg-card p-4">
-        <h2 className="font-display text-base font-semibold">
-          Hôtels à {route.destinationCity}
-          {dateSejour ? `, pour un départ le ${formatDateMedium(dateSejour)}` : ""}
-        </h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          Prix par nuit affichés par nos partenaires de réservation, chez qui vous réservez
-          directement.
-        </p>
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
-          <LienHotelsCom
-            className="sm:w-auto sm:min-w-64"
-            ville={route.destinationCity}
-            sid={`vols-${route.slug}`}
-            libelle={`Voir les hôtels à ${route.destinationCity}`}
-            mention
-          />
-          <Button asChild variant="outline" className="sm:mt-0">
-            {/* Rien d'inutile dans l'URL : un paramètre vide serait réécrit par
-                le routeur et coûterait une redirection à chaque clic. */}
-            <Link
-              to="/hebergement"
-              search={{
-                ville: route.destinationCity,
-                ...(dateSejour ? { arrivee: dateSejour } : {}),
-              }}
-            >
-              Voir la carte des hébergements
-            </Link>
-          </Button>
-        </div>
-      </div>
+      {hotelEnTete && blocHotel}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <LivePriceButton
@@ -610,13 +686,13 @@ function DestinationPage() {
                 </p>
                 <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                   {related.map((item) => {
-                    // Le code IATA passe désormais en premier argument : sans lui,
-                    // Rome ou Barcelone tombaient sur une image d'ambiance alors
-                    // qu'un visuel curé existe. L'alt, lui, reste celui de la
-                    // ville et non `thumb.alt` : les visuels curés portent une
-                    // description longue, juste pour un grand visuel mais hors
-                    // de propos sur une vignette de 48 px dans une liste.
-                    const thumb = getDestinationImage(item.destination, item.city, item.country);
+                    // `thumb.alt` et non plus l'alt de la ville : la vignette
+                    // affiche une photo précise, son texte alternatif doit
+                    // décrire CETTE photo. L'ancien arbitrage — un alt court
+                    // parce qu'une vignette fait 48 px — confondait la taille
+                    // affichée avec ce qu'un lecteur d'écran annonce, et
+                    // faisait dire « Oran, Algérie » à une chapelle.
+                    const thumb = getDestinationImage(item.destination, item.city);
                     return (
                       <li key={item.slug}>
                         <Link
@@ -627,7 +703,7 @@ function DestinationPage() {
                           <ResponsivePicture
                             src={thumb.thumb}
                             webp={thumb.thumbWebp}
-                            alt={cityPhotoAlt(item.destination, item.city, item.country)}
+                            alt={thumb.alt}
                             loading="lazy"
                             width={96}
                             height={72}
@@ -707,6 +783,15 @@ function DestinationPage() {
           </div>
         </aside>
       </div>
+
+      {/*
+        Sur les liaisons où l'hébergement n'est pas la question — visites
+        familiales du Maghreb —, l'encart hôtel vit ici, après le formulaire
+        d'alerte, plutôt qu'en tête de page. Il n'est pas supprimé : une
+        minorité cherche bien un hôtel à Alger, et le lui retirer serait aussi
+        faux que de le lui mettre sous les yeux en premier.
+      */}
+      {!hotelEnTete && blocHotel}
     </article>
   );
 }

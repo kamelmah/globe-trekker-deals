@@ -66,12 +66,8 @@ function ComparisonsIndex() {
         {withoutPruned(COMPARISONS, PRUNED_COMPARISON_SLUGS).map((comparison) => {
           const guideA = getCityGuide(comparison.cityA.guideSlug);
           const guideB = getCityGuide(comparison.cityB.guideSlug);
-          const imageA = guideA
-            ? getDestinationImage(guideA.destination, guideA.city, guideA.country)
-            : null;
-          const imageB = guideB
-            ? getDestinationImage(guideB.destination, guideB.city, guideB.country)
-            : null;
+          const imageA = guideA ? getDestinationImage(guideA.destination, guideA.city) : null;
+          const imageB = guideB ? getDestinationImage(guideB.destination, guideB.city) : null;
           return (
             <li key={comparison.slug}>
               <Link
