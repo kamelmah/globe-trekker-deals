@@ -158,13 +158,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           description:
             "Comparateur de vols transparent : prix total taxes incluses et vendeur réel affiché sur chaque résultat.",
           /*
-           * `sameAs` est ABSENT, faute de comptes à y mettre.
+           * Un seul profil, celui que nous tenons réellement.
            *
-           * Aucune URL de profil social n'existe dans le code ni dans les
-           * données du site. `/tiktok` est une page d'atterrissage à nous, pas
-           * un profil : l'y déclarer serait faux. Une propriété absente ne coûte
-           * rien ; une propriété qui pointe à côté fait échouer la validation.
+           * `sameAs` sert à Google pour rattacher une entité à ses comptes
+           * officiels : y mettre une URL approximative ou un compte tiers
+           * revient à revendiquer ce qui ne nous appartient pas. La liste ne
+           * s'allonge que d'un compte confirmé, jamais d'un compte supposé.
+           *
+           * À NE PAS CONFONDRE avec /tiktok, qui est notre page d'atterrissage
+           * pour le trafic social — une page à nous, pas un profil.
            */
+          sameAs: ["https://www.tiktok.com/@trouvemonvol"],
         }),
       },
     ],
