@@ -6,6 +6,7 @@ import {
   BAGGAGE_LEVELS,
   baggagePolicy,
   baggageSupplement,
+  formatBaggageFee,
   priceWithBaggage,
   type BaggageLevel,
   type BaggageSupplement,
@@ -117,10 +118,12 @@ function allowanceLabel(supplement: BaggageSupplement): string {
   }
   const poids = supplement.weightKg ? ` (${supplement.weightKg} kg)` : "";
   // Sans plafond publié, « à partir de » — jamais un maximum reconstitué.
+  // Le montant passe par `formatBaggageFee` : écrit brut, le 29,99 € de
+  // Transavia s'affichait « 29.99 € », avec le point décimal anglais.
   const fourchette =
     supplement.maxEur === undefined || supplement.maxEur === supplement.minEur
-      ? `${supplement.minEur} €`
-      : `${supplement.minEur} à ${supplement.maxEur} €`;
+      ? formatBaggageFee(supplement.minEur)
+      : `${formatBaggageFee(supplement.minEur)} à ${formatBaggageFee(supplement.maxEur)}`;
   return `+${fourchette}${poids}`;
 }
 

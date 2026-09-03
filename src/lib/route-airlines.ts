@@ -25,7 +25,7 @@
  * publié de la compagnie.
  */
 
-import { type AirlineBaggagePolicy, baggagePolicy } from "@/data/baggage-fees";
+import { type AirlineBaggagePolicy, baggagePolicy, formatBaggageFee } from "@/data/baggage-fees";
 import type { DestinationFaq } from "@/data/destinations";
 import type { WhitelistedRoute } from "@/data/route-whitelist";
 import { formatDateMedium } from "@/lib/dates";
@@ -36,6 +36,10 @@ function enumerate(parts: string[]): string {
   return `${parts.slice(0, -1).join(", ")} et ${parts[parts.length - 1]}`;
 }
 
+/**
+ * Un TOTAL calculé : plancher volatil + supplément. L'arrondir est honnête,
+ * c'est déjà une estimation.
+ */
 const euros = (value: number) => `${Math.round(value)} €`;
 
 /**
@@ -215,7 +219,7 @@ export function buildAirlinesSection(params: {
               gratuites.length > 0
                 ? ` ${enumerate(gratuites.map((s) => s.name))} ${gratuites.length > 1 ? "comprennent" : "comprend"} la valise en soute dans ${gratuites.length > 1 ? "leur" : "son"} tarif de base.`
                 : ""
-            } ${sujetFacturees} ajoute au moins ${euros(moinsChereFacturee.supplementEur)}, soit ${moinsChereFacturee.partPourcent} % du plancher de ${euros(plancher)} relevé ici.`
+            } ${sujetFacturees} ajoute au moins ${formatBaggageFee(moinsChereFacturee.supplementEur)}, soit ${moinsChereFacturee.partPourcent} % du plancher de ${euros(plancher)} relevé ici.`
           : "";
 
   /**
