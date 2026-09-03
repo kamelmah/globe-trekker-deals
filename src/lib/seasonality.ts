@@ -30,6 +30,65 @@ export type Seasonality = {
  */
 export const SEASON_MINIMUM_POINTS = 3;
 
+/**
+ * Deux mois suffisent en revanche à désigner le moins cher des deux.
+ *
+ * Ce n'est pas une saisonnalité, c'est une comparaison — d'où un seuil plus bas
+ * que `SEASON_MINIMUM_POINTS` pour la ligne affichée sous le titre.
+ */
+export const CHEAPEST_MONTH_MINIMUM_POINTS = 2;
+
+/**
+ * Le socle chiffré des relevés d'une route : mois extrêmes, médiane, écart.
+ *
+ * Extrait de `computeSeasonality` pour que la ligne « le moins cher en … »
+ * affichée sous le titre reparte du MÊME calcul, au lieu d'en refaire un second
+ * qui divergerait au premier changement.
+ */
+export type SeasonExtremes = {
+  points: SeasonPoint[];
+  cheapest: SeasonPoint;
+  dearest: SeasonPoint;
+  alsoCheapest: SeasonPoint[];
+  medianEur: number;
+  spreadPct: number;
+  latestObservedAt: string | null;
+};
+
+export function seasonExtremes(
+  points: SeasonPoint[],
+  minimumPoints: number = SEASON_MINIMUM_POINTS,
+): SeasonExtremes | null {
+  const valid = points
+    .filter((p) => Number.isFinite(p.priceEur) && p.priceEur > 0 && /^\d{4}-\d{2}$/.test(p.month))
+    .sort((a, b) => a.month.localeCompare(b.month));
+  if (valid.length < minimumPoints) return null;
+
+  const prixBas = Math.min(...valid.map((p) => p.priceEur));
+  const prixHaut = Math.max(...valid.map((p) => p.priceEur));
+  const auPrixBas = valid.filter((p) => p.priceEur === prixBas);
+  const cheapest = auPrixBas[0];
+  const dearest = valid.find((p) => p.priceEur === prixHaut);
+  if (!cheapest || !dearest) return null;
+
+  return {
+    points: valid,
+    cheapest,
+    dearest,
+    alsoCheapest: auPrixBas.slice(1, 3),
+    medianEur: median(valid.map((p) => p.priceEur)),
+    // Écart exprimé en % du mois le MOINS cher : « décembre coûte 233 % de plus
+    // qu'octobre » quand on passe de 40 € à 133 €.
+    spreadPct: Math.round(((prixHaut - prixBas) / prixBas) * 100),
+    latestObservedAt:
+      valid
+        .map((p) => p.observedAt)
+        .filter((v): v is string => Boolean(v))
+        .sort()
+        .at(-1) ?? null,
+  };
+}
+
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const middle = Math.floor(sorted.length / 2);
@@ -115,45 +174,48 @@ export function computeSeasonality(
   points: SeasonPoint[],
   route: { originCity: string; destinationCity: string },
 ): Seasonality | null {
-  const valid = points
-    .filter((p) => Number.isFinite(p.priceEur) && p.priceEur > 0 && /^\d{4}-\d{2}$/.test(p.month))
-    .sort((a, b) => a.month.localeCompare(b.month));
-  if (valid.length < SEASON_MINIMUM_POINTS) return null;
-
-  const prixBas = Math.min(...valid.map((p) => p.priceEur));
-  const prixHaut = Math.max(...valid.map((p) => p.priceEur));
-  const auPrixBas = valid.filter((p) => p.priceEur === prixBas);
-  const cheapest = auPrixBas[0];
-  const dearest = valid.find((p) => p.priceEur === prixHaut);
-  if (!cheapest || !dearest) return null;
-
-  const medianEur = median(valid.map((p) => p.priceEur));
-  const spreadPct = Math.round(((prixHaut - prixBas) / prixBas) * 100);
-  const latestObservedAt =
-    valid
-      .map((p) => p.observedAt)
-      .filter((v): v is string => Boolean(v))
-      .sort()
-      .at(-1) ?? null;
-
-  const alsoCheapest = auPrixBas.slice(1, 3);
+  const socle = seasonExtremes(points, SEASON_MINIMUM_POINTS);
+  if (!socle) return null;
 
   return {
-    points: valid,
-    cheapest,
-    dearest,
-    alsoCheapest,
-    medianEur,
-    spreadPct,
-    latestObservedAt,
+    ...socle,
     sentence: buildSentence({
       ...route,
-      cheapest,
-      alsoCheapest,
-      dearest,
-      medianEur,
-      spreadPct,
-      points: valid,
+      cheapest: socle.cheapest,
+      alsoCheapest: socle.alsoCheapest,
+      dearest: socle.dearest,
+      medianEur: socle.medianEur,
+      spreadPct: socle.spreadPct,
+      points: socle.points,
     }),
   };
+}
+
+/**
+ * À partir de quel écart le mois le plus cher mérite d'être cité.
+ *
+ * En dessous, l'écart n'est pas un levier de décision et l'annoncer donnerait à
+ * la ligne un poids qu'elle n'a pas.
+ */
+export const CHEAPEST_MONTH_SPREAD_THRESHOLD = 30;
+
+/**
+ * Une ligne, sous le titre : le mois le moins cher relevé et son montant.
+ *
+ * L'écart n'est cité qu'au-delà de 30 %, et il est formulé « X % de plus » sur
+ * le mois cher, pas « X % de moins » sur le mois bon marché : un prix ne peut
+ * pas baisser de plus de 100 %, et passer de 40 € à 133 € fait bien +233 % dans
+ * un sens, mais −70 % dans l'autre. Les deux chiffres sont vrais, un seul
+ * s'écrit avec « de plus ».
+ *
+ * Null quand moins de deux mois sont relevés : sans comparaison possible, « le
+ * moins cher » ne veut rien dire.
+ */
+export function cheapestMonthLine(points: SeasonPoint[]): string | null {
+  const socle = seasonExtremes(points, CHEAPEST_MONTH_MINIMUM_POINTS);
+  if (!socle) return null;
+
+  const base = `Le moins cher en ${monthName(socle.cheapest.month)}, à ${euros(socle.cheapest.priceEur)}`;
+  if (socle.spreadPct <= CHEAPEST_MONTH_SPREAD_THRESHOLD) return `${base}.`;
+  return `${base} — ${monthName(socle.dearest.month)} coûte ${socle.spreadPct} % de plus.`;
 }
