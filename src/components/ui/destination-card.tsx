@@ -172,15 +172,17 @@ export function DestinationCard({
       </div>
 
       {/* Contenu -------------------------------------------------------- */}
-      <div className="flex flex-1 flex-col gap-1 p-4">
+      <div className="flex flex-1 flex-col gap-1 p-3 sm:p-4">
         <div className="flex items-baseline justify-between gap-2">
-          <h3 className="text-base font-semibold text-foreground">{city}</h3>
+          <h3 className="min-w-0 truncate text-sm font-semibold text-foreground sm:text-base">
+            {city}
+          </h3>
           {country ? (
             <span className="shrink-0 text-xs text-muted-foreground">{country}</span>
           ) : null}
         </div>
 
-        <p className="text-2xl font-bold text-primary">
+        <p className="text-xl font-bold text-primary sm:text-2xl">
           {priceLabel ? (
             <>dès {priceLabel}</>
           ) : (
@@ -190,19 +192,22 @@ export function DestinationCard({
           )}
         </p>
 
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs text-muted-foreground sm:text-sm">
           {seller?.trim() ? seller : "Compagnie non communiquée"}
         </p>
 
         {/* La date de relevé est TOUJOURS rendue, sur toutes les cartes.
             C'est le cœur de la promesse « prix observé, pas prix garanti ». */}
-        <p className="mt-auto pt-2 text-xs text-muted-foreground/80">
+        <p className="mt-auto pt-2 text-[11px] leading-relaxed text-muted-foreground/80 sm:text-xs">
           {observed
             ? `Aller simple taxes incluses · relevé le ${observed}`
             : "Aller simple taxes incluses · prix observé"}
         </p>
 
-        <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        {/* Le survol n'existe pas au doigt : Tailwind gate `group-hover` derrière
+            `(hover: hover)`, cette ligne resterait donc invisible sur mobile
+            tout en y occupant une hauteur. */}
+        <span className="mt-2 hidden items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:inline-flex">
           Voir les offres
           <ArrowRight className="size-3.5" aria-hidden />
         </span>
@@ -231,7 +236,14 @@ export function DestinationGrid({
   className?: string;
 }) {
   return (
-    <div className={"grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 " + className}>
+    /*
+     * Deux colonnes dès le plus petit écran, pas une seule. Quatre cartes en
+     * 4:3 empilées font un mur de défilement entre le formulaire et la suite de
+     * la page, sur l'écran où l'accueil est le plus consulté. La typographie de
+     * la carte se resserre en dessous de 640 px pour tenir dans la moitié de la
+     * largeur.
+     */
+    <div className={"grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 " + className}>
       {items.map((item) => (
         <DestinationCard key={`${item.city}-${item.price}`} {...item} />
       ))}
