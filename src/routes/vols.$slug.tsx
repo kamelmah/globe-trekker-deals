@@ -29,6 +29,12 @@ import { formatPrice } from "@/lib/currency";
 import { withPreposition } from "@/lib/french-grammar";
 import { guideForRoutePage } from "@/data/city-guides";
 import { getDestinationImage } from "@/lib/destination-images";
+import { cityPhotoAlt } from "@/data/city-photo-alt";
+import {
+  RELATED_ROUTES_LIMIT,
+  relatedRoutesHeading,
+  relatedRoutesIntro,
+} from "@/lib/related-routes";
 import { saveLastFlightSearch, todayPlus } from "@/lib/search-params";
 import { SITE_URL, absoluteUrl, destinationOgImage } from "@/lib/site";
 
@@ -64,12 +70,15 @@ export const Route = createFileRoute("/vols/$slug")({
         history.months.find((m) => m.priceEur === historyLowest)?.updatedAt ??
         null);
     // Maillage interne : autres pages SSR disponibles depuis la même origine.
+    // Le pays de la destination affichée conduit la sélection — même pays
+    // d'abord, puis pays voisin, puis les moins chères.
     const { related } = await relatedRoutePages({
       data: {
         origin: route.origin,
         originCity: route.originCity,
         exclude: route.destination,
-        limit: 12,
+        country: route.country,
+        limit: RELATED_ROUTES_LIMIT,
       },
     });
     // Hors liste blanche, la page reste servie mais demande à ne pas être
@@ -498,15 +507,25 @@ function DestinationPage() {
             <Reveal className="mt-10">
               <section>
                 <h2 className="font-display text-xl font-semibold">
-                  Autres destinations depuis {route.originCity}
+                  {relatedRoutesHeading({
+                    originCity: route.originCity,
+                    destinationCountry: route.country,
+                    routes: related,
+                  })}
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Prix les plus bas déjà relevés depuis {route.originCity}, taxes incluses. Chaque
-                  lien mène à la fiche complète du trajet.
+                  {relatedRoutesIntro({
+                    originCity: route.originCity,
+                    destinationCountry: route.country,
+                    routes: related,
+                  })}
                 </p>
                 <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                   {related.map((item) => {
-                    const thumb = getDestinationImage(null, item.city, item.country);
+                    // Le code IATA passe désormais en premier argument : sans lui,
+                    // Rome ou Barcelone tombaient sur une image d'ambiance alors
+                    // qu'un visuel curé existe.
+                    const thumb = getDestinationImage(item.destination, item.city, item.country);
                     return (
                       <li key={item.slug}>
                         <Link
@@ -517,7 +536,7 @@ function DestinationPage() {
                           <ResponsivePicture
                             src={thumb.thumb}
                             webp={thumb.thumbWebp}
-                            alt={thumb.alt}
+                            alt={cityPhotoAlt(item.destination, item.city, item.country)}
                             loading="lazy"
                             width={96}
                             height={72}
