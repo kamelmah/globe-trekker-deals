@@ -158,6 +158,10 @@ export const Route = createFileRoute("/")({
             },
             "query-input": "required name=search_term_string",
           },
+          // L'Organization est déclarée une seule fois, à la racine, donc sur
+          // toutes les pages : la redéclarer ici en ferait deux sur l'accueil.
+          // Une référence par `@id` suffit à les relier.
+          publisher: { "@id": `${SITE_URL}/#organization` },
         }),
       },
     ],
