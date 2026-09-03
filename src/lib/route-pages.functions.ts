@@ -16,6 +16,9 @@ export const relatedRoutePages = createServerFn({ method: "GET" })
         origin: z.string().trim().min(3).max(3),
         originCity: z.string().trim().min(1).max(80),
         exclude: z.string().trim().max(3).optional(),
+        // Pays de la destination affichée : sert à remonter en tête les autres
+        // liaisons vers ce pays, puis vers ses voisins.
+        country: z.string().trim().min(1).max(80).optional(),
         limit: z.number().int().min(1).max(24).optional(),
       })
       .parse(data),

@@ -20,6 +20,11 @@ import {
   routesFrom,
 } from "@/data/route-whitelist";
 import { getCityIndex, type CityRecord } from "@/lib/geo.server";
+import {
+  RELATED_ROUTES_LIMIT,
+  rankRelatedRoutes,
+  type RankedRelatedRoute,
+} from "@/lib/related-routes";
 import { buildAirlinesSection } from "@/lib/route-airlines";
 import { routeSlug, slugify } from "@/lib/slug";
 import { airlineName } from "@/lib/travelpayouts.server";
@@ -439,12 +444,7 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
 // balayage mondial en cache et produisait à elle seule le millier de pages de
 // liaisons inexistantes. Le sitemap part maintenant de la liste blanche.
 
-export type RelatedRoute = {
-  slug: string;
-  city: string;
-  country: string;
-  priceEur: number | null;
-};
+export type RelatedRoute = RankedRelatedRoute;
 
 /**
  * Autres destinations proposées depuis la même ville de départ, pour renforcer
@@ -458,14 +458,20 @@ export type RelatedRoute = {
  * Les départs absents de la liste blanche (Paris, Lyon) retombent sur les pages
  * éditoriales de la même origine : elles sont indexables, et sans ce repli ces
  * pages perdraient tout maillage sortant.
+ *
+ * Le CHOIX des liaisons, lui, dépend de la page : même pays d'abord, puis pays
+ * voisin, puis les moins chères (voir `rankRelatedRoutes`). Avant, les mêmes
+ * douze liaisons s'affichaient sur les 128 pages.
  */
 export async function listRelatedRoutes(params: {
   origin: string;
   originCity: string;
   exclude?: string | undefined;
+  /** Pays de la destination affichée : c'est lui qui donne la priorité 1. */
+  country?: string | undefined;
   limit?: number | undefined;
 }): Promise<RelatedRoute[]> {
-  const limit = params.limit ?? 12;
+  const limit = params.limit ?? RELATED_ROUTES_LIMIT;
   const origin = params.origin.toUpperCase();
   const exclude = params.exclude?.toUpperCase();
 
@@ -499,15 +505,16 @@ export async function listRelatedRoutes(params: {
     if (current === undefined || price < current) observed.set(entry.destination, price);
   }
 
-  return siblings
-    .map((route) => ({
+  return rankRelatedRoutes(
+    siblings.map((route) => ({
       slug: route.slug,
+      destination: route.destination,
       city: route.city,
       country: route.country,
       priceEur: observed.get(route.destination) ?? null,
-    }))
-    .sort((a, b) => (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity))
-    .slice(0, limit);
+    })),
+    { destinationCountry: params.country ?? null, limit },
+  );
 }
 
 export type CheapestWhitelistedRoute = {
