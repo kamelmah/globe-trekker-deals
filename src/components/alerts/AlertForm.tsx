@@ -3,6 +3,7 @@ import { BellRing, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { trackEvent } from "@/lib/analytics";
 import { subscribeToAlert } from "@/lib/flights.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +55,10 @@ export function AlertForm({
         toast.success(result.message);
         setFeedback({ ok: true, message: result.message });
         setEmail("");
+        // Après la confirmation du serveur, jamais à la soumission : un
+        // formulaire refusé (email invalide, doublon) n'est pas une alerte
+        // créée. Le trajet part en propriété, l'adresse e-mail jamais.
+        trackEvent("alerte_creee", { trajet: `${origin}-${destination}`, source: "vols" });
       } else {
         toast.error(result.message);
         setFeedback({ ok: false, message: result.message });

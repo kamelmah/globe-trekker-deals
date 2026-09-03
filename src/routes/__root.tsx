@@ -11,6 +11,12 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import {
+  ANALYTICS_API_URL,
+  ANALYTICS_BOOTSTRAP,
+  ANALYTICS_SCRIPT_SRC,
+  analyticsDomain,
+} from "@/lib/analytics";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { CookieBanner } from "@/components/site/CookieBanner";
@@ -182,6 +188,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children:
           "(function(){try{var t=localStorage.getItem('tmv-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();",
       },
+      /*
+       * Mesure d'audience, seulement si elle est configurée.
+       *
+       * Deux balises et pas une : l'amorce d'abord (elle met les événements en
+       * file d'attente), le script `defer` ensuite. Inverser les deux ferait
+       * perdre les clics survenus avant la fin de l'analyse du document,
+       * c'est-à-dire précisément ceux des visiteurs les plus décidés.
+       *
+       * `src` et `data-api` pointent tous deux sur notre domaine : voir
+       * src/lib/analytics.ts pour le pourquoi, et netlify.toml pour le proxy.
+       */
+      ...(analyticsDomain()
+        ? [
+            { children: ANALYTICS_BOOTSTRAP },
+            {
+              src: ANALYTICS_SCRIPT_SRC,
+              defer: true,
+              "data-domain": analyticsDomain() as string,
+              "data-api": ANALYTICS_API_URL,
+            },
+          ]
+        : []),
       {
         type: "application/ld+json",
         children: JSON.stringify({

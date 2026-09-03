@@ -52,3 +52,48 @@
   for = "/og/*"
   [headers.values]
     cache-control = "public, max-age=604800"
+
+# ---------------------------------------------------------------------------
+# Mesure d'audience servie depuis notre domaine
+#
+# Les bloqueurs de publicité filtrent sur le NOM DE DOMAINE : un script chargé
+# depuis plausible.io disparaît chez une bonne partie des visiteurs, et pas chez
+# n'importe lesquels — navigateurs équipés, publics techniques, mobiles sous
+# navigateur alternatif. Les rapports deviennent alors non seulement incomplets
+# mais biaisés, ce qui est pire qu'incomplet.
+#
+# Ces deux règles servent le script ET l'endpoint de collecte sous /stats/,
+# c'est-à-dire depuis trouvemonvol.fr : plus de domaine tiers à filtrer.
+#
+# `status = 200` est essentiel : c'est ce qui fait un PROXY. Avec un 301/302, le
+# navigateur repartirait vers plausible.io et on aurait rebâti exactement ce
+# qu'on contourne.
+#
+# Les règles de netlify.toml sont évaluées AVANT le `_redirects` généré par
+# Nitro, dont le `/*` attrape tout le reste : /stats/* ne peut donc pas être
+# capturé par le rendu serveur.
+#
+# Instance auto-hébergée : remplacer https://plausible.io par l'URL de
+# l'instance dans les deux règles. Le préfixe /stats/, lui, est déclaré côté
+# application dans src/lib/analytics.ts (ANALYTICS_PREFIX) — les deux doivent
+# rester d'accord.
+# ---------------------------------------------------------------------------
+
+[[redirects]]
+  from = "/stats/js/script.js"
+  to = "https://plausible.io/js/script.js"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/stats/api/event"
+  to = "https://plausible.io/api/event"
+  status = 200
+  force = true
+
+[[headers]]
+  # Le script de mesure change rarement ; sans cet en-tête il serait redemandé
+  # à chaque page vue, proxy oblige.
+  for = "/stats/js/script.js"
+  [headers.values]
+    cache-control = "public, max-age=86400"

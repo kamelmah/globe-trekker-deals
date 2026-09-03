@@ -23,6 +23,7 @@ import {
   Clock,
 } from "lucide-react";
 
+import { trackEvent } from "@/lib/analytics";
 import { co2Label } from "@/lib/co2";
 import { computeFreshness, type Freshness, type FreshnessTone } from "@/lib/freshness";
 import { useCurrency } from "@/lib/currency-context";
@@ -324,7 +325,24 @@ export function FlightCard({
           </p>
 
           <Button asChild variant={freshness?.estimate ? "outline" : "default"} className="mt-1">
-            <a href={offer.bookingUrl} target="_blank" rel="noopener noreferrer nofollow sponsored">
+            <a
+              href={offer.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer nofollow sponsored"
+              /*
+               * Le seul point du site où l'on quitte TrouveMonVol pour un vol.
+               * On mesure quel VENDEUR est choisi et sur quel trajet : c'est ce
+               * qui dit si l'ordre des résultats correspond à ce que les gens
+               * retiennent. Aucun prix n'est envoyé — il change d'une minute à
+               * l'autre et rendrait la donnée illisible plutôt qu'utile.
+               */
+              onClick={() =>
+                trackEvent("clic_vol_sortant", {
+                  vendeur: offer.seller,
+                  trajet: `${offer.originAirport}-${offer.destinationAirport}`,
+                })
+              }
+            >
               {freshness?.estimate ? "Vérifier chez" : "Réserver chez"} {offer.seller}
             </a>
           </Button>
