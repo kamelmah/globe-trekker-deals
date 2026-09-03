@@ -54,6 +54,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         // une page en noindex envoie deux consignes contradictoires.
         const staticPages = [
           "/",
+          "/moins-cher",
           "/mode-budget",
           "/alertes",
           "/conseils",
