@@ -30,18 +30,62 @@
  * À revérifier tous les six mois, comme la liste blanche des routes.
  */
 
+/**
+ * Un palier de poids vendu par la compagnie, avec ses deux prix.
+ *
+ * Les compagnies ne vendent pas « un bagage en soute » mais une grille : chez
+ * Transavia, 15 kg à 29,99 € en ligne et 70 € à l'aéroport. Une fourchette
+ * min–max écrasait cette grille et laissait croire que le même bagage variait
+ * du simple au double selon la route, alors que ce sont des poids différents.
+ *
+ * Un prix absent est un prix que la compagnie ne publie pas pour ce palier :
+ * Transavia vend 10 kg à l'aéroport sans équivalent en ligne, easyJet publie
+ * ses formats (15, 23 et 32 kg) sans leurs tarifs.
+ */
+export type BaggageTier = {
+  weightKg: number;
+  /** Tarif à l'achat en ligne, au moment de la réservation. */
+  onlineEur?: number;
+  /** Tarif à l'aéroport ou à l'enregistrement, toujours bien plus élevé. */
+  airportEur?: number;
+};
+
 /** Ce que le tarif de base prévoit pour un type de bagage donné. */
 export type BaggageAllowance =
   /** Compris dans le tarif de base, sans supplément. */
-  | { kind: "inclus"; weightKg?: number }
+  | { kind: "inclus"; weightKg?: number; dimensionsCm?: string }
   /**
-   * Payant, avec la fourchette des tarifs publiés en ligne. `maxEur` couvre les
-   * lignes et périodes les plus chères ; `atAirportEur` est le tarif au comptoir
-   * quand la compagnie le publie, systématiquement bien plus élevé.
+   * Payant. `minEur` est le PLANCHER : le moins cher des paliers publiés en
+   * ligne, ce que `priceWithBaggage` ajoute au billet.
+   *
+   * `maxEur` est optionnel et ne sert plus qu'aux entrées sans grille : une
+   * compagnie qui publie ses paliers porte `tiers`, et un « max » y désignerait
+   * un bagage plus lourd, pas le même bagage plus cher.
    */
-  | { kind: "payant"; minEur: number; maxEur: number; weightKg?: number; atAirportEur?: number }
-  /** Non documenté chez nous : à ne jamais présenter comme gratuit ni comme payant. */
-  | { kind: "inconnu" };
+  | {
+      kind: "payant";
+      minEur: number;
+      maxEur?: number;
+      weightKg?: number;
+      dimensionsCm?: string;
+      /** Prix sur place pour la formule la moins chère (comptoir, enregistrement). */
+      atAirportEur?: number;
+      /** Prix à la porte d'embarquement, quand il diffère du comptoir. */
+      atGateEur?: number;
+      /** Grille complète des paliers publiés. */
+      tiers?: BaggageTier[];
+      /** Excédent de poids, par kilo au-delà du palier acheté. */
+      excessPerKgEur?: number;
+    }
+  /**
+   * Non documenté chez nous : à ne jamais présenter comme gratuit ni comme
+   * payant. `tiers` peut néanmoins porter les formats VENDUS quand la compagnie
+   * les publie sans leurs prix (easyJet).
+   */
+  | { kind: "inconnu"; tiers?: BaggageTier[] };
+
+/** D'où vient un chiffre, et quand nous l'avons vérifié. */
+export type BaggageSource = { url: string; officielle: boolean; verifiedAt: string };
 
 export type AirlineBaggagePolicy = {
   /** Code IATA tel que renvoyé par la source tarifaire. */
@@ -55,7 +99,7 @@ export type AirlineBaggagePolicy = {
   cabinBag: BaggageAllowance;
   /** Bagage en soute. */
   checkedBag: BaggageAllowance;
-  /** D'où vient l'information. */
+  /** D'où vient l'information, sauf champ disposant de sa propre source. */
   source: string;
   /**
    * Le lien de `source` est-il la page officielle de la compagnie ?
@@ -68,6 +112,15 @@ export type AirlineBaggagePolicy = {
   sourceOfficielle: boolean;
   /** Date à laquelle nous l'avons vérifiée. */
   verifiedAt: string;
+  /**
+   * Sources par champ, quand elles diffèrent de `source`.
+   *
+   * Existe parce qu'une entrée peut être corrigée champ par champ : la cabine
+   * de Volotea vient de volotea.com, sa soute est restée sur une source
+   * secondaire. Prétendre que toute l'entrée est officielle serait faux, et la
+   * ramener entièrement au secondaire effacerait une vérification réelle.
+   */
+  sources?: Partial<Record<"personalItem" | "cabinBag" | "checkedBag", BaggageSource>>;
   note?: string;
 };
 
@@ -97,24 +150,96 @@ export const AIRLINE_BAGGAGE: readonly AirlineBaggagePolicy[] = [
     name: "Transavia",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "inclus", weightKg: 10 },
-    checkedBag: { kind: "payant", minEur: 31, maxEur: 45, weightKg: 20, atAirportEur: 70 },
-    source:
-      "https://ulysse.com/news/comparatif-vols-marseille-algerie-transavia-volotea-air-algerie-ete-2026",
-    sourceOfficielle: false,
-    verifiedAt: VERIFIED,
+    /*
+     * Grille officielle relevée le 2026-09-03. L'ancienne donnée — « 20 kg de
+     * 31 € à 45 € en ligne, 70 € au comptoir » — était fausse sur les deux
+     * chiffres : le palier 20 kg est à 36,99 € en ligne et 80 € à l'aéroport.
+     *
+     * `minEur` vaut 29,99 € : le moins cher des paliers vendus en ligne (15 kg).
+     * Pas de `maxEur` — les 89,99 € du haut de grille achètent 50 kg, pas le
+     * même bagage sur une route plus chère.
+     */
+    checkedBag: {
+      kind: "payant",
+      minEur: 29.99,
+      weightKg: 15,
+      atAirportEur: 60,
+      excessPerKgEur: 15,
+      tiers: [
+        { weightKg: 10, airportEur: 60 },
+        { weightKg: 15, onlineEur: 29.99, airportEur: 70 },
+        { weightKg: 20, onlineEur: 36.99, airportEur: 80 },
+        { weightKg: 25, onlineEur: 41.99, airportEur: 90 },
+        { weightKg: 30, onlineEur: 51.99, airportEur: 100 },
+        { weightKg: 40, onlineEur: 64.99, airportEur: 120 },
+        { weightKg: 50, onlineEur: 89.99, airportEur: 180 },
+      ],
+    },
+    source: "https://www.transavia.com/aide/fr-fr/bagages/bagages-en-soute/tarifs-bagages-soute",
+    sourceOfficielle: true,
+    verifiedAt: "2026-09-03",
+    sources: {
+      // La page officielle relevée ne couvre que la soute : la franchise cabine
+      // reste sur la source secondaire tant que la page cabine n'est pas relevée.
+      personalItem: {
+        url: "https://ulysse.com/news/comparatif-vols-marseille-algerie-transavia-volotea-air-algerie-ete-2026",
+        officielle: false,
+        verifiedAt: VERIFIED,
+      },
+      cabinBag: {
+        url: "https://ulysse.com/news/comparatif-vols-marseille-algerie-transavia-volotea-air-algerie-ete-2026",
+        officielle: false,
+        verifiedAt: VERIFIED,
+      },
+    },
+    note: "Les tarifs soute dépendent de la destination, du vol et du moment de la réservation : les montants affichés ici sont des planchers. Le bagage cabine ne peut plus être acheté à l'aéroport ; seule une franchise soute de 10 kg à 60 € y est proposée. Excédent de poids à l'aéroport : à partir de 15 € par kilo.",
   },
   {
     airline: "V7",
     slug: "volotea",
     name: "Volotea",
-    personalItem: { kind: "inclus" },
-    cabinBag: { kind: "inclus", weightKg: 10 },
-    checkedBag: { kind: "payant", minEur: 15, maxEur: 34, weightKg: 20, atAirportEur: 65 },
-    source:
-      "https://ulysse.com/news/comparatif-vols-marseille-algerie-transavia-volotea-air-algerie-ete-2026",
-    sourceOfficielle: false,
-    verifiedAt: VERIFIED,
-    note: "Le tarif du bagage en soute varie selon la saison.",
+    personalItem: { kind: "inclus", dimensionsCm: "40 × 30 × 20 cm" },
+    /*
+     * CORRIGÉ le 2026-09-03. Le barème annonçait « bagage cabine de 10 kg
+     * compris », ce qui était FAUX : le tarif standard ne comprend que le sac
+     * sous le siège. Le bagage cabine 10 kg passe par l'embarquement
+     * prioritaire (à partir de 9 €) ou un abonnement Megavolotea, et coûte 65 €
+     * par pièce et par trajet présenté à la porte sans l'un des deux.
+     *
+     * L'erreur ne touchait pas que les pages bagages : `priceWithBaggage`
+     * alimente le prix affiché ET le tri des résultats de recherche. Une offre
+     * Volotea comparée « bagage cabine » sortait au prix nu, donc devant des
+     * concurrentes qui, elles, comprennent la cabine.
+     */
+    cabinBag: {
+      kind: "payant",
+      minEur: 9,
+      weightKg: 10,
+      dimensionsCm: "55 × 40 × 25 cm",
+      atGateEur: 65,
+    },
+    /*
+     * Grille officielle relevée le 2026-09-03. L'ancienne donnée — « 20 kg de
+     * 15 € à 34 € » — était fausse : le palier 20 kg est à 14 € en ligne, et
+     * le plancher réel est le palier 10 kg à 9 €.
+     */
+    checkedBag: {
+      kind: "payant",
+      minEur: 9,
+      weightKg: 10,
+      atAirportEur: 45,
+      atGateEur: 65,
+      excessPerKgEur: 12,
+      tiers: [
+        { weightKg: 10, onlineEur: 9, airportEur: 45 },
+        { weightKg: 20, onlineEur: 14, airportEur: 75 },
+        { weightKg: 25, onlineEur: 19, airportEur: 75 },
+      ],
+    },
+    source: "https://www.volotea.com/fr/bagage",
+    sourceOfficielle: true,
+    verifiedAt: "2026-09-03",
+    note: "Le tarif standard ne comprend que le sac sous le siège. Le bagage cabine de 10 kg exige l'embarquement prioritaire, à partir de 9 €, ou un abonnement Megavolotea ; présenté à la porte sans l'un des deux, il est facturé 65 € par pièce et par trajet. Excédent de poids : 12 € par kilo jusqu'à 32 kg. Maximum 5 bagages et 50 kg par passager ; bagage spécial 60 €, 32 kg maximum. Les prix varient selon l'origine, la destination et la saison.",
   },
   {
     airline: "AH",
@@ -159,15 +284,52 @@ export const AIRLINE_BAGGAGE: readonly AirlineBaggagePolicy[] = [
     name: "easyJet",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "payant", minEur: 6, maxEur: 33 },
-    // easyJet vend la soute par tranches de 3 kg : il n'existe pas de tarif
-    // unique pour 20 kg, on préfère ne rien afficher plutôt qu'approximer.
-    checkedBag: { kind: "inconnu" },
-    source: "https://easyscape.eu/blog/regles-bagages-compagnies-low-cost-2026",
-    sourceOfficielle: false,
-    verifiedAt: VERIFIED,
-    note: "La soute se paie par tranches de 3 kg jusqu'à 32 kg : pas de tarif unique pour 20 kg.",
+    /*
+     * La page officielle relevée le 2026-09-03 donne les FORMATS vendus — 15,
+     * 23 et 32 kg — sans leurs tarifs. Le prix reste donc « inconnu » : les
+     * poids sont affichés, aucun montant n'est deviné. C'est aussi ce qui
+     * corrige l'ancienne mention « tranches de 3 kg », qui venait d'une source
+     * secondaire et ne figure pas sur la page de la compagnie.
+     */
+    checkedBag: {
+      kind: "inconnu",
+      tiers: [{ weightKg: 15 }, { weightKg: 23 }, { weightKg: 32 }],
+    },
+    source: "https://www.easyjet.com/fr/aide/bagage/bagage-en-soute",
+    sourceOfficielle: true,
+    verifiedAt: "2026-09-03",
+    sources: {
+      // La page officielle relevée ne couvre que la soute.
+      personalItem: {
+        url: "https://easyscape.eu/blog/regles-bagages-compagnies-low-cost-2026",
+        officielle: false,
+        verifiedAt: VERIFIED,
+      },
+      cabinBag: {
+        url: "https://easyscape.eu/blog/regles-bagages-compagnies-low-cost-2026",
+        officielle: false,
+        verifiedAt: VERIFIED,
+      },
+    },
+    note: "La soute est vendue en trois formats : 15 kg, 23 kg (standard) et 32 kg. Leurs tarifs ne figurent pas sur la page relevée : nous ne les affichons pas plutôt que de les estimer.",
   },
 ];
+
+/**
+ * Un tarif bagage tel que la compagnie l'affiche.
+ *
+ * Les centimes sont conservés quand ils existent : Transavia publie 29,99 €, et
+ * l'arrondir à 30 € sur une page qui prétend citer un tarif officiel serait
+ * faux. Les montants ronds restent sans décimales.
+ */
+export function formatBaggageFee(amountEur: number): string {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: Number.isInteger(amountEur) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amountEur);
+}
 
 const PAR_CODE = new Map(AIRLINE_BAGGAGE.map((p) => [p.airline, p]));
 
@@ -195,8 +357,8 @@ function allowanceFor(policy: AirlineBaggagePolicy, level: BaggageLevel): Baggag
 export type BaggageSupplement =
   /** Aucun supplément : ce niveau est compris dans le tarif. */
   | { kind: "inclus"; weightKg?: number }
-  /** Supplément à partir de `minEur` (fourchette publiée `minEur`–`maxEur`). */
-  | { kind: "payant"; minEur: number; maxEur: number; weightKg?: number; atAirportEur?: number }
+  /** Supplément à partir de `minEur`. `maxEur` absent = plafond non publié. */
+  | { kind: "payant"; minEur: number; maxEur?: number; weightKg?: number; atAirportEur?: number }
   /** Compagnie non documentée, ou niveau non documenté chez cette compagnie. */
   | { kind: "inconnu" };
 
@@ -225,7 +387,7 @@ export function baggageSupplement(
   return {
     kind: "payant",
     minEur: allowance.minEur,
-    maxEur: allowance.maxEur,
+    ...(allowance.maxEur === undefined ? {} : { maxEur: allowance.maxEur }),
     ...(allowance.weightKg === undefined ? {} : { weightKg: allowance.weightKg }),
     ...(allowance.atAirportEur === undefined ? {} : { atAirportEur: allowance.atAirportEur }),
   };

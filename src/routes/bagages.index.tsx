@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
-import { AIRLINE_BAGGAGE, type BaggageAllowance } from "@/data/baggage-fees";
+import { AIRLINE_BAGGAGE, formatBaggageFee, type BaggageAllowance } from "@/data/baggage-fees";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 /**
@@ -51,9 +51,14 @@ export const Route = createFileRoute("/bagages/")({
   component: BagagesPage,
 });
 
-const euros = (value: number) => `${Math.round(value)} €`;
+/** Tarif publié, centimes compris quand la compagnie en affiche. */
+const euros = formatBaggageFee;
 
-/** Colonne « bagage cabine » du tableau d'aiguillage : compris, ou à partir de. */
+/**
+ * Colonnes du tableau d'aiguillage. « Compris » n'est écrit que si la franchise
+ * l'est vraiment : Volotea affichait « Compris (10 kg) » en cabine alors que son
+ * tarif standard ne couvre que le sac sous le siège.
+ */
 function cabinSummary(allowance: BaggageAllowance): string {
   if (allowance.kind === "inclus") {
     return allowance.weightKg ? `Compris (${allowance.weightKg} kg)` : "Compris";
@@ -67,8 +72,15 @@ function checkedSummary(allowance: BaggageAllowance): string {
   if (allowance.kind === "inclus") {
     return allowance.weightKg ? `Comprise (${allowance.weightKg} kg)` : "Comprise";
   }
-  if (allowance.kind === "payant") return euros(allowance.minEur);
-  return "Non documenté";
+  if (allowance.kind === "payant") {
+    return allowance.weightKg
+      ? `${euros(allowance.minEur)} (${allowance.weightKg} kg)`
+      : euros(allowance.minEur);
+  }
+  // Formats vendus connus, tarifs non publiés : le dire plutôt que « non documenté ».
+  return allowance.tiers && allowance.tiers.length > 0
+    ? `${allowance.tiers.map((t) => `${t.weightKg} kg`).join(", ")} — prix non publié`
+    : "Non documenté";
 }
 
 function BagagesPage() {
