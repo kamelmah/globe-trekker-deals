@@ -2,6 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { BellRing, Check, Compass, Map as MapIcon } from "lucide-react";
 
 import { HomeAlertForm } from "@/components/alerts/HomeAlertForm";
+import { DestinationCard } from "@/components/flights/DestinationCard";
 import { SearchForm } from "@/components/search/SearchForm";
 import { AvionAnime } from "@/components/site/AvionAnime";
 import { Reveal } from "@/components/site/Reveal";
@@ -12,8 +13,6 @@ import { PRUNED_GUIDE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { routesFrom } from "@/data/route-whitelist";
 import { DESTINATIONS } from "@/data/destinations";
 import { cityLabel } from "@/data/airports";
-import { useCurrency } from "@/lib/currency-context";
-import { formatDateMedium } from "@/lib/dates";
 import { getDestinationImage } from "@/lib/destination-images";
 import { withPreposition } from "@/lib/french-grammar";
 import { hreflangLinks } from "@/lib/hreflang";
@@ -190,7 +189,6 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { cheapest, guides, origin, originCity } = Route.useLoaderData();
   const prefill = Route.useSearch();
-  const { format } = useCurrency();
 
   return (
     <div>
@@ -293,43 +291,24 @@ function HomePage() {
             </div>
 
             <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-              {cheapest.map((route) => {
+              {cheapest.map((route, index) => {
                 const image = getDestinationImage(route.destination, route.city);
-                const details = [
-                  // `observedAt` est un instant complet ; formatDateMedium
-                  // attend une date nue, comme partout ailleurs sur le site.
-                  route.observedAt
-                    ? `relevé le ${formatDateMedium(route.observedAt.slice(0, 10))}`
-                    : null,
-                  route.airline,
-                  route.nonstop ? "direct" : "avec escale",
-                ].filter((part): part is string => Boolean(part));
                 return (
-                  <li key={route.slug}>
-                    <Link
-                      to="/vols/$slug"
-                      params={{ slug: route.slug }}
-                      className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-secondary"
-                    >
-                      <ResponsivePicture
-                        src={image.thumb}
-                        webp={image.thumbWebp}
-                        alt={image.alt}
-                        loading="lazy"
-                        width={256}
-                        height={192}
-                        className="h-24 w-full object-cover sm:h-32"
-                      />
-                      <span className="flex flex-1 flex-col p-3 sm:p-4">
-                        <span className="text-sm font-semibold">{route.city}</span>
-                        <span className="mt-1 font-display text-lg font-semibold text-primary">
-                          dès {format(route.priceEur)}
-                        </span>
-                        <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                          {details.join(" · ")}
-                        </span>
-                      </span>
-                    </Link>
+                  <li key={route.slug} className="h-full">
+                    <DestinationCard
+                      slug={route.slug}
+                      ville={route.city}
+                      photoUrl={image.thumb}
+                      photoWebpUrl={image.thumbWebp}
+                      photoAlt={image.alt}
+                      prixDepuis={route.priceEur}
+                      compagnie={route.airline}
+                      direct={route.nonstop}
+                      /* `observedAt` est un instant complet ; la carte, comme
+                         partout ailleurs sur le site, attend une date nue. */
+                      dateReleve={route.observedAt?.slice(0, 10) ?? null}
+                      index={index}
+                    />
                   </li>
                 );
               })}

@@ -1644,6 +1644,17 @@
   .card-in {
     animation: hero-fade-up 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+  /*
+   * Une carte à l'intérieur d'une section révélée au scroll : l'animation
+   * démarre au montage, donc pour une section sous la ligne de flottaison elle
+   * serait terminée avant même que la section devienne visible — le décalage
+   * carte par carte ne se verrait jamais. On la retient jusqu'à ce que
+   * l'observateur pose `reveal-visible`, ce qui la (re)lance à cet instant.
+   */
+  .reveal:not(.reveal-visible) .card-in {
+    animation: none;
+    opacity: 0;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-in {
@@ -1729,6 +1740,10 @@
     }
     .card-in {
       animation: none;
+    }
+    /* Sans animation à relancer, retenir ces cartes les effacerait pour de bon. */
+    .reveal:not(.reveal-visible) .card-in {
+      opacity: 1;
     }
   }
 }
