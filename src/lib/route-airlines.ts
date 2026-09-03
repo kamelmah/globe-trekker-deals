@@ -167,18 +167,53 @@ export function buildAirlinesSection(params: {
     );
   }
 
-  const incluses = documentees.filter((p) => p.policy.checkedBag.kind === "inclus");
+  /**
+   * Conséquence bagages de CE trajet, en une clause.
+   *
+   * Elle remplace trois phrases génériques qui se recopiaient d'une page à
+   * l'autre — « Sur ces compagnies, la valise en soute se paie en supplément :
+   * comparez les prix bagages compris », « ce qui compense souvent un prix
+   * d'appel plus élevé », « les compagnies ouvrent et ferment des lignes chaque
+   * saison ». Elles pesaient double : la réponse de FAQ est rendue à l'écran ET
+   * dans les données structurées FAQPage de la page.
+   *
+   * Ce qui la remplace tient au trajet : la part que la soute représente sur le
+   * plancher relevé ici. Vide quand nous n'avons ni plancher ni compagnie
+   * documentée — mieux vaut une réponse courte qu'un remplissage.
+   */
+  const gratuites = soutes.filter((s) => s.supplementEur === 0);
+  const facturees = soutes.filter((s) => s.supplementEur > 0);
+  const moinsChereFacturee = facturees[0];
+  // « Aucune » n'est dicible que si TOUTES les compagnies du trajet sont
+  // documentées. Sur Marseille — Rome, seule Ryanair l'est : écrire « aucune ne
+  // comprend la valise en soute » affirmerait quelque chose d'ITA Airways et de
+  // MW que nous ne savons pas. Dans ce cas, les compagnies sont nommées.
+  const toutesDocumentees = nonDocumentees.length === 0;
+  const sujetFacturees =
+    toutesDocumentees && gratuites.length === 0 && facturees.length > 1
+      ? "Aucune ne comprend la valise en soute dans son tarif de base : elle"
+      : `Chez ${enumerate(facturees.map((s) => s.name))}, la valise en soute`;
+  const clauseBagage =
+    soutes.length === 0 || !plancher
+      ? ""
+      : facturees.length === 0
+        ? toutesDocumentees && gratuites.length > 1
+          ? " Toutes comprennent la valise en soute dans leur tarif de base."
+          : ` ${enumerate(gratuites.map((s) => s.name))} ${gratuites.length > 1 ? "comprennent" : "comprend"} la valise en soute dans ${gratuites.length > 1 ? "leur" : "son"} tarif de base.`
+        : moinsChereFacturee
+          ? `${
+              gratuites.length > 0
+                ? ` ${enumerate(gratuites.map((s) => s.name))} ${gratuites.length > 1 ? "comprennent" : "comprend"} la valise en soute dans ${gratuites.length > 1 ? "leur" : "son"} tarif de base.`
+                : ""
+            } ${sujetFacturees} ajoute au moins ${euros(moinsChereFacturee.supplementEur)}, soit ${moinsChereFacturee.partPourcent} % du plancher de ${euros(plancher)} relevé ici.`
+          : "";
 
   const faq: DestinationFaq = {
     question: `Quelles compagnies assurent ${trajet} ?`,
     answer:
       codes.length === 1
-        ? `Lors de notre dernière vérification (${dateValidation}), seule ${names[0]} proposait des vols ${trajet}. Les compagnies ouvrent et ferment des lignes chaque saison : une recherche en direct affiche l'offre du moment.`
-        : `Lors de notre dernière vérification (${dateValidation}), ${enumerate(names)} proposaient des vols ${trajet}. ${
-            incluses.length > 0
-              ? `${enumerate(incluses.map((p) => p.policy.name))} ${incluses.length > 1 ? "incluent" : "inclut"} la valise en soute dans le tarif de base, ce qui compense souvent un prix d'appel plus élevé.`
-              : "Sur ces compagnies, la valise en soute se paie en supplément : comparez les prix bagages compris."
-          }`,
+        ? `Lors de notre dernière vérification (${dateValidation}), seule ${names[0]} proposait des vols ${trajet}.${clauseBagage}`
+        : `Lors de notre dernière vérification (${dateValidation}), ${enumerate(names)} proposaient des vols ${trajet}.${clauseBagage}`,
   };
 
   return {
