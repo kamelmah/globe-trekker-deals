@@ -141,11 +141,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
+          // `@id` stable : les autres nœuds du site (le `WebSite` de l'accueil)
+          // le référencent au lieu de redéclarer une seconde Organization sur
+          // la même page.
+          "@id": `${SITE_URL}/#organization`,
           name: SITE_NAME,
           url: SITE_URL,
-          logo: absoluteUrl("/icons/icon-512.png"),
+          // ImageObject plutôt qu'une simple URL : Google vérifie les dimensions
+          // du logo (112 × 112 au minimum) et ne peut pas les deviner d'un lien.
+          logo: {
+            "@type": "ImageObject",
+            url: absoluteUrl("/icons/icon-512.png"),
+            width: 512,
+            height: 512,
+          },
           description:
             "Comparateur de vols transparent : prix total taxes incluses et vendeur réel affiché sur chaque résultat.",
+          /*
+           * `sameAs` est ABSENT, faute de comptes à y mettre.
+           *
+           * Aucune URL de profil social n'existe dans le code ni dans les
+           * données du site. `/tiktok` est une page d'atterrissage à nous, pas
+           * un profil : l'y déclarer serait faux. Une propriété absente ne coûte
+           * rien ; une propriété qui pointe à côté fait échouer la validation.
+           */
         }),
       },
     ],

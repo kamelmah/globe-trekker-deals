@@ -150,7 +150,9 @@ export const Route = createFileRoute("/vols/$slug")({
         ],
       };
     }
-    const { route, lowestObserved, indexable } = loaderData;
+    // `lowestObserved` ne sert plus ici : il n'alimentait que le nœud `Offer`,
+    // retiré du balisage plus bas.
+    const { route, indexable } = loaderData;
     const pageUrl = `${SITE_URL}/vols/${route.slug}`;
     // Gabarit unique, y compris pour les pages éditoriales : leurs titres
     // avaient été écrits un par un et ne suivaient plus la même forme.
@@ -220,7 +222,8 @@ export const Route = createFileRoute("/vols/$slug")({
               {
                 "@type": "ListItem",
                 position: 2,
-                name: `Vols ${route.originCity} — ${route.destinationCity}`,
+                // Mot pour mot ce qu'affiche le fil d'Ariane de la page.
+                name: `Vols pas chers ${route.originCity} — ${route.destinationCity}`,
                 item: pageUrl,
               },
             ],
@@ -260,17 +263,19 @@ export const Route = createFileRoute("/vols/$slug")({
                   },
                 }
               : {}),
-            ...(lowestObserved
-              ? {
-                  offers: {
-                    "@type": "Offer",
-                    priceCurrency: "EUR",
-                    price: lowestObserved,
-                    url: pageUrl,
-                    availability: "https://schema.org/InStock",
-                  },
-                }
-              : {}),
+            /*
+             * AUCUN `offers` ICI, volontairement.
+             *
+             * Nous ne vendons pas de billet : un nœud `Offer` annoncerait un
+             * prix disponible à l'achat sur cette page, ce qui est faux. Il
+             * portait en plus `availability: InStock`, alors que le montant est
+             * un plancher DÉJÀ RELEVÉ — une mesure passée, pas une place en
+             * vente. Le prix reste affiché à l'écran, daté et expliqué ; il n'a
+             * simplement rien à faire dans un balisage marchand.
+             *
+             * Ce qui reste décrit la liaison — aéroports, compagnie, horaire
+             * relevé — et n'affirme rien de commercial.
+             */
           }),
         },
       ],

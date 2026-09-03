@@ -92,7 +92,10 @@ export const Route = createFileRoute("/conseils/destinations/$city")({
                 name: "Guides destinations",
                 item: `${SITE_URL}/conseils/destinations`,
               },
-              { "@type": "ListItem", position: 4, name: guide.title, item: pageUrl },
+              // Le nom du dernier maillon est celui AFFICHÉ dans le fil
+              // d'Ariane — la ville —, pas le titre complet de la page : un
+              // balisage doit décrire ce que le lecteur voit.
+              { "@type": "ListItem", position: 4, name: guide.city, item: pageUrl },
             ],
           }),
         },
@@ -123,6 +126,12 @@ function CityGuidePage() {
   return (
     <article className="container-page py-10">
       <nav className="text-xs text-muted-foreground" aria-label="Fil d'ariane">
+        {/* « Accueil » ouvre le fil comme sur les autres pages, et comme le dit
+            déjà le balisage BreadcrumbList : les deux doivent concorder. */}
+        <Link to="/" className="hover:text-foreground">
+          Accueil
+        </Link>{" "}
+        /{" "}
         <Link to="/conseils" className="hover:text-foreground">
           Conseils
         </Link>{" "}
