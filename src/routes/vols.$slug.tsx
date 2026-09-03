@@ -38,7 +38,6 @@ import { guideForRoutePage } from "@/data/city-guides";
 import { hotelPertinent } from "@/data/hotel-relevance";
 import { NUITS_ANNONCEES, prixNuit, totalNuits } from "@/data/hotel-night-prices";
 import { getDestinationImage } from "@/lib/destination-images";
-import { cityPhotoAlt } from "@/data/city-photo-alt";
 import {
   RELATED_ROUTES_LIMIT,
   relatedRoutesHeading,
@@ -190,9 +189,7 @@ export const Route = createFileRoute("/vols/$slug")({
       routeOgImage(route.slug) ??
       (getDestination(route.slug)
         ? destinationOgImage(route.slug)
-        : absoluteUrl(
-            getDestinationImage(route.destination, route.destinationCity, route.country).src,
-          ));
+        : absoluteUrl(getDestinationImage(route.destination, route.destinationCity).src));
     return {
       meta: [
         { title: metaTitle },
@@ -322,7 +319,7 @@ function DestinationPage() {
     lowestObservedFreshness,
     referencePriceFresh,
   } = Route.useLoaderData();
-  const banner = getDestinationImage(route.destination, route.destinationCity, route.country);
+  const banner = getDestinationImage(route.destination, route.destinationCity);
   const guide = guideForRoutePage(route.slug, route.destination);
   // Le graphique et la phrase de saisonnalité partagent la même donnée : ce
   // sont deux vues d'un seul relevé, pas deux fonctionnalités.
@@ -689,13 +686,13 @@ function DestinationPage() {
                 </p>
                 <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                   {related.map((item) => {
-                    // Le code IATA passe désormais en premier argument : sans lui,
-                    // Rome ou Barcelone tombaient sur une image d'ambiance alors
-                    // qu'un visuel curé existe. L'alt, lui, reste celui de la
-                    // ville et non `thumb.alt` : les visuels curés portent une
-                    // description longue, juste pour un grand visuel mais hors
-                    // de propos sur une vignette de 48 px dans une liste.
-                    const thumb = getDestinationImage(item.destination, item.city, item.country);
+                    // `thumb.alt` et non plus l'alt de la ville : la vignette
+                    // affiche une photo précise, son texte alternatif doit
+                    // décrire CETTE photo. L'ancien arbitrage — un alt court
+                    // parce qu'une vignette fait 48 px — confondait la taille
+                    // affichée avec ce qu'un lecteur d'écran annonce, et
+                    // faisait dire « Oran, Algérie » à une chapelle.
+                    const thumb = getDestinationImage(item.destination, item.city);
                     return (
                       <li key={item.slug}>
                         <Link
@@ -706,7 +703,7 @@ function DestinationPage() {
                           <ResponsivePicture
                             src={thumb.thumb}
                             webp={thumb.thumbWebp}
-                            alt={cityPhotoAlt(item.destination, item.city, item.country)}
+                            alt={thumb.alt}
                             loading="lazy"
                             width={96}
                             height={72}

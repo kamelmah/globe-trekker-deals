@@ -312,7 +312,7 @@ export function HebergementView({
 
           <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-3">
             {FEATURED_HOTEL_CITIES.map((item) => {
-              const image = getDestinationImage(item.code, item.ville, item.pays);
+              const image = getDestinationImage(item.code, item.ville);
               const prix = prixVols[item.code];
               return (
                 <li

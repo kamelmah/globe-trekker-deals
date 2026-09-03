@@ -283,7 +283,7 @@ function HomePage() {
 
             <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
               {cheapest.map((route) => {
-                const image = getDestinationImage(route.destination, route.city, route.country);
+                const image = getDestinationImage(route.destination, route.city);
                 const details = [
                   // `observedAt` est un instant complet ; formatDateMedium
                   // attend une date nue, comme partout ailleurs sur le site.
@@ -409,7 +409,7 @@ function HomePage() {
 
             <ul className="mt-6 grid gap-4 sm:grid-cols-3">
               {guides.map((guide) => {
-                const image = getDestinationImage(guide.destination, guide.city, guide.country);
+                const image = getDestinationImage(guide.destination, guide.city);
                 return (
                   <li key={guide.slug}>
                     <Link
