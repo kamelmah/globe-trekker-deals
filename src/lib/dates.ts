@@ -164,3 +164,38 @@ export function formatDateTimeShort(iso: string | null | undefined): string {
     timeZone: PARIS,
   }).format(date);
 }
+
+/**
+ * « 07:15 » — heure seule d'un instant, à l'heure de Paris.
+ *
+ * Sert aux horaires d'une carte de résultat, où la date est portée à côté et
+ * où répéter le jour à chaque ligne n'apprend rien.
+ */
+export function formatTimeOfDay(iso: string | null | undefined): string {
+  const date = iso ? parseInstant(iso) : null;
+  if (!date) return "";
+  return new Intl.DateTimeFormat("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: PARIS,
+  }).format(date);
+}
+
+/**
+ * Jour (AAAA-MM-JJ) auquel appartient un instant, à l'heure de Paris.
+ *
+ * Comparer deux de ces clés est la seule façon juste de dire « arrivée le
+ * lendemain » : soustraire des horodatages fait basculer le résultat d'une
+ * journée dès qu'un changement d'heure ou un fuseau s'en mêle.
+ */
+export function parisDayKey(iso: string | null | undefined): string {
+  const date = iso ? parseInstant(iso) : null;
+  if (!date) return "";
+  // en-CA produit AAAA-MM-JJ, le seul format comparable tel quel.
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: PARIS,
+  }).format(date);
+}

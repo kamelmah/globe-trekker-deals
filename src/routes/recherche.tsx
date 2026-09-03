@@ -6,14 +6,13 @@ import { useEffect, useMemo, useState } from "react";
 
 import { AlertForm } from "@/components/alerts/AlertForm";
 import { ApiDebugPanel } from "@/components/debug/ApiDebugPanel";
-import { FlightCard } from "@/components/flights/FlightCard";
+import { FlightResultRow } from "@/components/flights/FlightResultRow";
 import { ResultsPriceCalendar } from "@/components/flights/ResultsPriceCalendar";
 import { passengersSummary } from "@/components/search/PassengerSelector";
 import { SearchForm } from "@/components/search/SearchForm";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { LienHotelsCom } from "@/components/stay/LienHotelsCom";
 import { Stay22Map } from "@/components/stay/Stay22Map";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -228,6 +227,20 @@ function SearchResultsPage() {
     .sort((a, b) => prixComparaison(a) - prixComparaison(b));
 
   const cheapest = filtered[0] ?? offers[0];
+
+  /**
+   * La carte « Meilleur prix total sur cette recherche » marque le plus bas
+   * PRIX TOTAL affiché, pas la première ligne de la liste.
+   *
+   * Les deux diffèrent dès qu'un niveau de bagage est demandé : le tri porte
+   * alors sur le prix billet + supplément, et la première carte peut afficher
+   * un montant plus élevé que la troisième. Une pastille « meilleur prix » sur
+   * un montant qui n'est pas le plus bas de l'écran se lit comme un mensonge,
+   * même quand le classement, lui, est juste.
+   */
+  const bestPriceId = filtered.length
+    ? filtered.reduce((best, o) => (o.priceEur < best.priceEur ? o : best), filtered[0]!).id
+    : undefined;
   const greenestId = filtered.length
     ? filtered.reduce((best, o) => (o.co2Kg < best.co2Kg ? o : best), filtered[0]!).id
     : undefined;
@@ -427,23 +440,30 @@ function SearchResultsPage() {
           className="card-in"
           style={{ animationDelay: `${Math.min(index, 6) * 40}ms` }}
         >
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            {index === 0 && (
-              <Badge className="bg-success text-success-foreground">Prix le plus bas trouvé</Badge>
-            )}
-            {offer.departureAt.slice(0, 10) !== search["depart"] && (
-              <Badge variant="outline">
-                Départ le {formatDateCompact(offer.departureAt.slice(0, 10))}
-              </Badge>
-            )}
-          </div>
-          <FlightCard
+          <FlightResultRow
             offer={offer}
+            currency={currency}
+            best={offer.id === bestPriceId}
             greenest={offer.id === greenestId}
-            baggageLevel={baggageLevel}
           />
         </div>
       ))}
+
+      {filtered.length > 0 && (
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          Suppléments bagages : tarif le plus bas publié par la compagnie, par voyageur et à l'achat
+          en ligne — un bagage payé à l'aéroport coûte souvent le double. Un niveau sans puce est un
+          niveau que nous n'avons pas documenté chez cette compagnie, jamais un bagage gratuit ;{" "}
+          <Link
+            to="/bagages"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            le détail par compagnie est ici
+          </Link>
+          . Horaires donnés à l'heure de Paris : sur un vol qui change de fuseau, l'heure d'arrivée
+          n'est donc pas l'heure locale à destination — notre source ne fournit pas cette heure.
+        </p>
+      )}
     </div>
   );
 
@@ -539,10 +559,17 @@ function SearchResultsPage() {
                 </Button>
               ))}
             </div>
+            {/*
+              Le montant en gros sur une carte est TOUJOURS le prix du billet
+              taxes incluses, jamais un prix majoré : c'est ce que le vendeur
+              facturera à l'étape suivante. Le niveau choisi ici ne change donc
+              pas les montants affichés, il change l'ORDRE des résultats et le
+              budget appliqué — et c'est exactement ce que ce texte doit dire.
+            */}
             <p className="mt-2 text-xs text-muted-foreground">
               {baggageLevel === "personnel"
-                ? "Prix du billet nu. Le prix avec bagage en soute est indiqué sous chaque montant quand nous connaissons le tarif de la compagnie."
-                : "Les prix affichés incluent le supplément publié par la compagnie, et les résultats sont retriés en conséquence. Les compagnies dont nous n'avons pas le barème gardent leur prix nu, signalé sur leur carte."}
+                ? "Les résultats sont classés sur le prix du billet, taxes incluses. Le supplément publié par la compagnie pour la cabine et la soute est indiqué sur chaque carte."
+                : "Les résultats sont classés — et votre budget appliqué — sur le prix du billet augmenté du supplément publié par la compagnie. Le montant affiché sur chaque carte reste le prix du billet ; le supplément est indiqué juste à côté. Les compagnies dont nous n'avons pas le barème gardent leur prix nu et n'affichent pas de puce pour ce niveau."}
             </p>
           </fieldset>
 
