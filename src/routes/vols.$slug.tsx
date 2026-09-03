@@ -21,6 +21,7 @@ import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { hreflangLinks } from "@/lib/hreflang";
 import { cheapestMonthLine, computeSeasonality } from "@/lib/seasonality";
 import { routePriceTrend } from "@/lib/price-trend.functions";
+import { activeAlertCount } from "@/lib/alert-count.functions";
 import { routeSeasonality } from "@/lib/seasonality.functions";
 import { routeOgImage } from "@/lib/og-image";
 import { isIndexableRoute } from "@/data/route-whitelist";
@@ -91,14 +92,23 @@ export const Route = createFileRoute("/vols/$slug")({
     // Saisonnalité : lue en base uniquement, jamais appelée à la source
     // tarifaire au chargement d'une page. Les relevés viennent de la tâche
     // planifiée. Une lecture qui échoue rend la section absente, pas fausse.
-    // Variation entre les deux derniers relevés de la route. Lue en base, comme
-    // le reste : absente plutôt que fausse si la lecture échoue.
-    const { trend } = await routePriceTrend({
-      data: { origin: route.origin, destination: route.destination },
-    }).catch((error: unknown) => {
-      console.error("Variation de prix indisponible", error);
-      return { trend: null };
-    });
+    // Variation entre les deux derniers relevés de la route, et nombre
+    // d'alertes actives. Lus en base, comme le reste : absents plutôt que faux
+    // si la lecture échoue.
+    const [{ trend }, { count: followerCount }] = await Promise.all([
+      routePriceTrend({
+        data: { origin: route.origin, destination: route.destination },
+      }).catch((error: unknown) => {
+        console.error("Variation de prix indisponible", error);
+        return { trend: null };
+      }),
+      activeAlertCount({
+        data: { origin: route.origin, destination: route.destination },
+      }).catch((error: unknown) => {
+        console.error("Compteur d'alertes indisponible", error);
+        return { count: null };
+      }),
+    ]);
 
     let saison = null;
     // Une ligne sous le titre nomme le mois le moins cher. Elle sort des mêmes
@@ -127,6 +137,7 @@ export const Route = createFileRoute("/vols/$slug")({
       saison,
       moisLeMoinsCher,
       trend,
+      followerCount,
     };
   },
 
@@ -272,8 +283,16 @@ export const Route = createFileRoute("/vols/$slug")({
 const formatObservedDate = formatDateTimeLong;
 
 function DestinationPage() {
-  const { route, lowestObserved, lowestObservedAt, related, saison, moisLeMoinsCher, trend } =
-    Route.useLoaderData();
+  const {
+    route,
+    lowestObserved,
+    lowestObservedAt,
+    related,
+    saison,
+    moisLeMoinsCher,
+    trend,
+    followerCount,
+  } = Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity, route.country);
   const guide = guideForRoutePage(route.slug, route.destination);
   // Le graphique et la phrase de saisonnalité partagent la même donnée : ce
@@ -655,6 +674,7 @@ function DestinationPage() {
             origin={route.origin}
             destination={route.destination}
             referencePrice={lowestObserved}
+            followerCount={followerCount}
           />
           <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
             <h2 className="font-display text-base font-semibold text-foreground">
