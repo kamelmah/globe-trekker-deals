@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { BellRing, Check, Compass, Map as MapIcon } from "lucide-react";
+import { BellRing, Compass, Map as MapIcon } from "lucide-react";
 
 import { HomeAlertForm } from "@/components/alerts/HomeAlertForm";
 import { SearchForm } from "@/components/search/SearchForm";
@@ -7,14 +7,15 @@ import { AvionAnime } from "@/components/site/AvionAnime";
 import { Reveal } from "@/components/site/Reveal";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { Button } from "@/components/ui/button";
+import { DestinationGrid } from "@/components/ui/destination-card";
+import { TrustBar } from "@/components/ui/trust-bar";
 import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
 import { PRUNED_GUIDE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { routesFrom } from "@/data/route-whitelist";
 import { DESTINATIONS } from "@/data/destinations";
 import { cityLabel } from "@/data/airports";
 import { useCurrency } from "@/lib/currency-context";
-import { formatDateMedium } from "@/lib/dates";
-import { getDestinationImage } from "@/lib/destination-images";
+import { getDestinationImage, getDestinationPhoto } from "@/lib/destination-images";
 import { withPreposition } from "@/lib/french-grammar";
 import { hreflangLinks } from "@/lib/hreflang";
 import { listPublishedGuides } from "@/lib/published-guides.functions";
@@ -46,14 +47,6 @@ const BUDGETS = [50, 100, 150, 250];
 function budgetSearch(budget: number, origin: string) {
   return { origin, budget, month: "", adultes: 1, enfants: 0, bebes: 0 };
 }
-
-/** Les quatre promesses réellement tenables, sous le formulaire. */
-const CONFIANCE = [
-  "Prix total, taxes incluses",
-  "Vendeur identifié avant de cliquer",
-  "Aucun faux compte à rebours",
-  "Alerte prix sans compte",
-];
 
 const TITLE = "TrouveMonVol — le prix total d'un vol, taxes incluses et vendeur affiché";
 const DESCRIPTION =
@@ -217,6 +210,7 @@ function HomePage() {
             className="hero-in hero-in-3 mx-auto mt-8 max-w-[880px] scroll-mt-24 text-left"
           >
             <SearchForm
+              variant="card"
               key={`${prefill.origin}-${prefill.destination}-${prefill.depart}-${prefill.budget}`}
               initialOrigin={prefill.origin || origin}
               initialDestination={prefill.destination ?? ""}
@@ -234,23 +228,12 @@ function HomePage() {
 
           {/*
             Ces quatre points sont l'argument de vente face aux gros
-            comparateurs. Ils étaient rendus dans la plus petite et la plus
-            pâle des typographies de la page : la promesse qui différencie le
-            site était l'élément le moins visible du héros. Passés en
-            pastilles, sur la couleur de texte courante.
+            comparateurs. Ils tenaient sur une ligne de texte gris, puis en
+            pastilles d'un mot : dans les deux cas, la promesse qui différencie
+            le site était l'élément le moins lisible du héros. Chacune porte
+            désormais sa propre explication.
           */}
-          <ul className="confiance mt-7 flex flex-wrap justify-center gap-2">
-            {CONFIANCE.map((point, i) => (
-              <li
-                key={point}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/70 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm sm:text-sm"
-                style={{ '--rang': i } as React.CSSProperties}
-              >
-                <Check className="size-4 shrink-0 text-primary" aria-hidden />
-                {point}
-              </li>
-            ))}
-          </ul>
+          <TrustBar className="mx-auto mt-7 max-w-[880px] text-left" />
         </div>
       </section>
 
@@ -292,48 +275,37 @@ function HomePage() {
               </Link>
             </div>
 
-            <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-              {cheapest.map((route) => {
-                const image = getDestinationImage(route.destination, route.city);
-                const details = [
-                  // `observedAt` est un instant complet ; formatDateMedium
-                  // attend une date nue, comme partout ailleurs sur le site.
-                  route.observedAt
-                    ? `relevé le ${formatDateMedium(route.observedAt.slice(0, 10))}`
-                    : null,
-                  route.airline,
-                  route.nonstop ? "direct" : "avec escale",
-                ].filter((part): part is string => Boolean(part));
-                return (
-                  <li key={route.slug}>
-                    <Link
-                      to="/vols/$slug"
-                      params={{ slug: route.slug }}
-                      className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-secondary"
-                    >
-                      <ResponsivePicture
-                        src={image.thumb}
-                        webp={image.thumbWebp}
-                        alt={image.alt}
-                        loading="lazy"
-                        width={256}
-                        height={192}
-                        className="h-24 w-full object-cover sm:h-32"
-                      />
-                      <span className="flex flex-1 flex-col p-3 sm:p-4">
-                        <span className="text-sm font-semibold">{route.city}</span>
-                        <span className="mt-1 font-display text-lg font-semibold text-primary">
-                          dès {format(route.priceEur)}
-                        </span>
-                        <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                          {details.join(" · ")}
-                        </span>
-                      </span>
+            <DestinationGrid
+              className="mt-6"
+              items={cheapest.map((route) => {
+                /*
+                 * `null` plutôt qu'un visuel générique : sans photo DE CETTE
+                 * ville, la carte dessine un dégradé calculé sur son nom. La
+                 * grille montrait sinon quatre fois la même image de stock,
+                 * une par destination sans photo.
+                 */
+                const photo = getDestinationPhoto(route.destination, route.city);
+                return {
+                  city: route.city,
+                  country: route.country,
+                  price: route.priceEur,
+                  priceLabel: format(route.priceEur),
+                  seller: route.airline,
+                  direct: route.nonstop,
+                  // Chaîne vide quand la source n'a pas daté le relevé : la
+                  // carte affiche alors « prix observé », jamais une date
+                  // inventée.
+                  observedAt: route.observedAt ?? "",
+                  imageUrl: photo?.thumb ?? null,
+                  ...(photo ? { imageAlt: photo.alt } : {}),
+                  renderLink: ({ className, children }) => (
+                    <Link to="/vols/$slug" params={{ slug: route.slug }} className={className}>
+                      {children}
                     </Link>
-                  </li>
-                );
+                  ),
+                };
               })}
-            </ul>
+            />
           </section>
         </Reveal>
       )}

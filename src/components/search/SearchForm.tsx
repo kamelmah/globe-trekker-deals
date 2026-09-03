@@ -4,10 +4,19 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 
 import { DepartureDatePicker, PriceDatePicker } from "@/components/search/DepartureDatePicker";
-import { PassengerSelector, type Passengers } from "@/components/search/PassengerSelector";
+import {
+  PassengerSelector,
+  passengersSummary,
+  type Passengers,
+} from "@/components/search/PassengerSelector";
 import { PlaceAutocomplete } from "@/components/search/PlaceAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  FlightSearchCard,
+  type DureeSejour,
+  type FlightSearchValue,
+} from "@/components/ui/flight-search-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resolvePlace } from "@/lib/places.functions";
@@ -16,6 +25,26 @@ import { todayPlus } from "@/lib/search-params";
 
 /** Même règle que partout ailleurs : composantes locales, jamais UTC. */
 const defaultDate = todayPlus;
+
+/**
+ * Passerelle entre les deux façons de nommer la même durée : un nombre de
+ * nuits côté métier (c'est lui qui part dans l'URL et dans l'API), un
+ * identifiant lisible côté carte. Les cinq paliers sont ceux de TRIP_DURATIONS.
+ */
+const DUREE_PAR_ID: Record<DureeSejour, number> = {
+  precises: 0,
+  weekend: 2,
+  "3-4-jours": 4,
+  "1-semaine": 7,
+  "2-semaines": 14,
+};
+
+function dureeId(days: number): DureeSejour {
+  const found = (Object.keys(DUREE_PAR_ID) as DureeSejour[]).find(
+    (id) => DUREE_PAR_ID[id] === days,
+  );
+  return found ?? "precises";
+}
 
 export type SearchFormProps = {
   initialOrigin?: string;
@@ -27,6 +56,13 @@ export type SearchFormProps = {
   initialDuree?: number;
   initialPassengers?: Passengers;
   compact?: boolean;
+  /**
+   * « card » rend la même logique dans FlightSearchCard : c'est la variante du
+   * héros de l'accueil. Les champs métier (autocomplete aéroport, calendrier
+   * tarifaire, compteur de passagers) y sont injectés par slot — aucun n'est
+   * remplacé par une saisie libre.
+   */
+  variant?: "standard" | "card";
 };
 
 export function SearchForm({
@@ -39,6 +75,7 @@ export function SearchForm({
   initialDuree,
   initialPassengers,
   compact = false,
+  variant = "standard",
 }: SearchFormProps) {
   const navigate = useNavigate();
   const [origin, setOrigin] = useState(initialOrigin);
@@ -54,6 +91,13 @@ export function SearchForm({
   );
 
   const [budget, setBudget] = useState(initialBudget);
+  /*
+   * Le bouton d'inversion de la carte échange deux codes IATA d'un coup. Les
+   * champs d'autocomplete gardent leur texte saisi en état interne : sans un
+   * remontage explicite, ils continueraient d'afficher l'ancienne ville. Ce
+   * compteur ne bouge QUE sur une inversion, jamais sur une frappe.
+   */
+  const [inversions, setInversions] = useState(0);
   /** Texte brut du champ destination (saisie libre sans clic sur une suggestion). */
   const [destinationText, setDestinationText] = useState(initialDestination);
   const [destinationError, setDestinationError] = useState<string | null>(null);
@@ -83,8 +127,8 @@ export function SearchForm({
     });
   }
 
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
+  async function submit(event?: React.FormEvent) {
+    event?.preventDefault();
     setDestinationError(null);
 
     if (destination) {
@@ -128,6 +172,129 @@ export function SearchForm({
         bebes: passengers.infants,
       },
     });
+  }
+
+  /** Libellé du bouton : identique dans les deux variantes. */
+  const submitLabel = resolving
+    ? "Vérification de la destination…"
+    : destination || hasTypedDestination
+      ? "Chercher le meilleur prix"
+      : "Voir où partir avec mon budget";
+
+  if (variant === "card") {
+    /*
+     * La carte ne porte AUCUNE logique métier : elle ne fait que dessiner. Les
+     * quatre champs qui en ont une — les deux autocompletes aéroport, le
+     * calendrier tarifaire, le compteur de passagers — lui sont passés par
+     * slot, avec l'état et les gestionnaires ci-dessus. Ce qu'elle gère seule,
+     * c'est le budget, la flexibilité et la durée : trois valeurs simples,
+     * remontées ici par `onChange`.
+     */
+    return (
+      <FlightSearchCard
+        /* Réutilise la règle mobile déjà en place : sous 640 px, aucun contrôle
+           du formulaire de recherche ne descend sous 44 px de haut. */
+        className="form-recherche"
+        value={{
+          from: origin,
+          to: destination,
+          departure: depart,
+          returnDate: effectiveRetour,
+          passengers: passengersSummary(passengers),
+          budget,
+          flexible,
+          duree: dureeId(duree),
+        }}
+        onChange={(next: FlightSearchValue) => {
+          if (next.budget !== budget) setBudget(next.budget);
+          if (next.flexible !== flexible) setFlexible(next.flexible);
+          const jours = DUREE_PAR_ID[next.duree];
+          if (jours !== duree) setDuree(jours);
+          // Inversion départ/destination : les deux codes changent d'un coup.
+          if (next.from !== origin && next.to !== destination) {
+            setOrigin(next.from);
+            setDestination(next.to);
+            setDestinationText(next.to);
+            setDestinationError(null);
+            setInversions((n) => n + 1);
+          }
+        }}
+        onSubmit={() => void submit()}
+        submitting={resolving}
+        submitLabel={submitLabel}
+        renderFromField={(slot) => (
+          <PlaceAutocomplete
+            key={`origin-${inversions}`}
+            id={slot.id}
+            label="Ville ou aéroport de départ"
+            value={origin}
+            onChange={setOrigin}
+            placeholder="Ex. Paris, CDG, Marrakech…"
+            bare
+          />
+        )}
+        renderToField={(slot) => (
+          <PlaceAutocomplete
+            key={`destination-${inversions}`}
+            id={slot.id}
+            label="Destination (facultatif — laissez vide pour le mode budget)"
+            value={destination}
+            onChange={(code) => {
+              setDestination(code);
+              if (code) setDestinationError(null);
+            }}
+            onTextChange={(value) => {
+              setDestinationText(value);
+              setDestinationError(null);
+            }}
+            error={destinationError}
+            placeholder="Peu importe — mode budget"
+            allowEmpty
+            bare
+          />
+        )}
+        renderDepartureField={(slot) => (
+          <DepartureDatePicker
+            id={slot.id}
+            value={depart}
+            onChange={setDepart}
+            origin={origin}
+            destination={destination}
+            tripDuration={duree}
+            minDate={defaultDate(1)}
+            bare
+          />
+        )}
+        renderReturnField={(slot) =>
+          duree > 0 ? (
+            // Durée choisie : le retour est calculé, pas saisi. Même règle que
+            // dans la variante standard, au mot près.
+            <p id={slot.id} className="text-lg font-semibold">
+              {effectiveRetour
+                ? `${formatDateLong(effectiveRetour)} · ${duree} nuits`
+                : "Choisissez une date de départ"}
+            </p>
+          ) : (
+            <PriceDatePicker
+              mode="return"
+              id={slot.id}
+              label="Date de retour (facultatif)"
+              value={retour}
+              onChange={setRetour}
+              origin={origin}
+              destination={destination}
+              tripDuration={0}
+              departureAt={depart || null}
+              minDate={depart || defaultDate(1)}
+              bare
+            />
+          )
+        }
+        renderPassengersField={(slot) => (
+          <PassengerSelector id={slot.id} value={passengers} onChange={setPassengers} bare />
+        )}
+      />
+    );
   }
 
   return (
@@ -259,11 +426,7 @@ export function SearchForm({
         disabled={resolving}
       >
         <Search className="size-4" aria-hidden />
-        {resolving
-          ? "Vérification de la destination…"
-          : destination || hasTypedDestination
-            ? "Chercher le meilleur prix"
-            : "Voir où partir avec mon budget"}
+        {submitLabel}
       </Button>
       <p className="mt-3 text-xs text-muted-foreground">
         Prix total taxes incluses, vendeur affiché sur chaque résultat. Aucun compte à rebours

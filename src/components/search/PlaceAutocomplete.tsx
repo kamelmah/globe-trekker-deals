@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useId, useRef, useState } from "react";
 
+import { fieldInputClass } from "@/components/ui/flight-search-card";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { getAirport } from "@/data/airports";
 import { resolvePlace, searchPlaces } from "@/lib/places.functions";
 import type { Place } from "@/lib/places.server";
@@ -24,6 +26,11 @@ export type PlaceAutocompleteProps = {
   onTextChange?: (text: string) => void;
   /** Message d'erreur inline affiché sous le champ. */
   error?: string | null;
+  /**
+   * Rend le champ nu : sans label ni bordure propres. Réservé aux emplacements
+   * qui les fournissent déjà — le `Field` de FlightSearchCard, sur l'accueil.
+   */
+  bare?: boolean;
 };
 
 /**
@@ -39,6 +46,7 @@ export function PlaceAutocomplete({
   allowEmpty = false,
   onTextChange,
   error,
+  bare = false,
 }: PlaceAutocompleteProps) {
   const listId = useId();
   const [text, setText] = useState(() => labelFor(value));
@@ -139,12 +147,22 @@ export function PlaceAutocomplete({
 
   return (
     <div className="relative" ref={wrapper}>
-      <label htmlFor={id} className="text-sm font-medium leading-none">
-        {label}
-      </label>
+      {bare ? null : (
+        <label htmlFor={id} className="text-sm font-medium leading-none">
+          {label}
+        </label>
+      )}
       <Input
         id={id}
-        className="mt-1.5"
+        className={
+          bare
+            ? cn(
+                fieldInputClass,
+                "h-auto rounded-none border-0 px-0 py-0 shadow-none focus-visible:scale-100 focus-visible:ring-0 md:text-lg",
+              )
+            : "mt-1.5"
+        }
+        aria-label={bare ? label : undefined}
         autoComplete="off"
         role="combobox"
         aria-expanded={open}

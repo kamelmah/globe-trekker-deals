@@ -53,6 +53,7 @@ export function PriceDatePicker({
   id = "depart",
   label = "Date de départ",
   hint,
+  bare = false,
 }: {
   value: string;
   onChange: (date: string) => void;
@@ -70,6 +71,11 @@ export function PriceDatePicker({
    * simple par jour de départ » n'aurait aucun sens.
    */
   hint?: string;
+  /**
+   * Rend le champ nu : sans label ni bouton encadré. Réservé aux emplacements
+   * qui les fournissent déjà — le `Field` de FlightSearchCard, sur l'accueil.
+   */
+  bare?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [month, setMonth] = useState(() => monthOf(value || departureAt || ""));
@@ -118,19 +124,28 @@ export function PriceDatePicker({
   const firstWeekday = (new Date(`${month}-01T00:00:00Z`).getUTCDay() + 6) % 7;
 
   return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>{label}</Label>
+    <div className={bare ? undefined : "space-y-1.5"}>
+      {bare ? null : <Label htmlFor={id}>{label}</Label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             id={id}
             type="button"
-            variant="outline"
-            className={cn("w-full justify-start overflow-hidden text-left font-normal")}
+            variant={bare ? "ghost" : "outline"}
+            aria-label={bare ? label : undefined}
+            className={cn(
+              "w-full justify-start overflow-hidden text-left font-normal",
+              bare &&
+                "h-auto px-0 py-0 text-lg font-semibold shadow-none hover:bg-transparent focus-visible:ring-0",
+            )}
           >
-            <CalendarIcon className="size-4" aria-hidden />
+            {bare ? null : <CalendarIcon className="size-4" aria-hidden />}
             {/* Le champ porte une valeur ISO, mais on n'affiche jamais l'ISO. */}
-            <span className="truncate">{formatDateLong(value) || "Choisir une date"}</span>
+            <span
+              className={cn("truncate", bare && !value && "font-normal text-muted-foreground/70")}
+            >
+              {formatDateLong(value) || "Choisir une date"}
+            </span>
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="z-50 w-[320px] p-3 pointer-events-auto">
@@ -267,7 +282,8 @@ export function PriceDatePicker({
 
 /** Compatibilité : le champ de départ garde son nom historique. */
 export function DepartureDatePicker(
-  props: Omit<Parameters<typeof PriceDatePicker>[0], "mode" | "id" | "label">,
+  props: Omit<Parameters<typeof PriceDatePicker>[0], "mode" | "id" | "label"> & { id?: string },
 ) {
-  return <PriceDatePicker {...props} mode="departure" id="depart" label="Date de départ" />;
+  const { id = "depart", ...rest } = props;
+  return <PriceDatePicker {...rest} mode="departure" id={id} label="Date de départ" />;
 }

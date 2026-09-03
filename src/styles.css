@@ -1610,19 +1610,6 @@
     }
   }
 
-  /* ---------------------------------------------------------------------- */
-  /* Pastilles de confiance du héros                                          */
-  /*                                                                          */
-  /* Elles arrivent après le formulaire, en cascade de gauche à droite, pour   */
-  /* que l'œil les lise dans l'ordre plutôt que d'un bloc. `--rang` est posé   */
-  /* sur chaque pastille par la page ; le retard se calcule ici.               */
-  /* ---------------------------------------------------------------------- */
-
-  .confiance > li {
-    animation: hero-fade-up 420ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
-    animation-delay: calc(220ms + var(--rang) * 70ms);
-  }
-
   /*
    * Apparition au scroll (sections destinations/guides) : plus discrète que le
    * hero, déclenchée section par section via Intersection Observer plutôt que
@@ -1724,9 +1711,6 @@
     /* Les pastilles existent hors de leur animation : `backwards` les
        masquerait avant le retard, il faut donc couper l'animation, pas
        seulement la durée. */
-    .confiance > li {
-      animation: none;
-    }
     .card-in {
       animation: none;
     }

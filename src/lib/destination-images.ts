@@ -359,6 +359,24 @@ const VISUEL_NEUTRE: DestinationImage = {
  * que pour choisir une ambiance régionale.
  */
 export function getDestinationImage(code?: string | null, city?: string | null): DestinationImage {
+  return getDestinationPhoto(code, city) ?? VISUEL_NEUTRE;
+}
+
+/**
+ * Les points 1 et 2 ci-dessus, sans le repli : `null` quand le site n'a pas de
+ * photo DE CETTE VILLE.
+ *
+ * Le visuel neutre convient à une vignette posée au-dessus d'un titre qui dit
+ * déjà la ville. Il ne convient pas à une grille de quatre destinations côte à
+ * côte : quatre villes différentes y portaient la même image, et l'œil lit
+ * quatre fois la même chose plutôt que quatre destinations. Là, l'appelant a
+ * besoin de savoir qu'il n'y a pas de photo pour afficher autre chose — un
+ * visuel calculé depuis le nom de la ville, donc distinct d'une ville à l'autre.
+ */
+export function getDestinationPhoto(
+  code?: string | null,
+  city?: string | null,
+): DestinationImage | null {
   const photo = photoVille(code);
   if (photo) {
     return {
@@ -380,5 +398,5 @@ export function getDestinationImage(code?: string | null, city?: string | null):
     const hit = BY_CITY[normalize(city)];
     if (hit) return hit;
   }
-  return VISUEL_NEUTRE;
+  return null;
 }

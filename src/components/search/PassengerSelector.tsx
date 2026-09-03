@@ -3,6 +3,7 @@ import { Minus, Plus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export type Passengers = { adults: number; children: number; infants: number };
 
@@ -86,9 +87,20 @@ function CounterRow({
 export type PassengerSelectorProps = {
   value: Passengers;
   onChange: (value: Passengers) => void;
+  id?: string;
+  /**
+   * Rend le champ nu : sans label ni bouton encadré. Réservé aux emplacements
+   * qui les fournissent déjà — le `Field` de FlightSearchCard, sur l'accueil.
+   */
+  bare?: boolean;
 };
 
-export function PassengerSelector({ value, onChange }: PassengerSelectorProps) {
+export function PassengerSelector({
+  value,
+  onChange,
+  id = "passagers",
+  bare = false,
+}: PassengerSelectorProps) {
   const summary = passengersSummary(value);
 
   function setAdults(adults: number) {
@@ -96,17 +108,23 @@ export function PassengerSelector({ value, onChange }: PassengerSelectorProps) {
   }
 
   return (
-    <div className="space-y-1.5">
-      <Label htmlFor="passagers">Nombre de passagers</Label>
+    <div className={bare ? undefined : "space-y-1.5"}>
+      {bare ? null : <Label htmlFor={id}>Nombre de passagers</Label>}
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            id="passagers"
+            id={id}
             type="button"
-            variant="outline"
-            className="h-9 w-full justify-start font-normal"
+            variant={bare ? "ghost" : "outline"}
+            aria-label={bare ? "Nombre de passagers" : undefined}
+            className={cn(
+              "w-full justify-start font-normal",
+              bare
+                ? "h-auto px-0 py-0 text-lg font-semibold shadow-none hover:bg-transparent focus-visible:ring-0"
+                : "h-9",
+            )}
           >
-            <Users className="size-4 text-muted-foreground" aria-hidden />
+            {bare ? null : <Users className="size-4 text-muted-foreground" aria-hidden />}
             {summary}
           </Button>
         </PopoverTrigger>
