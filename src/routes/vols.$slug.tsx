@@ -20,6 +20,7 @@ import { isRoutePruned } from "@/data/pruned-pages";
 import { routeHeading, routeMetaTitle } from "@/lib/route-title";
 import { hreflangLinks } from "@/lib/hreflang";
 import { cheapestMonthLine, computeSeasonality } from "@/lib/seasonality";
+import { routePriceTrend } from "@/lib/price-trend.functions";
 import { routeSeasonality } from "@/lib/seasonality.functions";
 import { routeOgImage } from "@/lib/og-image";
 import { isIndexableRoute } from "@/data/route-whitelist";
@@ -90,6 +91,15 @@ export const Route = createFileRoute("/vols/$slug")({
     // Saisonnalité : lue en base uniquement, jamais appelée à la source
     // tarifaire au chargement d'une page. Les relevés viennent de la tâche
     // planifiée. Une lecture qui échoue rend la section absente, pas fausse.
+    // Variation entre les deux derniers relevés de la route. Lue en base, comme
+    // le reste : absente plutôt que fausse si la lecture échoue.
+    const { trend } = await routePriceTrend({
+      data: { origin: route.origin, destination: route.destination },
+    }).catch((error: unknown) => {
+      console.error("Variation de prix indisponible", error);
+      return { trend: null };
+    });
+
     let saison = null;
     // Une ligne sous le titre nomme le mois le moins cher. Elle sort des mêmes
     // relevés que la section « Quand partir », d'un seuil plus bas : deux mois
@@ -116,6 +126,7 @@ export const Route = createFileRoute("/vols/$slug")({
       indexable,
       saison,
       moisLeMoinsCher,
+      trend,
     };
   },
 
@@ -261,7 +272,7 @@ export const Route = createFileRoute("/vols/$slug")({
 const formatObservedDate = formatDateTimeLong;
 
 function DestinationPage() {
-  const { route, lowestObserved, lowestObservedAt, related, saison, moisLeMoinsCher } =
+  const { route, lowestObserved, lowestObservedAt, related, saison, moisLeMoinsCher, trend } =
     Route.useLoaderData();
   const banner = getDestinationImage(route.destination, route.destinationCity, route.country);
   const guide = guideForRoutePage(route.slug, route.destination);
@@ -345,11 +356,33 @@ function DestinationPage() {
                 : `Dès ${formatPrice(lowestObserved)}`
               : "Historique en constitution"}
           </p>
+          {trend && (
+            <p
+              className={`mt-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${
+                trend.direction === "baisse"
+                  ? "bg-success/15 text-success"
+                  : "bg-warning text-warning-foreground"
+              }`}
+            >
+              <span aria-hidden>{trend.direction === "baisse" ? "↓" : "↑"}</span>
+              {trend.direction === "baisse" ? "En baisse de" : "En hausse de"}{" "}
+              {formatPrice(Math.abs(trend.deltaEur))} ({Math.abs(trend.deltaPct)} %) depuis le{" "}
+              {formatDateMedium(trend.previousObservedOn)}
+            </p>
+          )}
           <p className="mt-1 text-xs text-muted-foreground">
             {lowestObservedAt
               ? `Relevé le ${formatObservedDate(lowestObservedAt)}, taxes incluses. Repère indicatif, distinct de l'historique mesuré ci-dessous.`
               : "Repère indicatif taxes incluses, distinct de l'historique mesuré ci-dessous"}
           </p>
+          {trend && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {formatPrice(trend.previousEur)} au relevé du{" "}
+              {formatDateMedium(trend.previousObservedOn)}, {formatPrice(trend.currentEur)} à celui
+              du {formatDateMedium(trend.observedOn)}, sur les {trend.monthsCompared} mois de départ
+              présents dans les deux.
+            </p>
+          )}
           {aeroportEloigne && (
             <p className="mt-1.5 inline-flex items-start gap-1 text-xs text-warning-foreground">
               <span className="rounded bg-warning px-1.5 py-0.5">
