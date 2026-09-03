@@ -65,7 +65,9 @@ export type AirlinesSection = {
   section: {
     heading: string;
     paragraphs: string[];
-    moreLink: { to: "/bagages"; label: string };
+    moreLink:
+      | { to: "/bagages"; label: string }
+      | { to: "/bagages/$compagnie"; params: { compagnie: string }; label: string };
   };
   faq: DestinationFaq;
   /** Noms des compagnies relevées, pour les données structurées. */
@@ -208,6 +210,14 @@ export function buildAirlinesSection(params: {
             } ${sujetFacturees} ajoute au moins ${euros(moinsChereFacturee.supplementEur)}, soit ${moinsChereFacturee.partPourcent} % du plancher de ${euros(plancher)} relevé ici.`
           : "";
 
+  /**
+   * La compagnie de la liaison, quand il n'y en a qu'une ET qu'elle est
+   * documentée. `codes.length === 1` et non `documentees.length === 1` : sur une
+   * route à trois compagnies dont une seule documentée, envoyer le lecteur sur
+   * la page de celle-là lui cacherait les deux autres.
+   */
+  const seuleDocumentee = codes.length === 1 ? (documentees[0]?.policy ?? null) : null;
+
   const faq: DestinationFaq = {
     question: `Quelles compagnies assurent ${trajet} ?`,
     answer:
@@ -220,12 +230,17 @@ export function buildAirlinesSection(params: {
     section: {
       heading: `Compagnies et bagages sur ${trajet}`,
       paragraphs,
-      // Les tarifs publiés par compagnie (cabine, soute, en ligne, au comptoir,
-      // sources et dates de vérification) sont sur /bagages, en un exemplaire.
-      moreLink: {
-        to: "/bagages",
-        label: "Tarifs bagages détaillés, compagnie par compagnie",
-      },
+      // Les tarifs publiés (cabine, soute, en ligne, au comptoir, source datée)
+      // vivent sur /bagages. Une seule compagnie sur la liaison et documentée :
+      // le lien mène droit à SA page, qui est celle que le lecteur cherche.
+      // Sinon l'aiguillage, qui les compare toutes.
+      moreLink: seuleDocumentee
+        ? {
+            to: "/bagages/$compagnie",
+            params: { compagnie: seuleDocumentee.slug },
+            label: `Bagages ${seuleDocumentee.name} : franchise et tarifs détaillés`,
+          }
+        : { to: "/bagages", label: "Tarifs bagages détaillés, compagnie par compagnie" },
     },
     faq,
     airlineNames: names,

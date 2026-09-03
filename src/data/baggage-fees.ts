@@ -47,6 +47,8 @@ export type AirlineBaggagePolicy = {
   /** Code IATA tel que renvoyé par la source tarifaire. */
   airline: string;
   name: string;
+  /** Segment d'URL de sa page /bagages/<slug>. */
+  slug: string;
   /** Petit sac sous le siège. */
   personalItem: BaggageAllowance;
   /** Bagage cabine à placer dans le coffre. */
@@ -55,6 +57,15 @@ export type AirlineBaggagePolicy = {
   checkedBag: BaggageAllowance;
   /** D'où vient l'information. */
   source: string;
+  /**
+   * Le lien de `source` est-il la page officielle de la compagnie ?
+   *
+   * Affiché tel quel sur /bagages/<compagnie> : un chiffre repris d'un
+   * comparateur tiers n'a pas la même valeur qu'un tarif publié par le
+   * transporteur, et le lecteur doit pouvoir en juger. Aujourd'hui, une seule
+   * des sept sources est officielle — les six autres sont à remplacer.
+   */
+  sourceOfficielle: boolean;
   /** Date à laquelle nous l'avons vérifiée. */
   verifiedAt: string;
   note?: string;
@@ -70,68 +81,81 @@ const VERIFIED = "2026-09-01";
 export const AIRLINE_BAGGAGE: readonly AirlineBaggagePolicy[] = [
   {
     airline: "FR",
+    slug: "ryanair",
     name: "Ryanair",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "payant", minEur: 6, maxEur: 36 },
     checkedBag: { kind: "payant", minEur: 19, maxEur: 60, weightKg: 20, atAirportEur: 60 },
     source: "https://olyneia.com/blogs/infos/frais-bagage-ryanair-2026-comment-les-eviter",
+    sourceOfficielle: false,
     verifiedAt: VERIFIED,
     note: "Seul un petit sac sous le siège est compris. Le bagage cabine dans le coffre est payant.",
   },
   {
     airline: "TO",
+    slug: "transavia",
     name: "Transavia",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "inclus", weightKg: 10 },
     checkedBag: { kind: "payant", minEur: 31, maxEur: 45, weightKg: 20, atAirportEur: 70 },
     source:
       "https://ulysse.com/news/comparatif-vols-marseille-algerie-transavia-volotea-air-algerie-ete-2026",
+    sourceOfficielle: false,
     verifiedAt: VERIFIED,
   },
   {
     airline: "V7",
+    slug: "volotea",
     name: "Volotea",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "inclus", weightKg: 10 },
     checkedBag: { kind: "payant", minEur: 15, maxEur: 34, weightKg: 20, atAirportEur: 65 },
     source:
       "https://ulysse.com/news/comparatif-vols-marseille-algerie-transavia-volotea-air-algerie-ete-2026",
+    sourceOfficielle: false,
     verifiedAt: VERIFIED,
     note: "Le tarif du bagage en soute varie selon la saison.",
   },
   {
     airline: "AH",
+    slug: "air-algerie",
     name: "Air Algérie",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "inclus", weightKg: 10 },
     checkedBag: { kind: "inclus", weightKg: 23 },
     source:
       "https://ulysse.com/news/comparatif-vols-marseille-algerie-transavia-volotea-air-algerie-ete-2026",
+    sourceOfficielle: false,
     verifiedAt: VERIFIED,
     note: "Soute comprise dans le tarif de base, ce qui compense souvent un billet plus cher au départ.",
   },
   {
     airline: "TU",
+    slug: "tunisair",
     name: "Tunisair",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "inclus", weightKg: 10 },
     checkedBag: { kind: "inclus", weightKg: 23 },
     source: "https://www.tunisair.com/en/guide-utilisateur/prepare-your-luggage",
+    sourceOfficielle: true,
     verifiedAt: VERIFIED,
     note: "23 kg sur la plupart des lignes ; jusqu'à 32 kg selon la destination et la cabine.",
   },
   {
     airline: "BJ",
+    slug: "nouvelair",
     name: "Nouvelair",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "inclus", weightKg: 10 },
     checkedBag: { kind: "inclus", weightKg: 25 },
     source: "https://www.marhba.com/voyages/tout-savoir-sur-la-franchise-bagage-de-nouvelair",
+    sourceOfficielle: false,
     verifiedAt: VERIFIED,
     note: "Offre Pack Easy : 10 kg en cabine et 25 kg en soute compris.",
   },
   {
     airline: "U2",
+    slug: "easyjet",
     name: "easyJet",
     personalItem: { kind: "inclus" },
     cabinBag: { kind: "payant", minEur: 6, maxEur: 33 },
@@ -139,6 +163,7 @@ export const AIRLINE_BAGGAGE: readonly AirlineBaggagePolicy[] = [
     // unique pour 20 kg, on préfère ne rien afficher plutôt qu'approximer.
     checkedBag: { kind: "inconnu" },
     source: "https://easyscape.eu/blog/regles-bagages-compagnies-low-cost-2026",
+    sourceOfficielle: false,
     verifiedAt: VERIFIED,
     note: "La soute se paie par tranches de 3 kg jusqu'à 32 kg : pas de tarif unique pour 20 kg.",
   },

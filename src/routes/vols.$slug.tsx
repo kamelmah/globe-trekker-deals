@@ -464,12 +464,22 @@ function DestinationPage() {
                 ))}
                 {section.moreLink && (
                   <p className="mt-3 text-sm">
-                    <Link
-                      to={section.moreLink.to}
-                      className="font-medium text-primary underline-offset-2 hover:underline"
-                    >
-                      {section.moreLink.label}
-                    </Link>
+                    {section.moreLink.to === "/bagages/$compagnie" ? (
+                      <Link
+                        to="/bagages/$compagnie"
+                        params={section.moreLink.params}
+                        className="font-medium text-primary underline-offset-2 hover:underline"
+                      >
+                        {section.moreLink.label}
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/bagages"
+                        className="font-medium text-primary underline-offset-2 hover:underline"
+                      >
+                        {section.moreLink.label}
+                      </Link>
+                    )}
                   </p>
                 )}
               </section>
