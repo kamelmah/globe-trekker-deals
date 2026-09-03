@@ -53,7 +53,7 @@ export const Route = createFileRoute("/bagages/$compagnie")({
     const title = `Bagages ${policy.name} : cabine, soute et tarifs`;
     const description =
       policy.checkedBag.kind === "payant"
-        ? `Ce que ${policy.name} comprend dans son tarif de base et ce qu'elle facture en soute (à partir de ${Math.round(policy.checkedBag.minEur)} €), avec le surcoût réel calculé sur ${routes.length} liaisons du site.`
+        ? `Ce que ${policy.name} comprend dans son tarif de base et ce qu'elle facture en soute (à partir de ${formatBaggageFee(policy.checkedBag.minEur)}), avec le surcoût réel calculé sur ${routes.length} liaisons du site.`
         : `Ce que ${policy.name} comprend dans son tarif de base pour la cabine et la soute, source et date de vérification à l'appui.`;
     return {
       meta: [
