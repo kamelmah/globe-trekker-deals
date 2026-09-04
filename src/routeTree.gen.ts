@@ -20,12 +20,15 @@ import { Route as IndemnisationRouteImport } from './routes/indemnisation'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MethodologieRouteImport } from './routes/methodologie'
 import { Route as ModeBudgetRouteImport } from './routes/mode-budget'
+import { Route as MoinsCherRouteImport } from './routes/moins-cher'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TiktokRouteImport } from './routes/tiktok'
 import { Route as AdminJournalRouteImport } from './routes/admin.journal'
 import { Route as AlertesIndexRouteImport } from './routes/alertes.index'
 import { Route as AlertesDesinscriptionRouteImport } from './routes/alertes.desinscription'
+import { Route as BagagesIndexRouteImport } from './routes/bagages.index'
+import { Route as BagagesCompagnieRouteImport } from './routes/bagages.$compagnie'
 import { Route as ComparatifsIndexRouteImport } from './routes/comparatifs.index'
 import { Route as ComparatifsSlugRouteImport } from './routes/comparatifs.$slug'
 import { Route as ConseilsIndexRouteImport } from './routes/conseils.index'
@@ -97,6 +100,11 @@ const ModeBudgetRoute = ModeBudgetRouteImport.update({
   path: '/mode-budget',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MoinsCherRoute = MoinsCherRouteImport.update({
+  id: '/moins-cher',
+  path: '/moins-cher',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RechercheRoute = RechercheRouteImport.update({
   id: '/recherche',
   path: '/recherche',
@@ -125,6 +133,16 @@ const AlertesIndexRoute = AlertesIndexRouteImport.update({
 const AlertesDesinscriptionRoute = AlertesDesinscriptionRouteImport.update({
   id: '/alertes/desinscription',
   path: '/alertes/desinscription',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BagagesIndexRoute = BagagesIndexRouteImport.update({
+  id: '/bagages/',
+  path: '/bagages/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BagagesCompagnieRoute = BagagesCompagnieRouteImport.update({
+  id: '/bagages/$compagnie',
+  path: '/bagages/$compagnie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComparatifsIndexRoute = ComparatifsIndexRouteImport.update({
@@ -219,17 +237,20 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
+  '/moins-cher': typeof MoinsCherRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/bagages/$compagnie': typeof BagagesCompagnieRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes/': typeof AlertesIndexRoute
+  '/bagages/': typeof BagagesIndexRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/hebergement/': typeof HebergementIndexRoute
@@ -253,17 +274,20 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
+  '/moins-cher': typeof MoinsCherRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/bagages/$compagnie': typeof BagagesCompagnieRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes': typeof AlertesIndexRoute
+  '/bagages': typeof BagagesIndexRoute
   '/comparatifs': typeof ComparatifsIndexRoute
   '/conseils': typeof ConseilsIndexRoute
   '/hebergement': typeof HebergementIndexRoute
@@ -288,17 +312,20 @@ export interface FileRoutesById {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/methodologie': typeof MethodologieRoute
   '/mode-budget': typeof ModeBudgetRoute
+  '/moins-cher': typeof MoinsCherRoute
   '/recherche': typeof RechercheRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiktok': typeof TiktokRoute
   '/admin/journal': typeof AdminJournalRoute
   '/alertes/desinscription': typeof AlertesDesinscriptionRoute
+  '/bagages/$compagnie': typeof BagagesCompagnieRoute
   '/comparatifs/$slug': typeof ComparatifsSlugRoute
   '/conseils/$slug': typeof ConseilsSlugRoute
   '/hebergement/$ville': typeof HebergementVilleRoute
   '/vols-pas-chers/$slug': typeof VolsPasChersSlugRoute
   '/vols/$slug': typeof VolsSlugRoute
   '/alertes/': typeof AlertesIndexRoute
+  '/bagages/': typeof BagagesIndexRoute
   '/comparatifs/': typeof ComparatifsIndexRoute
   '/conseils/': typeof ConseilsIndexRoute
   '/hebergement/': typeof HebergementIndexRoute
@@ -324,17 +351,20 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/methodologie'
     | '/mode-budget'
+    | '/moins-cher'
     | '/recherche'
     | '/sitemap.xml'
     | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/bagages/$compagnie'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes/'
+    | '/bagages/'
     | '/comparatifs/'
     | '/conseils/'
     | '/hebergement/'
@@ -358,17 +388,20 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/methodologie'
     | '/mode-budget'
+    | '/moins-cher'
     | '/recherche'
     | '/sitemap.xml'
     | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/bagages/$compagnie'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes'
+    | '/bagages'
     | '/comparatifs'
     | '/conseils'
     | '/hebergement'
@@ -392,17 +425,20 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/methodologie'
     | '/mode-budget'
+    | '/moins-cher'
     | '/recherche'
     | '/sitemap.xml'
     | '/tiktok'
     | '/admin/journal'
     | '/alertes/desinscription'
+    | '/bagages/$compagnie'
     | '/comparatifs/$slug'
     | '/conseils/$slug'
     | '/hebergement/$ville'
     | '/vols-pas-chers/$slug'
     | '/vols/$slug'
     | '/alertes/'
+    | '/bagages/'
     | '/comparatifs/'
     | '/conseils/'
     | '/hebergement/'
@@ -427,17 +463,20 @@ export interface RootRouteChildren {
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MethodologieRoute: typeof MethodologieRoute
   ModeBudgetRoute: typeof ModeBudgetRoute
+  MoinsCherRoute: typeof MoinsCherRoute
   RechercheRoute: typeof RechercheRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TiktokRoute: typeof TiktokRoute
   AdminJournalRoute: typeof AdminJournalRoute
   AlertesDesinscriptionRoute: typeof AlertesDesinscriptionRoute
+  BagagesCompagnieRoute: typeof BagagesCompagnieRoute
   ComparatifsSlugRoute: typeof ComparatifsSlugRoute
   ConseilsSlugRoute: typeof ConseilsSlugRoute
   HebergementVilleRoute: typeof HebergementVilleRoute
   VolsPasChersSlugRoute: typeof VolsPasChersSlugRoute
   VolsSlugRoute: typeof VolsSlugRoute
   AlertesIndexRoute: typeof AlertesIndexRoute
+  BagagesIndexRoute: typeof BagagesIndexRoute
   ComparatifsIndexRoute: typeof ComparatifsIndexRoute
   ConseilsIndexRoute: typeof ConseilsIndexRoute
   HebergementIndexRoute: typeof HebergementIndexRoute
@@ -529,6 +568,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModeBudgetRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/moins-cher': {
+      id: '/moins-cher'
+      path: '/moins-cher'
+      fullPath: '/moins-cher'
+      preLoaderRoute: typeof MoinsCherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recherche': {
       id: '/recherche'
       path: '/recherche'
@@ -569,6 +615,20 @@ declare module '@tanstack/react-router' {
       path: '/alertes/desinscription'
       fullPath: '/alertes/desinscription'
       preLoaderRoute: typeof AlertesDesinscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bagages/': {
+      id: '/bagages/'
+      path: '/bagages'
+      fullPath: '/bagages/'
+      preLoaderRoute: typeof BagagesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bagages/$compagnie': {
+      id: '/bagages/$compagnie'
+      path: '/bagages/$compagnie'
+      fullPath: '/bagages/$compagnie'
+      preLoaderRoute: typeof BagagesCompagnieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/comparatifs/': {
@@ -691,17 +751,20 @@ const rootRouteChildren: RootRouteChildren = {
   MentionsLegalesRoute: MentionsLegalesRoute,
   MethodologieRoute: MethodologieRoute,
   ModeBudgetRoute: ModeBudgetRoute,
+  MoinsCherRoute: MoinsCherRoute,
   RechercheRoute: RechercheRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TiktokRoute: TiktokRoute,
   AdminJournalRoute: AdminJournalRoute,
   AlertesDesinscriptionRoute: AlertesDesinscriptionRoute,
+  BagagesCompagnieRoute: BagagesCompagnieRoute,
   ComparatifsSlugRoute: ComparatifsSlugRoute,
   ConseilsSlugRoute: ConseilsSlugRoute,
   HebergementVilleRoute: HebergementVilleRoute,
   VolsPasChersSlugRoute: VolsPasChersSlugRoute,
   VolsSlugRoute: VolsSlugRoute,
   AlertesIndexRoute: AlertesIndexRoute,
+  BagagesIndexRoute: BagagesIndexRoute,
   ComparatifsIndexRoute: ComparatifsIndexRoute,
   ConseilsIndexRoute: ConseilsIndexRoute,
   HebergementIndexRoute: HebergementIndexRoute,

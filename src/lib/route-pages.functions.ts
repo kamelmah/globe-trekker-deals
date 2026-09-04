@@ -16,6 +16,9 @@ export const relatedRoutePages = createServerFn({ method: "GET" })
         origin: z.string().trim().min(3).max(3),
         originCity: z.string().trim().min(1).max(80),
         exclude: z.string().trim().max(3).optional(),
+        // Pays de la destination affichée : sert à remonter en tête les autres
+        // liaisons vers ce pays, puis vers ses voisins.
+        country: z.string().trim().min(1).max(80).optional(),
         limit: z.number().int().min(1).max(24).optional(),
       })
       .parse(data),
@@ -42,6 +45,24 @@ export const cheapestWhitelistedRoutes = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { listCheapestWhitelistedRoutes } = await import("@/lib/route-pages.server");
     return { routes: await listCheapestWhitelistedRoutes(data) };
+  });
+
+/**
+ * Les quatre liaisons de l'accueil : deux moins chères, deux « envies ».
+ * Même contrat que ci-dessus — lecture en base uniquement, aucun appel API.
+ */
+export const homeRoutes = createServerFn({ method: "GET" })
+  .inputValidator((data) =>
+    z
+      .object({
+        origin: z.string().trim().min(3).max(3),
+        limit: z.number().int().min(1).max(12).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { listHomeRoutes } = await import("@/lib/route-pages.server");
+    return { routes: await listHomeRoutes(data) };
   });
 
 /**

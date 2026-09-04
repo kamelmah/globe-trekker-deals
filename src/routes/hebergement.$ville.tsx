@@ -46,6 +46,23 @@ export const Route = createFileRoute("/hebergement/$ville")({
       meta: [
         { title },
         { name: "description", content: description },
+        /*
+         * `noindex, follow` sur les pages ville.
+         *
+         * Leur contenu propre tient en un nom de ville : le reste — carte,
+         * formulaire, texte — est le même widget partenaire d'une ville à
+         * l'autre. Demander à Google d'évaluer une trentaine de pages bâties
+         * sur ce gabarit dilue le domaine sans rien lui apporter, exactement
+         * comme les pages de liaison hors liste blanche élaguées avant elles.
+         *
+         * `follow` et non `nofollow` : les liens sortants continuent de
+         * circuler. Ces pages restent liées depuis /hebergement et depuis les
+         * pages de liaison, et servent toujours les visiteurs — elles ne sont
+         * ni supprimées, ni coupées du maillage. Seule l'évaluation en index
+         * cesse. /hebergement, elle, reste indexée : c'est la page qui porte
+         * la promesse et la liste.
+         */
+        { name: "robots", content: "noindex, follow" },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:url", content: url },

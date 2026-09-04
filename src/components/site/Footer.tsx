@@ -1,10 +1,11 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouteContext } from "@tanstack/react-router";
 
 import { Logo } from "@/components/site/Logo";
 import { DESTINATIONS } from "@/data/destinations";
 import { PRUNED_ROUTE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { routesFrom } from "@/data/route-whitelist";
 import { useCookieConsent } from "@/lib/cookie-consent-context";
+import { FALLBACK_ORIGIN } from "@/lib/geo-origin";
 
 const linkClass = "transition-colors hover:text-foreground";
 
@@ -19,6 +20,13 @@ const MARSEILLE_FOOTER_ROUTES = [...routesFrom("MRS")]
 export function Footer() {
   const year = new Date().getFullYear();
   const { openManager } = useCookieConsent();
+  /*
+   * L'origine vient du contexte RACINE, donc du rendu serveur : le lien du pied
+   * de page porte la bonne ville dès le HTML servi. Le repli couvre le cas où
+   * la racine n'aurait pas encore de contexte (rendu d'une frontière d'erreur,
+   * par exemple), plutôt que de laisser planter le pied de page.
+   */
+  const originDetectee = useRouteContext({ from: "__root__" })?.origin ?? FALLBACK_ORIGIN;
 
   return (
     <footer className="mt-20 border-t border-border bg-secondary/40">
@@ -55,6 +63,13 @@ export function Footer() {
                 Toutes les destinations depuis Marseille
               </Link>
             </li>
+            {/* Le seul point d'entrée « vol pas cher » sans destination en tête :
+                l'accueil demande une recherche, le mode budget une origine. */}
+            <li>
+              <Link to="/moins-cher" className={`${linkClass} font-medium`}>
+                Les vols les moins chers relevés
+              </Link>
+            </li>
           </ul>
 
           <p className="mt-6 text-sm font-semibold">Au départ de Paris</p>
@@ -75,9 +90,22 @@ export function Footer() {
           <p className="text-sm font-semibold">Explorer</p>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li>
+              {/*
+                Origine détectée, et non « PAR » en dur : ce lien n'annonce
+                aucune ville, contrairement aux deux ci-dessus qui vivent sous un
+                intertitre « Au départ de … ». Envoyer un Marseillais sur la
+                carte parisienne était l'autre moitié de l'incohérence PAR/MRS.
+              */}
               <Link
                 to="/mode-budget"
-                search={{ origin: "PAR", budget: 400, month: "", adultes: 1, enfants: 0, bebes: 0 }}
+                search={{
+                  origin: originDetectee,
+                  budget: 400,
+                  month: "",
+                  adultes: 1,
+                  enfants: 0,
+                  bebes: 0,
+                }}
                 className={linkClass}
               >
                 Mode budget

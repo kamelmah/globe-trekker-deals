@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { analyticsEnabled } from "@/lib/analytics";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 const TITLE = "Politique de confidentialité | TrouveMonVol";
@@ -26,6 +27,9 @@ export const Route = createFileRoute("/confidentialite")({
 });
 
 function PrivacyPage() {
+  // Branché sur la même constante que le script (src/lib/analytics.ts) : cette
+  // page ne peut ni annoncer une mesure absente, ni taire une mesure active.
+  const mesureActive = analyticsEnabled();
   return (
     <article className="container-page max-w-3xl py-12">
       <h1 className="font-display text-3xl font-semibold">Politique de confidentialité</h1>
@@ -69,9 +73,11 @@ function PrivacyPage() {
       <p className="mt-2 text-muted-foreground">
         Le site utilise des cookies techniques strictement nécessaires (devise, thème, mémorisation
         de votre choix de consentement), et un cookie tiers optionnel de notre partenaire Stay22
-        pour les cartes d'hébergement, chargé uniquement après votre accord. Aucun outil de mesure
-        d'audience n'est actuellement intégré au site. Le détail complet, catégorie par catégorie,
-        est sur la page{" "}
+        pour les cartes d'hébergement, chargé uniquement après votre accord.{" "}
+        {mesureActive
+          ? "La mesure d'audience du site (Plausible Analytics) ne dépose aucun cookie, ne conserve pas votre adresse IP et ne vous suit pas d'un site à l'autre : elle ne relève donc pas du consentement aux cookies."
+          : "Aucun outil de mesure d'audience n'est actuellement intégré au site."}{" "}
+        Le détail complet, catégorie par catégorie, est sur la page{" "}
         <a href="/cookies" className="underline underline-offset-2 hover:text-foreground">
           Gestion des cookies
         </a>

@@ -18,7 +18,7 @@
  * de toutes les pages de liaison du site.
  */
 export function routeMetaTitle(originCity: string, destinationCity: string): string {
-  return `Vol pas cher ${originCity} ${destinationCity} : prix et meilleure période`;
+  return `Vol pas cher ${originCity} ${destinationCity} : prix, saisonnalité et bagages`;
 }
 
 /**

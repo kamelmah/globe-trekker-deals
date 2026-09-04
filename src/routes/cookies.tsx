@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
+import { analyticsEnabled } from "@/lib/analytics";
 import { useCookieConsent } from "@/lib/cookie-consent-context";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/cookies")({
 
 function CookiesPage() {
   const { openManager } = useCookieConsent();
+  const mesureActive = analyticsEnabled();
   return (
     <article className="container-page max-w-3xl py-12">
       <h1 className="font-display text-3xl font-semibold">Gestion des cookies</h1>
@@ -37,9 +39,43 @@ function CookiesPage() {
       <p className="mt-4 text-muted-foreground">
         Cette page liste précisément les cookies et technologies similaires utilisés par
         TrouveMonVol au moment de la rédaction. Nous ne décrivons ici que ce qui est réellement en
-        place : aucun outil de mesure d'audience (type Google Analytics) n'est actuellement intégré
-        au site.
+        place :{" "}
+        {mesureActive
+          ? "la mesure d'audience décrite plus bas ne dépose aucun cookie et ne vous identifie pas, et aucun outil publicitaire (type Google Analytics) n'est intégré au site."
+          : "aucun outil de mesure d'audience (type Google Analytics) n'est actuellement intégré au site."}
       </p>
+
+      {/*
+        Ce paragraphe est branché sur la MÊME constante que le script lui-même
+        (src/lib/analytics.ts) : il ne peut donc pas décrire un outil absent du
+        site, ni se taire sur un outil actif. C'est le défaut le plus courant
+        des pages cookies, et il est structurellement impossible ici.
+      */}
+      {mesureActive && (
+        <>
+          <h2 className="mt-8 font-display text-xl font-semibold">
+            Mesure d'audience (sans cookie, sans consentement requis)
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            Nous comptons les pages vues et quelques actions — création d'une alerte prix, clic vers
+            un hôtel, clic vers un vendeur de billets — avec Plausible Analytics, un outil qui ne
+            dépose aucun cookie, ne stocke rien sur votre appareil, ne conserve pas votre adresse IP
+            et ne vous suit pas d'un site à l'autre. Les mesures sont agrégées : elles indiquent
+            combien de personnes ont fait quelque chose, jamais qui.
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            Le script est servi depuis notre propre domaine, sous <code>/stats/</code>. Ce n'est pas
+            un moyen de contourner votre choix — il n'y a rien à choisir puisque rien n'est déposé —
+            mais d'éviter que les bloqueurs, qui filtrent sur le nom de domaine, ne faussent le
+            comptage en n'effaçant qu'une partie des visites.
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            Aucune donnée personnelle n'accompagne ces mesures : ni adresse e-mail, ni identifiant,
+            ni contenu de recherche libre. Les seules informations transmises avec une action sont
+            le trajet ou la ville concernés, et la page d'où part le clic.
+          </p>
+        </>
+      )}
 
       <h2 className="mt-8 font-display text-xl font-semibold">Cookies strictement nécessaires</h2>
       <p className="mt-2 text-muted-foreground">

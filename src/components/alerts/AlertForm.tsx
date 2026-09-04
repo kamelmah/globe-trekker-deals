@@ -1,8 +1,9 @@
 import { useServerFn } from "@tanstack/react-start";
-import { BellRing } from "lucide-react";
+import { BellRing, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { trackEvent } from "@/lib/analytics";
 import { subscribeToAlert } from "@/lib/flights.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,12 +15,20 @@ export function AlertForm({
   departDate,
   returnDate,
   referencePrice,
+  followerCount,
 }: {
   origin: string;
   destination: string;
   departDate?: string;
   returnDate?: string;
   referencePrice?: number | null;
+  /**
+   * Nombre d'alertes actives sur la liaison, DÉJÀ filtré par le seuil
+   * d'affichage côté serveur. Absent ou null : rien ne s'affiche. Le composant
+   * ne décide pas du seuil et n'arrondit rien — il affiche le compte réel qu'on
+   * lui donne, ou rien.
+   */
+  followerCount?: number | null;
 }) {
   const subscribe = useServerFn(subscribeToAlert);
   const [email, setEmail] = useState("");
@@ -46,6 +55,10 @@ export function AlertForm({
         toast.success(result.message);
         setFeedback({ ok: true, message: result.message });
         setEmail("");
+        // Après la confirmation du serveur, jamais à la soumission : un
+        // formulaire refusé (email invalide, doublon) n'est pas une alerte
+        // créée. Le trajet part en propriété, l'adresse e-mail jamais.
+        trackEvent("alerte_creee", { trajet: `${origin}-${destination}`, source: "vols" });
       } else {
         toast.error(result.message);
         setFeedback({ ok: false, message: result.message });
@@ -69,6 +82,12 @@ export function AlertForm({
         <BellRing className="size-4 text-primary" aria-hidden />
         Être alerté si le prix baisse sur ce trajet
       </h2>
+      {typeof followerCount === "number" && (
+        <p className="mt-1.5 inline-flex items-center gap-1.5 rounded bg-secondary px-2 py-0.5 text-xs font-medium text-foreground">
+          <Users className="size-3.5 text-primary" aria-hidden />
+          {followerCount} personnes suivent ce trajet
+        </p>
+      )}
       <p className="mt-1.5 text-sm text-muted-foreground">
         Votre email suffit, aucun compte à créer. Nous vérifions le prix une fois par jour et nous
         ne vous écrivons que s'il baisse. Désinscription en un clic.

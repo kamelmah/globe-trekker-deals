@@ -36,7 +36,7 @@ export function DestinationPriceGrid({
       {sorted.length > 0 && (
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {sorted.map((price) => {
-            const image = getDestinationImage(price.destination, price.city, price.country);
+            const image = getDestinationImage(price.destination, price.city);
             // Le tarif d’appel peut partir d’un aéroport éloigné : « Marrakech 50 € »
             // au départ de Beauvais, ce n’est pas le même voyage.
             const depart = secondaryAirport(price.originAirport);

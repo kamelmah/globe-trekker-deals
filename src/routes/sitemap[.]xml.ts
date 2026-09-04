@@ -1,6 +1,7 @@
 import { SITE_URL } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AIRLINE_BAGGAGE } from "@/data/baggage-fees";
 import { CITY_GUIDES } from "@/data/city-guides";
 import { COMPARISONS } from "@/data/comparisons";
 import { DESTINATIONS } from "@/data/destinations";
@@ -18,7 +19,6 @@ import {
 } from "@/data/route-whitelist";
 import { pageLastmod } from "@/data/page-lastmod";
 import { TRAVEL_DOCUMENTS } from "@/data/travel-documents";
-import { HOTEL_CITIES } from "@/lib/hotel-cities";
 import { urlsetXml, xmlResponse, type SitemapEntry } from "@/lib/sitemap-xml";
 
 /**
@@ -53,6 +53,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         // une page en noindex envoie deux consignes contradictoires.
         const staticPages = [
           "/",
+          "/moins-cher",
           "/mode-budget",
           "/alertes",
           "/conseils",
@@ -61,6 +62,11 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/conseils/formalites",
           "/faq",
           "/methodologie",
+          // Aiguillage bagages, plus la page de chaque compagnie documentée.
+          // Ces grilles étaient recopiées sur les 126 pages de liaison ; elles
+          // sont désormais indexées une fois, là où elles sont cherchées.
+          "/bagages",
+          ...AIRLINE_BAGGAGE.map((policy) => `/bagages/${policy.slug}`),
           "/contact",
           "/indemnisation",
           "/hebergement",
@@ -92,9 +98,11 @@ export const Route = createFileRoute("/sitemap.xml")({
             dated(`/comparatifs/${c.slug}`, c.updated),
           ),
           ...TRAVEL_DOCUMENTS.map((d) => dated(`/conseils/formalites/${d.slug}`, d.updated)),
-          // Pages hébergement par ville : leur contenu suit la liste blanche,
-          // qui les date.
-          ...HOTEL_CITIES.map((v) => dated(`/hebergement/${v.slug}`, WHITELIST_VALIDATED_AT)),
+          // Les pages /hebergement/<ville> NE FIGURENT PLUS ICI : elles sont
+          // passées en `noindex, follow`. Un sitemap ne déclare que des pages
+          // dont on demande l'indexation — y laisser une page en noindex envoie
+          // deux consignes contradictoires, comme le dit déjà le commentaire des
+          // pages de service plus haut. Seule /hebergement reste déclarée.
         ];
 
         // Une page éditoriale peut aussi figurer dans la liste blanche : on ne

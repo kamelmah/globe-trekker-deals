@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cityLabel } from "@/data/airports";
+import { trackEvent } from "@/lib/analytics";
 import { subscribeToAlert } from "@/lib/flights.functions";
 
 /**
@@ -54,7 +55,13 @@ export function HomeAlertForm({ initialOrigin }: { initialOrigin: string }) {
           ? `Alerte créée. Vous recevrez un email dès que le prix de ${cityLabel(origin)} → ${cityLabel(destination)} baisse.`
           : resultat.message,
       });
-      if (resultat.ok) setEmail("");
+      if (resultat.ok) {
+        setEmail("");
+        // Après la confirmation du serveur, jamais à la soumission : un
+        // formulaire refusé (email invalide, doublon) n'est pas une alerte
+        // créée. Le trajet part en propriété, l'adresse e-mail jamais.
+        trackEvent("alerte_creee", { trajet: `${origin}-${destination}`, source: "accueil" });
+      }
     } catch {
       setRetourCreation({
         ok: false,

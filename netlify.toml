@@ -33,7 +33,8 @@
 # ce qui garde l'horaire à côté du code qu'il déclenche. Elle est répétée ici
 # pour rester lisible d'un coup d'œil.
 #
-#   rafraichir-prix       "7 * * * *"     toutes les heures
+#   rafraichir-prix       "7 * * * *"     toutes les heures, liaisons courantes
+#   rafraichir-prix-top   "29 */3 * * *"  toutes les 3 h, liaisons prioritaires
 #   relever-saisonnalite  "0 3 * * *"     chaque nuit à 3 h, 24 routes par passage
 #   rediger-routes        "23 * * * *"    toutes les heures, 3 trajets redigés par passage
 #   verifier-alertes      "37 * * * *"    toutes les heures
@@ -51,3 +52,52 @@
   for = "/og/*"
   [headers.values]
     cache-control = "public, max-age=604800"
+
+# ---------------------------------------------------------------------------
+# Mesure d'audience servie depuis notre domaine
+#
+# Les bloqueurs de publicité filtrent sur le NOM DE DOMAINE : un script chargé
+# depuis plausible.io disparaît chez une bonne partie des visiteurs, et pas chez
+# n'importe lesquels — navigateurs équipés, publics techniques, mobiles sous
+# navigateur alternatif. Les rapports deviennent alors non seulement incomplets
+# mais biaisés, ce qui est pire qu'incomplet.
+#
+# Ces deux règles servent le script ET l'endpoint de collecte sous /stats/,
+# c'est-à-dire depuis trouvemonvol.fr : plus de domaine tiers à filtrer.
+#
+# `status = 200` est essentiel : c'est ce qui fait un PROXY. Avec un 301/302, le
+# navigateur repartirait vers plausible.io et on aurait rebâti exactement ce
+# qu'on contourne.
+#
+# Les règles de netlify.toml sont évaluées AVANT le `_redirects` généré par
+# Nitro, dont le `/*` attrape tout le reste : /stats/* ne peut donc pas être
+# capturé par le rendu serveur.
+#
+# Instance auto-hébergée : remplacer https://plausible.io par l'URL de
+# l'instance dans les deux règles. Le préfixe /stats/, lui, est déclaré côté
+# application dans src/lib/analytics.ts (ANALYTICS_PREFIX) — les deux doivent
+# rester d'accord.
+# ---------------------------------------------------------------------------
+
+[[redirects]]
+  # Joker sur le nom de fichier, et non sur un nom en dur : le script actuel
+  # porte l'identité du site dans son nom (`pa-….js`), qui est configuré côté
+  # application (VITE_PLAUSIBLE_SCRIPT_ID). Changer de compte de mesure ne doit
+  # pas obliger à retoucher l'infrastructure.
+  from = "/stats/js/*"
+  to = "https://plausible.io/js/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/stats/api/event"
+  to = "https://plausible.io/api/event"
+  status = 200
+  force = true
+
+[[headers]]
+  # Le script de mesure change rarement ; sans cet en-tête il serait redemandé
+  # à chaque page vue, proxy oblige.
+  for = "/stats/js/*"
+  [headers.values]
+    cache-control = "public, max-age=86400"

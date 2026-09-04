@@ -34,58 +34,12 @@ import cph from "@/assets/dest/cph.jpg";
 import cphWebp from "@/assets/dest/cph.webp";
 import cphThumb from "@/assets/dest/cph-thumb.jpg";
 import cphThumbWebp from "@/assets/dest/cph-thumb.webp";
+import { photoVille } from "@/data/city-photos";
+
 import defaultImg from "@/assets/dest/default.jpg";
 import defaultImgWebp from "@/assets/dest/default.webp";
 import defaultImgThumb from "@/assets/dest/default-thumb.jpg";
 import defaultImgThumbWebp from "@/assets/dest/default-thumb.webp";
-import genericCoast from "@/assets/dest/generic/coast.jpg";
-import genericCoastWebp from "@/assets/dest/generic/coast.webp";
-import genericCoastThumb from "@/assets/dest/generic/coast-thumb.jpg";
-import genericCoastThumbWebp from "@/assets/dest/generic/coast-thumb.webp";
-import genericDesert from "@/assets/dest/generic/desert.jpg";
-import genericDesertWebp from "@/assets/dest/generic/desert.webp";
-import genericDesertThumb from "@/assets/dest/generic/desert-thumb.jpg";
-import genericDesertThumbWebp from "@/assets/dest/generic/desert-thumb.webp";
-import genericHarbour from "@/assets/dest/generic/harbour.jpg";
-import genericHarbourWebp from "@/assets/dest/generic/harbour.webp";
-import genericHarbourThumb from "@/assets/dest/generic/harbour-thumb.jpg";
-import genericHarbourThumbWebp from "@/assets/dest/generic/harbour-thumb.webp";
-import genericLake from "@/assets/dest/generic/lake.jpg";
-import genericLakeWebp from "@/assets/dest/generic/lake.webp";
-import genericLakeThumb from "@/assets/dest/generic/lake-thumb.jpg";
-import genericLakeThumbWebp from "@/assets/dest/generic/lake-thumb.webp";
-import genericMedina from "@/assets/dest/generic/medina.jpg";
-import genericMedinaWebp from "@/assets/dest/generic/medina.webp";
-import genericMedinaThumb from "@/assets/dest/generic/medina-thumb.jpg";
-import genericMedinaThumbWebp from "@/assets/dest/generic/medina-thumb.webp";
-import genericMedina2 from "@/assets/dest/generic/medina2.jpg";
-import genericMedina2Webp from "@/assets/dest/generic/medina2.webp";
-import genericMedina2Thumb from "@/assets/dest/generic/medina2-thumb.jpg";
-import genericMedina2ThumbWebp from "@/assets/dest/generic/medina2-thumb.webp";
-import genericMountain from "@/assets/dest/generic/mountain.jpg";
-import genericMountainWebp from "@/assets/dest/generic/mountain.webp";
-import genericMountainThumb from "@/assets/dest/generic/mountain-thumb.jpg";
-import genericMountainThumbWebp from "@/assets/dest/generic/mountain-thumb.webp";
-import genericNightCity from "@/assets/dest/generic/nightcity.jpg";
-import genericNightCityWebp from "@/assets/dest/generic/nightcity.webp";
-import genericNightCityThumb from "@/assets/dest/generic/nightcity-thumb.jpg";
-import genericNightCityThumbWebp from "@/assets/dest/generic/nightcity-thumb.webp";
-import genericNorthCoast from "@/assets/dest/generic/northcoast.jpg";
-import genericNorthCoastWebp from "@/assets/dest/generic/northcoast.webp";
-import genericNorthCoastThumb from "@/assets/dest/generic/northcoast-thumb.jpg";
-import genericNorthCoastThumbWebp from "@/assets/dest/generic/northcoast-thumb.webp";
-import genericOldTown from "@/assets/dest/generic/oldtown.jpg";
-import genericOldTownWebp from "@/assets/dest/generic/oldtown.webp";
-import genericOldTownThumb from "@/assets/dest/generic/oldtown-thumb.jpg";
-import genericOldTownThumbWebp from "@/assets/dest/generic/oldtown-thumb.webp";
-import genericSkyline from "@/assets/dest/generic/skyline.jpg";
-import genericSkylineWebp from "@/assets/dest/generic/skyline.webp";
-import genericSkylineThumb from "@/assets/dest/generic/skyline-thumb.jpg";
-import genericSkylineThumbWebp from "@/assets/dest/generic/skyline-thumb.webp";
-import genericTropical from "@/assets/dest/generic/tropical.jpg";
-import genericTropicalWebp from "@/assets/dest/generic/tropical.webp";
-import genericTropicalThumb from "@/assets/dest/generic/tropical-thumb.jpg";
-import genericTropicalThumbWebp from "@/assets/dest/generic/tropical-thumb.webp";
 import dxb from "@/assets/dest/dxb.jpg";
 import dxbWebp from "@/assets/dest/dxb.webp";
 import dxbThumb from "@/assets/dest/dxb-thumb.jpg";
@@ -368,326 +322,56 @@ function normalize(value: string): string {
 }
 
 /**
- * Visuels génériques d'ambiance : aucun visuel curé n'existant pour les ~680
- * destinations du catalogue, on choisit une scène cohérente avec la région
- * (ou, à défaut, de façon déterministe) au lieu d'afficher la même image
- * pour toutes les villes.
+ * Visuel neutre unique, servi pour toute ville sans photo renseignée.
+ *
+ * Un seul, et assumé comme tel. Il a remplacé une sélection automatique qui
+ * choisissait une « ambiance » d'après le pays et un hachage du nom de ville :
+ * douze photos de décor tournantes, dont aucune ne montrait la ville affichée,
+ * mais qui portaient toutes son nom en texte alternatif. Sétif héritait d'une
+ * médina marocaine, Ibiza d'un canal néerlandais. Répartir un mensonge sur
+ * douze images ne le rend pas vrai, et c'est exactement ce que produisait ce
+ * mécanisme : plus il variait, plus il paraissait crédible.
+ *
+ * Son alt décrit CETTE image et ne nomme aucune ville, puisqu'il n'en montre
+ * aucune. C'est ce qui distingue un visuel d'illustration d'une photo de
+ * destination, pour un lecteur d'écran comme pour un moteur de recherche.
  */
-type Scene = { src: string; webp: string; thumb: string; thumbWebp: string; description: string };
-
-const SCENES: Record<string, Scene> = {
-  oldtown: {
-    src: genericOldTown,
-    webp: genericOldTownWebp,
-    thumb: genericOldTownThumb,
-    thumbWebp: genericOldTownThumbWebp,
-    description: "ruelle pavée bordée de façades colorées d'un centre historique européen",
-  },
-  coast: {
-    src: genericCoast,
-    webp: genericCoastWebp,
-    thumb: genericCoastThumb,
-    thumbWebp: genericCoastThumbWebp,
-    description: "port méditerranéen aux eaux turquoise et aux toits de tuiles",
-  },
-  harbour: {
-    src: genericHarbour,
-    webp: genericHarbourWebp,
-    thumb: genericHarbourThumb,
-    thumbWebp: genericHarbourThumbWebp,
-    description: "quartier portuaire d'Europe du Nord, canal et bateaux amarrés",
-  },
-  mountain: {
-    src: genericMountain,
-    webp: genericMountainWebp,
-    thumb: genericMountainThumb,
-    thumbWebp: genericMountainThumbWebp,
-    description: "vallée verdoyante dominée par des sommets enneigés",
-  },
-  lake: {
-    src: genericLake,
-    webp: genericLakeWebp,
-    thumb: genericLakeThumb,
-    thumbWebp: genericLakeThumbWebp,
-    description: "lac au lever du soleil au milieu de collines",
-  },
-  skyline: {
-    src: genericSkyline,
-    webp: genericSkylineWebp,
-    thumb: genericSkylineThumb,
-    thumbWebp: genericSkylineThumbWebp,
-    description: "skyline de gratte-ciels au crépuscule au bord de l'eau",
-  },
-  medina: {
-    src: genericMedina,
-    webp: genericMedinaWebp,
-    thumb: genericMedinaThumb,
-    thumbWebp: genericMedinaThumbWebp,
-    description: "ruelle voûtée aux murs ocre éclairée par des lanternes",
-  },
-  /*
-   * Les trois ambiances qui suivent existent pour le Maghreb et le Proche-Orient,
-   * dont « medina » était jusqu'ici la seule image utilisable — quinze villes s'y
-   * partageaient une photo unique.
-   *
-   * Elles ne sont jamais tirées pour l'Europe : elles n'apparaissent que dans le
-   * bassin de « medina », et jamais dans SCENES_NEUTRES.
-   *
-   * Sources, licence Unsplash (usage commercial autorisé, crédit non obligatoire) :
-   *   medina2    https://unsplash.com/fr/photos/FvaiA2QPgzI
-   *   northcoast https://unsplash.com/fr/photos/FImbftN5DZQ
-   *   desert     https://unsplash.com/fr/photos/pdzQ1cAdftk
-   */
-  medina2: {
-    src: genericMedina2,
-    webp: genericMedina2Webp,
-    thumb: genericMedina2Thumb,
-    thumbWebp: genericMedina2ThumbWebp,
-    description: "ruelle en escalier aux murs peints en bleu, portes sculptées et bougainvilliers",
-  },
-  northcoast: {
-    src: genericNorthCoast,
-    webp: genericNorthCoastWebp,
-    thumb: genericNorthCoastThumb,
-    thumbWebp: genericNorthCoastThumbWebp,
-    description: "cap rocheux surmonté d'un phare blanc, palmiers et mer turquoise",
-  },
-  desert: {
-    src: genericDesert,
-    webp: genericDesertWebp,
-    thumb: genericDesertThumb,
-    thumbWebp: genericDesertThumbWebp,
-    description: "dunes de sable ocre parsemées de touffes d'herbe sèche",
-  },
-  tropical: {
-    src: genericTropical,
-    webp: genericTropicalWebp,
-    thumb: genericTropicalThumb,
-    thumbWebp: genericTropicalThumbWebp,
-    description: "plage de sable blanc bordée de cocotiers et de lagon turquoise",
-  },
-  nightcity: {
-    src: genericNightCity,
-    webp: genericNightCityWebp,
-    thumb: genericNightCityThumb,
-    thumbWebp: genericNightCityThumbWebp,
-    description: "avenue animée d'une grande ville asiatique illuminée de néons",
-  },
+const VISUEL_NEUTRE: DestinationImage = {
+  src: defaultImg,
+  webp: defaultImgWebp,
+  thumb: defaultImgThumb,
+  thumbWebp: defaultImgThumbWebp,
+  alt: "Destination de voyage — panorama urbain à l'heure dorée",
 };
 
 /**
- * Ambiances utilisables quand le pays est inconnu.
+ * Visuel d'une destination, par ordre de priorité décroissante.
  *
- * « nightcity », « tropical » et « medina » sont trop marquees geographiquement
- * pour etre attribuees au hasard : une page Marseille - Annaba affichait une
- * avenue asiatique aux neons parce que le pays n etait pas transmis. Ces trois
- * scenes ne sortent donc que d une correspondance explicite avec le pays.
+ * 1. La photo renseignée dans la table des villes (city-photos.ts). Elle prime
+ *    sur tout : c'est la seule qui puisse être ajoutée sans toucher au code.
+ * 2. Un visuel curé embarqué, pour les vingt-quatre villes qui en ont un. Même
+ *    nature que le point 1 — une vraie photo de la ville, avec son alt écrit à
+ *    la main — mais servie depuis le bundle plutôt que depuis /images.
+ * 3. Le visuel neutre. Pas de troisième catégorie : soit on a une photo de la
+ *    ville, soit on affiche une illustration qui ne prétend pas en être une.
+ *
+ * Le pays ne sert plus à rien ici et n'est donc plus demandé : il n'existait
+ * que pour choisir une ambiance régionale.
  */
-const SCENES_NEUTRES = ["oldtown", "coast", "harbour", "lake", "mountain"];
-
-/** Ambiances alternatives cohérentes avec une ambiance régionale donnée. */
-const SCENE_VARIANTS: Record<string, string[]> = {
-  oldtown: ["harbour", "lake"],
-  coast: ["oldtown", "harbour"],
-  harbour: ["oldtown", "lake"],
-  mountain: ["lake", "oldtown"],
-  lake: ["mountain", "oldtown"],
-  skyline: ["nightcity"],
-  /**
-   * Bassin de quatre, et pas un de moins.
-   *
-   * Aucune ambiance européenne n'y figure : la place pavée d'« oldtown » est
-   * bohémienne, le port de « coast » est grec, « harbour » est un canal
-   * néerlandais et « mountain » un village alpin. Les emprunter envoyait Annaba
-   * et Tlemcen sur une place de Bohême, Constantine et Sétif dans un port grec.
-   *
-   * La taille quatre n'est pas un chiffre rond : mesurée sur les empreintes des
-   * villes, c'est la seule qui sépare Agadir d'Oran, qui tombaient dans le même
-   * groupe à un, deux et trois.
-   *
-   * RÉSERVE. SCENE_BY_COUNTRY range aussi la Turquie et l'Inde sous « medina » :
-   * elles peuvent donc tirer une dune saharienne, ce qui serait faux. Aucune
-   * ville concernée ne le fait aujourd'hui — Antalya sort sur « medina », et
-   * l'Inde n'a pas de destination — mais un bassin par scène ne sait pas
-   * distinguer ces pays. Les en sortir demanderait de leur donner leurs propres
-   * images, pas de bricoler ce tableau.
-   */
-  medina: ["medina2", "northcoast", "desert"],
-  tropical: ["coast"],
-  nightcity: ["skyline"],
-};
-
-/** Scène privilégiée selon le pays (français ou anglais, sans accents). */
-const SCENE_BY_COUNTRY: Record<string, string> = {
-  // Bassin méditerranéen
-  espagne: "coast",
-  spain: "coast",
-  italie: "coast",
-  italy: "coast",
-  grece: "coast",
-  greece: "coast",
-  portugal: "coast",
-  croatie: "coast",
-  croatia: "coast",
-  chypre: "coast",
-  cyprus: "coast",
-  malte: "coast",
-  malta: "coast",
-  // Villes historiques d'Europe centrale et de l'Ouest
-  france: "oldtown",
-  allemagne: "oldtown",
-  germany: "oldtown",
-  autriche: "oldtown",
-  austria: "oldtown",
-  "republique tcheque": "oldtown",
-  hongrie: "oldtown",
-  hungary: "oldtown",
-  pologne: "oldtown",
-  poland: "oldtown",
-  roumanie: "oldtown",
-  romania: "oldtown",
-  bulgarie: "oldtown",
-  bulgaria: "oldtown",
-  serbie: "oldtown",
-  slovaquie: "oldtown",
-  slovenie: "oldtown",
-  belgique: "oldtown",
-  belgium: "oldtown",
-  luxembourg: "oldtown",
-  // Europe du Nord
-  "royaume-uni": "harbour",
-  "united kingdom": "harbour",
-  irlande: "harbour",
-  ireland: "harbour",
-  "pays-bas": "harbour",
-  netherlands: "harbour",
-  danemark: "harbour",
-  denmark: "harbour",
-  suede: "harbour",
-  sweden: "harbour",
-  norvege: "harbour",
-  norway: "harbour",
-  finlande: "harbour",
-  finland: "harbour",
-  estonie: "harbour",
-  lettonie: "harbour",
-  lituanie: "harbour",
-  islande: "harbour",
-  // Montagnes
-  suisse: "mountain",
-  switzerland: "mountain",
-  // Afrique du Nord et Moyen-Orient
-  maroc: "medina",
-  morocco: "medina",
-  tunisie: "medina",
-  tunisia: "medina",
-  algerie: "medina",
-  algeria: "medina",
-  egypte: "medina",
-  egypt: "medina",
-  jordanie: "medina",
-  jordan: "medina",
-  turquie: "medina",
-  turkey: "medina",
-  israel: "medina",
-  liban: "medina",
-  "emirats arabes unis": "skyline",
-  "united arab emirates": "skyline",
-  qatar: "skyline",
-  "arabie saoudite": "skyline",
-  oman: "medina",
-  bahrein: "skyline",
-  // Amériques
-  "etats-unis": "skyline",
-  "united states": "skyline",
-  canada: "skyline",
-  mexique: "tropical",
-  mexico: "tropical",
-  bresil: "tropical",
-  brazil: "tropical",
-  cuba: "tropical",
-  "republique dominicaine": "tropical",
-  argentine: "skyline",
-  argentina: "skyline",
-  chili: "mountain",
-  chile: "mountain",
-  perou: "mountain",
-  peru: "mountain",
-  colombie: "mountain",
-  colombia: "mountain",
-  // Asie / Océanie
-  japon: "nightcity",
-  japan: "nightcity",
-  "coree du sud": "nightcity",
-  "south korea": "nightcity",
-  chine: "nightcity",
-  china: "nightcity",
-  "hong kong": "nightcity",
-  taiwan: "nightcity",
-  singapour: "skyline",
-  singapore: "skyline",
-  thailande: "tropical",
-  thailand: "tropical",
-  vietnam: "tropical",
-  indonesie: "tropical",
-  indonesia: "tropical",
-  malaisie: "tropical",
-  malaysia: "tropical",
-  philippines: "tropical",
-  maldives: "tropical",
-  "sri lanka": "tropical",
-  inde: "medina",
-  india: "medina",
-  nepal: "mountain",
-  australie: "coast",
-  australia: "coast",
-  "nouvelle-zelande": "mountain",
-  "new zealand": "mountain",
-  // Afrique subsaharienne
-  senegal: "coast",
-  "afrique du sud": "coast",
-  "south africa": "coast",
-  kenya: "lake",
-  tanzanie: "lake",
-  tanzania: "lake",
-  ethiopie: "lake",
-  maurice: "tropical",
-  mauritius: "tropical",
-  seychelles: "tropical",
-  "cap-vert": "tropical",
-  reunion: "tropical",
-};
-
-/** Hachage stable d'une chaîne, pour répartir les villes sans pays connu. */
-function hashOf(value: string): number {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) hash = (hash * 31 + value.charCodeAt(i)) % 1000003;
-  return hash;
-}
-
-function genericImage(city?: string | null, country?: string | null): DestinationImage {
-  const hash = hashOf(normalize(city ?? "destination"));
-  const regional = country ? SCENE_BY_COUNTRY[normalize(country)] : undefined;
-  // Deux ambiances possibles par région : deux villes voisines n'ont pas le même visuel.
-  const pool = regional ? [regional, ...(SCENE_VARIANTS[regional] ?? [])] : SCENES_NEUTRES;
-  const key = pool[hash % pool.length]!;
-  const scene = SCENES[key] ?? SCENES["oldtown"]!;
-  const label = city ? `Ambiance de voyage évoquant ${city}` : "Ambiance de voyage";
-  return {
-    src: scene.src,
-    webp: scene.webp,
-    thumb: scene.thumb,
-    thumbWebp: scene.thumbWebp,
-    alt: `${label} : ${scene.description}`,
-  };
-}
-
-/** Retourne un visuel pour une destination (code IATA, nom de ville, pays). */
-export function getDestinationImage(
-  code?: string | null,
-  city?: string | null,
-  country?: string | null,
-): DestinationImage {
+export function getDestinationImage(code?: string | null, city?: string | null): DestinationImage {
+  const photo = photoVille(code);
+  if (photo) {
+    return {
+      // WebP servi aux deux sources : le fichier de la table EST un WebP, et
+      // <picture> retombera dessus faute de mieux. Tous les navigateurs que le
+      // site vise le lisent depuis 2020.
+      src: photo.imageUrl,
+      webp: photo.imageUrl,
+      thumb: photo.imageThumbUrl,
+      thumbWebp: photo.imageThumbUrl,
+      alt: photo.imageAlt,
+    };
+  }
   if (code) {
     const hit = BY_CODE[code.toUpperCase()];
     if (hit) return hit;
@@ -696,12 +380,5 @@ export function getDestinationImage(
     const hit = BY_CITY[normalize(city)];
     if (hit) return hit;
   }
-  if (city || country) return genericImage(city, country);
-  return {
-    src: defaultImg,
-    webp: defaultImgWebp,
-    thumb: defaultImgThumb,
-    thumbWebp: defaultImgThumbWebp,
-    alt: "Destination de voyage — panorama urbain à l'heure dorée",
-  };
+  return VISUEL_NEUTRE;
 }
