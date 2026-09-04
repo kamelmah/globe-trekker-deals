@@ -41,10 +41,39 @@ export type PhotoVille = {
 
 /** Clé : code IATA de la ville, comme partout ailleurs dans le site. */
 export const CITY_PHOTOS: Record<string, PhotoVille> = {
+  ALC: {
+    imageUrl: "/images/alicante-santa-barbara.webp",
+    imageThumbUrl: "/images/alicante-santa-barbara-thumb.webp",
+    imageAlt:
+      "Château de Santa Bárbara sur son rocher au-dessus des toits d'Alicante et de la Méditerranée",
+  },
+  BIA: {
+    imageUrl: "/images/bastia-vieux-port.webp",
+    imageThumbUrl: "/images/bastia-vieux-port-thumb.webp",
+    imageAlt:
+      "Vue aérienne de la vieille ville et du vieux port de Bastia, du phare de la jetée aux montagnes du Cap Corse",
+  },
+  BJA: {
+    imageUrl: "/images/bejaia-baie.webp",
+    imageThumbUrl: "/images/bejaia-baie-thumb.webp",
+    imageAlt: "Baie et port de Béjaïa au pied des montagnes de Kabylie, vus des hauteurs boisées",
+  },
   ORN: {
     imageUrl: "/images/oran-santa-cruz.webp",
     imageThumbUrl: "/images/oran-santa-cruz-thumb.webp",
     imageAlt: "Chapelle Santa Cruz dominant la baie et le port d'Oran, Algérie",
+  },
+  SSH: {
+    imageUrl: "/images/charm-el-cheikh-plage.webp",
+    imageThumbUrl: "/images/charm-el-cheikh-plage-thumb.webp",
+    imageAlt:
+      "Paillotes de chaume et parasols sur une plage de Charm el-Cheikh, au-dessus d'un lagon turquoise bordé de récifs",
+  },
+  TNG: {
+    imageUrl: "/images/tanger-kasbah.webp",
+    imageThumbUrl: "/images/tanger-kasbah-thumb.webp",
+    imageAlt:
+      "Remparts crénelés de la kasbah de Tanger au-dessus des toits de la médina, du port et de la baie",
   },
 };
 
