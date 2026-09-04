@@ -709,6 +709,45 @@ export type StoredEditorial = {
   imageUrl: string | null;
 };
 
+/**
+ * Photos relevées pour un lot de villes d'arrivée, en UNE requête.
+ *
+ * Indexée par code IATA de destination et non par trajet : la photo illustre la
+ * ville, pas la liaison. Marseille — Malaga et Nice — Malaga montrent la même
+ * Malaga, et une carte d'accueil peut donc afficher une ville dont ce n'est pas
+ * exactement le trajet qui a été rédigé.
+ *
+ * Une requête pour l'ensemble des cartes, pas une par carte : c'est la règle
+ * déjà suivie par `readHistoryLows` pour les prix, et pour la même raison.
+ */
+export async function readCityImages(codes: string[]): Promise<Map<string, string>> {
+  const images = new Map<string, string>();
+  const uniques = [...new Set(codes.map((code) => code.toUpperCase()))].filter(Boolean);
+  if (uniques.length === 0) return images;
+  try {
+    const db = await admin();
+    const { data, error } = await db
+      .from("route_editorials")
+      .select("destination,image_url,generated_at")
+      .in("destination", uniques)
+      .not("image_url", "is", null)
+      .eq("published", true)
+      // Plusieurs trajets mènent à la même ville : le relevé le plus récent
+      // tranche, pour que la photo ne change pas d'une visite à l'autre.
+      .order("generated_at", { ascending: false });
+    if (error) throw error;
+    for (const row of data ?? []) {
+      if (!row.image_url) continue;
+      const code = row.destination.toUpperCase();
+      if (!images.has(code)) images.set(code, row.image_url);
+    }
+  } catch (error) {
+    // Sans photo relevée, les cartes gardent leur visuel local : rien à réparer.
+    console.error("Lecture des photos de villes impossible", error);
+  }
+  return images;
+}
+
 /** Texte publié d'un trajet, ou null. Une lecture qui échoue laisse la page en l'état. */
 export async function readRouteEditorial(slug: string): Promise<StoredEditorial | null> {
   try {

@@ -27,6 +27,7 @@
  * texte déjà généré ne doit pas être perdu pour autant.
  */
 
+import { imageWikimediaALargeur, plusGrandeLargeurJusqua } from "@/lib/city-image.shared";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 /**
@@ -116,19 +117,26 @@ type ResumeWikipedia = {
  *
  * Le résumé Wikipédia renvoie une vignette de 330 px de large, illisible en
  * bannière de 1200 px. Les URL de Wikimedia portent la largeur demandée dans
- * leur dernier segment (« …/330px-Fichier.jpg ») : on la réécrit, sans jamais
- * dépasser la taille du fichier d'origine — au-delà, Wikimedia refuse le rendu.
+ * leur dernier segment (« …/330px-Fichier.jpg ») : on la réécrit.
+ *
+ * Deux bornes, et pas une de moins. Ne jamais dépasser le fichier d'origine :
+ * Wikimedia refuse d'agrandir. Et ne demander qu'une des largeurs qu'elle sert
+ * réellement (voir `city-image.shared`) : `min(1280, original)` produisait
+ * sinon des adresses comme « /900px-… », refusées en 400 et enregistrées telles
+ * quelles en base — une image cassée que rien n'aurait signalée avant qu'elle
+ * ne s'affiche.
  *
  * Les paramètres `utm_*` que l'API accole servent sa propre mesure d'audience ;
  * ils sont retirés avant d'écrire l'URL en base, où elle vivra des mois.
  */
 function agrandir(vignette: string, largeurOriginale: number | undefined): string {
   const propre = vignette.split("?")[0] ?? vignette;
-  const motif = /\/(\d+)px-([^/]+)$/;
-  if (!motif.test(propre)) return propre;
-  const largeur = Math.min(LARGEUR_CIBLE, largeurOriginale ?? LARGEUR_CIBLE);
-  if (largeur <= 0) return propre;
-  return propre.replace(motif, `/${largeur}px-$2`);
+  const plafond = Math.min(LARGEUR_CIBLE, largeurOriginale ?? LARGEUR_CIBLE);
+  const largeur = plusGrandeLargeurJusqua(plafond);
+  // Fichier d'origine plus petit que la plus petite largeur servie : la
+  // vignette du résumé reste la seule adresse valable.
+  if (largeur === null) return propre;
+  return imageWikimediaALargeur(propre, largeur);
 }
 
 /**

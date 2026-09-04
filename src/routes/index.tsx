@@ -5,7 +5,7 @@ import { HomeAlertForm } from "@/components/alerts/HomeAlertForm";
 import { SearchForm } from "@/components/search/SearchForm";
 import { AvionAnime } from "@/components/site/AvionAnime";
 import { Reveal } from "@/components/site/Reveal";
-import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { CityPicture } from "@/components/site/CityPicture";
 import { Button } from "@/components/ui/button";
 import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
 import { PRUNED_GUIDE_SLUGS, withoutPruned } from "@/data/pruned-pages";
@@ -311,10 +311,12 @@ function HomePage() {
                       params={{ slug: route.slug }}
                       className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-secondary"
                     >
-                      <ResponsivePicture
-                        src={image.thumb}
-                        webp={image.thumbWebp}
-                        alt={image.alt}
+                      <CityPicture
+                        imageUrl={route.imageUrl}
+                        fallback={image}
+                        code={route.destination}
+                        city={route.city}
+                        vignette
                         loading="lazy"
                         width={256}
                         height={192}
@@ -428,10 +430,12 @@ function HomePage() {
                       params={{ city: guide.slug }}
                       className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-secondary"
                     >
-                      <ResponsivePicture
-                        src={image.thumb}
-                        webp={image.thumbWebp}
-                        alt={image.alt}
+                      <CityPicture
+                        imageUrl={guide.imageUrl}
+                        fallback={image}
+                        code={guide.destination}
+                        city={guide.city}
+                        vignette
                         loading="lazy"
                         width={256}
                         height={192}

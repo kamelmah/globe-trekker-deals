@@ -2,6 +2,11 @@ import { useState } from "react";
 
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { photoVille } from "@/data/city-photos";
+import {
+  imageWikimediaALargeur,
+  largeurWikimedia,
+  plusPetiteLargeurCouvrant,
+} from "@/lib/city-image.shared";
 import type { DestinationImage } from "@/lib/destination-images";
 
 /**
@@ -67,9 +72,33 @@ export function CityPicture({
     );
   }
 
+  /*
+   * L'URL relevée est stockée en 1 280 px, taille d'une bannière. Une carte de
+   * la page d'accueil l'affiche en 256 : la servir telle quelle ferait
+   * télécharger sept images pleine taille pour la seule page la plus vue du
+   * site — le défaut que `city-photos` évite avec son fichier de vignette.
+   *
+   * On demande donc la plus petite largeur SERVIE par Wikimedia qui couvre une
+   * fois et demie la largeur déclarée — une carte de 256 prend 500, pas 512,
+   * qui n'existe pas. Le facteur n'est pas deux : `width` est la taille
+   * intrinsèque déclarée, et la carte s'affiche autour de 136 px sur un écran
+   * courant ; doubler faisait passer au palier suivant, 960, soit presque la
+   * bannière pour rien. À 500 px, une carte de 136 reste nette en densité 3.
+   *
+   * Jamais au-dessus de la largeur stockée : elle a déjà été bornée au fichier
+   * d'origine à la génération, et demander plus grand donnerait une image
+   * absente.
+   */
+  const largeurStockee = largeurWikimedia(imageUrl);
+  const voulue = plusPetiteLargeurCouvrant(Math.round(width * 1.5));
+  const src =
+    largeurStockee !== null && voulue !== null && voulue < largeurStockee
+      ? imageWikimediaALargeur(imageUrl, voulue)
+      : imageUrl;
+
   return (
     <img
-      src={imageUrl}
+      src={src}
       /*
        * L'alt nomme la ville sans décrire la scène, à rebours de la règle que
        * suit `city-photos`. C'est le maximum de ce que le relevé sait : la photo

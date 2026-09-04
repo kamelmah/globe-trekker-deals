@@ -556,6 +556,12 @@ export type CheapestWhitelistedRoute = {
   airline: string | null;
   /** Date du relevé, null quand elle est inconnue — jamais remplacée par « maintenant ». */
   observedAt: string | null;
+  /**
+   * Photo relevée pour la ville d'arrivée, quand il en existe une. Absente, la
+   * carte garde son visuel local — curé pour les villes qui en ont un, neutre
+   * sinon.
+   */
+  imageUrl?: string;
 };
 
 export type PlancherObserve = { priceEur: number; observedAt: string | null };
@@ -742,5 +748,19 @@ export async function listHomeRoutes(params: {
     if (retenues.some((r) => r.slug === route.slug)) continue;
     retenues.push(route);
   }
-  return retenues;
+
+  /*
+   * Photo de chaque ville affichée, en une requête pour les quatre cartes.
+   *
+   * Sans elle, toute ville hors des vingt-quatre visuels curés et de
+   * `city-photos` reçoit le même visuel neutre : Malaga, Palma et Palerme
+   * partageaient ainsi la même image sur l'accueil. Import dynamique, comme
+   * pour les textes : le module de rédaction s'appuie sur ce fichier.
+   */
+  const { readCityImages } = await import("@/lib/route-editorial.server");
+  const images = await readCityImages(retenues.map((route) => route.destination));
+  return retenues.map((route) => {
+    const image = images.get(route.destination.toUpperCase());
+    return image ? { ...route, imageUrl: image } : route;
+  });
 }
