@@ -441,6 +441,7 @@ function DestinationPage() {
         <CityPicture
           imageUrl={route.imageUrl}
           fallback={banner}
+          code={route.destination}
           city={route.destinationCity}
           width={1200}
           height={630}

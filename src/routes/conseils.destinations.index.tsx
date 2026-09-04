@@ -97,6 +97,7 @@ function CityGuidesIndex() {
                 <CityPicture
                   imageUrl={guide.imageUrl}
                   fallback={image}
+                  code={guide.destination}
                   city={guide.city}
                   vignette
                   loading="lazy"

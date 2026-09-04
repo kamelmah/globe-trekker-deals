@@ -328,7 +328,7 @@ Réponds uniquement en JSON, sans texte autour, avec ce schéma exact :
        * Import dynamique : ce fichier part dans le bundle du navigateur, et la
        * clé Pexels lue par ce module n'a rien à y faire. `getCityImage` ne lève
        * jamais ; quand aucune source ne donne d'image de la bonne ville, la
-       * colonne reste hors du payload et le guide garde son visuel d'ambiance —
+       * colonne reste hors du payload et le guide garde son visuel local —
        * une image absente vaut mieux qu'une image d'une autre ville.
        */
       const { getCityImage } = await import("@/lib/city-image.server");

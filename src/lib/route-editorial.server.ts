@@ -556,8 +556,8 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
    * L'image n'est jamais indispensable : `getCityImage` ne lève pas et rend null
    * quand aucune source ne donne de photo de la bonne ville. La colonne est
    * alors laissée hors du payload, pour qu'un passage bredouille n'efface pas un
-   * relevé antérieur — la page retombe sur son visuel d'ambiance, ce qu'elle
-   * faisait déjà.
+   * relevé antérieur — la page retombe sur son visuel local, ce qu'elle faisait
+   * déjà.
    */
   const imageUrl =
     (await imageDejaRelevee(slug)) ??

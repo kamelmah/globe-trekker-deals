@@ -2,12 +2,15 @@
  * Photo d'illustration d'une ville, récupérée automatiquement.
  *
  * POURQUOI. Les pages générées — trajets rédigés par `rediger-routes`, guides
- * publiés depuis /destinations-proposes — n'avaient d'image que par
- * `getDestinationImage`, qui ne connaît qu'une trentaine de villes curées et
- * retombe sinon sur une ambiance régionale. Une page sur trois affichait donc
- * une photo qui n'est pas celle de sa ville, et rien ne la reliait à la
- * destination. Ce module va chercher une photo de CETTE ville, et n'en retourne
- * aucune plutôt qu'une mauvaise.
+ * publiés depuis /destinations-proposes — ont une photo de leur ville quand
+ * quelqu'un l'a déposée dans `city-photos`, ou quand elle fait partie des
+ * vingt-quatre villes curées. Partout ailleurs, c'est le visuel neutre : juste,
+ * mais muet. Ce module va chercher une photo de CETTE ville pour le reste du
+ * catalogue, et n'en retourne aucune plutôt qu'une mauvaise.
+ *
+ * Il ne remplace pas `city-photos` : une photo choisie et légendée à la main
+ * reste devant (voir `CityPicture`). Il couvre les centaines de villes qui
+ * n'auront jamais leur entrée écrite une par une.
  *
  * CHAÎNE DE REPLI, dans cet ordre :
  *   1. Wikipédia (fr) — la vignette de l'article de la ville. C'est la source
@@ -16,8 +19,8 @@
  *   2. Pexels — banque de photos libres, interrogée sur « <ville> city ». La
  *      correspondance n'y est que textuelle : rien ne garantit que la photo a
  *      été prise dans la ville. C'est un repli, pas une source de premier rang.
- *   3. null — l'appelant garde alors son visuel d'ambiance. Jamais d'URL
- *      cassée ni d'image vide enregistrée en base.
+ *   3. null — l'appelant garde alors son visuel local, curé ou neutre. Jamais
+ *      d'URL cassée ni d'image vide enregistrée en base.
  *
  * CE MODULE NE LÈVE JAMAIS. Une API tierce indisponible vaut « pas d'image » :
  * une tâche planifiée ne doit pas échouer parce qu'une photo manque, et un

@@ -146,6 +146,7 @@ function CityGuidePage() {
         <CityPicture
           imageUrl={guide.imageUrl}
           fallback={image}
+          code={guide.destination}
           city={guide.city}
           width={1200}
           height={630}

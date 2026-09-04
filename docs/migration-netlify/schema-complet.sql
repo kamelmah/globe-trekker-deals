@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS public.route_editorials (
   generated_at timestamp with time zone NOT NULL DEFAULT now(),
   -- Photo de la ville d'arrivée relevée à la rédaction (Wikipédia, puis Pexels).
   -- NULL quand aucune source n'a d'image de CETTE ville : la page reprend alors
-  -- son visuel d'ambiance, ce qui vaut mieux qu'une photo d'une autre ville.
+  -- son visuel local, ce qui vaut mieux qu'une photo d'une autre ville.
   image_url text,
   error_message text,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
