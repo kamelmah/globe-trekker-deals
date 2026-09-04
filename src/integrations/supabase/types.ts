@@ -45,6 +45,7 @@ export type Database = {
           error_message: string | null;
           generated_at: string | null;
           id: string;
+          image_url: string | null;
           origin: string;
           published_at: string | null;
           route_slug: string;
@@ -61,6 +62,7 @@ export type Database = {
           error_message?: string | null;
           generated_at?: string | null;
           id?: string;
+          image_url?: string | null;
           origin?: string;
           published_at?: string | null;
           route_slug: string;
@@ -77,6 +79,7 @@ export type Database = {
           error_message?: string | null;
           generated_at?: string | null;
           id?: string;
+          image_url?: string | null;
           origin?: string;
           published_at?: string | null;
           route_slug?: string;
@@ -314,6 +317,7 @@ export type Database = {
           destination: string;
           error_message: string | null;
           generated_at: string;
+          image_url: string | null;
           input_tokens: number | null;
           intro: string;
           meta_description: string;
@@ -331,6 +335,7 @@ export type Database = {
           destination: string;
           error_message?: string | null;
           generated_at?: string;
+          image_url?: string | null;
           input_tokens?: number | null;
           intro: string;
           meta_description: string;
@@ -348,6 +353,7 @@ export type Database = {
           destination?: string;
           error_message?: string | null;
           generated_at?: string;
+          image_url?: string | null;
           input_tokens?: number | null;
           intro?: string;
           meta_description?: string;

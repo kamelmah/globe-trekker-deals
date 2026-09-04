@@ -27,6 +27,7 @@ import {
   ROUTE_WHITELIST,
   WHITELIST_VALIDATED_AT,
 } from "@/data/route-whitelist";
+import { estImageDeConfiance, getCityImage } from "@/lib/city-image.server";
 import { formatDateMedium, formatMonthLong } from "@/lib/dates";
 import { flushOpsLogs, logOps } from "@/lib/ops-log.server";
 import {
@@ -406,6 +407,27 @@ async function noterEchec(slug: string, message: string): Promise<void> {
   }
 }
 
+/**
+ * Photo déjà enregistrée sur ce trajet, à condition qu'elle vienne de notre
+ * chaîne de relevé. Une URL d'une autre provenance n'a rien à garantir sur la
+ * ville qu'elle montre : on la traite comme absente et on relève à nouveau.
+ */
+async function imageDejaRelevee(slug: string): Promise<string | null> {
+  try {
+    const db = await admin();
+    const { data } = await db
+      .from("route_editorials")
+      .select("image_url")
+      .eq("route_slug", slug)
+      .maybeSingle();
+    return estImageDeConfiance(data?.image_url) ? (data?.image_url ?? null) : null;
+  } catch (error) {
+    // Lecture impossible : on relève l'image, quitte à refaire un appel.
+    console.warn("[rediger-routes] image existante illisible", error);
+    return null;
+  }
+}
+
 /** Rédige le texte d'un trajet et l'enregistre. Ne lève jamais. */
 export async function generateRouteEditorial(slug: string): Promise<Rapport> {
   const debut = Date.now();
@@ -522,6 +544,25 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
   const inputTokens = payload.usage?.input_tokens ?? 0;
   const outputTokens = payload.usage?.output_tokens ?? 0;
   const tokens = inputTokens + outputTokens;
+
+  /**
+   * Photo de la ville d'arrivée, relevée en même temps que le texte.
+   *
+   * Une image déjà en place est conservée telle quelle : le rafraîchissement
+   * revient tous les quatre-vingt-dix jours sur chaque trajet, et redemander la
+   * même photo à Wikipédia ne changerait rien tout en prélevant des secondes sur
+   * le budget du passage.
+   *
+   * L'image n'est jamais indispensable : `getCityImage` ne lève pas et rend null
+   * quand aucune source ne donne de photo de la bonne ville. La colonne est
+   * alors laissée hors du payload, pour qu'un passage bredouille n'efface pas un
+   * relevé antérieur — la page retombe sur son visuel d'ambiance, ce qu'elle
+   * faisait déjà.
+   */
+  const imageUrl =
+    (await imageDejaRelevee(slug)) ??
+    (await getCityImage(contexte.trajet.destination.ville, contexte.trajet.destination.pays));
+
   try {
     const db = await admin();
     const { error } = await db.from("route_editorials").upsert(
@@ -532,6 +573,7 @@ export async function generateRouteEditorial(slug: string): Promise<Rapport> {
         meta_description: parsed.metaDescription,
         intro: parsed.intro,
         sections: parsed.sections as never,
+        ...(imageUrl ? { image_url: imageUrl } : {}),
         model,
         input_tokens: payload.usage?.input_tokens ?? null,
         output_tokens: payload.usage?.output_tokens ?? null,
@@ -663,6 +705,8 @@ export type StoredEditorial = {
   metaDescription: string;
   intro: string;
   sections: { heading: string; paragraphs: string[] }[];
+  /** Photo de la ville d'arrivée, quand une source en a donné une. */
+  imageUrl: string | null;
 };
 
 /** Texte publié d'un trajet, ou null. Une lecture qui échoue laisse la page en l'état. */
@@ -671,7 +715,7 @@ export async function readRouteEditorial(slug: string): Promise<StoredEditorial 
     const db = await admin();
     const { data, error } = await db
       .from("route_editorials")
-      .select("meta_description,intro,sections")
+      .select("meta_description,intro,sections,image_url")
       .eq("route_slug", slug)
       .eq("published", true)
       .maybeSingle();
@@ -682,6 +726,7 @@ export async function readRouteEditorial(slug: string): Promise<StoredEditorial 
       metaDescription: data.meta_description,
       intro: data.intro,
       sections,
+      imageUrl: data.image_url,
     };
   } catch (error) {
     console.error("Lecture du texte éditorial impossible", error);

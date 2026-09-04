@@ -69,6 +69,12 @@ Dans l'ordre. _Site configuration → Environment variables._
 | `ANTHROPIC_API_KEY` | platform.claude.com → Clés API. Utilisée par `generateGuideDraft`, depuis `/destinations-proposes`. |
 | `ANTHROPIC_MODEL`   | facultative — `claude-sonnet-5` par défaut.                                                         |
 
+### Photos de villes — Pexels
+
+| Variable         | Note                                                                                              |
+| ---------------- | ------------------------------------------------------------------------------------------------- |
+| `PEXELS_API_KEY` | facultative — pexels.com/api, gratuite. Repli quand Wikipédia n'a pas de photo de la ville. Sans elle, seul Wikipédia est interrogé et les villes sans article illustré restent sur leur visuel d'ambiance. |
+
 ### Administration
 
 | Variable           | Note                                      |

@@ -23,6 +23,12 @@ export type CityGuide = {
   intro: string;
   readingMinutes: number;
   updated: string;
+  /**
+   * Photo de la ville relevée à la génération (guides publiés depuis
+   * /destinations-proposes). Absente des guides écrits à la main, qui ont tous
+   * un visuel curé dans `destination-images`.
+   */
+  imageUrl?: string | null;
   practical: CityGuidePractical;
   sections: { heading: string; paragraphs: string[] }[];
 };

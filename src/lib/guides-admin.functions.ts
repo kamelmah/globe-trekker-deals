@@ -321,10 +321,24 @@ Réponds uniquement en JSON, sans texte autour, avec ce schéma exact :
         originCity: "Paris",
         updated: new Date().toISOString().slice(0, 10),
       };
+
+      /**
+       * Photo de la ville, relevée en même temps que le texte.
+       *
+       * Import dynamique : ce fichier part dans le bundle du navigateur, et la
+       * clé Pexels lue par ce module n'a rien à y faire. `getCityImage` ne lève
+       * jamais ; quand aucune source ne donne d'image de la bonne ville, la
+       * colonne reste hors du payload et le guide garde son visuel d'ambiance —
+       * une image absente vaut mieux qu'une image d'une autre ville.
+       */
+      const { getCityImage } = await import("@/lib/city-image.server");
+      const imageUrl = await getCityImage(request.city, request.country);
+
       const { error: writeError } = await supabase
         .from("guide_requests")
         .update({
           draft: draft as never,
+          ...(imageUrl ? { image_url: imageUrl } : {}),
           status: request.status === "publie" ? "publie" : "brouillon",
           generated_at: new Date().toISOString(),
           error_message: null,

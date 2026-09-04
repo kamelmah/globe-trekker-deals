@@ -34,6 +34,11 @@ export type DestinationRoute = {
    */
   observedOriginAirport?: string;
   observedDestinationAirport?: string;
+  /**
+   * Photo de la ville d'arrivée relevée à la rédaction du texte (pages
+   * générées). Absente des pages écrites à la main, qui ont un visuel curé.
+   */
+  imageUrl?: string;
 };
 
 const CORE_DESTINATIONS: DestinationRoute[] = [

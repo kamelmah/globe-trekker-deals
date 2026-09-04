@@ -8,6 +8,7 @@ import { LivePriceButton } from "@/components/flights/LivePriceButton";
 import { PriceHistoryChart } from "@/components/flights/PriceHistoryChart";
 import { FaqAccordion } from "@/components/site/FaqAccordion";
 import { Reveal } from "@/components/site/Reveal";
+import { CityPicture } from "@/components/site/CityPicture";
 import { ResponsivePicture } from "@/components/site/ResponsivePicture";
 import { LienHotelsCom } from "@/components/stay/LienHotelsCom";
 import { Stay22Map } from "@/components/stay/Stay22Map";
@@ -296,10 +297,10 @@ function DestinationPage() {
       </nav>
 
       <div className="relative mt-4 overflow-hidden rounded-2xl border border-border">
-        <ResponsivePicture
-          src={banner.src}
-          webp={banner.webp}
-          alt={banner.alt}
+        <CityPicture
+          imageUrl={route.imageUrl}
+          fallback={banner}
+          city={route.destinationCity}
           width={1200}
           height={630}
           className="h-44 w-full object-cover sm:h-64 lg:h-80"

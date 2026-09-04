@@ -18,6 +18,7 @@ function toGuide(row: {
   destination: string;
   route_slug: string;
   draft: unknown;
+  image_url: string | null;
 }): CityGuide | null {
   const draft = row.draft as Partial<CityGuide> | null;
   if (!draft?.intro || !Array.isArray(draft.sections) || !draft.practical) return null;
@@ -35,12 +36,13 @@ function toGuide(row: {
     intro: draft.intro,
     readingMinutes: draft.readingMinutes ?? 6,
     updated: draft.updated ?? new Date().toISOString().slice(0, 10),
+    imageUrl: row.image_url,
     practical: draft.practical,
     sections: draft.sections,
   };
 }
 
-const SELECT = "slug,city,country,origin,destination,route_slug,draft";
+const SELECT = "slug,city,country,origin,destination,route_slug,draft,image_url";
 
 export const listPublishedGuides = createServerFn({ method: "GET" }).handler(
   async (): Promise<{ guides: CityGuide[] }> => {
@@ -64,9 +66,7 @@ export const listPublishedGuides = createServerFn({ method: "GET" }).handler(
 );
 
 export const publishedGuide = createServerFn({ method: "GET" })
-  .inputValidator((data) =>
-    z.object({ slug: z.string().trim().min(1).max(80) }).parse(data),
-  )
+  .inputValidator((data) => z.object({ slug: z.string().trim().min(1).max(80) }).parse(data))
   .handler(async ({ data }): Promise<{ guide: CityGuide | null }> => {
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

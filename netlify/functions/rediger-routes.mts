@@ -18,6 +18,11 @@
  * couverts en moins de quatre jours, ce qui ne justifie pas de risquer un
  * passage tué. La durée de chaque génération est journalisée pour trancher.
  *
+ * Depuis, chaque passage relève aussi une photo de la ville d'arrivée (voir
+ * `city-image.server.ts`) : au pire six secondes par source interrogée, et
+ * seulement pour un trajet qui n'a pas encore d'image. Un trajet déjà pourvu ne
+ * paie rien, ce qui rend le cas coûteux non répétable.
+ *
  * HORAIRE. h+23, entre le rafraîchissement des prix (h+07) et la vérification
  * des alertes (h+37) : les trois tâches ne se chevauchent pas.
  *

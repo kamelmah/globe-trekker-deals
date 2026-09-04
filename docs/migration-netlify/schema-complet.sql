@@ -1,7 +1,7 @@
 -- ============================================================================
 -- TrouveMonVol — schéma complet, à rejouer sur un projet Supabase vierge.
 --
--- Concaténation des 11 migrations du dépôt, dans l'ordre chronologique, moins
+-- Concaténation des 14 migrations du dépôt, dans l'ordre chronologique, moins
 -- ce qui est spécifique à la plateforme Lovable (détaillé en fin de fichier).
 --
 -- Structure uniquement : aucune donnée. Rejouable sans erreur.
@@ -134,6 +134,10 @@ CREATE TABLE IF NOT EXISTS public.route_editorials (
   source_snapshot jsonb,
   published boolean NOT NULL DEFAULT true,
   generated_at timestamp with time zone NOT NULL DEFAULT now(),
+  -- Photo de la ville d'arrivée relevée à la rédaction (Wikipédia, puis Pexels).
+  -- NULL quand aucune source n'a d'image de CETTE ville : la page reprend alors
+  -- son visuel d'ambiance, ce qui vaut mieux qu'une photo d'une autre ville.
+  image_url text,
   error_message text,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now()
@@ -224,6 +228,8 @@ CREATE TABLE IF NOT EXISTS public.guide_requests (
   draft jsonb,
   generated_at timestamp with time zone,
   published_at timestamp with time zone,
+  -- Même rôle que sur route_editorials : photo de la ville du guide, ou NULL.
+  image_url text,
   error_message text,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now()

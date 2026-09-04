@@ -4,7 +4,7 @@ import { CITY_GUIDES, type CityGuide } from "@/data/city-guides";
 import { PRUNED_GUIDE_SLUGS, withoutPruned } from "@/data/pruned-pages";
 import { listPublishedGuides } from "@/lib/published-guides.functions";
 import { FondAnime } from "@/components/site/FondAnime";
-import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { CityPicture } from "@/components/site/CityPicture";
 import { getDestinationImage } from "@/lib/destination-images";
 import { withPreposition } from "@/lib/french-grammar";
 import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
@@ -94,10 +94,11 @@ function CityGuidesIndex() {
                 params={{ city: guide.slug }}
                 className="flex gap-4 rounded-lg transition-colors hover:bg-secondary"
               >
-                <ResponsivePicture
-                  src={image.thumb}
-                  webp={image.thumbWebp}
-                  alt={image.alt}
+                <CityPicture
+                  imageUrl={guide.imageUrl}
+                  fallback={image}
+                  city={guide.city}
+                  vignette
                   loading="lazy"
                   width={128}
                   height={96}

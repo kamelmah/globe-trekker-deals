@@ -422,6 +422,9 @@ export async function buildDynamicRoutePage(slug: string): Promise<DestinationRo
     metaDescription: editorial?.metaDescription ?? metaDescription,
     intro: editorial?.intro ?? intro,
     sections,
+    // Photo de la ville d'arrivée quand la rédaction en a relevé une ; sinon la
+    // bannière reste le visuel d'ambiance choisi au rendu.
+    ...(editorial?.imageUrl ? { imageUrl: editorial.imageUrl } : {}),
     averageDuration: durationLabel(km),
     faq,
     ...(observed ? { observedLowestPrice: observed.priceEur } : {}),

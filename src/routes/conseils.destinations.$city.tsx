@@ -2,7 +2,7 @@ import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import { isGuidePruned } from "@/data/pruned-pages";
 
 import { Reveal } from "@/components/site/Reveal";
-import { ResponsivePicture } from "@/components/site/ResponsivePicture";
+import { CityPicture } from "@/components/site/CityPicture";
 import { TravelPartnersSection } from "@/components/site/TravelPartners";
 import { LienHotelsCom } from "@/components/stay/LienHotelsCom";
 import { Stay22Map } from "@/components/stay/Stay22Map";
@@ -134,10 +134,10 @@ function CityGuidePage() {
       </nav>
 
       <div className="relative mt-4 overflow-hidden rounded-2xl border border-border">
-        <ResponsivePicture
-          src={image.src}
-          webp={image.webp}
-          alt={image.alt}
+        <CityPicture
+          imageUrl={guide.imageUrl}
+          fallback={image}
+          city={guide.city}
           width={1200}
           height={630}
           className="h-44 w-full object-cover sm:h-64"
